@@ -31,7 +31,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;

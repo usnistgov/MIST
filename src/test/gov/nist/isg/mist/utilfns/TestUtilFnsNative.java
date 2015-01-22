@@ -26,7 +26,7 @@
 //
 // ================================================================
 
-package test.utilfns;
+package test.gov.nist.isg.mist.utilfns;
 
 import java.io.File;
 

@@ -31,7 +31,7 @@ package test.gov.nist.isg.mist.jcuda;
 import java.io.File;
 import java.io.InvalidClassException;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdeviceptr;
 import jcuda.driver.JCudaDriver;

@@ -33,7 +33,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import main.gov.nist.isg.mist.stitching.lib.log.Log;

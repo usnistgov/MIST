@@ -32,7 +32,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.common.Array2DView;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;

@@ -30,7 +30,7 @@ package test.gov.nist.isg.mist.jcuda;
 
 import java.io.File;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import main.gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;

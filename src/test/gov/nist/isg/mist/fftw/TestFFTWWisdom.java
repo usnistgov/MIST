@@ -30,7 +30,7 @@ package test.gov.nist.isg.mist.fftw;
 
 import java.io.File;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import main.gov.nist.isg.mist.stitching.lib.log.Log;
 import main.gov.nist.isg.mist.stitching.lib.log.Log.LogType;

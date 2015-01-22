@@ -47,7 +47,7 @@ import main.gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser
 
 import org.bridj.Pointer;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 
 /**
  * Test case for stitching a grid of tiles using FFTW.

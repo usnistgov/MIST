@@ -31,7 +31,7 @@ package test.gov.nist.isg.mist.java;
 import java.io.File;
 import java.io.InvalidClassException;
 
-import test.timing.TimeUtil;
+import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;

@@ -26,7 +26,7 @@
 //
 // ================================================================
 
-package test.timing;
+package test.gov.nist.isg.mist.timing;
 
 /**
  * Timing utlity functions for obtaining timing information in milliseconds.
