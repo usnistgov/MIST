@@ -31,6 +31,8 @@ https://nist.gov/path/to/userguide
 
 ##  Standalone Installation
 
+The standalone version allows you to launch the application either through the command-line or through the included execute scripts. This version also supports headless systems that pass the stitching parameters as a paramter.
+
 1. Download the zip file from https://nist.gov/location/of/mist/zip.
 2. Extract contents to a folder
 3. Double click run.bat for Windows users or run.sh for Linux/MacOS users
