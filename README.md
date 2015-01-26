@@ -37,7 +37,7 @@ The standalone version allows you to launch the application either through the c
 2. Extract contents to a folder
 3. Double click run.bat for Windows users or run.sh for Linux/MacOS users
 
-#### Command-line user guide
+#### Command-line Users Guide
 
 1. Download the zip file from https://nist.gov/location/of/mist/zip.
 2. Extract contents to a folder
