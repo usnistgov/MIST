@@ -130,7 +130,7 @@ public class OptimizationRepeatability<T> {
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
         "Optimization...", 0, 0, 0, false);
 
-    File directory = new File(this.params.getOutputParams().getOutputPath());
+    File directory = new File(this.params.getOutputParams().getMetadataPath());
     directory.mkdirs();
     File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(StitchingStatistics.currentTimeSlice);
     Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);

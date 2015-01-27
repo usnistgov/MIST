@@ -166,7 +166,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getHillClimbPositionFile(int timeSlice)
   {
-    return new File(this.outputPath, this.getHillClimbStartingPositionsName(timeSlice));
+    return new File(this.metadataPath, this.getHillClimbStartingPositionsName(timeSlice));
   }
   
   /**
