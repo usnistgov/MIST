@@ -3,6 +3,10 @@
  * accompanying materials are made available under the terms of the Common Public License - v1.0,
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Original source code repository found: https://github.com/dhale/jtk
+ * 
+ * Any license provisions that differ from above are offered by the license below.
  ****************************************************************************/
 
 // ================================================================
