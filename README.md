@@ -3,8 +3,8 @@ Microscopy Image Stitching Tool for Fiji and standalone
 
 ## Quick Navigation
 
-|[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Fiji-Installation)|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|Technical Documentation|
-|----------------------------|----------------------------|----------------------------|----------------------------|
+|[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|[Wiki](https://github.com/NIST-ISG/MIST/wiki)|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Fiji-Installation)|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|Technical Documentation|
+|----------------------------|--------------------|----------------------------|----------------------------|----------------------------|
 
 
 ## Sample Data Sets
