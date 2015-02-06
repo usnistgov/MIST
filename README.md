@@ -43,6 +43,10 @@ The standalone version allows you to launch the application either through the c
 2. Extract contents to a folder
 3. From command-line execute **./run.bat <params>** or **./run.sh <params>** ; Use --help to view list of parameters
 
+## Sample Data Sets
+
+[2015 BioImage Informatics Conference: Image Stitching Challenge](https://isg.nist.gov/BII_2015/webPages/pages/stitching/Stitching.html)
+
 ## Applicable Problem Domain
 
 MIST is designed to stitch 2D image datasets. Therefore each slice of a higher dimensional dataset is stitched together independently of all others with no information being carried between slices. For example, MIST can stitch a time series of 2D datasets (2D+time) where the image grid for each time slice it stitched together independently of all others. The problem of 3D volumetric stitching is not handled by MIST. 
