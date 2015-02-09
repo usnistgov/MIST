@@ -43,10 +43,8 @@ import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.util.prefs.Preferences;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -106,7 +104,8 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   public StitchingGUIFrame(String title, Frame parent) {
     super(title);
 
-    this.setSize(new Dimension(550, 590));
+    this.setSize(new Dimension(570, 600));
+    this.setMinimumSize(new Dimension(570, 600));
 
     this.mainFrame = new JPanel(new GridBagLayout());
 
@@ -146,7 +145,6 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
     JScrollPane sp = new JScrollPane(this.advancedPanel);
     sp.getVerticalScrollBar().setUnitIncrement(8);
-    tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
     tabbedPane.addTab("Input", this.inputPanel);
     tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -177,20 +175,20 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     this.saveParamsButton = new JButton("Save Params");
     this.loadParamsButton = new JButton("Load Params");
 
-    ImageIcon icon = null;
-    JLabel picLabel = null;
-    try {
-      icon = AppImageHelper.loadImage("NIST-Logo_5.png");
-    } catch (FileNotFoundException e) {
-      // Log.msg(LogType.MANDATORY, "ERROR: NIST Logo file not found.");
-    }
-
-    if (icon != null) {
-      picLabel = new JLabel(icon);
-    } else
-      picLabel = new JLabel();
-
-    bottomPanel.add(picLabel);
+//    ImageIcon icon = null;
+//    JLabel picLabel = null;
+//    try {
+//      icon = AppImageHelper.loadImage("NIST-Logo_5.png");
+//    } catch (FileNotFoundException e) {
+//      // Log.msg(LogType.MANDATORY, "ERROR: NIST Logo file not found.");
+//    }
+//
+//    if (icon != null) {
+//      picLabel = new JLabel(icon);
+//    } else
+//      picLabel = new JLabel();
+//
+//    bottomPanel.add(picLabel);
     bottomPanel.add(this.saveParamsButton);
     bottomPanel.add(this.beginStitchingButton);
     bottomPanel.add(this.loadParamsButton);
