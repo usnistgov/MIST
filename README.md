@@ -1,10 +1,14 @@
 # MIST
-Microscopy Image Stitching Tool for Fiji was developed at the National Institute for Standards and Technology. It is currently available as a plugin for Fiji. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
+Microscopy Image Stitching Tool for Fiji was developed at the National Institute for Standards and Technology. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
 ## Quick Navigation
 
 |[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|[Wiki](https://github.com/NIST-ISG/MIST/wiki)|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/MIST-Plugin-Installation)|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|Technical Documentation|
 |----------------------------|--------------------|----------------------------|----------------------------|----------------------------|
+
+## Applicable Problem Domain
+
+MIST is designed to stitch 2D image datasets. Therefore each slice of a higher dimensional dataset is stitched together independently of all others with no information being carried between slices. For example, MIST can stitch a time series of 2D datasets (2D+time) where the image grid for each time slice it stitched together independently of all others. The problem of 3D volumetric stitching is not handled by MIST. 
 
 
 ## Sample Data Sets
@@ -18,7 +22,3 @@ The results of any stitching algorithm will be submitted to the challenge chair 
 [Cy5_ImageTiles.zip ~ 119 MB](https://isg.nist.gov/BII_2015/Stitching/Cy5_Image_Tiles.zip)
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
-
-## Applicable Problem Domain
-
-MIST is designed to stitch 2D image datasets. Therefore each slice of a higher dimensional dataset is stitched together independently of all others with no information being carried between slices. For example, MIST can stitch a time series of 2D datasets (2D+time) where the image grid for each time slice it stitched together independently of all others. The problem of 3D volumetric stitching is not handled by MIST. 
