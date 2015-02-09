@@ -1,5 +1,5 @@
 # MIST
-Microscopy Image Stitching Tool for Fiji and standalone
+Microscopy Image Stitching Tool for Fiji was developed at the National Institute for Standards and Technology. It is currently available as a plugin for Fiji. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
 ## Quick Navigation
 
