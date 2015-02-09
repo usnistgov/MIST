@@ -64,6 +64,7 @@ public class LibraryUtils {
   public static void initalize() {
     try {
       addDir("." + File.separator + "lib" + File.separator + "jcuda-5.0");
+      addDir("." + File.separator + "lib");
       os = LibUtils.calculateOS();
       arch = LibUtils.calculateArch();
 

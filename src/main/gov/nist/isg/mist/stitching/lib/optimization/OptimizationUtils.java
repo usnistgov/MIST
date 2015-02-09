@@ -1592,6 +1592,42 @@ public class OptimizationUtils {
     return emptyCols;
   }
 
+
+  public static <T> void replaceTranslationFromOverlap(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double overlap) {
+
+    int estTranslation;
+    switch(dir) {
+      case West:
+        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue)*(1 - overlap/100));
+        for (int col = 0; col < grid.getExtentWidth(); col++) {
+          for (int row = 0; row < grid.getExtentHeight(); row++) {
+            CorrelationTriple triple = grid.getSubGridTile(row, col).getWestTranslation();
+            if(triple != null) {
+              triple.setX(estTranslation);
+              triple.setY(0);
+            }
+          }
+        }
+
+
+        break;
+      case North:
+        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue)*(1 - overlap/100));
+
+        for (int col = 0; col < grid.getExtentWidth(); col++) {
+          for (int row = 0; row < grid.getExtentHeight(); row++) {
+            CorrelationTriple triple = grid.getSubGridTile(row, col).getNorthTranslation();
+            if(triple != null) {
+              triple.setX(0);
+              triple.setY(estTranslation);
+            }
+          }
+        }
+
+        break;
+    }
+
+  }
   
   public static <T> void replaceTranslationsRow(TileGrid<ImageTile<T>> grid, CorrelationTriple median, List<Integer> missingRows)
   {

@@ -256,7 +256,9 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
       String fftwLibraryName) {
     boolean loaded = false;
     try {
-      BridJ.setNativeLibraryActualName("fftw", fftwLibraryName);
+      BridJ.addNativeLibraryAlias("fftw", fftwLibraryName);
+      BridJ.addNativeLibraryAlias("fftw", "fftw3");
+      BridJ.addNativeLibraryAlias("fftw", "fftw3-3");
       BridJ.addLibraryPath(libFFTWPath);
       FFTW3Library.fftw_cleanup();
       Log.msg(LogType.INFO, "FFTW library loaded successfully");

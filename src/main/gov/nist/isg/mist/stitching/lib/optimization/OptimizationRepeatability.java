@@ -234,6 +234,36 @@ public class OptimizationRepeatability<T> {
     }
   }
 
+
+  private double getOverlap(Direction dir, DisplacementValue dispValue, double percOverlapError) {
+
+    double overlap = Double.NaN;
+    switch (dir) {
+      case West:
+        if (!Double.isNaN(this.userDefinedHorizontalOverlap)) {
+          // use the specified overlap
+          overlap = this.userDefinedHorizontalOverlap;
+        }else{
+          // compute the overlap from translations
+          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError);
+        }
+        break;
+      case North:
+        if (!Double.isNaN(this.userDefinedVerticalOverlap)) {
+          // use the specified repeatability
+          overlap = this.userDefinedVerticalOverlap;
+        }else{
+          // compute the overlap from translations
+          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError);
+        }
+        break;
+      default:
+        break;
+
+    }
+    return overlap;
+  }
+
   /**
    * Correlations translations of a grid based on a filtering step that enables estimating the
    * repeatability and backlash of a microscope.
@@ -261,45 +291,20 @@ public class OptimizationRepeatability<T> {
 
     }
 
-    double overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError);
+    // get the overlap for the current direction
+    double overlap = getOverlap(dir, dispValue, percOverlapError);
 
-    switch (dir) {
-      case West:
-        if (!Double.isNaN(this.userDefinedHorizontalOverlap)) {
-          // Check if user-specified is out of bounds... if it is then warn
-          if (this.userDefinedHorizontalOverlap > overlap + percOverlapError
-              || this.userDefinedHorizontalOverlap < overlap - percOverlapError) {
-            Log.msg(LogType.MANDATORY, "Warning: Our computed overlap (" + overlap + ") +/- "
-                + percOverlapError + " is out of bounds of your defined overlap: "
-                + this.userDefinedHorizontalOverlap);
-          }
-
-          overlap = this.userDefinedHorizontalOverlap;
-        }
-        break;
-      case North:
-        if (!Double.isNaN(this.userDefinedVerticalOverlap)) {
-          // Check if user-specified is out of bounds... if it is then warn
-          if (this.userDefinedVerticalOverlap > overlap + percOverlapError
-              || this.userDefinedVerticalOverlap < overlap - percOverlapError) {
-            Log.msg(LogType.MANDATORY, "Warning: Our computed overlap (" + overlap + ") +/- "
-                + percOverlapError + " is out of bounds of your defined overlap: "
-                + this.userDefinedVerticalOverlap);
-          }
-
-          overlap = this.userDefinedVerticalOverlap;
-        }
-        break;
-      default:
-        break;
-
+    // check that an overlap value has been computed
+    if(Double.isNaN(overlap)) {
+      Log.msg(LogType.MANDATORY, "Warning: Unable to compute overlap for " + dir
+                                 + " direction. Please set your overlap in the advanced options");
+      throw new GlobalOptimizationException("Unable to compute overlap for " + dir + " direction.");
     }
-
+    // limit the overlap to reasonable values
     overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
-    
     StitchingExecutor.stitchingStatistics.setOverlap(dir, overlap);
-
     Log.msg(LogType.VERBOSE, "Computed overlap: " + overlap);
+
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
@@ -307,11 +312,24 @@ public class OptimizationRepeatability<T> {
     validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap);
 
     if (validTranslations.size() == 0) {
-      Log.msg(LogType.MANDATORY, "Warning: Unable to compute repeatability for " + dir
-          + " direction. (No good translations found). Please set your repeatability in the advanced options");
+      Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+          + " direction. Estimated translations generated from the overlap.");
 
-      throw new GlobalOptimizationException("Unable to compute repeatability for " + dir
-          + " direction.");
+      if(this.isUserDefinedRepeatability) {
+        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                   + " direction. Repeatability has been set to zero.");
+      }else{
+        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                   + " direction. Repeatability has been set to " +
+                                   this.userDefinedRepeatability + " (advanced options value).");
+      }
+
+      // replace with translation estimated from overlap
+      OptimizationUtils.replaceTranslationFromOverlap(this.grid, dir, dispValue, overlap);
+      int r = 0;
+      if(this.isUserDefinedRepeatability)
+        r = this.userDefinedRepeatability;
+      return r;
     }
 
     MinMaxElement minMaxVal = null;
@@ -346,8 +364,8 @@ public class OptimizationRepeatability<T> {
     int repeatability = repeatability1 > repeatability2 ? repeatability1 : repeatability2;
 
     if (this.isUserDefinedRepeatability) {
-      Log.msg(LogType.MANDATORY, "Computed repeatability: " + repeatability + " Overriden by user specified repeatability: " + this.userDefinedRepeatability);
-      repeatability = Math.min(repeatability, this.userDefinedRepeatability);
+      Log.msg(LogType.MANDATORY, "Computed repeatability: " + repeatability + " Overridden by user specified repeatability: " + this.userDefinedRepeatability);
+      repeatability = this.userDefinedRepeatability;
     }else{
       if (repeatability > MaxRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: the computed repeatability (" + repeatability
@@ -380,10 +398,24 @@ public class OptimizationRepeatability<T> {
     .setNumValidTilesAfterFilter(dir, validTranslations.size());
 
     if (validTranslations.size() == 0) {
-      Log.msg(LogType.MANDATORY, "Warning: Unable to compute optimization for " + dir
-          + " direction. (No good translations found)");
-      throw new GlobalOptimizationException("Unable to compute repeatability for " + dir
-          + " direction.");
+      Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                 + " direction. Estimated translations generated from the overlap.");
+
+      if(this.isUserDefinedRepeatability) {
+        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                   + " direction. Repeatability has been set to zero.");
+      }else{
+        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                   + " direction. Repeatability has been set to " +
+                                   this.userDefinedRepeatability + " (advanced options value).");
+      }
+
+      // replace with translation estimated from overlap
+      OptimizationUtils.replaceTranslationFromOverlap(this.grid, dir, dispValue, overlap);
+      int r = 0;
+      if(this.isUserDefinedRepeatability)
+        r = this.userDefinedRepeatability;
+      return r;
     }
 
 
