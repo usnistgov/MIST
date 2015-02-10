@@ -22,3 +22,5 @@ The results of any stitching algorithm will be submitted to the challenge chair 
 [Cy5_ImageTiles.zip ~ 119 MB](https://isg.nist.gov/BII_2015/Stitching/Cy5_Image_Tiles.zip)
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
+
+![Cy5 and Phase images](https://github.com/NIST-ISG/MIST/blob/master/screenshots/Cy5Phase.png)
