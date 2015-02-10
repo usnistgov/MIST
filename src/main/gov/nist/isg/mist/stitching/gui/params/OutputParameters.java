@@ -106,9 +106,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeslice the timeslice
    * @return the hill climbing starting position name
    */
-  public String getHillClimbStartingPositionsName(int timeslice)
+  public static String getHillClimbStartingPositionsName(int timeslice)
   {
-    return this.outFilePrefix + hillClimbPosFilename + "-" + timeslice + metadataSuffix;
+    return hillClimbPosFilename + "-" + timeslice + metadataSuffix;
   }
   
   /**
@@ -166,7 +166,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getHillClimbPositionFile(int timeSlice)
   {
-    return new File(this.metadataPath, this.getHillClimbStartingPositionsName(timeSlice));
+    return new File(this.metadataPath, getHillClimbStartingPositionsName(timeSlice));
   }
   
   /**
