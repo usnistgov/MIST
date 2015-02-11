@@ -81,7 +81,7 @@ public class Stitching {
   /**
    * The number of FFT peaks to check
    */
-  public static int NUM_PEAKS = 10;
+  public static int NUM_PEAKS = 2;
 
   /**
    * The correlation threshold for checking the number of peaks
