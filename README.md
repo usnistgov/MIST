@@ -31,4 +31,4 @@ This dataset is a grid of 10x10 image tiles of a stem cell colony experiment. Th
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
 
-![Cy5 and Phase images](screenshots/Cy5Phase.png)
+![Cy5 and Phase images](../../wiki/images/Cy5Phase.png)
