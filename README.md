@@ -17,9 +17,9 @@ MIST is designed to stitch 2D image datasets. Therefore each slice of a higher d
 
 This dataset is a grid of 5x5 image tiles of a stem cell colony experiment. The images were acquired with 10% overlap in two imaging modalities: phase contrast and Cy5. The participants can choose which channel is their registration channel depending on the algorithm they are using. Phase contrast has more noise and artifacts in the background area while Cy5 does not. Grid tiling starts in the upper left corner and moves horizontally (x or column direction). The shift between rows is done by combing, meaning the next tile acquired after the 10th right tile on row i is the first tile on the left of row i+1. The naming convention of the files follows the one done by MicroManager in the format: file_name_r{rrr}_c{ccc}.tif where r{rrr} is the row number and c{ccc} is the column number of the tile in the 5x5 grid. For example: img_Cy5_r003_c004.tif is the image acquired using Cy5 and located on row 3, column 4 on the 5x5 grid.
 
-[Cy5_ImageTiles.zip ~ 54 MB](https://github.com/NIST-ISG/MIST/blob/master/testdata/Small_Fluorescent_Test_Dataset.zip)
+[Cy5_ImageTiles.zip ~ 54 MB](../../wiki/testdata/Small_Fluorescent_Test_Dataset.zip)
 
-[Phase_Image_Tiles.zip ~ 83 MB](https://github.com/NIST-ISG/MIST/blob/master/testdata/Small_Phase_Test_Dataset.zip)
+[Phase_Image_Tiles.zip ~ 83 MB](../../wiki/testdata/Small_Phase_Test_Dataset.zip)
 
 ### 10x10 Image Tile Dataset
 
