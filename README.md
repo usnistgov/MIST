@@ -27,12 +27,12 @@ These datasets can be downloaded from the following links:
 
 #### 10x10 Image Tile Dataset
 
-[2015 BioImage Informatics Conference: Image Stitching Challenge](https://isg.nist.gov/BII_2015/webPages/pages/stitching/Stitching.html)
-
 [Cy5_ImageTiles.zip ~ 119 MB](https://isg.nist.gov/BII_2015/Stitching/Cy5_Image_Tiles.zip)
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
 
+This dataset is hosted at and used for the [2015 BioImage Informatics Conference: Image Stitching Challenge](https://isg.nist.gov/BII_2015/webPages/pages/stitching/Stitching.html). 
+
 ![Cy5 and Phase images](../../wiki/images/Cy5Phase.png)
 
-Figure 1: example Phase Contrast and Cy5 stitched images with auto adjusted contrast for visualization purposes.
+Figure 1: Example Phase Contrast and Cy5 stitched images with auto adjusted contrast for visualization purposes.
