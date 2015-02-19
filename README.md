@@ -1,12 +1,12 @@
 # MIST
-Microscopy Image Stitching Tool for Fiji was developed at the National Institute for Standards and Technology. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
+Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
 ## Quick Navigation
 
 |[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|[Wiki](https://github.com/NIST-ISG/MIST/wiki)|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Install-Guide)|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|Technical Documentation (Coming Soon)|
 |----------------------------|--------------------|----------------------------|----------------------------|----------------------------|
 
-## Applicable Problem Domain
+## Applicable Domain
 
 MIST is designed to stitch 2D image datasets. Therefore each slice of a higher dimensional dataset is stitched together independently of all others with no information being carried between slices. For example, MIST can stitch a time series of 2D datasets (2D+time) where the image grid for each time slice it stitched together independently of all others. The problem of 3D volumetric stitching is not handled by MIST.
 
