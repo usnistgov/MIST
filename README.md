@@ -33,4 +33,6 @@ These datasets can be downloaded from the following links:
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
 
-![Cy5 and Phase images](../../wiki/images/Cy5Phase.png "Figure 1")
+![Cy5 and Phase images](../../wiki/images/Cy5Phase.png)
+
+Figure 1: example Phase Contrast and Cy5 stitched images with auto adjusted contrast for visualization purposes.
