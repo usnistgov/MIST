@@ -226,7 +226,7 @@ public class LargeImageExporter<T> {
       Array2DView arrayView = new Array2DView(tile, tileY, tileHeight, tileX, tileWidth);
       this.blender.blend(tileStartX, tileStartY, arrayView, tile);
 
-      tile.releasePixelsNow();
+       tile.releasePixelsNow();
 
       StitchingGuiUtils.incrementProgressBar(this.progressBar);
     }

@@ -67,8 +67,6 @@ public class LinearBlend implements Blender {
    * @param alpha the alpha component of the linear blend
    */
   public LinearBlend(int initImgWidth, int initImgHeight, double alpha) {
-    this.width = initImgWidth;
-    this.height = initImgHeight;
     
     if (Double.isNaN(alpha))
       alpha = DEFAULT_ALPHA;
@@ -98,6 +96,10 @@ public class LinearBlend implements Blender {
   @Override
   public void init(int width, int height, ImagePlus initImg) throws OutOfMemoryError,
       NegativeArraySizeException {
+
+      this.width = width;
+      this.height = height;
+
     if (initImg.getBitDepth() == 24) {
       this.numChannels = 3;
     } else {
@@ -157,24 +159,24 @@ public class LinearBlend implements Blender {
 
   @Override
   public ImageProcessor getResult() {
-    for (int row = 0; row < this.height; row++) {
-      for (int col = 0; col < this.width; col++) {
-        int val = 0;
-        for (int channel = 0; channel < this.numChannels; channel++) {
-          if (this.numChannels > 1)
-            val = val |
-                (((int) (this.pixelSums[channel][row][col] / this.weightSums[channel][row][col]) & 0xFF) << ((this.numChannels - 1 - channel) * 8));
-          else
-            val = (int) (this.pixelSums[channel][row][col] / this.weightSums[channel][row][col]);
-        }
-        this.ip.set(col, row, val);
-      }
-    }
-
     return this.ip;
   }
 
   @Override
-  public void postProcess() {}
+  public void postProcess() {
+      for (int row = 0; row < this.height; row++) {
+          for (int col = 0; col < this.width; col++) {
+              int val = 0;
+              for (int channel = 0; channel < this.numChannels; channel++) {
+                  if (this.numChannels > 1)
+                      val = val |
+                              (((int) (this.pixelSums[channel][row][col] / this.weightSums[channel][row][col]) & 0xFF) << ((this.numChannels - 1 - channel) * 8));
+                  else
+                      val = (int) (this.pixelSums[channel][row][col] / this.weightSums[channel][row][col]);
+              }
+              this.ip.set(col, row, val);
+          }
+      }
+  }
 
 }

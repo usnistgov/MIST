@@ -369,6 +369,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     }
 
     this.blendingType.setSelectedItem(params.getOutputParams().getBlendingMode());
+    this.blendingAlpha.setValue(params.getOutputParams().getBlendingAlpha());
 
     this.makingChanges = false;
   }
@@ -413,5 +414,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     params.getOutputParams().setOutputMeta(true);
     params.getOutputParams().setOutFilePrefix(this.filePrefixName.getValue());
     params.getOutputParams().setBlendingMode((BlendingMode)this.blendingType.getSelectedItem());
+      params.getOutputParams().setBlendingAlpha(this.blendingAlpha.getValue());
   }
 }
