@@ -29,6 +29,7 @@
 package main.gov.nist.isg.mist.stitching.lib.imagetile.jcuda;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -178,7 +179,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft() {
+  public void computeFft() throws FileNotFoundException {
     
     if (hasFft())
       return;
@@ -231,7 +232,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
    */
   @Override
   public void computeFft(DynamicMemoryPool<CUdeviceptr> pool, TileWorkerMemory memory,
-      CUstream stream) {
+      CUstream stream) throws FileNotFoundException {
     if (!isTileRead())
       readTile();
 
@@ -265,7 +266,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
   }
 
   @Override
-  public void computeFft(DynamicMemoryPool<CUdeviceptr> pool, TileWorkerMemory memory) {
+  public void computeFft(DynamicMemoryPool<CUdeviceptr> pool, TileWorkerMemory memory) throws FileNotFoundException {
     this.computeFft(pool, memory, null);
   }
 

@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.basic;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +62,7 @@ public class TestOptimizationUtils {
   /**
    * Tests reading an image
    */
-  public static void testGetTopCorrelation() {
+  public static void testGetTopCorrelation() throws FileNotFoundException {
     Log.msg(LogType.MANDATORY, "Running Finding Top Correlations");
 
     int startRow = 0;
@@ -110,10 +111,11 @@ public class TestOptimizationUtils {
     }
 
     Log.msg(LogType.MANDATORY, "Getting top 5 correlations");
-    List<CorrelationTriple> topFiveNorth =
-        OptimizationUtils.getTopCorrelations(subGrid, Direction.North, 5);
-    List<CorrelationTriple> topFiveWest =
-        OptimizationUtils.getTopCorrelations(subGrid, Direction.West, 5);
+          List<CorrelationTriple> topFiveNorth =
+                  OptimizationUtils.getTopCorrelations(subGrid, Direction.North, 5);
+          List<CorrelationTriple> topFiveWest =
+                  OptimizationUtils.getTopCorrelations(subGrid, Direction.West, 5);
+
 
     Collections.sort(northList);
     Collections.sort(westList);
@@ -145,6 +147,11 @@ public class TestOptimizationUtils {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestOptimizationUtils.testGetTopCorrelation();
+    try {
+        TestOptimizationUtils.testGetTopCorrelation();
+    } catch (FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

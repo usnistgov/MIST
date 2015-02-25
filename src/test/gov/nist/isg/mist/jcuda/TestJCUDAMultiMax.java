@@ -28,6 +28,7 @@
 package test.gov.nist.isg.mist.jcuda;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class TestJCUDAMultiMax {
     LibraryUtils.initalize();
   }
 
-  private static void runTestJCUDACUFFT() {
+  private static void runTestJCUDACUFFT() throws FileNotFoundException {
     JCudaDriver.setExceptionsEnabled(true);
     JCudaDriver.setLogLevel(LogLevel.LOG_DEBUG);
     Log.setLogLevel(LogType.HELPFUL);
@@ -213,6 +214,11 @@ public class TestJCUDAMultiMax {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestJCUDAMultiMax.runTestJCUDACUFFT();
+    try {
+        TestJCUDAMultiMax.runTestJCUDACUFFT();
+    } catch (FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.fftw;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
@@ -46,7 +47,7 @@ public class TestFFTWComputFFT {
   /**
    * Computes the FFT for an image using FFTW
    */
-  public static void runTestFFTImage() {
+  public static void runTestFFTImage() throws FileNotFoundException {
     Log.setLogLevel(LogType.INFO);
     // JFrame frame = new JFrame();
     Log.msg(LogType.MANDATORY, "Running Test Compute FFT Image using FFTW");
@@ -92,6 +93,11 @@ public class TestFFTWComputFFT {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestFFTWComputFFT.runTestFFTImage();
+    try {
+        TestFFTWComputFFT.runTestFFTImage();
+    } catch (FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

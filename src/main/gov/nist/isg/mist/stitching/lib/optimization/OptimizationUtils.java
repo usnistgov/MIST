@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.optimization;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -168,7 +169,7 @@ public class OptimizationUtils {
 
 
   public static <T> List<CorrelationTriple> getTopCorrelationsFullStdCheck(TileGrid<ImageTile<T>> grid,
-                                                               final Direction dir, int numCorrelations) {
+                                                               final Direction dir, int numCorrelations) throws FileNotFoundException {
     List<CorrelationTriple> topTranslations = new ArrayList<CorrelationTriple>(numCorrelations);
     List<ImageTile<T>> topTiles = new ArrayList<ImageTile<T>>();
 
@@ -305,7 +306,7 @@ public class OptimizationUtils {
    * @return a list of correlations that are highest in the tile grid
    */
   public static <T> List<CorrelationTriple> getTopCorrelations(TileGrid<ImageTile<T>> grid,
-      final Direction dir, int numCorrelations) {
+      final Direction dir, int numCorrelations) throws FileNotFoundException  {
     List<CorrelationTriple> topTranslations = new ArrayList<CorrelationTriple>(numCorrelations);
     List<ImageTile<T>> topTiles = new ArrayList<ImageTile<T>>();
 
@@ -464,7 +465,7 @@ public class OptimizationUtils {
    * @return the overlap
    * @throws GlobalOptimizationException thrown if no valid tiles are found
    */
-  public static <T> double getOverlapMLE(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double pou) throws GlobalOptimizationException{
+  public static <T> double getOverlapMLE(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double pou) throws GlobalOptimizationException, FileNotFoundException{
     Log.msg(LogType.INFO, "Computing overlap for " + dir.name() + " direction using Maximum Likelihood Estimation.");
 
     // get valid range for translations given the direction
@@ -675,7 +676,7 @@ public class OptimizationUtils {
   }
 
 
-  private static<T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue) {
+  private static<T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue) throws FileNotFoundException  {
     // get valid range for translations given the direction
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if (!tile.isTileRead())
@@ -702,7 +703,7 @@ public class OptimizationUtils {
      * @return the overlap
      */
   public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispValue, double percOverlapError) {
+      DisplacementValue dispValue, double percOverlapError) throws FileNotFoundException  {
     Log.msg(LogType.VERBOSE,
         "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
@@ -765,7 +766,7 @@ public class OptimizationUtils {
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
-      Direction dir, double percOverlapError, double overlap) {
+      Direction dir, double percOverlapError, double overlap) throws FileNotFoundException  {
     Log.msg(LogType.INFO, "Filtering translations:");
     DisplacementValue dispValue = null;
     switch (dir) {
@@ -790,7 +791,7 @@ public class OptimizationUtils {
 
   
   private static <T> HashSet<ImageTile<T>> filterTilesFromOverlapAndCorrelation(Direction dir, DisplacementValue dispValue, double overlap, double
-      percOverlapError, TileGrid<ImageTile<T>>grid)
+      percOverlapError, TileGrid<ImageTile<T>>grid) throws FileNotFoundException
   {    
     double minCorrelation = CorrelationThreshold;
 
@@ -1593,7 +1594,7 @@ public class OptimizationUtils {
   }
 
 
-  public static <T> void replaceTranslationFromOverlap(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double overlap) {
+  public static <T> void replaceTranslationFromOverlap(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double overlap) throws FileNotFoundException {
 
     int estTranslation;
     switch(dir) {
@@ -1677,7 +1678,7 @@ public class OptimizationUtils {
    */
   public static <T> void updateEmptyRows(TileGrid<ImageTile<T>> grid, double overlap,
       double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
-      List<Integer> missingRows) {
+      List<Integer> missingRows) throws FileNotFoundException  {
 
     for (int row : missingRows) {
       // For each tile in the row, find the tile that has the highest
@@ -1780,7 +1781,7 @@ public class OptimizationUtils {
    */
   public static <T> void updateEmptyColumns(TileGrid<ImageTile<T>> grid, double overlap,
       double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
-      List<Integer> missingCols) {
+      List<Integer> missingCols) throws FileNotFoundException {
     for (int col : missingCols) {
       // For each tile in the col, find the tile that has the highest
       // standard deviation

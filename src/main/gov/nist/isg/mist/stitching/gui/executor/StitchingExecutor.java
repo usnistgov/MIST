@@ -34,6 +34,7 @@ import ij.plugin.frame.Recorder;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 import java.util.List;
 
@@ -138,6 +139,7 @@ public class StitchingExecutor implements Runnable {
 
   private Thread optimizationThread;
   private GlobalOptimization<?> globalOptimization;
+  private LargeImageExporter<?> imageExporter;
 
   private volatile boolean isCancelled;
 
@@ -168,6 +170,7 @@ public class StitchingExecutor implements Runnable {
     this.progressBar = null;
     this.progressLabel = null;
     this.isCancelled = false;
+    this.imageExporter = null;
   }
 
   @Override
@@ -184,7 +187,12 @@ public class StitchingExecutor implements Runnable {
         runStitchingFromMeta();
         break;
       case PreviewNoOverlap:
-        previewNoOverlap();
+          try {
+              previewNoOverlap();
+          } catch (FileNotFoundException e)
+          {
+              Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage() + " Cancelling preview.");
+          }
         break;
       case LoadParams:
       case RunStitchingFromMetaMacro:
@@ -211,6 +219,7 @@ public class StitchingExecutor implements Runnable {
     }
 
     this.cancelOptimization();
+    this.cancelExport();
   }
 
 
@@ -224,8 +233,16 @@ public class StitchingExecutor implements Runnable {
       this.globalOptimization.cancelOptimization();
       this.optimizationThread.interrupt();
     }
-
   }
+
+  public void cancelExport()
+  {
+      if (this.imageExporter != null)
+      {
+          this.imageExporter.cancel();
+      }
+  }
+
 
   private void runStitchingWithGUI() {
     Log.msg(LogType.MANDATORY, "Checking args for stitching:");
@@ -411,13 +428,17 @@ public class StitchingExecutor implements Runnable {
         initProgressBar();
         stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
-        try {  
+        try {
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);       
         } catch (OutOfMemoryError e) {
           showOutOfMemoryError(outOfMemoryMessage);
           return;              
         } catch (CudaException e) {
           showOutOfMemoryError("Error allocating CUDA device memory: " + e.getMessage());
+          return;
+        }
+        catch (FileNotFoundException e) {
+          Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Cancelling stitching.");
           return;
         }
 
@@ -447,8 +468,14 @@ public class StitchingExecutor implements Runnable {
         File outputDir = new File(this.params.getOutputParams().getOutputPath());
         outputDir.mkdirs();
         
-        if (optimizationSuccessful)
-          outputGrid(grid, this.progressBar, timeSlice);
+        if (optimizationSuccessful) {
+            try {
+                outputGrid(grid, this.progressBar, timeSlice);
+            } catch (FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable find file: " + e.getMessage() + ". Cancelling output grid.");
+            }
+        }
 
         releaseTiles(grid);
       }
@@ -547,7 +574,7 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> void outputGrid(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      int timeSlice) {
+      int timeSlice) throws FileNotFoundException  {
 
     if (this.isCancelled)
       return;
@@ -596,7 +623,7 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      int timeSlice)
+      int timeSlice) throws FileNotFoundException
   {
     ImagePlus img = null;
     StitchingGuiUtils.updateProgressBar(progress, true, "Writing Full Image");
@@ -639,8 +666,9 @@ public class StitchingExecutor implements Runnable {
       if (blend != null) {
         blend.init(width, height, initImg.getImagePlus());
 
-        img =
-            LargeImageExporter.exportImage(grid, 0, 0, width, height, blend, imageFile, progress);
+        imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
+        img = imageExporter.exportImage(imageFile);
+
 
         stitchingStatistics.stopTimer(RunTimers.OutputFullImageTileTime);
 
@@ -664,7 +692,7 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> void displayFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      ImagePlus img)
+      ImagePlus img) throws FileNotFoundException
   {
     if (img == null) {
       ImageTile<T> initImg = grid.getSubGridTile(0, 0);
@@ -675,6 +703,8 @@ public class StitchingExecutor implements Runnable {
       int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
       int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
+        if ( this.isCancelled)
+            return;
 
       Blender blend = null;
       try {
@@ -707,9 +737,14 @@ public class StitchingExecutor implements Runnable {
 
       if (blend != null) {
 
+          if ( this.isCancelled)
+              return;
+
         blend.init(width, height, initImg.getImagePlus());
 
-        img = LargeImageExporter.exportImage(grid, 0, 0, width, height, blend, null, progress);
+        imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
+        img = imageExporter.exportImage(null);
+
       } else {
         Log.msg(LogType.MANDATORY,
             "Error: Unable to initialize blending mode: " + this.params.getOutputParams().getBlendingMode());
@@ -725,7 +760,7 @@ public class StitchingExecutor implements Runnable {
     }
   }
 
-  private <T> void previewNoOverlap() {
+  private <T> void previewNoOverlap() throws FileNotFoundException {
     Log.msg(LogType.MANDATORY, "Checking args for preview:");
 
     if (this.stitchingGUI.checkAndParseGUI(this.params)) {
@@ -812,10 +847,8 @@ public class StitchingExecutor implements Runnable {
 
       blend.init(width, height, initImg.getImagePlus());
 
-      img =
-          LargeImageExporter.exportImageNoOverlap(grid, 0, 0, width, height, blend, null,
-              this.progressBar);
-
+      imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, this.progressBar);
+      img = imageExporter.exportImageNoOverlap(null);
 
     } catch (OutOfMemoryError e) {
       Log.msg(LogType.MANDATORY, "Error: Insufficient memory to save image.");

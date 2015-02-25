@@ -28,10 +28,12 @@
 
 package main.gov.nist.isg.mist.stitching.lib.parallel.cpu;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile.State;
+import main.gov.nist.isg.mist.stitching.lib.log.Log;
 import main.gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import main.gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import main.gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
@@ -76,7 +78,13 @@ public class TileProducer<T> implements Runnable {
       if (this.isCancelled)
         break;
 
-      tile.readTile();
+        try {
+            tile.readTile();
+        } catch (FileNotFoundException e)
+        {
+            Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
+            continue;
+        }
       tile.setFftState(State.IN_FLIGHT);
       tile.allocateFftMemory(this.pool);
       this.workQueue.put(new StitchingTask<T>(tile, null, TaskType.FFT));

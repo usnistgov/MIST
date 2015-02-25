@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.optimization;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -98,8 +99,14 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
             CorrelationTriple northTrans = tile.getNorthTranslation();
 
-            readTile(tile);
-            readTile(neighbor);
+              try {
+                  readTile(tile);
+                  readTile(neighbor);
+              } catch (FileNotFoundException e)
+              {
+                  Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage() + ". Skipping standard deviation computation");
+                  continue;
+              }
 
             int xMin = northTrans.getX() - this.repeatabilty;
             int xMax = northTrans.getX() + this.repeatabilty;
@@ -147,8 +154,15 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
             CorrelationTriple westTrans = tile.getWestTranslation();
 
+              try
+              {
             readTile(tile);
             readTile(neighbor);
+          } catch (FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage() + ". Skipping standard deviation computation");
+                continue;
+            }
 
             int xMin = westTrans.getX() - this.repeatabilty;
             int xMax = westTrans.getX() + this.repeatabilty;
@@ -201,7 +215,7 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
    * 
    * @param tile the tile that is to be read
    */
-  private static synchronized <T> void readTile(ImageTile<T> tile) {
+  private static synchronized <T> void readTile(ImageTile<T> tile) throws FileNotFoundException{
     if (!tile.isTileRead())
       tile.readTile();
   }

@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.jcuda;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
@@ -68,7 +69,7 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
   /**
    * Computes the phase correlation using a multiple thread on a grid of tiles using FFTW
    */
-  public static void runTestGridPhaseCorrelation() {
+  public static void runTestGridPhaseCorrelation() throws FileNotFoundException{
     int startRow = 0;
     int startCol = 0;
     int extentWidth = 4;// 16;
@@ -137,6 +138,11 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
    * @param args not used
    */
   public static void main(String args[]) {
-    TestJCUDAGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+    try {
+        TestJCUDAGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+    }catch (FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

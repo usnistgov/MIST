@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.imagetile.java;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +58,7 @@ public class JavaStitching {
    *         images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(JavaImageTile t1,
-      JavaImageTile t2, TileWorkerMemory memory) {
+      JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     float[][] pcm = memory.getArrayMemory();
     pcm = peakCorrelationMatrix(t1, t2, pcm);
 //    int idx = UtilFnsStitching.getMaxIdxJava(pcm, t1.getWidth(), t1.getHeight());
@@ -106,7 +107,7 @@ public class JavaStitching {
    * @param ncc the normalized cross correlation matrix
    * @return the peak correlation matrix
    */
-  public static float[][] peakCorrelationMatrix(JavaImageTile t1, JavaImageTile t2, float[][] ncc) {
+  public static float[][] peakCorrelationMatrix(JavaImageTile t1, JavaImageTile t2, float[][] ncc) throws FileNotFoundException {
     if (!t1.hasFft())
       t1.computeFft();
 

@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.basic;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JFileChooser;
 
@@ -50,7 +51,7 @@ public class TestStandardDeviation {
   /**
    * Tests reading an image
    */
-  public static void testStdDev() {
+  public static void testStdDev() throws FileNotFoundException {
     // JFrame frame = new JFrame();
 
     Log.msg(LogType.MANDATORY, "Running Test StdDev Image");
@@ -91,6 +92,11 @@ public class TestStandardDeviation {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestStandardDeviation.testStdDev();
+    try {
+        TestStandardDeviation.testStdDev();
+    } catch (FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage());
+    }
   }
 }

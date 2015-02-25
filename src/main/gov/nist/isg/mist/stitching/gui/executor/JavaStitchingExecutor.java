@@ -27,6 +27,7 @@
 
 package main.gov.nist.isg.mist.stitching.gui.executor;
 
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 import javax.swing.JOptionPane;
@@ -87,7 +88,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
-  CudaException {
+  CudaException, FileNotFoundException {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     tile.readTile();

@@ -129,7 +129,7 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static <T> CorrelationTriple phaseCorrelationImageAlignment(ImageTile<T> t1,
-      ImageTile<T> t2, TileWorkerMemory memory) {
+      ImageTile<T> t2, TileWorkerMemory memory) throws FileNotFoundException {
 
     if (t1 instanceof JavaImageTile)
       return JavaStitching.phaseCorrelationImageAlignment((JavaImageTile) t1, (JavaImageTile) t2,
@@ -154,7 +154,7 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentJava(JavaImageTile t1,
-      JavaImageTile t2, TileWorkerMemory memory) {
+      JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     return JavaStitching.phaseCorrelationImageAlignment(t1, t2,
         memory);
   }
@@ -168,7 +168,7 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile t1,
-      FftwImageTile t2, TileWorkerMemory memory) {
+      FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     return FftwStitching.phaseCorrelationImageAlignment(t1, t2, memory);
   }
 
@@ -182,7 +182,7 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile t1,
-      CudaImageTile t2, TileWorkerMemory memory, CUstream stream) {
+      CudaImageTile t2, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
     return CudaStitching.phaseCorrelationImageAlignment(t1, t2, memory, stream);
   }
 
@@ -194,7 +194,7 @@ public class Stitching {
    * @param grid the grid of tiles to stitch
    */
   public static <T> void stitchGridJava(TileGridTraverser<ImageTile<T>> traverser,
-      TileGrid<ImageTile<T>> grid) {
+      TileGrid<ImageTile<T>> grid) throws FileNotFoundException {
     TileWorkerMemory memory = null;
     for (ImageTile<T> t : traverser) {
       t.setThreadID(0);
@@ -262,7 +262,7 @@ public class Stitching {
    * @param grid the grid of tiles to stitch
    */
   public static <T> void stitchGridFftw(TileGridTraverser<ImageTile<T>> traverser,
-      TileGrid<ImageTile<T>> grid) {
+      TileGrid<ImageTile<T>> grid) throws FileNotFoundException {
     TileWorkerMemory memory = null;
     for (ImageTile<?> t : traverser) {
       t.setThreadID(0);
@@ -332,7 +332,7 @@ public class Stitching {
    * @param context the GPU context
    */
   public static void stitchGridCuda(TileGridTraverser<ImageTile<CUdeviceptr>> traverser,
-      TileGrid<ImageTile<CUdeviceptr>> grid, CUcontext context) {
+      TileGrid<ImageTile<CUdeviceptr>> grid, CUcontext context) throws FileNotFoundException {
     TileWorkerMemory memory = null;
     DynamicMemoryPool<CUdeviceptr> memoryPool = null;
 

@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.java;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -49,7 +50,7 @@ public class TestJavaComputeFFT {
   /**
    * Tests computing the FFT of an image using java.
    */
-  public static void runTestFFTImage() {
+  public static void runTestFFTImage() throws FileNotFoundException {
     JFrame frame = new JFrame();
 
     Log.setLogLevel(LogType.INFO);
@@ -88,6 +89,11 @@ public class TestJavaComputeFFT {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestJavaComputeFFT.runTestFFTImage();
+    try {
+        TestJavaComputeFFT.runTestFFTImage();
+    } catch(FileNotFoundException e)
+    {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

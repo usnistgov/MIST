@@ -29,6 +29,7 @@
 package main.gov.nist.isg.mist.stitching.lib.optimization;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -125,7 +126,7 @@ public class OptimizationRepeatability<T> {
    * repeatability provides a search range for computing an exhaustive cross correlation.
    * @throws GlobalOptimizationException 
    */
-  public void computeGlobalOptimizationRepeatablity() throws GlobalOptimizationException {
+  public void computeGlobalOptimizationRepeatablity() throws GlobalOptimizationException, FileNotFoundException {
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
         "Optimization...", 0, 0, 0, false);
@@ -235,7 +236,7 @@ public class OptimizationRepeatability<T> {
   }
 
 
-  private double getOverlap(Direction dir, DisplacementValue dispValue, double percOverlapError) {
+  private double getOverlap(Direction dir, DisplacementValue dispValue, double percOverlapError) throws FileNotFoundException {
 
     double overlap = Double.NaN;
     switch (dir) {
@@ -273,7 +274,7 @@ public class OptimizationRepeatability<T> {
    * @return the computed repeatability
    * @throws GlobalOptimizationException 
    */
-  public int correctTranslationsModel(double percOverlapError, Direction dir) throws GlobalOptimizationException {
+  public int correctTranslationsModel(double percOverlapError, Direction dir) throws GlobalOptimizationException, FileNotFoundException {
     DisplacementValue dispValue = null;
     switch (dir) {
       case North:

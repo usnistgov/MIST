@@ -33,6 +33,8 @@ import main.gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
+import java.io.FileNotFoundException;
+
 
 /**
  * StitchingExecutorInterface interface for various stitching executors
@@ -61,10 +63,11 @@ public interface StitchingExecutorInterface<T> {
    * @param params the stitching application parameters
    * @param progressBar the progress bar
    * @param timeSlice the timeslice
-   * @throws OutOfMemoryError 
-   * @throws CudaException 
+   * @throws OutOfMemoryError
+   * @throws CudaException
+   * @throws FileNotFoundException
    */
-  public abstract void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException;
+  public abstract void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException, FileNotFoundException;
 
   /**
    * Checks for required libraries.

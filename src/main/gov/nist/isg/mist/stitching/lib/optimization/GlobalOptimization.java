@@ -34,7 +34,11 @@ import main.gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import main.gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import main.gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import main.gov.nist.isg.mist.stitching.lib.log.Log;
 import main.gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+
+import java.io.FileNotFoundException;
 
 /**
  * Class for computing the global optimization of a TileGrid.
@@ -120,6 +124,10 @@ public class GlobalOptimization<T> implements Runnable {
         } catch (GlobalOptimizationException e) {
           this.exceptionThrown = true;
         }
+           catch (FileNotFoundException ex)
+           {
+               Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
+           }
         break;        
       case NONE:
         break;

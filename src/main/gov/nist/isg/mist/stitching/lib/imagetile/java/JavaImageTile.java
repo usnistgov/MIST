@@ -29,6 +29,7 @@
 package main.gov.nist.isg.mist.stitching.lib.imagetile.java;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import jcuda.driver.CUstream;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -125,7 +126,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft() {
+  public void computeFft()throws FileNotFoundException{
 
     if (fftPlan == null)
       initJavaPlan(this);
@@ -151,7 +152,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    * @param memory extra memory for input if needed
    */
   @Override
-  public void computeFft(DynamicMemoryPool<float[][]> pool, TileWorkerMemory memory) {
+  public void computeFft(DynamicMemoryPool<float[][]> pool, TileWorkerMemory memory) throws FileNotFoundException {
     if (!isTileRead()) {
       readTile();
     }
@@ -168,7 +169,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
   }
 
   @Override
-  public void computeFft(DynamicMemoryPool<float[][]> pool, TileWorkerMemory memory, CUstream stream) {
+  public void computeFft(DynamicMemoryPool<float[][]> pool, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
     computeFft(pool, memory);
   }
 
@@ -214,7 +215,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    * 
    * @param tile the initial tile to get the width and height
    */
-  public static void initJavaPlan(ImageTile<?> tile) {
+  public static void initJavaPlan(ImageTile<?> tile) throws FileNotFoundException {
     if (!tile.isTileRead())
       tile.readTile();
 

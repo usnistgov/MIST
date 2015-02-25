@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.fftw;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -60,7 +61,7 @@ public class TestFFTWGridPhaseCorrelation {
   /**
    * Computes the phase correlation using a single thread on a grid of tiles using FFTW
    */
-  public static void runTestGridPhaseCorrelation() {
+  public static void runTestGridPhaseCorrelation() throws FileNotFoundException{
 
     Log.setLogLevel(LogType.HELPFUL);
     // Debug.setDebugLevel(DebugType.VERBOSE);
@@ -138,6 +139,12 @@ public class TestFFTWGridPhaseCorrelation {
    * @param args not used
    */
   public static void main(String args[]) {
-    TestFFTWGridPhaseCorrelation.runTestGridPhaseCorrelation();
+      try {
+          TestFFTWGridPhaseCorrelation.runTestGridPhaseCorrelation();
+      }
+      catch (FileNotFoundException e)
+      {
+        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      }
   }
 }

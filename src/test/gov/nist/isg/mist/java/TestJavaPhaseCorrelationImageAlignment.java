@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.java;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
@@ -52,7 +53,7 @@ public class TestJavaPhaseCorrelationImageAlignment {
   /**
    * Computes the phase correlation between two images.
    */
-  public static void runTestPhaseCorrelationImageAlignment() {
+  public static void runTestPhaseCorrelationImageAlignment()throws FileNotFoundException{
     Log.setLogLevel(LogType.VERBOSE);
     Debug.setDebugLevel(DebugType.VERBOSE);
 
@@ -88,7 +89,12 @@ public class TestJavaPhaseCorrelationImageAlignment {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestJavaPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+      try {
+          TestJavaPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+      } catch (FileNotFoundException e)
+      {
+          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      }
   }
 
 

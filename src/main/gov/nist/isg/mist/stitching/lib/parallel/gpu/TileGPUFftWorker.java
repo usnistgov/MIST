@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.parallel.gpu;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import jcuda.driver.CUcontext;
@@ -111,7 +112,14 @@ public class TileGPUFftWorker<T> implements Runnable {
         if (task.getTask() == TaskType.FFT) {
           task.getTile().setDev(this.devID);
           task.getTile().setThreadID(this.threadID);
-          task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
+
+            try {
+                task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
+            } catch (FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping file");
+                continue;
+            }
 
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
 

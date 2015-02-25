@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.jcuda;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
@@ -61,7 +62,7 @@ public class TestJCUDAPhaseCorrelationImageAlignment {
   /**
    * Computes the phase correlation between two tiles using FFTW
    */
-  public static void runTestPhaseCorrelationImageAlignment() {
+  public static void runTestPhaseCorrelationImageAlignment() throws FileNotFoundException {
     JCudaDriver.setExceptionsEnabled(true);
     JCufft.setExceptionsEnabled(true);
     Log.setLogLevel(LogType.HELPFUL);
@@ -118,7 +119,14 @@ public class TestJCUDAPhaseCorrelationImageAlignment {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestJCUDAPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+      try
+      {
+        TestJCUDAPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+      }
+      catch (FileNotFoundException e)
+      {
+          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      }
   }
 
 }

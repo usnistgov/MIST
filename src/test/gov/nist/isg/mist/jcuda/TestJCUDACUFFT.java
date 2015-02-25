@@ -29,6 +29,7 @@
 package test.gov.nist.isg.mist.jcuda;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
@@ -48,7 +49,7 @@ import jcuda.runtime.JCuda;
  */
 public class TestJCUDACUFFT {
 
-  private static void runTestJCUDACUFFT() {
+  private static void runTestJCUDACUFFT() throws FileNotFoundException {
     LibraryUtils.initalize();
     JCudaDriver.setExceptionsEnabled(true);
     JCudaDriver.setLogLevel(LogLevel.LOG_DEBUG);
@@ -82,6 +83,11 @@ public class TestJCUDACUFFT {
    * @param args not used
    */
   public static void main(String[] args) {
-    TestJCUDACUFFT.runTestJCUDACUFFT();
+      try {
+          TestJCUDACUFFT.runTestJCUDACUFFT();
+      } catch (FileNotFoundException e)
+      {
+          Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
+      }
   }
 }

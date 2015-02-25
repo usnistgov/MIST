@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.optimization;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -103,17 +104,22 @@ public class StandardDeviationWorker<T> implements Runnable {
         if (!this.grid.hasTile(neighbor)) {
           continue;
         }
+        try {
+            readTile(tile);
+            readTile(neighbor);
 
-        readTile(tile);
-        readTile(neighbor);
-
-        switch (this.dir) {
-          case North:
-            tile.computeStdDevNorth(neighbor, this.overlap, this.percOverlapError);
-            break;
-          case West:
-            tile.computeStdDevWest(neighbor, this.overlap, this.percOverlapError);
-            break;
+            switch (this.dir) {
+                case North:
+                    tile.computeStdDevNorth(neighbor, this.overlap, this.percOverlapError);
+                    break;
+                case West:
+                    tile.computeStdDevWest(neighbor, this.overlap, this.percOverlapError);
+                    break;
+            }
+        } catch (FileNotFoundException e)
+        {
+            Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage() + ". Skipping");
+            continue;
         }
 
         releaseTile(tile);
@@ -133,7 +139,7 @@ public class StandardDeviationWorker<T> implements Runnable {
    * 
    * @param tile the tile to be read
    */
-  private static synchronized <T> void readTile(ImageTile<T> tile) {
+  private static synchronized <T> void readTile(ImageTile<T> tile) throws FileNotFoundException {
     if (!tile.isTileRead())
       tile.readTile();
   }

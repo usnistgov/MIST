@@ -29,6 +29,7 @@
 package main.gov.nist.isg.mist.stitching.lib.imagetile.fftw;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import jcuda.driver.CUstream;
 import main.gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -149,7 +150,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft() {
+  public void computeFft() throws FileNotFoundException {
 
     if (hasFft())
       return;
@@ -186,7 +187,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory) {
+  public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory) throws FileNotFoundException {
     if (!isTileRead())
       readTile();
 
@@ -217,7 +218,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
 
   @Override
   public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory,
-      CUstream stream) {
+      CUstream stream) throws FileNotFoundException {
     this.computeFft(pool, memory);
   }
 

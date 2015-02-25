@@ -29,6 +29,7 @@ package test.gov.nist.isg.mist.java;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 import test.gov.nist.isg.mist.timing.TimeUtil;
@@ -52,7 +53,7 @@ import main.gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridO
  */
 public class TestJavaGridPhaseCorrelationMultiThreaded {
 
-  private static void runTestGridPhaseCorrelation() {
+  private static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     Log.setLogLevel(LogType.HELPFUL);
     int startRow = 0;
     int startCol = 0;
@@ -105,6 +106,11 @@ public class TestJavaGridPhaseCorrelationMultiThreaded {
    * @param args not used
    */
   public static void main(String args[]) {
-    TestJavaGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+      try {
+          TestJavaGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+      } catch (FileNotFoundException e)
+      {
+          Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
+      }
   }
 }

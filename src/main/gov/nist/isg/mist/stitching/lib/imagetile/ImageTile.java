@@ -32,6 +32,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import jcuda.driver.CUstream;
 import main.gov.nist.isg.mist.stitching.lib.common.Array2DView;
@@ -166,7 +167,12 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     this.fname = file.getName();
 
     if (read) {
-      this.readTile();
+        try {
+            this.readTile();
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     } else {
       this.pixels = null;
       this.width = 0;
@@ -540,7 +546,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * 
    * @param neighbor this tile's northern neighbor
    */
-  public void computeStdDevNorth(ImageTile<T> neighbor) {
+  public void computeStdDevNorth(ImageTile<T> neighbor) throws FileNotFoundException {
     CorrelationTriple translation = this.getNorthTranslation();
 
     if (translation == null)
@@ -588,7 +594,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * 
    * @param neighbor this tile's western neighbor
    */
-  public void computeStdDevWest(ImageTile<T> neighbor) {
+  public void computeStdDevWest(ImageTile<T> neighbor) throws FileNotFoundException {
     CorrelationTriple translation = this.getWestTranslation();
 
     if (translation == null)
@@ -638,7 +644,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @param overlap the percent overlap
    * @param percOverlapError the percent overlap error
    */
-  public void computeStdDevNorth(ImageTile<T> neighbor, double overlap, double percOverlapError) {
+  public void computeStdDevNorth(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
     if (Double.isNaN(getStdDevNorthOverlapOrigin())) {
       if (!this.isTileRead())
         this.readTile();
@@ -681,7 +687,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @param overlap the percent overlap
    * @param percOverlapError the percent overlap error
    */
-  public void computeStdDevWest(ImageTile<T> neighbor, double overlap, double percOverlapError) {
+  public void computeStdDevWest(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
     if (Double.isNaN(getStdDevWestOverlapOrigin())) {
 
       if (!this.isTileRead())
@@ -806,8 +812,10 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Reads image tile from file
+   *
+   * @throws java.io.FileNotFoundException if the file does not exist
    */
-  public void readTile() {
+  public void readTile() throws FileNotFoundException {
     Log.msg(LogType.INFO, "Loading image: " + this.fpath);
 
     ImagePlus image = new ImagePlus(this.fpath);
@@ -819,6 +827,8 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
       Log.msg(LogType.MANDATORY, "Error: Unable to read file: " + this.fpath);
       Log.msg(LogType.MANDATORY,
           "Please ensure your grid parameters are correctly setup (origin, direction, width, height)");
+
+        throw new FileNotFoundException(this.fpath);
     }
 
     this.bitDepth = image.getBitDepth();
@@ -1177,7 +1187,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Computes this image's FFT
    */
-  public abstract void computeFft();
+  public abstract void computeFft() throws FileNotFoundException;
 
   /**
    * Computes image's FFT without memory allocation asynchronously on GPU
@@ -1187,7 +1197,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @param stream CUDA CUstream
    */
   public abstract void computeFft(DynamicMemoryPool<T> pool, TileWorkerMemory memory,
-      CUstream stream);
+      CUstream stream) throws FileNotFoundException;
 
   /**
    * Computes the FFT for this tile using a pool, if the memory has not been allocated for the FFT
@@ -1195,6 +1205,6 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @param pool the pool of memory
    * @param memory the tile worker memory
    */
-  public abstract void computeFft(DynamicMemoryPool<T> pool, TileWorkerMemory memory);
+  public abstract void computeFft(DynamicMemoryPool<T> pool, TileWorkerMemory memory) throws FileNotFoundException;
 
 }

@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,7 @@ public class FftwStitching {
    *         images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(FftwImageTile t1,
-      FftwImageTile t2, TileWorkerMemory memory) {
+      FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     Pointer<Double> pcm = peakCorrelationMatrix(t1, t2, memory);
 
 //    int idx;
@@ -122,7 +123,7 @@ public class FftwStitching {
    * @return the peak correlation matrix
    */
   public static Pointer<Double> peakCorrelationMatrix(FftwImageTile t1, FftwImageTile t2,
-      TileWorkerMemory memory) {
+      TileWorkerMemory memory) throws FileNotFoundException{
     if (!t1.hasFft())
       t1.computeFft();
 

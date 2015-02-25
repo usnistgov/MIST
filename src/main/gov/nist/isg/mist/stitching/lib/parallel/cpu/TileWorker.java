@@ -28,6 +28,7 @@
 
 package main.gov.nist.isg.mist.stitching.lib.parallel.cpu;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import javax.swing.JProgressBar;
@@ -113,7 +114,13 @@ public class TileWorker<T> implements Runnable {
             "WP Task acquired: " + task.getTask() + "  size: " + this.workQueue.size());
 
         if (task.getTask() == TaskType.FFT) {
-          task.getTile().computeFft(this.memoryPool, this.memory);
+            try {
+                task.getTile().computeFft(this.memoryPool, this.memory);
+            } catch(FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+                continue;
+            }
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
           this.bkQueue.put(task);
         } else if (task.getTask() == TaskType.PCIAM_NORTH) {
@@ -121,8 +128,13 @@ public class TileWorker<T> implements Runnable {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple corr;
-
-          corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            try {
+                corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            } catch (FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+                continue;
+            }
 
 
           tile.setNorthTranslation(corr);
@@ -142,7 +154,13 @@ public class TileWorker<T> implements Runnable {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple corr;
-          corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            try {
+                corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            }catch (FileNotFoundException e)
+            {
+                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+                continue;
+            }
 
 
           tile.setWestTranslation(corr);
