@@ -28,7 +28,7 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.helpTab;
 
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
+import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
@@ -42,7 +42,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -56,17 +55,27 @@ import java.net.URISyntaxException;
  */
 public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListener {
 
-  private static final String aboutUsText = "MIST Fiji Plugin:";
-  private static final String helpDocumentationStr = "StitchingDocumentation.pdf";
-
   private static final String documentationURL =
-      "http://bluegrit.cs.umbc.edu/~tblatt1/NISTStitching/UserGuide/index.html";
+      "https://github.com/NIST-ISG/MIST/wiki";
+
+    private static final String sourceURL =
+            "https://github.com/NIST-ISG/MIST";
+
+    private static final String license =
+            "<html>This software was developed at the National Institute of Standards and<br>" +
+                    "Technology by employees of the Federal Government in the course of<br>" +
+                    "their official duties. Pursuant to title 17 Section 105 of the United<br>" +
+                    "States Code this software is not subject to copyright protection and is<br>" +
+                    "in the public domain. This software is an experimental system. NIST<br>" +
+                    "assumes no responsibility whatsoever for its use by other parties, and<br>" +
+                    "makes no guarantees, expressed or implied, about its quality, reliability,<br>" +
+                    "or any other characteristic. We would appreciate acknowledgement if the<br>" +
+                    "software is used.</html>";
 
   private static final long serialVersionUID = 1L;
 
-  private JLabel aboutUs;
 
-  private JButton openPdfHelpButton;
+  private JButton openLocalHelp;
 
   private JComboBox loggingLevel;
   private JComboBox debugLevel;
@@ -75,9 +84,10 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
    * Initializes the help panel
    */
   public HelpPanel() {
-    this.aboutUs = new JLabel(aboutUsText);
 
-    this.openPdfHelpButton = new JButton("Open Help (PDF)");
+    this.openLocalHelp = new JButton("Open Local Help");
+      HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("mist-user-guide");
+      this.openLocalHelp.addActionListener(helpDialog);
 
 
     this.loggingLevel = new JComboBox(LogType.values());
@@ -87,7 +97,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
     this.loggingLevel.setSelectedItem(Log.getLogLevel());
     this.debugLevel.setSelectedItem(Debug.getDebugLevel());
 
-    this.openPdfHelpButton.setPreferredSize(new Dimension(150, 40));    
+    this.openLocalHelp.setPreferredSize(new Dimension(150, 40));
 
     setFocusable(false);
 
@@ -98,7 +108,6 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
   
   private void initListeners()
   {
-    this.openPdfHelpButton.addActionListener(this);
     this.loggingLevel.addActionListener(this);
     this.debugLevel.addActionListener(this);
   }
@@ -136,31 +145,36 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
     
     
     c.fill = GridBagConstraints.HORIZONTAL;
+
     c.gridy = 1;
-    vertPanel.add(this.aboutUs, c);
+      JLabel link = new JLabel("<html>Documentation: <a href=\"\">" + documentationURL + "</a></html>");
 
-
-    c.gridy = 2;
-    vertPanel.add(new JLabel("Created at the National Institute of Standards and Technology."), c);
-
-
-    c.gridy = 3;
-    vertPanel.add(new JLabel("Documentation:"), c);
-
-    c.gridy = 4;
-    JLabel link = new JLabel("<html><a href=\"\">" + documentationURL + "</a></html>");
     link.setCursor(new Cursor(Cursor.HAND_CURSOR));
     vertPanel.add(link, c);
 
-    c.gridy = 5;
+      c.gridy = 2;
+      JLabel srclink = new JLabel("<html>Source code: <a href=\"\">" + sourceURL + "</a></html>");
+
+      srclink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      vertPanel.add(srclink, c);
+
+    c.gridy = 3;
     JPanel helpButtonPanel = new JPanel();
-    helpButtonPanel.add(this.openPdfHelpButton);
+    helpButtonPanel.add(this.openLocalHelp);
     vertPanel.add(helpButtonPanel, c);
+
+      c.gridy = 4;
+      vertPanel.add(new JLabel(license), c);
+
     mainPanel.add(vertPanel);
+
+
+
 
     add(mainPanel);
 
     goWebsite(link);
+      goWebsite(srclink);
 
   }
 
@@ -255,28 +269,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
   @Override
   public void actionPerformed(ActionEvent arg0) {
     Object src = arg0.getSource();
-
-    if (src.equals(this.openPdfHelpButton))
-    {
-
-      if (Desktop.isDesktopSupported())
-      {
-        File file = StitchingGuiUtils.loadCompressedResource(helpDocumentationStr, ".pdf");          
-
-        try {
-          Desktop.getDesktop().open(file);
-        } catch (IOException e) {
-          Log.msg(LogType.MANDATORY, "Error loading help documentation: " + e.getMessage());
-
-        }
-      }
-      else
-      {
-        Log.msg(LogType.MANDATORY, "Error: Unsupported desktop for openning pdf");
-      }      
-    }
-
-    else if (src instanceof JComboBox) {
+      if (src instanceof JComboBox) {
       JComboBox action = (JComboBox) src;
 
       if (action.equals(this.loggingLevel)) {

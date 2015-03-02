@@ -47,7 +47,7 @@ import java.io.IOException;
 public class HelpDocumentationViewer implements ActionListener{
   
   
-  private static final String helpDocumentation = "GUIStitchingDocumentation.html";
+  private static final String helpDocumentation = "Combined-User-Install-Guide.md.html";
   private static boolean isMainDocumentationLoaded = false;
   private static File mainDocumentationTempFile;
   

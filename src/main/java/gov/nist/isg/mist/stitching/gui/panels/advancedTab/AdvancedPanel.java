@@ -130,7 +130,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
 
     JButton qButton = new JButton("?");
     
-    qButton.addActionListener(new HelpDocumentationViewer("AdvancedParameters"));
+    qButton.addActionListener(new HelpDocumentationViewer("advanced-parameters-optional-"));
     
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;

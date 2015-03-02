@@ -135,7 +135,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     GridBagConstraints c = new GridBagConstraints();
 
     JButton qButton = new JButton("?");
-    qButton.addActionListener(new HelpDocumentationViewer("SubgridParameters"));
+    qButton.addActionListener(new HelpDocumentationViewer("subgrid-parameters"));
 
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;
