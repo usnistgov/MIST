@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>gov.nist.isg</groupId>
+    <artifactId>MIST</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>gov.nih.imagej</groupId>
+            <artifactId>imagej</artifactId>
+            <version>1.46</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nativelibs4java</groupId>
+            <artifactId>bridj</artifactId>
+            <version>0.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jcuda</groupId>
+            <artifactId>org.jcuda</artifactId>
+            <version>5.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/java_libs/jcuda/jcuda-0.5.0b.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>jcufft</groupId>
+            <artifactId>org.jcuda</artifactId>
+            <version>5.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/java_libs/jcuda/jcufft-0.5.0b.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>edu.mines</groupId>
+            <artifactId>mines-jtk</artifactId>
+            <version>20100113</version>
+        </dependency>
+
+
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+    </repositories>
+</project>
