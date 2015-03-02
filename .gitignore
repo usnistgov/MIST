@@ -1,7 +1,6 @@
 /bin/
 /.idea/
 .classpath
-LICENSE~
 *.dat
 *.class
 MIST.iml
