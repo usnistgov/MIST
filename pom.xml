@@ -25,16 +25,12 @@
             <groupId>org.jcuda</groupId>
             <artifactId>jcuda</artifactId>
             <version>5.0</version>
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/java_libs/jcuda/jcuda-0.5.0b.jar</systemPath>-->
         </dependency>
 
         <dependency>
             <groupId>org.jcuda</groupId>
             <artifactId>jcufft</artifactId>
             <version>5.0</version>
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/java_libs/jcuda/jcufft-0.5.0b.jar</systemPath>-->
         </dependency>
 
         <dependency>
