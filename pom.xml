@@ -22,19 +22,15 @@
         </dependency>
 
         <dependency>
-            <groupId>jcuda</groupId>
-            <artifactId>org.jcuda</artifactId>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcuda</artifactId>
             <version>5.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/java_libs/jcuda/jcuda-0.5.0b.jar</systemPath>
         </dependency>
 
         <dependency>
-            <groupId>jcufft</groupId>
-            <artifactId>org.jcuda</artifactId>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcufft</artifactId>
             <version>5.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/java_libs/jcuda/jcufft-0.5.0b.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -49,6 +45,11 @@
         <repository>
             <id>imagej.public</id>
             <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>mist.in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${project.basedir}/java_libs</url>
         </repository>
     </repositories>
 </project>
