@@ -173,12 +173,12 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
 
     add(mainPanel);
 
-    goWebsite(link);
-      goWebsite(srclink);
+    goWebsiteDocumentation(link);
+      goWebsiteSourceCode(srclink);
 
   }
 
-  private static void goWebsite(JLabel website) {
+  private static void goWebsiteDocumentation(JLabel website) {
     website.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -191,6 +191,20 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
       }
     });
   }
+
+    private static void goWebsiteSourceCode(JLabel website) {
+        website.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(sourceURL));
+                } catch (URISyntaxException ex) {
+                } catch (IOException ex) {
+
+                }
+            }
+        });
+    }
 
   /**
    * Gets the log level

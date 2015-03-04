@@ -89,7 +89,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
     this.savePlanToFile.setSelected(true);
     this.loadPlanFromFile.setSelected(true);
-    this.fftwPlanGroup.setValue(FftwPlanType.PATIENT.toString());
+    this.fftwPlanGroup.setValue(FftwPlanType.MEASURE.toString());
 
     JPanel subPanel = new JPanel(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();

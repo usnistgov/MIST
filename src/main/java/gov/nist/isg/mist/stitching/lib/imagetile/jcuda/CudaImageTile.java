@@ -28,8 +28,10 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.jcuda;
 
+import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import jcuda.LibUtils;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.*;
@@ -63,7 +65,7 @@ import java.nio.ByteBuffer;
  */
 public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
-  private static final String CUDA_MODULE_NAME = "lib/jcuda-5.0/stitching-util-cuda-bin.ptx";
+  private static final String CUDA_MODULE_NAME = "lib/jcuda-"+ LibraryUtils.JCUDA_VERSION +"/stitching-util-cuda-bin.ptx";
   private static final String FUNC_ELT_PROD = "elt_prod_conj_v2";
   private static final String FUNC_MAX = "reduce_max_main";
   private static final String FUNC_MAX_FIN = "reduce_max_final";

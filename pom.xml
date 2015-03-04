@@ -33,6 +33,20 @@
             <version>5.0</version>
         </dependency>
 
+
+        <!--<dependency>-->
+        <!--<groupId>org.nd4j</groupId>-->
+        <!--<artifactId>jcuda</artifactId>-->
+        <!--<version>6.0</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>org.nd4j</groupId>-->
+        <!--<artifactId>jcufft</artifactId>-->
+        <!--<version>6.0</version>-->
+        <!--</dependency>-->
+
+
         <dependency>
             <groupId>edu.mines</groupId>
             <artifactId>mines-jtk</artifactId>

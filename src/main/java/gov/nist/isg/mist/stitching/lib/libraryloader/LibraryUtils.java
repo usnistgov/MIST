@@ -46,6 +46,7 @@ import java.lang.reflect.Field;
  */
 public class LibraryUtils {
 
+    public static final String JCUDA_VERSION = "5.0";
 
   /**
    * The operating sytem
@@ -62,7 +63,7 @@ public class LibraryUtils {
    */
   public static void initalize() {
     try {
-      addDir("." + File.separator + "lib" + File.separator + "jcuda-5.0");
+      addDir("." + File.separator + "lib" + File.separator + "jcuda-" + JCUDA_VERSION);
       addDir("." + File.separator + "lib");
       os = LibUtils.calculateOS();
       arch = LibUtils.calculateArch();
