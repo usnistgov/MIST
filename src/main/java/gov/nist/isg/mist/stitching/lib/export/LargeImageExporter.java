@@ -263,7 +263,7 @@ public class LargeImageExporter<T> {
   public ImagePlus exportImageNoOverlap(File file) throws FileNotFoundException  {
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null,
-        "Blending tiles (no overlap)...", 0, this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0,
+        "Blending tiles...", 0, this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0,
         false);
 
     for (int row = 0; row < this.grid.getExtentHeight(); row++) {

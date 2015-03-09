@@ -90,8 +90,8 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   public StitchingGUIFrame(String title, Frame parent) {
     super(title);
 
-    this.setSize(new Dimension(570, 600));
-    this.setMinimumSize(new Dimension(570, 600));
+    this.setSize(new Dimension(570, 625));
+    this.setMinimumSize(new Dimension(570, 625));
 
     this.mainFrame = new JPanel(new GridBagLayout());
 
