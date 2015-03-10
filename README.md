@@ -8,14 +8,13 @@ Microscopy Image Stitching Tool (MIST) is developed at the National Institute of
 
 ## Applicable Domain
 
-MIST is designed to stitch 2D image datasets. Therefore each slice of a higher dimensional dataset is stitched together independently of all others with no information being carried between slices. For example, MIST can stitch a time series of 2D datasets (2D+time) where the image grid for each time slice it stitched together independently of all others. The problem of 3D volumetric stitching is not handled by MIST.
+MIST is designed to stitch 2D image datasets. It does not address volumetric or 3d stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
 
 
 ## Sample Data Sets
 
+We have two datasets: a 5x5 grid of image tiles and a 10x10 one.  The two datasets were acquired with 10% overlap between consecutive tiles and in two imaging modalities: phase contrast and Cy5 (a Fluorescent imaging modality with minimal background noise).  An example of each image is shown in Figure~1 below.  Grid tiling starts in the upper left corner and proceeds one row at a time from left to right; rows are ordered from top to bottom.  File names follow the pattern, `basename_r{rrr}_c{ccc}.tif`, where `r{rrr}` is the row number and `c{ccc}` the column number.  For example: `img_Cy5_r003_c004.tif` is the image acquired using Cy5 and located on row 3, column 4 on the 5x5 grid.
 
-
-We have two datasets: a 5x5 grid of images and a 10x10 grid of images. These datasets were acquired with 10% overlap between consecutive tiles and in two imaging modalities: phase contrast and Cy5 (a Fluorescent imaging modality with minimal background noise). An example of each image is shown in Figure 1 below. Grid tiling starts in the upper left corner and moves horizontally (x or column direction). The shift between rows is done by combing, meaning in an mxn grid the next tile acquired after the nth right tile on row i is the first tile on the left of row i+1. The naming convention of the files follows the one done by MicroManager in the format: file_name_r{rrr}_c{ccc}.tif where r{rrr} is the row number and c{ccc} is the column number of the tile in the 5x5 grid. For example: img_Cy5_r003_c004.tif is the image acquired using Cy5 and located on row 3, column 4 on the 5x5 grid.
 
 These datasets can be downloaded from the following links:
 
