@@ -32,6 +32,7 @@ import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import jcuda.CudaException;
 import jcuda.driver.CUcontext;
 import jcuda.driver.JCudaDriver;
+import jcuda.jcufft.JCufft;
 import jcuda.runtime.cudaError;
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -135,7 +136,12 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
         this.librariesInitialized = true;
         return true;
       }
-      return false;
+
+      JCufft.setExceptionsEnabled(true);
+      JCufft.initialize();
+      JCufft.setExceptionsEnabled(false);
+
+      return true;
     } catch (UnsatisfiedLinkError err) {
       Log.msg(LogType.MANDATORY, "Error loading CUDA. Unable to find " + "required libraries: "
           + err.getMessage());
