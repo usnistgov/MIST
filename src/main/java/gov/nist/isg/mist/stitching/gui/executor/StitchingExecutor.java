@@ -424,12 +424,12 @@ public class StitchingExecutor implements Runnable {
         stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
         try {
-          stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);       
+          stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
         } catch (OutOfMemoryError e) {
-          showOutOfMemoryError(outOfMemoryMessage);
+          showError(outOfMemoryMessage);
           return;              
         } catch (CudaException e) {
-          showOutOfMemoryError("Error allocating CUDA device memory: " + e.getMessage());
+          showError("CUDA exception thrown: " + e.getMessage());
           return;
         }
         catch (FileNotFoundException e) {
@@ -892,12 +892,12 @@ public class StitchingExecutor implements Runnable {
   }
 
   
-  private static void showOutOfMemoryError(String details) {
+  private static void showError(String details) {
     Log.msg(LogType.MANDATORY, details);
 
     if (!GraphicsEnvironment.isHeadless()) {
-      JOptionPane.showMessageDialog(null, "Error: Insufficient memory to complete stitching.\n"
-          + "Check log for more details.", "Insufficient Memory", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, "Error: Cancelling stitching.\n"
+          + "Check log for more details.", "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
 

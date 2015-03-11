@@ -346,8 +346,9 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
     } catch (UnsatisfiedLinkError ex) {
       Log.msg(LogType.MANDATORY, "Unable to load CUFFT library. Currently it is "
-          + "mandatory to install the CUDA toolkit (v5.0).");
-      Log.msg(LogType.MANDATORY, "https://developer.nvidia.com/cuda-toolkit-50-archive");
+          + "mandatory to install the CUDA toolkit (v" + LibraryUtils.JCUDA_VERSION + "). " +
+              "If you recently installed the toolkit, please restart your computer.");
+      Log.msg(LogType.MANDATORY, "http://nvidia.com/getcuda");
       return false;
     }
 

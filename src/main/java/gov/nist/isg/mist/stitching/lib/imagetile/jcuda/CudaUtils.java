@@ -177,7 +177,7 @@ public class CudaUtils {
         if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
           return null;
       } catch (IOException e) {
-        Log.msg(LogType.MANDATORY, "Unable to load CU-DA PTX file.");
+        Log.msg(LogType.MANDATORY, "Unable to load CUDA PTX file.");
         return null;
       }
 
