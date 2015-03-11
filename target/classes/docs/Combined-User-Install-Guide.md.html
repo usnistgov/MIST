@@ -17,7 +17,6 @@
 </ol>
 </li>
 <li><a href="#mist-status-frame">MIST Status Frame</a></li>
-<li><a href="#mist-plugin-installation">MIST Plugin Installation</a></li>
 </ol>
 <hr>
 <h3 id="launching-mist">Launching MIST</h3>
@@ -52,7 +51,6 @@
 <li>Perform a pixel-wise comparison between the stitched images</li>
 <li>Fiji&gt;&gt;Process&gt;&gt;Image Calculator</li>
 <li>The operation new stitched image "Difference" reference stitched image should produce an image containing all zeros when using loaded parameters.</li>
-<li>(Optional) Use a diff utility to compare "global-positions-0.txt' files. This file contains the global positions of each image tile in the grid. The reference global positions file shipped with the test data at '\stitched-image\global-positions-0.txt' and the newly generated one should have been saved in the stitching metadata directory specified before launching MIST.</li>
 </ol>
 </li>
 </ol>
@@ -61,8 +59,6 @@
 <p>The MIST plugin consists of five tabs. Below, we outline each tab and discuss all of the parameters. All options labeled with an * are required in order to start stitching. Each tab contains a <strong>?</strong> button that, when clicked, generates a local copy of this documentation.</p>
 <hr>
 <h4 id="input-parameters">Input Parameters</h4>
-<!-- ![](images/InputWindow.png) -->
-
 <blockquote>
 <p><strong>Save Params</strong> Button - Saves all parameters in MIST to a file.</p>
 <p><strong>Begin Stitching</strong> Button - Launches the stitching experiment.</p>
@@ -86,8 +82,6 @@
 <hr>
 </blockquote>
 <h4 id="output-parameters">Output Parameters</h4>
-<!-- ![](images/OutputWindow.png) -->
-
 <blockquote>
 <p><strong>Use Image Directory as Output Directory</strong> - Sets the output directory to be the same as the input directory.</p>
 <p><strong>Output Directory</strong> - Specifies the location to save images and run statistics.</p>
@@ -123,8 +117,6 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="subgrid-parameters">Subgrid Parameters</h4>
-<!-- ![](images/SubgridWindow.png)  -->
-
 <blockquote>
 <p><strong>Use full grid</strong> - Updates the subgrid to use the full grid of images.</p>
 <p><strong>Start Col</strong> - The start column for the subgrid.</p>
@@ -134,8 +126,6 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="advanced-parameters-optional-">Advanced Parameters (optional)</h4>
-<!-- ![](images/AdvancedWindow.png) -->
-
 <blockquote>
 <p><strong>Number of FFT Peaks</strong> - Specifies the number of peaks to check when computing the phase correlation image alignment method. We have determined that modifying this value can yield more accurate pre-optimization displacements. This value should not exceed 10. (Default: 2)</p>
 <p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm.</p>
@@ -152,15 +142,11 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h5 id="java-execution">Java Execution</h5>
-<!-- ![](images/JavaWindow.png) -->
-
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 </blockquote>
 <hr>
 <h5 id="fftw-execution">FFTW Execution</h5>
-<!--![](images/FftwWindow.png) -->
-
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>FFTW Plan Type</strong> - The type of FFTW plan to generate</p>
@@ -180,12 +166,10 @@ Example Files:</p>
 <li>Mac OSX: libfftw3.dylib (default installation location "/usr/local/lib")</li>
 </ul>
 <p><strong>Plan Location (or file)</strong> - The location to load FFTW plans. If a file is specified, the file will be used when loading the plan. This path is also used for saving plans.</p>
-<p><em>Note: <a href="#fftw-installation-on-unix-64-bit-mac-osxlinux">FFTW installation instructions</a></em></p>
+<p><em>Note: <a href="#fftw-installation">FFTW installation instructions</a></em></p>
 </blockquote>
 <hr>
 <h5 id="cuda-execution">CUDA Execution</h5>
-<!-- ![](images/CudaWindow.png) -->
-
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>Execute Device Query</strong> - Queries for all GPUs installed on the system and prints the information to the log.</p>
@@ -196,8 +180,6 @@ Example Files:</p>
 </blockquote>
 <hr>
 <h4 id="help">Help</h4>
-<!-- ![](images/HelpWindow.png) -->
-
 <blockquote>
 <p><strong>Log Level</strong> - Sets the log level for the user interface and the stitching execution.
 Possible Options:</p>
@@ -223,8 +205,6 @@ Possible Options:</p>
 </blockquote>
 <hr>
 <h3 id="mist-status-frame">MIST Status Frame</h3>
-<!-- ![](images/MISTStatus.png) -->
-
 <blockquote>
 <p><strong>Progress</strong> - If timeslices are used, shows the current timeslice, total timeslices, and number of groups (if entered as a comma separated list in the input parameters).</p>
 <p><strong>Progress bar</strong> - Shows the % progress made for the current experiment.</p>
@@ -252,11 +232,9 @@ Possible Options:</p>
 </blockquote>
 <hr>
 <p>* - required in order to start stitching</p>
-<hr>
 <h1 id="mist-plugin-installation">MIST Plugin Installation</h1>
 <p>Installing the plugin into <a href="http://fiji.sc/Fiji">Fiji</a> is simplified using Fiji's update site manager. If the machine is not configured for the network then please refer to the <a href="#manual-installation">manual installation</a>.</p>
 <h3 id="update-site-installation">Update Site Installation</h3>
-<blockquote>
 <ol>
 <li>Open Fiji</li>
 <li>Help &gt;&gt; Update Fiji</li>
@@ -265,36 +243,39 @@ Possible Options:</p>
 <li>Close and Apply Changes</li>
 <li>Plugin is installed in Plugin &gt;&gt; Stitching &gt;&gt; MIST</li>
 </ol>
-</blockquote>
 <h3 id="manual-installation">Manual Installation</h3>
-<blockquote>
 <ol>
 <li>Download the latest version of the MIST plugin from [LINK TO ZIP]</li>
 <li>Extract the contents of the zip file into your Fiji.app folder</li>
 <li>Restart Fiji</li>
 <li>Plugin is installed in Plugins &gt;&gt; Stitching &gt;&gt; MIST</li>
 </ol>
-</blockquote>
 <h1 id="fftw-installation">FFTW Installation</h1>
-<blockquote>
 <p>FFTW (Fastest Fourer Transform in the West, <a href="http://fftw.org">http://fftw.org</a> ) is a C implementation out of MIT that computes the discrete Fourier transform. The plugin loads the library at run-time and uses the high performance FFTW functions in Java.</p>
 <p><strong>Requirements:</strong></p>
 <ol>
-<li>Fiji 64-bit</li>
+<li>Fiji (64-bit version)</li>
 </ol>
 <p>Note: <em>64-bit Windows systems should be able to run the FFTW version without additional setup.</em></p>
-</blockquote>
 <h2 id="fftw-installation-on-unix-64-bit-mac-osx-linux-">FFTW Installation on Unix (64-bit Mac OSX/Linux)</h2>
-<blockquote>
 <ol>
 <li>Download fftw-3.3.4.tar.gz from <a href="http://www.fftw.org/download.html">http://www.fftw.org/download.html</a></li>
 <li>Extract source code to directory (tar xzvf fftw-3.3.4.tar.gz)</li>
-<li>From a terminal locate source code and run the following commands:</li>
+<li><p>From a terminal locate source code and run the following commands:</p>
+<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor><p>(If configure fails, additional compilers and/or libraries may be needed)</p>
+</li>
+<li><p>Launch the Fiji MIST plugin</p>
+</li>
+<li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
+<li>Linux library name example: <em>libfftw3.so</em> (or similar)</li>
+<li>MacOSX library name example: <em>libfftw3.dylib</em> (or similar)</li>
 </ol>
-</blockquote>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor><blockquote>
-<p>(If configure fails, additional compilers and/or libraries may be needed)</p>
+</li>
+<li>You should now be able to launch MIST using FFTW</li>
+</ol>
+<h2 id="fftw-installation-using-macports">FFTW Installation using MacPorts</h2>
 <ol>
+<li>From the command-line: <code>sudo port install fftw-3</code></li>
 <li>Launch the Fiji MIST plugin</li>
 <li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
 <li>Linux library name example: <em>libfftw3.so</em> (or similar)</li>
@@ -303,28 +284,25 @@ Possible Options:</p>
 </li>
 <li>You should now be able to launch MIST using FFTW</li>
 </ol>
-</blockquote>
 <h1 id="cuda-installation">CUDA Installation</h1>
-<blockquote>
 <p>CUDA is the Compute Unified Device Architecture and is a language developed by NVIDIA. It is used to execute code on NVIDIA GPUs to obtain high performance.</p>
 <p><strong>Requirements:</strong></p>
 <ol>
 <li>NVIDIA GPU installed on your system</li>
-<li>CUDA toolkit version 5.0</li>
+<li>CUDA toolkit version 6.5</li>
 <li>Fiji 64-bit</li>
 </ol>
-</blockquote>
-<h3 id="cuda-toolkit-installation-on-windows-linux-macosx">CUDA Toolkit installation on Windows/Linux/MacOSX</h3>
-<blockquote>
+<p>Once the CUDA toolkit is installed a computer restart might be required before stitching can take advantage of your GPU.</p>
+<h3 id="cuda-toolkit-v6-5-installation-on-windows-linux-macosx">CUDA Toolkit v6.5 installation on Windows/Linux/MacOSX</h3>
 <ol>
-<li>Download CUDA toolkit v5.0 for the appropriate operating system version <a href="https://developer.nvidia.com/cuda-toolkit-50-archive">CUDA Toolkit 5.0</a></li>
+<li>Download CUDA toolkit v6.5 for the appropriate operating system version <a href="http://nvidia.com/getcuda">CUDA Toolkit 6.5</a></li>
 <li>Install the CUDA Tookit<ol>
 <li>For Windows: Launch the executable and complete the installation</li>
 <li>For MacOSX: <a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-mac-os-x/index.html#axzz34MbYZuma">Toolkit MacOSX installation guide</a></li>
 <li>For Linux: <a href="http://docs.nvidia.com/cuda/cuda-getting-started-guide-for-linux/index.html#axzz34MbYZuma">Toolkit Linux installation guide</a></li>
 </ol>
 </li>
-<li>Restart/Open Fiji</li>
+<li>Restart your computer</li>
+<li>Open Fiji and run MIST plugin</li>
 <li>CUDA option should be available in the MIST plugin.</li>
 </ol>
-</blockquote>
