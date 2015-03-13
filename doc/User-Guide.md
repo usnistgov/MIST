@@ -62,15 +62,15 @@ The MIST gui consists of three tabs. Below, we outline each tab and discuss all 
 
 > \* **Source Directory** - The directory where the source images are located. Select browse to open a directory browser.
 
-> \* **File Name Pattern** - Used to load images from a directory. Pattern type (dropdown) is used to specify the type of file pattern. Possible options: **Sequential** and **Row-Column**.
-> * If the **File Pattern Type** = **Sequential**, then the **File Pattern** expects sequential style numbering.
+> \* **Filename Pattern** - Used to load images from a directory. Pattern type (dropdown) is used to specify the type of file pattern. Possible options: **Sequential** and **Row-Column**.
+> * If the **Filename Pattern Type** = **Sequential**, then the **Filename Pattern** expects sequential style numbering.
 
 >         Example 1: Img_pos0001_c01.tif = Img_pos{pppp}_c01.tif
 >         Examples 2: Img_pos001_time001.tif = Img_pos{ppp}_time{ttt}.tif
 >         {ppp} - Special text that represents position numbering between 0 and 999. Increase the number of p's to represent larger numbers.
 >         {ttt} - Special text that represents timeslice number between 0 and 999. Each value of {ttt} will be stitched independently. Increase the number of t's to represent larger numbers. Specifying time slices is optional.
 
-> * If the **File Pattern Type** = **Row-Column**, then the **File Pattern** expects row-column style numbering.
+> * If the **Filename Pattern Type** = **Row-Column**, then the **Filename Pattern** expects row-column style numbering.
 
 >         Example 1: Img_r1_c1.tif = Img_r{r}_c{c}.tif
 >         Example 2: Img_row01_col01_time01.tif = Img_row{rr}_col{cc}_time{tt}.tif

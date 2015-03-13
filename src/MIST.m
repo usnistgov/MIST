@@ -14,10 +14,12 @@ function MIST(varargin)
 
 % add the folder 'Sub_Functions' to the Matlab search path so it finds any
 % functions placed in that subfolder
-addpath([pwd filesep 'subfunctions']);
-fp = fileparts(pwd);
-addpath([fp filesep 'doc']);
-addpath([fp filesep 'imgs']);
+if ~isdeployed
+  addpath([pwd filesep 'subfunctions']);
+  fp = fileparts(pwd);
+  addpath([fp filesep 'doc']);
+  addpath([fp filesep 'imgs']);
+end
 
 % ----------------------------------------------------------------------
 % Shared Variables (with default values)
