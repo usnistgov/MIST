@@ -1,0 +1,113 @@
+<h1 id="mist-user-guide">MIST User Guide</h1>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#launching-mist">Launching MIST</a></li>
+<li><a href="#installation-validation-test">Installation Validation Test</a></li>
+<li><a href="#mist-graphical-user-interface">MIST Graphical User Interface</a><ol>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-parameters">Output Parameters</a></li>
+<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a></li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="launching-mist">Launching MIST</h3>
+<ol>
+<li>From Source<ol>
+<li>Start MATLAB.</li>
+<li>Navigate to the MIST source code folder.</li>
+<li>Run: 'Stitching_GUI.m'</li>
+</ol>
+</li>
+<li>From Executable<ol>
+<li>Run: MIST.exe</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="installation-validation-test">Installation Validation Test</h3>
+<p>In this section, we will walk through setting up running MIST on one of the 5x5 image tile datasets in order to validate that the everything is installed correctly.</p>
+<ol>
+<li>Download test images: <a href="https://github.com/NIST-ISG/MIST/wiki/testdata/Small_Fluorescent_Test_Dataset.zip">Cy5_ImageTiles.zip ~ 54 MB</a></li>
+<li>Extract Cy5_ImageTiles.zip into a directory</li>
+<li><a href="#launching-mist">Launch MIST</a></li>
+<li>Manually enter the following parameters into the Input Tab<ol>
+<li><strong>Source Directory</strong>: '&lt; extractionPath &gt;/Small_Fluorescent_Test_Dataset/image-tiles/'</li>
+<li><strong>Filename Pattern</strong>: 'img_r{rrr}_c{ccc}.tif' and 'Row-Column' drop-down</li>
+<li><strong>Plate Size (W x H)</strong>: '5', '5'</li>
+<li><strong>Starting Point</strong>: 'Upper Left'</li>
+</ol>
+</li>
+<li>Select Output Tab and update <strong>Output Directory</strong> option</li>
+<li>Click <strong>Stitch Images</strong> to launch</li>
+<li>Output stitched images should be saved in '&lt; MIST directory &gt;/test/stitched/'</li>
+<li>(Optional) Compare the newly generated stitched image to reference stitched image shipped with the dataset<ol>
+<li>Open '&lt; extractionPath &gt;/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif' in Fiji/ImageJ.</li>
+<li>Check that the new stitched image has the same dimensions as the reference</li>
+<li>Perform a pixel-wise comparison between the stitched images<ol>
+<li>Fiji&gt;&gt;Process&gt;&gt;Image Calculator</li>
+<li>The operation new stitched image "Difference" reference stitched image should produce an image containing all zeros when using loaded parameters.</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="mist-graphical-user-interface">MIST Graphical User Interface</h3>
+<p>The MIST gui consists of three tabs. Below, we outline each tab and discuss all of the parameters. All options labeled with an * are required in order to start stitching. Each tab contains a <strong>Help</strong> button that, when clicked, generates a local copy of this documentation.</p>
+<hr>
+<h4 id="input-parameters">Input Parameters</h4>
+<p><img src="images\InputWindow.png" alt=""></p>
+<blockquote>
+<p><strong>Stitch Images</strong> Button - Launches the stitching experiment.</p>
+<p><strong>Load Default Params</strong> Button - Loads the set of default parameters.</p>
+<p>* <strong>Source Directory</strong> - The directory where the source images are located. Select browse to open a directory browser.</p>
+<p>* <strong>File Name Pattern</strong> - Used to load images from a directory. Pattern type (dropdown) is used to specify the type of file pattern. Possible options: <strong>Sequential</strong> and <strong>Row-Column</strong>.</p>
+<ul>
+<li><p>If the <strong>File Pattern Type</strong> = <strong>Sequential</strong>, then the <strong>File Pattern</strong> expects sequential style numbering.</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_pos0001_c01.tif&nbsp;=&nbsp;Img_pos{pppp}_c01.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Examples&nbsp;2:&nbsp;Img_pos001_time001.tif&nbsp;=&nbsp;Img_pos{ppp}_time{ttt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ppp}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;position&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;p's&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t's&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
+<li><p>If the <strong>File Pattern Type</strong> = <strong>Row-Column</strong>, then the <strong>File Pattern</strong> expects row-column style numbering.</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_r1_c1.tif&nbsp;=&nbsp;Img_r{r}_c{c}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Example&nbsp;2:&nbsp;Img_row01_col01_time01.tif&nbsp;=&nbsp;Img_row{rr}_col{cc}_time{tt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{rr}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;row&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;r's&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{cc}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;column&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;c's&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t's&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
+</ul>
+<p><strong>Slices to Stitch</strong> - The number of timeslices to stitch. Leave this field blank or enter 'all' to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Name Pattern</strong>. This input supports a comma separated list and/or a range using a '-'.
+         Example: "1-25,35,45" stitches timeslices 1 through 25, 35, and 45.</p>
+<p>* <strong>Plate Size (W &amp; H)</strong> - The number of images in a row, the width of the image grid. The number of images in a column, the height of the image grid.</p>
+<p>* <strong>Starting Point</strong> - The starting point of the microscope scan. Possible options: <strong>Upper Left</strong>, <strong>Upper Right</strong>, <strong>Lower Left</strong>, and <strong>Lower Right</strong>.</p>
+<p>* <strong>First Direction</strong> - The direction the microscope moves. Possible options: <strong>Vertical</strong> and <strong>Horizontal</strong>.</p>
+<p>* <strong>Tiling Technique</strong> - The motion pattern of the microscope. Possible options: <strong>Combing</strong> and <strong>Continuous</strong>.</p>
+<p><strong>Load CSV Image Grid</strong> Button - Loads an image grid from a .csv file where each entry in the .csv file is an image name.</p>
+<p><strong>Reset</strong> Button - Resets an image name grid loaded from .csv file.</p>
+<hr>
+</blockquote>
+<h4 id="output-parameters">Output Parameters</h4>
+<p><img src="images\OutputWindow.png" alt=""></p>
+<blockquote>
+<p><strong>Stitch Images</strong> Button - Launches the stitching experiment.</p>
+<p><strong>Load Default Params</strong> Button - Loads the set of default parameters.</p>
+<p><strong>Output Directory</strong> - Specifies the location to save images and metadata.</p>
+<p><strong>Filename Prefix</strong> - The prefix given to output files.</p>
+<p><strong>Blending Method</strong> - Selects the blending mode to be used for computing the mosaic image.
+Blending Types:</p>
+<ul>
+<li>Overlay - Choose only one pixel from overlapping pixels based on highest accuracy</li>
+<li>Linear - Smoothly alters the intensity of the overlapping area between images. Smoothness is determined by alpha. Value should be between (0, 5]</li>
+<li>Average - Computes the average intensity</li>
+<li>Min - Choose the minimum pixel from overlapping pixels</li>
+<li>Max - Choose the maximum pixel from overlapping pixels</li>
+</ul>
+<p><strong>Create Stitched Image</strong> - Toggles whether the stitched image is created.</p>
+<p><strong>Create 0% Overlap Mosaic</strong> - Generates the stitched image assuming 0% overlap.</p>
+<p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>:<em>You must specify the output directory in the <a href="#output-parameters">output tab</a> to refer to the output directory of your previous run.</em></p>
+</blockquote>
+<hr>
+<h4 id="advanced-parameters-optional-">Advanced Parameters (optional)</h4>
+<p><img src="images\AdvancedWindow.png" alt=""></p>
+<blockquote>
+<p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm. This field can contain 'NaN' or be left blank to use the default value.</p>
+<p><strong>Image Overlap Uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables. This field can contain 'NaN' or be left blank to use the default value.</p>
+<p><strong>Estimated Overlap (Horz, Vert)</strong> - Sets the horizontal/Vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This field can contain 'NaN' or be left blank to use the default value.</p>
+<p><strong>Start Location (X,Y)</strong> - X: the start column for the subgrid. Y: the start row for the subgrid.</p>
+<p><strong>Extent Area (W x H)</strong> - W: the width for the subgrid. H: the height for the subgrid.</p>
+</blockquote>
+<hr>
+<p>* - required in order to start stitching</p>
