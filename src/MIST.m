@@ -9,7 +9,7 @@
 % from it, and any modified versions bear some notice that they have been modified.
 
 
-function Stitching_GUI(varargin)
+function MIST(varargin)
 
 
 % add the folder 'Sub_Functions' to the Matlab search path so it finds any
@@ -60,7 +60,7 @@ extent_width = nb_horizontal_tiles;
 extent_height = nb_vertical_tiles;
 
 % if the GUI is already open, don't open another copy
-open_fig_handle = findobj('type','figure','name','Stitching_GUI');
+open_fig_handle = findobj('type','figure','name','MIST');
 if ~isempty(open_fig_handle)
   figure(open_fig_handle); % brings the figure to front
   return;
@@ -99,7 +99,7 @@ XPos = (MaxMonitorX-MaxWindowX)/2 - offset;
 YPos = (MaxMonitorY-MaxWindowY)/2 + offset;
 
 % create main gui figure
-hctfig = figure('Name','Stitching_GUI',...
+hctfig = figure('Name','MIST',...
   'Position',[XPos, YPos, gui_width, gui_height],...
   'units', 'pixels', 'NumberTitle','off', 'Menubar','none', 'Toolbar','none', 'Resize', 'on');
 
@@ -125,7 +125,7 @@ end
 %  Aquisition Technique
 %---------------------------------------------------------------------------------------------
 % create NIST Stitching GUI text box
-label(h_tabpanel(1), [.275 .9 .45 .07], 'NIST Image Stitching GUI', 'center', green_blue, background_color, .8, 'serif', 'bold');
+label(h_tabpanel(1), [.275 .9 .45 .07], 'MIST', 'center', green_blue, background_color, .8, 'serif', 'bold');
 
 
 input_panel = sub_panel(h_tabpanel(1), [.05 .14 .9 .7], 'Input', 'lefttop', highlight_text_color, background_color, 14, 'serif');

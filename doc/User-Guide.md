@@ -13,11 +13,13 @@
 ### Launching MIST
 
 1. From Source
-  1. Start MATLAB.
-  2. Navigate to the MIST source code folder.
-  3. Run: 'Stitching_GUI.m'
+  1. Start MATLAB
+  2. Navigate to the MIST source code folder
+  3. Run: 'src/MIST.m'
 2. From Executable
-  1. Run: MIST.exe
+  1. Run 'MIST_Installer_web.exe' [(download link)](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html) to install the MIST MATLAB application into a directory of your choice
+  2. Navigate to where MIST was installed
+  3. Run: 'application/MIST.exe'
 
 ***
 ### Installation Validation Test
