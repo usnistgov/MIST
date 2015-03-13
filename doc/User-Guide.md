@@ -30,15 +30,15 @@ In this section, we will walk through setting up running MIST on one of the 5x5 
 2. Extract Cy5_ImageTiles.zip into a directory
 3. [Launch MIST](#launching-mist)
 5. Manually enter the following parameters into the Input Tab
-  1. **Source Directory**: '< extractionPath >/Small_Fluorescent_Test_Dataset/image-tiles/'
+  1. **Source Directory**: '\[extractionPath\]/Small_Fluorescent_Test_Dataset/image-tiles/'
   2. **Filename Pattern**: 'img_r{rrr}_c{ccc}.tif' and 'Row-Column' drop-down
   3. **Plate Size (W x H)**: '5', '5'
   4. **Starting Point**: 'Upper Left'
 6. Select Output Tab and update **Output Directory** option
 7. Click **Stitch Images** to launch
-8. Output stitched images should be saved in '< MIST directory >/test/stitched/'
+8. Output stitched images should be saved in '\[MIST directory\]/test/stitched/'
 9. (Optional) Compare the newly generated stitched image to reference stitched image shipped with the dataset
-  1. Open '< extractionPath >/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif' in Fiji/ImageJ.
+  1. Open '\[extractionPath\]/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif' in Fiji/ImageJ.
   2. Check that the new stitched image has the same dimensions as the reference
   3. Perform a pixel-wise comparison between the stitched images
     1. Fiji>>Process>>Image Calculator

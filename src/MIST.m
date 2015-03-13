@@ -114,7 +114,8 @@ h_tabpanel(1) = uipanel('Position', [0,0,1,1], 'Parent', hctfig,...
   'Units', 'normalized', 'Visible', 'off', ...
   'Backgroundcolor', background_color, 'BorderWidth',1);
 
-% load the NIST logo into the bottom right corner
+% 
+the NIST logo into the bottom right corner
 try
   axes('Parent', h_tabpanel(1), 'Units', 'normalized', 'position', [0.8125 -0.035 0.16 0.2]);
   imshow(imread('NIST_Logo.png'), []);
@@ -437,7 +438,7 @@ uicontrol('style','push',...
     
     
     % Advanced Tab
-    repeatability = 10;
+    repeatability = NaN;
     estimated_overlap_x = NaN;
     estimated_overlap_y = NaN;
     start_location_x = 1;
