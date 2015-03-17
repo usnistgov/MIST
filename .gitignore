@@ -1,9 +1,8 @@
 /bin/
 /out/
-/.idea/
 .classpath
 *.dat
 *.class
-MIST.iml
 target
 
+target/classes/docs/Combined-User-Install-Guide.md.html

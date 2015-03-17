@@ -61,6 +61,13 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
     private static final String sourceURL =
             "https://github.com/NIST-ISG/MIST";
 
+
+    private static final String aboutUsURL =
+            "https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html";
+
+    private static final String testDatasetURL =
+            "https://github.com/NIST-ISG/MIST#sample-data-sets";
+
     private static final String license =
             "<html>This software was developed at the National Institute of Standards and<br>" +
                     "Technology by employees of the Federal Government in the course of<br>" +
@@ -147,23 +154,36 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
     c.fill = GridBagConstraints.HORIZONTAL;
 
     c.gridy = 1;
-      JLabel link = new JLabel("<html>Documentation: <a href=\"\">" + documentationURL + "</a></html>");
+
+      JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MIST" + "</a></html>");
+      aboutUsLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+      vertPanel.add(aboutUsLink, c);
+
+      c.gridy = 2;
+      JLabel link = new JLabel("<html><a href=\"" + documentationURL + "\">" + "Documentation" + "</a></html>");
 
     link.setCursor(new Cursor(Cursor.HAND_CURSOR));
     vertPanel.add(link, c);
 
-      c.gridy = 2;
-      JLabel srclink = new JLabel("<html>Source code: <a href=\"\">" + sourceURL + "</a></html>");
+      c.gridy = 3;
+      JLabel srclink = new JLabel("<html><a href=\"" + sourceURL +"\">" + "Source Code" + "</a></html>");
 
       srclink.setCursor(new Cursor(Cursor.HAND_CURSOR));
       vertPanel.add(srclink, c);
 
-    c.gridy = 3;
+      c.gridy = 4;
+      JLabel examplesLink = new JLabel("<html><a href=\"" + testDatasetURL + "\">" + "Sample Datasets" + "</a></html>");
+      examplesLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+      vertPanel.add(examplesLink, c);
+
+
+    c.gridy = 5;
     JPanel helpButtonPanel = new JPanel();
     helpButtonPanel.add(this.openLocalHelp);
     vertPanel.add(helpButtonPanel, c);
 
-      c.gridy = 4;
+      c.gridy = 6;
       vertPanel.add(new JLabel(license), c);
 
     mainPanel.add(vertPanel);
@@ -175,6 +195,8 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
 
     goWebsiteDocumentation(link);
       goWebsiteSourceCode(srclink);
+      goWebsiteAboutUs(aboutUsLink);
+      goWebsiteExamples(examplesLink);
 
   }
 
@@ -198,6 +220,33 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
             public void mouseClicked(MouseEvent e) {
                 try {
                     Desktop.getDesktop().browse(new URI(sourceURL));
+                } catch (URISyntaxException ex) {
+                } catch (IOException ex) {
+
+                }
+            }
+        });
+    }
+    private static void goWebsiteAboutUs(JLabel website) {
+        website.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(aboutUsURL));
+                } catch (URISyntaxException ex) {
+                } catch (IOException ex) {
+
+                }
+            }
+        });
+    }
+
+    private static void goWebsiteExamples(JLabel website) {
+        website.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(testDatasetURL));
                 } catch (URISyntaxException ex) {
                 } catch (IOException ex) {
 

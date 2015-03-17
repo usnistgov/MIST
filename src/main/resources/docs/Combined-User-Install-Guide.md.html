@@ -1,22 +1,105 @@
-<h1 id="mist-user-guide">MIST User Guide</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Combined-User-Install-Guide</title>
+      <style>.markdown-preview { font-family: 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px; line-height: 1.6; overflow: scroll; box-sizing: border-box; padding: 20px; background-color: rgb(255, 255, 255); }
+.markdown-preview code { color: rgb(51, 51, 51); }
+.markdown-preview code, .markdown-preview tt, .markdown-preview pre.editor-colors { font-size: 12px; font-family: Consolas, 'Liberation Mono', Courier, monospace; }
+.markdown-preview a, .markdown-preview a code { color: rgb(65, 131, 196); }
+.markdown-preview ol > li { list-style-type: decimal; }
+.markdown-preview ul > li { list-style-type: disc; }
+.markdown-preview li > pre.editor-colors { display: inline-block; vertical-align: top; width: 100%; }
+.markdown-preview li:last-child > pre.editor-colors { margin-bottom: 0px; }
+.markdown-preview > :first-child { margin-top: 0px !important; }
+.markdown-preview > :last-child { margin-bottom: 0px !important; }
+.markdown-preview a.absent { color: rgb(204, 0, 0); }
+.markdown-preview a.anchor { display: block; padding-left: 30px; margin-left: -30px; cursor: pointer; position: absolute; top: 0px; left: 0px; bottom: 0px; }
+.markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4, .markdown-preview h5, .markdown-preview h6 { font-family: 'Helvetica Neue', Helvetica, sans-serif; margin: 20px 0px 10px; padding: 0px 0px 10px; font-weight: bold; -webkit-font-smoothing: antialiased; cursor: text; position: relative; }
+.markdown-preview h1 .octicon-link, .markdown-preview h2 .octicon-link, .markdown-preview h3 .octicon-link, .markdown-preview h4 .octicon-link, .markdown-preview h5 .octicon-link, .markdown-preview h6 .octicon-link { display: none; color: rgb(0, 0, 0); }
+.markdown-preview h1:hover a.anchor, .markdown-preview h2:hover a.anchor, .markdown-preview h3:hover a.anchor, .markdown-preview h4:hover a.anchor, .markdown-preview h5:hover a.anchor, .markdown-preview h6:hover a.anchor { text-decoration: none; line-height: 1; padding-left: 0px; margin-left: -22px; top: 15%; }
+.markdown-preview h1:hover a.anchor .octicon-link, .markdown-preview h2:hover a.anchor .octicon-link, .markdown-preview h3:hover a.anchor .octicon-link, .markdown-preview h4:hover a.anchor .octicon-link, .markdown-preview h5:hover a.anchor .octicon-link, .markdown-preview h6:hover a.anchor .octicon-link { display: inline-block; }
+.markdown-preview h1 tt, .markdown-preview h2 tt, .markdown-preview h3 tt, .markdown-preview h4 tt, .markdown-preview h5 tt, .markdown-preview h6 tt, .markdown-preview h1 code, .markdown-preview h2 code, .markdown-preview h3 code, .markdown-preview h4 code, .markdown-preview h5 code, .markdown-preview h6 code { font-size: inherit; }
+.markdown-preview h1 { font-size: 28px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(221, 221, 221); color: rgb(0, 0, 0); }
+.markdown-preview h2 { font-size: 24px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: rgb(238, 238, 238); color: rgb(0, 0, 0); }
+.markdown-preview h3 { font-size: 18px; }
+.markdown-preview h4 { font-size: 16px; }
+.markdown-preview h5 { font-size: 14px; }
+.markdown-preview h6 { color: rgb(119, 119, 119); font-size: 14px; }
+.markdown-preview p, .markdown-preview blockquote, .markdown-preview ul, .markdown-preview ol, .markdown-preview dl, .markdown-preview table, .markdown-preview pre.editor-colors { margin: 15px 0px; }
+.markdown-preview hr { border: 0px none; color: rgb(204, 204, 204); height: 4px; padding: 0px; margin: 15px 0px; background: url('data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC') 0px 0px repeat-x transparent; }
+.markdown-preview > h2:first-child, .markdown-preview > h1:first-child, .markdown-preview > h1:first-child + h2, .markdown-preview > h3:first-child, .markdown-preview > h4:first-child, .markdown-preview > h5:first-child, .markdown-preview > h6:first-child { margin-top: 0px; padding-top: 0px; }
+.markdown-preview a:first-child h1, .markdown-preview a:first-child h2, .markdown-preview a:first-child h3, .markdown-preview a:first-child h4, .markdown-preview a:first-child h5, .markdown-preview a:first-child h6 { margin-top: 0px; padding-top: 0px; }
+.markdown-preview h1 + p, .markdown-preview h2 + p, .markdown-preview h3 + p, .markdown-preview h4 + p, .markdown-preview h5 + p, .markdown-preview h6 + p { margin-top: 0px; }
+.markdown-preview li p.first { display: inline-block; }
+.markdown-preview ul, .markdown-preview ol { padding-left: 30px; }
+.markdown-preview ul.no-list, .markdown-preview ol.no-list { list-style-type: none; padding: 0px; }
+.markdown-preview ul li > :first-child, .markdown-preview ol li > :first-child, .markdown-preview ul li ul:first-of-type, .markdown-preview ol li ul:first-of-type { margin-top: 0px; }
+.markdown-preview ul ul, .markdown-preview ul ol, .markdown-preview ol ol, .markdown-preview ol ul { margin-bottom: 0px; }
+.markdown-preview dl { padding: 0px; }
+.markdown-preview dl dt { font-size: 14px; font-weight: bold; font-style: italic; padding: 0px; margin: 15px 0px 5px; }
+.markdown-preview dl dt:first-child { padding: 0px; }
+.markdown-preview dl dt > :first-child { margin-top: 0px; }
+.markdown-preview dl dt > :last-child { margin-bottom: 0px; }
+.markdown-preview dl dd { margin: 0px 0px 15px; padding: 0px 15px; }
+.markdown-preview dl dd > :first-child { margin-top: 0px; }
+.markdown-preview dl dd > :last-child { margin-bottom: 0px; }
+.markdown-preview blockquote { border-left-width: 4px; border-left-style: solid; border-left-color: rgb(221, 221, 221); padding: 0px 15px; color: rgb(119, 119, 119); }
+.markdown-preview blockquote > :first-child { margin-top: 0px; }
+.markdown-preview blockquote > :last-child { margin-bottom: 0px; }
+.markdown-preview blockquote p { font-size: 16px; line-height: 1.5; }
+.markdown-preview table th { font-weight: bold; }
+.markdown-preview table th, .markdown-preview table td { border: 1px solid rgb(204, 204, 204); padding: 6px 13px; }
+.markdown-preview table tr { border-top-width: 1px; border-top-style: solid; border-top-color: rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
+.markdown-preview table tr:nth-child(2n) { background-color: rgb(248, 248, 248); }
+.markdown-preview img { max-width: 100%; }
+.markdown-preview span.frame { display: block; overflow: hidden; }
+.markdown-preview span.frame > span { border: 1px solid rgb(221, 221, 221); display: block; float: left; overflow: hidden; margin: 13px 0px 0px; padding: 7px; width: auto; }
+.markdown-preview span.frame span img { display: block; float: left; }
+.markdown-preview span.frame span span { clear: both; color: rgb(51, 51, 51); display: block; padding: 5px 0px 0px; }
+.markdown-preview span.align-center { display: block; overflow: hidden; clear: both; }
+.markdown-preview span.align-center > span { display: block; overflow: hidden; margin: 13px auto 0px; text-align: center; }
+.markdown-preview span.align-center span img { margin: 0px auto; text-align: center; }
+.markdown-preview span.align-right { display: block; overflow: hidden; clear: both; }
+.markdown-preview span.align-right > span { display: block; overflow: hidden; margin: 13px 0px 0px; text-align: right; }
+.markdown-preview span.align-right span img { margin: 0px; text-align: right; }
+.markdown-preview span.float-left { display: block; margin-right: 13px; overflow: hidden; float: left; }
+.markdown-preview span.float-left span { margin: 13px 0px 0px; }
+.markdown-preview span.float-right { display: block; margin-left: 13px; overflow: hidden; float: right; }
+.markdown-preview span.float-right > span { display: block; overflow: hidden; margin: 13px auto 0px; text-align: right; }
+.markdown-preview code, .markdown-preview tt { margin: 0px 2px; padding: 0px 5px; border: 1px solid rgb(234, 234, 234); border-radius: 3px; text-shadow: none; background-color: rgb(248, 248, 248); }
+.markdown-preview code { white-space: nowrap; }
+.markdown-preview pre.editor-colors { font-size: 13px; line-height: 19px; overflow: auto; padding: 6px 10px; border-radius: 3px; border: 1px solid rgb(5, 6, 6); background: rgb(29, 31, 33); }
+.markdown-preview kbd { border-radius: 2px; border-width: 1px; border-style: solid; border-color: rgb(221, 221, 221) rgb(204, 204, 204) rgb(204, 204, 204) rgb(221, 221, 221); padding: 1px 4px; line-height: 10px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-image: linear-gradient(rgb(241, 241, 241), rgb(221, 221, 221)); background-color: rgb(221, 221, 221); background-repeat: repeat-x; }
+.markdown-preview .emoji { height: 20px; width: 20px; }
+</style>
+  </head>
+  <body class='markdown-preview'><h1 id="mist-user-guide">MIST User Guide</h1>
 <h2 id="contents">Contents</h2>
 <ol>
+<li><a href="#mist-user-guide">MIST User Guide</a><ol>
 <li><a href="#launching-mist">Launching MIST</a></li>
 <li><a href="#installation-validation-test">Installation Validation Test</a></li>
 <li><a href="#mist-graphical-user-interface">MIST Graphical User Interface</a><ol>
 <li><a href="#input-parameters">Input Parameters</a></li>
 <li><a href="#output-parameters">Output Parameters</a></li>
 <li><a href="#subgrid-parameters">Subgrid Parameters</a></li>
-<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a><ol>
+<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a></li>
 <li><a href="#java-execution">Java Execution</a></li>
 <li><a href="#fftw-execution">FFTW Execution</a></li>
 <li><a href="#cuda-execution">CUDA Execution</a></li>
-</ol>
-</li>
 <li><a href="#help">Help</a></li>
 </ol>
 </li>
 <li><a href="#mist-status-frame">MIST Status Frame</a></li>
+</ol>
+</li>
+<li><a href="#mist-plugin-installation">Installing MIST</a><ol>
+<li><a href="#update-site-installation">Update Site Installation</a></li>
+<li><a href="#manual-installation">Manual Installation</a></li>
+</ol>
+</li>
+<li><a href="#fftw-installation">Installing FFTW</a></li>
+<li><a href="#cuda-instalation">Installing CUDA</a></li>
 </ol>
 <hr>
 <h3 id="launching-mist">Launching MIST</h3>
@@ -29,28 +112,28 @@
 <h3 id="installation-validation-test">Installation Validation Test</h3>
 <p>In this section, we will walk through setting up running MIST on one of the 5x5 image tile datasets in order to validate that the plugin is installed correctly.</p>
 <ol>
-<li>Download test images: [Cy5_ImageTiles.zip ~ 54 MB] (testdata/Small_Fluorescent_Test_Dataset.zip)</li>
+<li>Download test images: <a href="testdata/Small_Fluorescent_Test_Dataset.zip">Cy5_ImageTiles.zip ~ 54 MB</a></li>
 <li>Extract Cy5_ImageTiles.zip into a directory</li>
 <li><a href="#launching-mist">Launch MIST plugin from Fiji</a></li>
-<li>Select <strong>Load Params</strong> and open '\<extractionpath\>\Small_Fluorescent_Test_Dataset\stitching-params.txt'</extractionpath\></li>
+<li>Select <strong>Load Params</strong> and open &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/stitching-params.txt&#39;</li>
 <li>To manually enter parameters (avoiding <strong>Load Params</strong>) enter the following values into the Input Tab<ol>
-<li><strong>Filename Pattern Type</strong>: 'Row-Column'</li>
-<li><strong>Filename Pattern</strong>: 'img_r{rrr}_c{ccc}.tif'</li>
-<li><strong>Starting Point</strong>: 'Upper Left'</li>
-<li><strong>Grid Width</strong>: '5'</li>
-<li><strong>Grid Height</strong>: '5'</li>
+<li><strong>Filename Pattern Type</strong>: &#39;Row-Column&#39;</li>
+<li><strong>Filename Pattern</strong>: &#39;img_r{rrr}_c{ccc}.tif&#39;</li>
+<li><strong>Starting Point</strong>: &#39;Upper Left&#39;</li>
+<li><strong>Grid Width</strong>: &#39;5&#39;</li>
+<li><strong>Grid Height</strong>: &#39;5&#39;</li>
 </ol>
 </li>
-<li>Modify <strong>Image Directory</strong> to '\<extractionpath\>\Small_Fluorescent_Test_Dataset\image-tiles'</extractionpath\></li>
+<li>Modify <strong>Image Directory</strong> to &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/image-tiles&#39;</li>
 <li>Select Output tab and update <strong>Output Directory</strong>, <strong>Metadata Directory</strong>, and <strong>Display Stitched Image</strong> options</li>
 <li>To check the parameters defining the image grid, select <strong>Preview Mosaic With No Overlap</strong></li>
 <li>Click <strong>Begin Stitching</strong> to launch</li>
 <li>Compare the newly generated stitched image to reference stitched image shipped with the dataset<ol>
-<li>Open '\<extractionpath\>\Small_Fluorescent_Test_Dataset\stitched-image\img-stitched-0.tif' in Fiji.</extractionpath\></li>
+<li>Open &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif&#39; in Fiji.</li>
 <li>Check that the new stitched image has the same dimensions as the reference</li>
 <li>Perform a pixel-wise comparison between the stitched images</li>
 <li>Fiji&gt;&gt;Process&gt;&gt;Image Calculator</li>
-<li>The operation new stitched image "Difference" reference stitched image should produce an image containing all zeros when using loaded parameters.</li>
+<li>The operation new stitched image &quot;Difference&quot; reference stitched image should produce an image containing all zeros when using loaded parameters.</li>
 </ol>
 </li>
 </ol>
@@ -67,9 +150,9 @@
 <p>* <strong>File Pattern</strong> - Used to load images from a directory. Changes based on the <strong>File Pattern Type</strong></p>
 <ul>
 <li><p>If the <strong>File Pattern Type</strong> = <strong>Sequential</strong>, then the <strong>File Pattern</strong> expects sequential style numbering.</p>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor></li>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_pos0001_c01.tif&nbsp;=&nbsp;Img_pos{pppp}_c01.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Examples&nbsp;2:&nbsp;Img_pos001_time001.tif&nbsp;=&nbsp;Img_pos{ppp}_time{ttt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ppp}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;position&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;p&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
 <li><p>If the <strong>File Pattern Type</strong> = <strong>Row-Column</strong>, then the <strong>File Pattern</strong> expects row-column style numbering.</p>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor></li>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_r1_c1.tif&nbsp;=&nbsp;Img_r{r}_c{c}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Example&nbsp;2:&nbsp;Img_row01_col01_time01.tif&nbsp;=&nbsp;Img_row{rr}_col{cc}_time{tt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{rr}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;row&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;r&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{cc}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;column&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;c&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
 </ul>
 <p>* <strong>Image Directory</strong> - The directory where the source images are located. Select browse to open a directory browser.</p>
 <p>* <strong>Starting Point</strong> - The starting point of the microscope scan. Possible options: <strong>Upper Left</strong>, <strong>Upper Right</strong>, <strong>Lower Left</strong>, and <strong>Lower Right</strong>.</p>
@@ -77,8 +160,8 @@
 <p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>:<em>You must specify the metadata directory in the <a href="#output-parameters">output tab</a> to refer to the metadata directory of your previous run.</em></p>
 <p>* <strong>Grid Width</strong> - The number of images in a row (The number of columns, the width of the image grid)</p>
 <p>* <strong>Grid Height</strong> - The number of images in a column. (The number of rows, the height of the image grid)</p>
-<p><strong>Timeslices</strong> - The number of timeslices to stitch. Leave this field blank to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Pattern</strong>. This input supports a comma separated list and/or a range using a '-'.
-         Example: "1-25,35,45" stitches timeslices 1 through 25, 35, and 45.</p>
+<p><strong>Timeslices</strong> - The number of timeslices to stitch. Leave this field blank to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Pattern</strong>. This input supports a comma separated list and/or a range using a &#39;-&#39;.
+         Example: &quot;1-25,35,45&quot; stitches timeslices 1 through 25, 35, and 45.</p>
 <hr>
 </blockquote>
 <h4 id="output-parameters">Output Parameters</h4>
@@ -89,7 +172,7 @@
 <ul>
 <li><strong>{namePrefix}</strong>stitched-<strong>{#}</strong>.tiff</li>
 <li><p><strong>{namePrefix}</strong>statistics.txt</p>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor></li>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>{namePrefix}&nbsp;-&nbsp;the&nbsp;prefix&nbsp;used&nbsp;in&nbsp;&quot;Filename&nbsp;Prefix&quot;</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{#}&nbsp;-&nbsp;The&nbsp;timeslice&nbsp;number&nbsp;(0&nbsp;if&nbsp;no&nbsp;timeslices&nbsp;are&nbsp;used)</span></span></span></div></pre></li>
 </ul>
 <p><strong>Filename Prefix</strong> - The prefix given to output files.</p>
 <p><strong>Metadata Directory</strong> - The directory where metadata is written.</p>
@@ -99,7 +182,7 @@
 <li>relative-positions-{#}.txt</li>
 <li>relative-positions-no-optimization-{#}.txt</li>
 <li><p>hillclimb-startings-positions-{#}.txt</p>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor></li>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>{#}&nbsp;-&nbsp;The&nbsp;timeslice&nbsp;number&nbsp;(0&nbsp;if&nbsp;no&nbsp;timeslices&nbsp;are&nbsp;used)</span></span></span></div></pre></li>
 </ul>
 <p><strong>Blending mode</strong> - Selects the blending mode to be used for computing the mosaic image.
 Blending Types:</p>
@@ -161,9 +244,9 @@ Blending Types:</p>
 <p><strong>FFTW Library File</strong> - Specifies the FFTW library file to load.
 Example Files:</p>
 <ul>
-<li>Windows: libfftw3.dll (this library is packaged with MIST in the "Fiji.app/lib/fftw" directory)</li>
-<li>Linux: libfftw3.so (default installation location "/usr/local/lib")</li>
-<li>Mac OSX: libfftw3.dylib (default installation location "/usr/local/lib")</li>
+<li>Windows: libfftw3.dll (this library is packaged with MIST in the &quot;Fiji.app/lib/fftw&quot; directory)</li>
+<li>Linux: libfftw3.so (default installation location &quot;/usr/local/lib&quot;)</li>
+<li>Mac OSX: libfftw3.dylib (default installation location &quot;/usr/local/lib&quot;)</li>
 </ul>
 <p><strong>Plan Location (or file)</strong> - The location to load FFTW plans. If a file is specified, the file will be used when loading the plan. This path is also used for saving plans.</p>
 <p><em>Note: <a href="#fftw-installation">FFTW installation instructions</a></em></p>
@@ -233,7 +316,7 @@ Possible Options:</p>
 <hr>
 <p>* - required in order to start stitching</p>
 <h1 id="mist-plugin-installation">MIST Plugin Installation</h1>
-<p>Installing the plugin into <a href="http://fiji.sc/Fiji">Fiji</a> is simplified using Fiji's update site manager. If the machine is not configured for the network then please refer to the <a href="#manual-installation">manual installation</a>.</p>
+<p>Installing the plugin into <a href="http://fiji.sc/Fiji">Fiji</a> is simplified using Fiji&#39;s update site manager. If the machine is not configured for the network then please refer to the <a href="#manual-installation">manual installation</a>.</p>
 <h3 id="update-site-installation">Update Site Installation</h3>
 <ol>
 <li>Open Fiji</li>
@@ -243,9 +326,19 @@ Possible Options:</p>
 <li>Close and Apply Changes</li>
 <li>Plugin is installed in Plugin &gt;&gt; Stitching &gt;&gt; MIST</li>
 </ol>
+<p>Or</p>
+<ol>
+<li>Open Fiji</li>
+<li>Help &gt;&gt; Update Fiji</li>
+<li>Manage update sites</li>
+<li>Click &quot;Add&quot;</li>
+<li>Enter Name: &quot;MIST&quot; and URL: <a href="http://sites.imagej.net/NIST-ISG-MIST/">http://sites.imagej.net/NIST-ISG-MIST/</a></li>
+<li>Close and Apply Changes</li>
+<li>Plugin is installed in Plugin &gt;&gt; Stitching &gt;&gt; MIST</li>
+</ol>
 <h3 id="manual-installation">Manual Installation</h3>
 <ol>
-<li>Download the latest version of the MIST plugin from [LINK TO ZIP]</li>
+<li>Download the latest version of the MIST plugin from <a href="https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/downloads/MIST-plugin.zip">MIST Plugin Download</a></li>
 <li>Extract the contents of the zip file into your Fiji.app folder</li>
 <li>Restart Fiji</li>
 <li>Plugin is installed in Plugins &gt;&gt; Stitching &gt;&gt; MIST</li>
@@ -261,11 +354,13 @@ Possible Options:</p>
 <ol>
 <li>Download fftw-3.3.4.tar.gz from <a href="http://www.fftw.org/download.html">http://www.fftw.org/download.html</a></li>
 <li>Extract source code to directory (tar xzvf fftw-3.3.4.tar.gz)</li>
-<li><p>From a terminal locate source code and run the following commands:</p>
-<atom-text-editor class="editor" callattachhooks="true" gutter-hidden="" data-grammar="text plain" data-encoding="utf8"><div class="underlayer"></div><div class="overlayer"></div></atom-text-editor><p>(If configure fails, additional compilers and/or libraries may be needed)</p>
-</li>
-<li><p>Launch the Fiji MIST plugin</p>
-</li>
+<li>From a terminal locate source code and run the following commands:</li>
+</ol>
+<blockquote>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>./configure&nbsp;--enable-shared</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;make</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;sudo&nbsp;make&nbsp;install</span></span></span></div></pre></blockquote>
+<p> (If configure fails, additional compilers and/or libraries may be needed)</p>
+<ol>
+<li>Launch the Fiji MIST plugin</li>
 <li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
 <li>Linux library name example: <em>libfftw3.so</em> (or similar)</li>
 <li>MacOSX library name example: <em>libfftw3.dylib</em> (or similar)</li>
@@ -305,4 +400,5 @@ Possible Options:</p>
 <li>Restart your computer</li>
 <li>Open Fiji and run MIST plugin</li>
 <li>CUDA option should be available in the MIST plugin.</li>
-</ol>
+</ol></body>
+</html>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: gov.nih.imagej:imagej:1.46">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
