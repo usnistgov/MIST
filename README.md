@@ -13,7 +13,7 @@ MIST is designed to stitch 2D image datasets. It does not address volumetric or 
 
 ## Sample Data Sets
 
-We have two datasets: a 5x5 grid of image tiles and a 10x10 one.  The two datasets were acquired with 10% overlap between consecutive tiles and in two imaging modalities: phase contrast and Cy5 (a Fluorescent imaging modality with minimal background noise).  An example of each image is shown in Figure~1 below.  Grid tiling starts in the upper left corner and proceeds one row at a time from left to right; rows are ordered from top to bottom.  File names follow the pattern, `basename_r{rrr}_c{ccc}.tif`, where `r{rrr}` is the row number and `c{ccc}` the column number.  For example: `img_Cy5_r003_c004.tif` is the image acquired using Cy5 and located on row 3, column 4 on the 5x5 grid.
+We have two datasets: a 5x5 grid of image tiles and a 10x10 one.  The two datasets were acquired with 10% overlap between consecutive tiles and in two imaging modalities: phase contrast and Cy5 (a Fluorescent imaging modality with minimal background noise).  An example of each image is shown in Figure 1 below.  Grid tiling starts in the upper left corner and proceeds one row at a time from left to right; rows are ordered from top to bottom.  File names follow the pattern, `basename_r{rrr}_c{ccc}.tif`, where `r{rrr}` is the row number and `c{ccc}` the column number.  For example: `img_Cy5_r003_c004.tif` is the image acquired using Cy5 and located on row 3, column 4 on the 5x5 grid.
 
 
 These datasets can be downloaded from the following links:
