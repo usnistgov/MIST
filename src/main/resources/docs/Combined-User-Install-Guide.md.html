@@ -125,15 +125,16 @@
 </ol>
 </li>
 <li>Modify <strong>Image Directory</strong> to &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/image-tiles&#39;</li>
-<li>Select Output tab and update <strong>Output Directory</strong>, <strong>Metadata Directory</strong>, and <strong>Display Stitched Image</strong> options</li>
-<li>To check the parameters defining the image grid, select <strong>Preview Mosaic With No Overlap</strong></li>
+<li>Select the Output tab and update <strong>Output Directory</strong> and <strong>Metadata Directory</strong> to define where the output files are to be saved</li>
+<li>Update <strong>Display Stitched Image</strong> and <strong>Save Full Stitched Image</strong> to selected/enabled</li>
+<li>To check the parameters defining the image grid, select <strong>Preview Mosaic With No Overlap</strong> which should generate and display a zero percent overlap tiling of the input images</li>
 <li>Click <strong>Begin Stitching</strong> to launch</li>
-<li>Compare the newly generated stitched image to reference stitched image shipped with the dataset<ol>
+<li>Compare the newly generated stitched image to the reference stitched image shipped with the test dataset<ol>
 <li>Open &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif&#39; in Fiji.</li>
 <li>Check that the new stitched image has the same dimensions as the reference</li>
 <li>Perform a pixel-wise comparison between the stitched images</li>
 <li>Fiji&gt;&gt;Process&gt;&gt;Image Calculator</li>
-<li>The operation new stitched image &quot;Difference&quot; reference stitched image should produce an image containing all zeros when using loaded parameters.</li>
+<li>The operation new stitched image &quot;Difference&quot; reference stitched image should produce an image containing all zeros when using the correct parameters</li>
 </ol>
 </li>
 </ol>

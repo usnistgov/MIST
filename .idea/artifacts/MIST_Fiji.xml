@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact name="MIST_Fiji">
+  <artifact build-on-make="true" name="MIST_Fiji">
     <output-path>$PROJECT_DIR$/out/artifacts/MIST_Fiji</output-path>
     <root id="root">
       <element id="directory" name="plugins">
