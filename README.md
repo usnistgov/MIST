@@ -1,5 +1,5 @@
 # MIST
-Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
+Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. This repository contains source code for the plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
 ## Quick Navigation
 
@@ -30,7 +30,7 @@ These datasets can be downloaded from the following links:
 
 [Phase_Image_Tiles.zip ~ 195 MB](https://isg.nist.gov/BII_2015/Stitching/Phase_Image_Tiles.zip)
 
-This dataset is hosted at and used for the [2015 BioImage Informatics Conference: Image Stitching Challenge](https://isg.nist.gov/BII_2015/webPages/pages/stitching/Stitching.html). 
+This dataset is hosted at and used for the [2015 BioImage Informatics Conference: Image Stitching Challenge](https://isg.nist.gov/BII_2015/webPages/pages/stitching/Stitching.html).
 
 ![Cy5 and Phase images](../../wiki/images/Cy5Phase.png)
 
