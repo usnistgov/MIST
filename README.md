@@ -1,5 +1,5 @@
 # MIST
-Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. This branch contains the MATLAB source code. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation. Note: the User Guide and Wiki are devoted to the ImageJ/Fiji plugin. The MATLAB source code contains its own help document in the 'doc' folder.
+Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. This repository contains source code for the ImageJ/Fiji plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation. Note: the User Guide and Wiki are devoted to the ImageJ/Fiji plugin. The MATLAB source code contains its own help document in the 'doc' folder.
 
 ## Quick Navigation
 
