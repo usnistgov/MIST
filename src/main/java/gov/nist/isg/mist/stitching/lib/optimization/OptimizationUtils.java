@@ -759,10 +759,11 @@ public class OptimizationUtils {
    * @param dir the direction that is to be filtered
    * @param percOverlapError the percent overlap of error
    * @param overlap the overlap between tiles
+   * @param numStdDevThreads the number of standard deviation threads used for filtering
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
-      Direction dir, double percOverlapError, double overlap) throws FileNotFoundException  {
+      Direction dir, double percOverlapError, double overlap, int numStdDevThreads) throws FileNotFoundException  {
     Log.msg(LogType.INFO, "Filtering translations:");
     DisplacementValue dispValue = null;
     switch (dir) {
@@ -778,7 +779,7 @@ public class OptimizationUtils {
     
     HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid);
        
-    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir, overlap, percOverlapError);
+    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir, overlap, percOverlapError, numStdDevThreads);
     
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 
@@ -875,7 +876,7 @@ public class OptimizationUtils {
   }
   
   private static <T> HashSet<ImageTile<T>> filterTilesFromStdDev(HashSet<ImageTile<T>> validTiles, 
-      TileGrid<ImageTile<T>>grid, Direction dir, double overlap, double percOverlapError)
+      TileGrid<ImageTile<T>>grid, Direction dir, double overlap, double percOverlapError, int numThreads)
   {
     
     Log.msg(LogType.VERBOSE, "Filtering by standard deviation with " + validTiles.size()
@@ -918,8 +919,6 @@ public class OptimizationUtils {
     List<Double> stdDevValues = new ArrayList<Double>();
 
     // compute stdDev on direction in parallel.
-    int numThreads = Runtime.getRuntime().availableProcessors();
-
     List<Thread> threads = new ArrayList<Thread>();
 
     BlockingQueue<ImageTile<T>> queue = new ArrayBlockingQueue<ImageTile<T>>(validTiles.size());

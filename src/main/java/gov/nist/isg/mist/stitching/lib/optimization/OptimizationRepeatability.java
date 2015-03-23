@@ -96,10 +96,6 @@ public class OptimizationRepeatability<T> {
    * @param grid the grid of image tiles
    * @param progressBar a progress bar (or null if no progress bar is needed)
    * @param params the stitching app parameters
-   * @param repeatability the user-defined repeatability (if 0, then compute repeatability)
-   * @param userDefinedHorizontalOverlap the user defined horizontal overlap
-   * @param userDefinedVerticalOverlap the user defined vertical overlap
-   * @param userDefinedOverlapError the user defined overlap error
    */
   public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params)
   {
@@ -180,7 +176,7 @@ public class OptimizationRepeatability<T> {
       }
     }
 
-    int numThreads = Runtime.getRuntime().availableProcessors();
+    int numThreads = this.params.getAdvancedParams().getNumCPUThreads();
 
     this.executionThreads = new ArrayList<Thread>();
     this.optimizationWorkers = new ArrayList<OptimizationRepeatabilityWorker<T>>();
@@ -309,7 +305,7 @@ public class OptimizationRepeatability<T> {
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
     HashSet<ImageTile<T>> validTranslations;
-    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap);
+    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap, this.params.getAdvancedParams().getNumCPUThreads());
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
