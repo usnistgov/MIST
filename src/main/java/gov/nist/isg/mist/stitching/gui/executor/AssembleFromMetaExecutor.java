@@ -26,7 +26,6 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.executor;
 
-import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -78,8 +77,8 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
       if (displayGui)
       {
-        int ret = JOptionPane.showConfirmDialog(null, "Error: Global position file: " + absPosFile.getAbsoluteFile() + ". Would you like to specify the location of the file?",
-                "Global position file not found", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+        int ret = JOptionPane.showConfirmDialog(null, "Error: Global position file: " + absPosFile.getAbsoluteFile() + " not found. Would you like to specify the location of the file?",
+                "Global position file not found", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         if (ret == JOptionPane.YES_OPTION)
         {

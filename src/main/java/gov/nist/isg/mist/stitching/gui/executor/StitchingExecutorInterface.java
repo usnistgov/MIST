@@ -62,7 +62,6 @@ public interface StitchingExecutorInterface<T> {
    * @param params the stitching application parameters
    * @param progressBar the progress bar
    * @param timeSlice the timeslice
-
    * @throws OutOfMemoryError
    * @throws CudaException
    * @throws FileNotFoundException

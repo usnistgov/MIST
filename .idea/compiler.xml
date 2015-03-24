@@ -23,11 +23,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="MIST" />
+        <module name="MIST_" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MIST" target="1.5" />
+      <module name="MIST_" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

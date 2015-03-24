@@ -272,12 +272,12 @@ public class Stitching {
       if (col > grid.getStartCol()) {
         ImageTile<?> west = grid.getTile(row, col - 1);
         t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) west,
-            (FftwImageTile) t, memory));
+                (FftwImageTile) t, memory));
 
         Log.msgNoTime(
-            LogType.HELPFUL,
-            " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-                + t.getWestTranslation());
+                LogType.HELPFUL,
+                " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
+                        + t.getWestTranslation());
 
         t.decrementFftReleaseCount();
         west.decrementFftReleaseCount();
@@ -512,6 +512,14 @@ public class Stitching {
         int gridRow = 0;
         int gridCol = 0;
         Matcher matcher = pattern.matcher(line);
+        if (!matcher.matches())
+        {
+          Log.msg(LogType.MANDATORY, "Error: unable to parse line: " + line);
+          Log.msg(LogType.MANDATORY, "Error parsing absolute positions: " + file.getAbsolutePath());
+          br.close();
+          return false;
+        }
+
         while (matcher.find()) {
           if (matcher.groupCount() == 2) {
             String key = matcher.group(1);
@@ -545,10 +553,21 @@ public class Stitching {
                 gridCol = Integer.parseInt(gridSplit[0].trim());
                 gridRow = Integer.parseInt(gridSplit[1].trim());
               } catch (NumberFormatException e) {
-                Log.msg(LogType.MANDATORY, "Unable to parse position for " + tileName);
+                Log.msg(LogType.MANDATORY, "Unable to parse grid position for " + tileName);
                 parseError = true;
               }
             }
+            else {
+              Log.msg(LogType.MANDATORY, "Error: Unknown key: " + key);
+              parseError = true;
+              break;
+            }
+          }
+          else
+          {
+            Log.msg(LogType.MANDATORY, "Error: unable to parse line: " + line);
+            parseError = true;
+            break;
           }
         }
 
