@@ -26,5 +26,8 @@
         <module name="MIST" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="MIST" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
