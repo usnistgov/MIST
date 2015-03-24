@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/MIST_Fiji</output-path>
     <root id="root">
       <element id="directory" name="plugins">
-        <element id="archive" name="MIST.jar">
+        <element id="archive" name="MIST_.jar">
           <element id="module-output" name="MIST" />
           <element id="file-copy" path="$PROJECT_DIR$/plugins.config" />
         </element>
