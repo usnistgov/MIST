@@ -7,7 +7,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4803dcc4-7c16-44ec-8703-de920c4b63cc" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/Stitching.java" afterPath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/Stitching.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/CUDAPanel.java" afterPath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/CUDAPanel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java" afterPath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/JavaPanel.java" afterPath="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/JavaPanel.java" />
     </list>
     <ignored path="MIST.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,16 +66,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StitchingExecutorInterface.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/StitchingExecutorInterface.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="69" column="0" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="AssembleFromMetaExecutor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/AssembleFromMetaExecutor.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -87,53 +79,62 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Stitching.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Stitching.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/Stitching.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.60645163">
+            <state vertical-scroll-proportion="0.0">
               <caret line="520" column="9" selection-start-line="520" selection-start-column="9" selection-end-line="520" selection-end-column="9" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CudaStitchingExecutor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/CudaStitchingExecutor.java">
+      <file leaf-file-name="ParallelOptPane.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/ParallelOptPane.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#6378#0" expanded="false" />
-                <element signature="imports" expanded="false" />
-                <element signature="e#6314#6315#0" expanded="false" />
-                <element signature="e#6372#6373#0" expanded="false" />
-              </folding>
+              <caret line="53" column="13" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="13" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FftwStitchingExecutor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/FftwStitchingExecutor.java">
+      <file leaf-file-name="AdvancedPanel.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/AdvancedPanel.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#5393#0" expanded="false" />
-                <element signature="imports" expanded="false" />
-              </folding>
+              <caret line="88" column="35" selection-start-line="88" selection-start-column="35" selection-end-line="88" selection-end-column="35" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JavaStitchingExecutor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/JavaStitchingExecutor.java">
+      <file leaf-file-name="CUDAPanel.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/CUDAPanel.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="106" column="0" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#4317#0" expanded="false" />
-                <element signature="imports" expanded="false" />
-              </folding>
+              <caret line="78" column="28" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FFTWPanel.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="87" column="28" selection-start-line="87" selection-start-column="28" selection-end-line="87" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JavaPanel.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/JavaPanel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.4967742">
+              <caret line="62" column="28" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -163,7 +164,6 @@
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/AdvancedPanel.java" />
         <option value="$PROJECT_DIR$/java_libs/org/jcuda/jcuda/6.5/pom.xml" />
         <option value="$PROJECT_DIR$/plugins.config" />
-        <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java" />
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/export/LargeImageExporter.java" />
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/StitchingGUIFrame.java" />
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/libraryloader/LibraryUtils.java" />
@@ -182,6 +182,9 @@
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/StitchingExecutor.java" />
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/executor/AssembleFromMetaExecutor.java" />
         <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/Stitching.java" />
+        <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/CUDAPanel.java" />
+        <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java" />
+        <option value="$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/JavaPanel.java" />
       </list>
     </option>
   </component>
@@ -400,7 +403,87 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="executor" />
+              <option name="myItemId" value="panels" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MIST" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MIST" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="stitching" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="panels" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="advancedTab" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MIST" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MIST" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="stitching" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="panels" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="advancedTab" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="parallelPanels" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -675,7 +758,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3296875" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32976654" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37026238" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.37026238" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -722,157 +805,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/optimization/GlobalOptimization.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="48" column="13" selection-start-line="48" selection-start-column="13" selection-end-line="48" selection-end-column="13" />
-          <folding>
-            <element signature="e#0#4685#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2440#2441#0" expanded="false" />
-            <element signature="e#2470#2471#0" expanded="false" />
-            <element signature="e#2548#2549#0" expanded="false" />
-            <element signature="e#2578#2579#0" expanded="false" />
-            <element signature="e#4642#4643#0" expanded="false" />
-            <element signature="e#4679#4680#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/optimization/OptimizationUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="877" column="43" selection-start-line="877" selection-start-column="43" selection-end-line="877" selection-end-column="43" />
-          <folding>
-            <element signature="e#0#62483#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/ImageTile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="935" column="5" selection-start-line="935" selection-start-column="5" selection-end-line="935" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#32318#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#3956#3957#0" expanded="false" />
-            <element signature="e#4000#4001#0" expanded="false" />
-            <element signature="e#4228#4229#0" expanded="false" />
-            <element signature="e#4272#4273#0" expanded="false" />
-            <element signature="e#7962#7963#0" expanded="false" />
-            <element signature="e#7999#8000#0" expanded="false" />
-            <element signature="e#8087#8088#0" expanded="false" />
-            <element signature="e#8124#8125#0" expanded="false" />
-            <element signature="e#8358#8359#0" expanded="false" />
-            <element signature="e#8387#8388#0" expanded="false" />
-            <element signature="e#8481#8482#0" expanded="false" />
-            <element signature="e#8513#8514#0" expanded="false" />
-            <element signature="e#8581#8582#0" expanded="false" />
-            <element signature="e#8610#8611#0" expanded="false" />
-            <element signature="e#8704#8705#0" expanded="false" />
-            <element signature="e#8736#8737#0" expanded="false" />
-            <element signature="e#9703#9704#0" expanded="false" />
-            <element signature="e#9733#9734#0" expanded="false" />
-            <element signature="e#9832#9833#0" expanded="false" />
-            <element signature="e#9866#9867#0" expanded="false" />
-            <element signature="e#9950#9951#0" expanded="false" />
-            <element signature="e#9986#9987#0" expanded="false" />
-            <element signature="e#10110#10111#0" expanded="false" />
-            <element signature="e#10156#10157#0" expanded="false" />
-            <element signature="e#10242#10243#0" expanded="false" />
-            <element signature="e#10279#10280#0" expanded="false" />
-            <element signature="e#10407#10408#0" expanded="false" />
-            <element signature="e#10455#10456#0" expanded="false" />
-            <element signature="e#10528#10529#0" expanded="false" />
-            <element signature="e#10556#10557#0" expanded="false" />
-            <element signature="e#10685#10686#0" expanded="false" />
-            <element signature="e#10722#10723#0" expanded="false" />
-            <element signature="e#10808#10809#0" expanded="false" />
-            <element signature="e#10840#10841#0" expanded="false" />
-            <element signature="e#10937#10938#0" expanded="false" />
-            <element signature="e#10980#10981#0" expanded="false" />
-            <element signature="e#11133#11134#0" expanded="false" />
-            <element signature="e#11175#11176#0" expanded="false" />
-            <element signature="e#11278#11279#0" expanded="false" />
-            <element signature="e#11316#11317#0" expanded="false" />
-            <element signature="e#11423#11424#0" expanded="false" />
-            <element signature="e#11461#11462#0" expanded="false" />
-            <element signature="e#11628#11629#0" expanded="false" />
-            <element signature="e#11658#11659#0" expanded="false" />
-            <element signature="e#11837#11838#0" expanded="false" />
-            <element signature="e#11871#11872#0" expanded="false" />
-            <element signature="e#12001#12002#0" expanded="false" />
-            <element signature="e#12038#12039#0" expanded="false" />
-            <element signature="e#12171#12172#0" expanded="false" />
-            <element signature="e#12209#12210#0" expanded="false" />
-            <element signature="e#12374#12375#0" expanded="false" />
-            <element signature="e#12417#12418#0" expanded="false" />
-            <element signature="e#12584#12585#0" expanded="false" />
-            <element signature="e#12628#12629#0" expanded="false" />
-            <element signature="e#12747#12748#0" expanded="false" />
-            <element signature="e#12799#12800#0" expanded="false" />
-            <element signature="e#13189#13190#0" expanded="false" />
-            <element signature="e#13242#13243#0" expanded="false" />
-            <element signature="e#20885#20886#0" expanded="false" />
-            <element signature="e#20931#20932#0" expanded="false" />
-            <element signature="e#21258#21259#0" expanded="false" />
-            <element signature="e#21306#21307#0" expanded="false" />
-            <element signature="e#21639#21640#0" expanded="false" />
-            <element signature="e#21684#21685#0" expanded="false" />
-            <element signature="e#22003#22004#0" expanded="false" />
-            <element signature="e#22050#22051#0" expanded="false" />
-            <element signature="e#22444#22445#0" expanded="false" />
-            <element signature="e#22480#22481#0" expanded="false" />
-            <element signature="e#24184#24185#0" expanded="false" />
-            <element signature="e#24226#24227#0" expanded="false" />
-            <element signature="e#24363#24364#0" expanded="false" />
-            <element signature="e#24393#24394#0" expanded="false" />
-            <element signature="e#24641#24642#0" expanded="false" />
-            <element signature="e#24669#24670#0" expanded="false" />
-            <element signature="e#24798#24799#0" expanded="false" />
-            <element signature="e#24825#24826#0" expanded="false" />
-            <element signature="e#25304#25305#0" expanded="false" />
-            <element signature="e#25332#25333#0" expanded="false" />
-            <element signature="e#25428#25429#0" expanded="false" />
-            <element signature="e#25456#25457#0" expanded="false" />
-            <element signature="e#25518#25519#0" expanded="false" />
-            <element signature="e#25545#25546#0" expanded="false" />
-            <element signature="e#25609#25610#0" expanded="false" />
-            <element signature="e#25637#25638#0" expanded="false" />
-            <element signature="e#25881#25882#0" expanded="false" />
-            <element signature="e#25925#25926#0" expanded="false" />
-            <element signature="e#26181#26182#0" expanded="false" />
-            <element signature="e#26225#26226#0" expanded="false" />
-            <element signature="e#26449#26450#0" expanded="false" />
-            <element signature="e#26523#26524#0" expanded="false" />
-            <element signature="e#26744#26745#0" expanded="false" />
-            <element signature="e#26818#26819#0" expanded="false" />
-            <element signature="e#27042#27043#0" expanded="false" />
-            <element signature="e#27116#27117#0" expanded="false" />
-            <element signature="e#27337#27338#0" expanded="false" />
-            <element signature="e#27411#27412#0" expanded="false" />
-            <element signature="e#29602#29603#0" expanded="false" />
-            <element signature="e#29632#29633#0" expanded="false" />
-            <element signature="e#29721#29722#0" expanded="false" />
-            <element signature="e#29751#29752#0" expanded="false" />
-            <element signature="e#29842#29843#0" expanded="false" />
-            <element signature="e#29873#29874#0" expanded="false" />
-            <element signature="e#30475#30476#0" expanded="false" />
-            <element signature="e#30502#30503#0" expanded="false" />
-            <element signature="e#30643#30644#0" expanded="false" />
-            <element signature="e#30669#30670#0" expanded="false" />
-            <element signature="e#30816#30817#0" expanded="false" />
-            <element signature="e#30849#30850#0" expanded="false" />
-            <element signature="e#31269#31270#0" expanded="false" />
-            <element signature="e#31303#31304#0" expanded="false" />
-            <element signature="e#31425#31426#0" expanded="false" />
-            <element signature="e#31458#31459#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/MIST.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1312,20 +1244,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/AdvancedPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="88" column="35" selection-start-line="88" selection-start-column="35" selection-end-line="88" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="209" column="0" selection-start-line="209" selection-start-column="0" selection-end-line="209" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/StitchingGUIFrame.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1685,8 +1603,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/lib/imagetile/Stitching.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.60645163">
+        <state vertical-scroll-proportion="0.0">
           <caret line="520" column="9" selection-start-line="520" selection-start-column="9" selection-end-line="520" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/ParallelOptPane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="53" column="13" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/AdvancedPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="88" column="35" selection-start-line="88" selection-start-column="35" selection-end-line="88" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/CUDAPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="78" column="28" selection-start-line="78" selection-start-column="28" selection-end-line="78" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/FFTWPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="87" column="28" selection-start-line="87" selection-start-column="28" selection-end-line="87" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/gov/nist/isg/mist/stitching/gui/panels/advancedTab/parallelPanels/JavaPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4967742">
+          <caret line="62" column="28" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
           <folding />
         </state>
       </provider>

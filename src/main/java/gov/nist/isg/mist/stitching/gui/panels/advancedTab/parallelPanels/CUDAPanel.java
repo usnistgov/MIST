@@ -76,7 +76,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
     int numProc = Runtime.getRuntime().availableProcessors();
     this.numThreadsCPU =
         new TextFieldInputPanel<Integer>("CPU worker threads", Integer.toString(numProc),
-            new IntModel(1, 2 * numProc));
+            new IntModel(1, numProc));
 
     try {
       this.tableModel = new CudaDeviceTableModel();

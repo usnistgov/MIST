@@ -85,7 +85,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
     int numProc = Runtime.getRuntime().availableProcessors();
     this.numThreadsCPU =
         new TextFieldInputPanel<Integer>("CPU worker threads", Integer.toString(numProc),
-            new IntModel(1, 2 * numProc));
+            new IntModel(1, numProc));
 
     this.savePlanToFile.setSelected(true);
     this.loadPlanFromFile.setSelected(true);
