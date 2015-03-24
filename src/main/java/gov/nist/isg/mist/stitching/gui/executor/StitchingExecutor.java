@@ -320,7 +320,7 @@ public class StitchingExecutor implements Runnable {
 
     if (assembleFromMeta)
     {
-      stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
+      stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>(displayGui);
     }
     else
     {
@@ -433,8 +433,8 @@ public class StitchingExecutor implements Runnable {
           return;
         }
         catch (FileNotFoundException e) {
-          Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Cancelling stitching.");
-          return;
+          Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: " + timeSlice);
+          continue;
         }
 
         stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);

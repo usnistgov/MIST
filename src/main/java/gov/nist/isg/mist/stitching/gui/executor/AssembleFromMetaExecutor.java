@@ -26,6 +26,7 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.executor;
 
+import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -38,6 +39,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGridUtils;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 /**
@@ -48,7 +50,10 @@ import java.io.InvalidClassException;
  */
 public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T> {
 
-  public AssembleFromMetaExecutor() {
+  private boolean displayGui;
+
+  public AssembleFromMetaExecutor(boolean displayGui) {
+    this.displayGui = displayGui;
   }
 
   @Override
@@ -63,24 +68,55 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
-  CudaException {
+  CudaException, FileNotFoundException {
 
     File absPosFile = params.getOutputParams().getAbsPosFile(timeSlice);
 
     if (!absPosFile.exists()) {
       Log.msg(LogType.MANDATORY, "Error: Global position file does not exist for timeslice "
           + timeSlice + ": " + absPosFile.getAbsolutePath());
-      return;
+
+      if (displayGui)
+      {
+        int ret = JOptionPane.showConfirmDialog(null, "Error: Global position file: " + absPosFile.getAbsoluteFile() + ". Would you like to specify the location of the file?",
+                "Global position file not found", JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+
+        if (ret == JOptionPane.YES_OPTION)
+        {
+          JFileChooser chooser = new JFileChooser(params.getOutputParams().getMetadataPath());
+          chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+          int val = chooser.showOpenDialog(null);
+          if (val == JFileChooser.APPROVE_OPTION) {
+            absPosFile = chooser.getSelectedFile();
+          }
+          else
+          {
+            throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
+          }
+
+        }
+        else
+        {
+          throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
+        }
+      }
+      else {
+        throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath() + ". Skipping ...");
+      }
     }
 
     if (grid == null) {
       Log.msg(LogType.MANDATORY, "Error creating tile grid.");
-      return;
+      throw new NullPointerException("Grid is null");
     }
 
     if (Stitching.parseAbsolutePositions(grid, absPosFile)) {
       TileGridUtils.translateTranslations(grid);
-
+    }
+    else
+    {
+      throw new FileNotFoundException("Error parsing: " + absPosFile.getAbsolutePath());
     }
   }
   

@@ -107,8 +107,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     this.fftwExecutor = new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid, progressBar);
     
     this.fftwExecutor.execute();
-    
-   
+
   }
 
   @Override

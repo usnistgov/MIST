@@ -102,7 +102,8 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     StitchingGuiUtils.updateProgressBar(progressBar, false, null);
 
-    this.executor.execute();        
+    this.executor.execute();
+
   }
 
   @Override

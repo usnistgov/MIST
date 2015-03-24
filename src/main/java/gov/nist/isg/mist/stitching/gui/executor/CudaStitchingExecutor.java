@@ -118,7 +118,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     
     this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor);
     
-    this.gpuExecutor.execute();       
+    this.gpuExecutor.execute();
+
   }
 
   @Override
