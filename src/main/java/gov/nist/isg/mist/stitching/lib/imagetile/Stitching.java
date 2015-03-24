@@ -512,7 +512,7 @@ public class Stitching {
         int gridRow = 0;
         int gridCol = 0;
         Matcher matcher = pattern.matcher(line);
-        if (!matcher.matches())
+        if (!matcher.find())
         {
           Log.msg(LogType.MANDATORY, "Error: unable to parse line: " + line);
           Log.msg(LogType.MANDATORY, "Error parsing absolute positions: " + file.getAbsolutePath());
@@ -520,6 +520,7 @@ public class Stitching {
           return false;
         }
 
+        matcher.reset();
         while (matcher.find()) {
           if (matcher.groupCount() == 2) {
             String key = matcher.group(1);
