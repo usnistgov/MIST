@@ -59,7 +59,7 @@ public class StitchingStatistics {
 
   private static final String ERROR_REPORT_MESSAGE = "This could indicate calibration problems or problematic image data.";
   private static final String ERROR_OVERLAP_MESSAGE = "Clipped value can be adjusted using the percent overlap uncertainty or you can specify the overlap";
-
+  private static final String DEVELOPER_MESSAGE = "The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or https://github.com/NIST-ISG/MIST/issues.";
   /**
    * The version number for the stitching statistics
    */
@@ -906,6 +906,11 @@ public class StitchingStatistics {
 
     writer.write("Error report: " + getErrorReportStatus(timeSlice) + newLine);
     writer.write(errorMessage);
+
+    if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED)
+    {
+      writer.write(DEVELOPER_MESSAGE + newLine);
+    }
 
   }
 

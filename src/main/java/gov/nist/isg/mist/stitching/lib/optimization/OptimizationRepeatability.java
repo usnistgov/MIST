@@ -334,6 +334,9 @@ public class OptimizationRepeatability<T> {
 
       StitchingExecutor.stitchingStatistics.setRepeatability(dir, r);
       StitchingExecutor.stitchingStatistics.setNumValidTilesAfterFilter(dir, 0);
+
+      Log.msg(LogType.MANDATORY, "Please check the statistics file for more details.");
+
       return r;
     }
 
@@ -420,6 +423,9 @@ public class OptimizationRepeatability<T> {
       int r = 0;
       if(this.isUserDefinedRepeatability)
         r = this.userDefinedRepeatability;
+
+      Log.msg(LogType.MANDATORY, "Please check the statistics file for more details.");
+
       return r;
     }
 
