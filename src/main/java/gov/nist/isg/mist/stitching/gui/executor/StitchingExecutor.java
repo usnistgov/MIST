@@ -320,7 +320,7 @@ public class StitchingExecutor implements Runnable {
 
     if (assembleFromMeta)
     {
-      stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>(displayGui);
+      stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
     }
     else
     {

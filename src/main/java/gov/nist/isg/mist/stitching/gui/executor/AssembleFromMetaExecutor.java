@@ -49,10 +49,8 @@ import java.io.InvalidClassException;
  */
 public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T> {
 
-  private boolean displayGui;
+  public AssembleFromMetaExecutor() {
 
-  public AssembleFromMetaExecutor(boolean displayGui) {
-    this.displayGui = displayGui;
   }
 
   @Override
@@ -75,34 +73,7 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
       Log.msg(LogType.MANDATORY, "Error: Global position file does not exist for timeslice "
           + timeSlice + ": " + absPosFile.getAbsolutePath());
 
-      if (displayGui)
-      {
-        int ret = JOptionPane.showConfirmDialog(null, "Error: Global position file: " + absPosFile.getAbsoluteFile() + " not found. Would you like to specify the location of the file?",
-                "Global position file not found", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        if (ret == JOptionPane.YES_OPTION)
-        {
-          JFileChooser chooser = new JFileChooser(params.getOutputParams().getMetadataPath());
-          chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
-          int val = chooser.showOpenDialog(null);
-          if (val == JFileChooser.APPROVE_OPTION) {
-            absPosFile = chooser.getSelectedFile();
-          }
-          else
-          {
-            throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
-          }
-
-        }
-        else
-        {
-          throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
-        }
-      }
-      else {
-        throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath() + ". Skipping ...");
-      }
+        throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
     }
 
     if (grid == null) {
