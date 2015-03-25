@@ -35,12 +35,15 @@ import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.Direction;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +57,9 @@ import java.util.List;
  */
 public class StitchingStatistics {
 
+  private static final String ERROR_REPORT_MESSAGE = "This could indicate calibration problems or problematic image data.";
+  private static final String ERROR_OVERLAP_MESSAGE = "Clipped value can be adjusted using the percent overlap uncertainty or you can specify the overlap";
+
   /**
    * The version number for the stitching statistics
    */
@@ -63,6 +69,15 @@ public class StitchingStatistics {
    * The current time slice number
    */
   public static int currentTimeSlice = 0;
+
+  /**
+   * Enum representing what error report status
+   */
+  public enum ErrorReportStatus {
+    PASSED,
+    WARNING,
+    FAILED
+  }
 
   /**
    * Enum represented the different runtimes observed
@@ -137,8 +152,18 @@ public class StitchingStatistics {
   private List<HashMap<Direction, Double>> maxFilterThresholds;
   private List<HashMap<Direction, Double>> stdDevThresholds;
   private List<HashMap<Direction, List<Integer>>> emptyRowCols;
+  private List<HashMap<Direction, Integer>> numRowCols;
   private List<Integer> timeSlicesRun;
   private int maxTimeSlice;
+
+  private List<ErrorReportStatus> errorReportStatus;
+  private List<HashMap<Direction, Boolean>> hasNoValidTranslations;
+  private List<HashMap<Direction, Double>> computedOverlaps;
+  private List<HashMap<Direction, Boolean>> hasHighRepeatability;
+  private List<HashMap<Direction, Boolean>> hasHighPercentMissingRowCol;
+
+
+
 
   /**
    * Initializes the stitching statistics
@@ -168,7 +193,14 @@ public class StitchingStatistics {
     this.maxFilterThresholds = new ArrayList<HashMap<Direction, Double>>();
     this.stdDevThresholds = new ArrayList<HashMap<Direction, Double>>();
     this.emptyRowCols = new ArrayList<HashMap<Direction, List<Integer>>>();
+    this.numRowCols = new ArrayList<HashMap<Direction, Integer>>();
     this.timeSlicesRun = new ArrayList<Integer>();
+
+    this.errorReportStatus = new ArrayList<ErrorReportStatus>();
+    this.hasNoValidTranslations = new ArrayList<HashMap<Direction, Boolean>>();
+    this.computedOverlaps = new ArrayList<HashMap<Direction, Double>>();
+    this.hasHighRepeatability = new ArrayList<HashMap<Direction, Boolean>>();
+    this.hasHighPercentMissingRowCol = new ArrayList<HashMap<Direction, Boolean>>();
 
     // Initialize HashMaps for all time slices
     int numTimeSlices = 0;
@@ -197,7 +229,13 @@ public class StitchingStatistics {
       HashMap<Direction, Double> maxFilterThreshold = new HashMap<Direction, Double>();
       HashMap<Direction, Double> stdDevThreshold = new HashMap<Direction, Double>();
       HashMap<Direction, List<Integer>> emptyRowCol = new HashMap<Direction, List<Integer>>();
+      HashMap<Direction, Integer> numRowCol = new HashMap<Direction, Integer>();
+      HashMap<Direction, Boolean> noValidTranslations = new HashMap<Direction, Boolean>();
+      HashMap<Direction, Double> computedOverlap  = new HashMap<Direction, Double>();
+      HashMap<Direction, Boolean> highRepeatability = new HashMap<Direction, Boolean>();
+      HashMap<Direction, Boolean> highPercMissRowCol = new HashMap<Direction, Boolean>();
 
+      this.errorReportStatus.add(ErrorReportStatus.PASSED);
       this.startTimers.add(startTimer);
       this.endTimers.add(endTimer);
       this.repeatabilities.add(repeatability);
@@ -207,6 +245,11 @@ public class StitchingStatistics {
       this.maxFilterThresholds.add(maxFilterThreshold);
       this.stdDevThresholds.add(stdDevThreshold);
       this.emptyRowCols.add(emptyRowCol);
+      this.numRowCols.add(numRowCol);
+      this.hasNoValidTranslations.add(noValidTranslations);
+      this.computedOverlaps.add(computedOverlap);
+      this.hasHighRepeatability.add(highRepeatability);
+      this.hasHighPercentMissingRowCol.add(highPercMissRowCol);
     }
   }
 
@@ -304,6 +347,17 @@ public class StitchingStatistics {
   }
 
   /**
+   * Sets the computed overlap for a direction
+   *
+   * @param dir the direction
+   * @param overlap the overlap
+   */
+  public void setComputedOverlap(Direction dir, double overlap) {
+    HashMap<Direction, Double> computedOverlapMap = this.computedOverlaps.get(currentTimeSlice);
+    computedOverlapMap.put(dir, overlap);
+  }
+
+  /**
    * Sets the number of valid tiles after filtering for a direction
    * 
    * @param dir the direction
@@ -357,6 +411,17 @@ public class StitchingStatistics {
   public void setEmptyRowsCols(Direction dir, List<Integer> emptyRowCol) {
     HashMap<Direction, List<Integer>> thresholdMap = this.emptyRowCols.get(currentTimeSlice);
     thresholdMap.put(dir, emptyRowCol);
+  }
+
+  /**
+   * Sets the number of rows/cols for a direction
+   *
+   * @param dir the direction
+   * @param numRowCol the number of rows/cols
+   */
+  public void setNumRowsCols(Direction dir, int numRowCol) {
+    HashMap<Direction, Integer> numRowCols = this.numRowCols.get(currentTimeSlice);
+    numRowCols.put(dir, numRowCol);
   }
 
   /**
@@ -487,6 +552,21 @@ public class StitchingStatistics {
    */
   public double getOverlap(Direction dir, int timeSlice) {
     HashMap<Direction, Double> overlapMap = this.overlaps.get(timeSlice);
+
+    if (overlapMap.containsKey(dir))
+      return overlapMap.get(dir);
+    return -1;
+  }
+
+  /**
+   * Gets the computed overlap for a direction and timeslice
+   *
+   * @param dir the direction
+   * @param timeSlice the time slice
+   * @return the overlap or -1 if it does not exist
+   */
+  public double getComputedOverlap(Direction dir, int timeSlice) {
+    HashMap<Direction, Double> overlapMap = this.computedOverlaps.get(timeSlice);
 
     if (overlapMap.containsKey(dir))
       return overlapMap.get(dir);
@@ -728,6 +808,14 @@ public class StitchingStatistics {
     return null;
   }
 
+  public Integer getNumRowCols(Direction dir, int timeSlice) {
+    HashMap<Direction, Integer> numRowCol = this.numRowCols.get(timeSlice);
+
+    if (numRowCol.containsKey(dir))
+      return numRowCol.get(dir);
+    return 0;
+  }
+
   /**
    * Checks if the list of empty row/cols for a direction exist for a time slice
    * 
@@ -739,6 +827,8 @@ public class StitchingStatistics {
     HashMap<Direction, List<Integer>> EmptyRowColMap = this.emptyRowCols.get(timeSlice);
     return EmptyRowColMap.containsKey(dir);
   }
+
+
 
   @Override
   public String toString() {
@@ -754,7 +844,72 @@ public class StitchingStatistics {
   {
     this.writeStatistics(new File(fileName));
   }
-  
+
+  private void updateErrorStatus(int timeSlice, ErrorReportStatus status)
+  {
+    ErrorReportStatus curStatus = this.errorReportStatus.get(timeSlice);
+
+    if (curStatus == ErrorReportStatus.PASSED || curStatus == ErrorReportStatus.WARNING)
+      this.errorReportStatus.set(timeSlice, status);
+
+  }
+
+  private String getErrorReportStatus(int timeSlice)
+  {
+    return this.errorReportStatus.get(timeSlice).name();
+  }
+
+
+  private void runErrorChecks(FileWriter writer, int timeSlice) throws IOException
+  {
+    String newLine = "\n";
+
+    String errorMessage = "";
+
+    // Check no valid translations
+    for (Direction dir : Direction.values()) {
+      int numValid = getNumValidTilesAfterFilter(Direction.North, timeSlice);
+      if (numValid == 0)
+      {
+        updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
+        errorMessage += "- No valid " + dir + " translations found" + newLine + ERROR_REPORT_MESSAGE + newLine;
+      }
+
+      double overlap = getOverlap(dir, timeSlice);
+      double computedOverlap = getComputedOverlap(dir, timeSlice);
+
+      if (overlap != computedOverlap)
+      {
+        updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
+        errorMessage += "- Computed " + dir + " overlap = " + computedOverlap + ". Value was clipped to " + overlap + newLine + ERROR_OVERLAP_MESSAGE + newLine;
+      }
+
+      double repeatability = getRepeatability(dir, timeSlice);
+
+      if (repeatability > OptimizationRepeatability.MaxRepeatability)
+      {
+        updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
+        errorMessage += "- Computed " + dir + " repeatability is high." + newLine + ERROR_REPORT_MESSAGE + newLine;
+      }
+
+      List<Integer> emptyRowColsLst = getEmptyRowCols(dir, timeSlice);
+
+      if (hasEmptyRowCols(dir, timeSlice)) {
+        double percMissingRowCol = emptyRowColsLst.size() / getNumRowCols(dir, timeSlice) * 100.0;
+
+        if (percMissingRowCol > 80.0) {
+          updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
+          errorMessage += "- Percentage missing " + dir + " rows/cols is high." + newLine + ERROR_REPORT_MESSAGE + newLine;
+        }
+      }
+    }
+
+    writer.write("Error report: " + getErrorReportStatus(timeSlice) + newLine);
+    writer.write(errorMessage);
+
+  }
+
+
   /**
    * Writes the statistics to a file
    * 
@@ -861,11 +1016,18 @@ public class StitchingStatistics {
             writer.write(dir + " standard deviation threshold: "
                 + getStdDevThreshold(dir, timeSlice) + newLine);
 
-          if (hasEmptyRowCols(dir, timeSlice))
+          if (hasEmptyRowCols(dir, timeSlice)) {
+            List<Integer> emptyRowColsLst = getEmptyRowCols(dir, timeSlice);
             writer.write(dir + " missing row/col: "
-                + Arrays.toString(getEmptyRowCols(dir, timeSlice).toArray()) + newLine);
+                    + Arrays.toString(emptyRowColsLst.toArray()) + newLine);
+
+            DecimalFormat df = new DecimalFormat("#.#");
+            writer.write(dir + " percentage missing row/col: " + df.format(emptyRowColsLst.size() / getNumRowCols(dir, timeSlice) * 100.0) + "%" + newLine);
+          }
           writer.write(newLine);
         }
+
+        runErrorChecks(writer, timeSlice);
 
         writer.write(newLine);
       }

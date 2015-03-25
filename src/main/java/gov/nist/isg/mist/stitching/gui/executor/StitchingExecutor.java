@@ -382,6 +382,7 @@ public class StitchingExecutor implements Runnable {
 
     Log.msg(LogType.MANDATORY, "STITCHING BEGINS!");
     stitchingStatistics = new StitchingStatistics(this.params);
+    stitchingStatistics.setExecutionType(this.params.getAdvancedParams().getProgramType());
     stitchingStatistics.startEndToEndTimer();
 
     if (this.params.getAdvancedParams().getNumFFTPeaks() != 0)

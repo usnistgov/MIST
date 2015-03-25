@@ -71,9 +71,13 @@ public class OptimizationRepeatability<T> {
     Median,
     Search
   }
-  
+
+  /**
+   * The maximum repeatability.
+   */
+  public static int MaxRepeatability = 10;
+
   private static final MissingSwitch missingSwitch =  MissingSwitch.Median;
-  private static int MaxRepeatability = 10;
   private static final double OverlapError = 5.0;
 
   private TileGrid<ImageTile<T>> grid;
@@ -290,6 +294,8 @@ public class OptimizationRepeatability<T> {
     // get the overlap for the current direction
     double overlap = getOverlap(dir, dispValue, percOverlapError);
 
+    StitchingExecutor.stitchingStatistics.setComputedOverlap(dir, overlap);
+
     // check that an overlap value has been computed
     if(Double.isNaN(overlap)) {
       Log.msg(LogType.MANDATORY, "Warning: Unable to compute overlap for " + dir
@@ -325,6 +331,9 @@ public class OptimizationRepeatability<T> {
       int r = 0;
       if(this.isUserDefinedRepeatability)
         r = this.userDefinedRepeatability;
+
+      StitchingExecutor.stitchingStatistics.setRepeatability(dir, r);
+      StitchingExecutor.stitchingStatistics.setNumValidTilesAfterFilter(dir, 0);
       return r;
     }
 
@@ -419,14 +428,17 @@ public class OptimizationRepeatability<T> {
     List<Integer> missingRowOrCol = null;
     switch (dir) {
       case North:
+        StitchingExecutor.stitchingStatistics.setNumRowsCols(dir, grid.getExtentHeight());
         missingRowOrCol = OptimizationUtils.fixInvalidTranslationsPerRow(this.grid, dir, OP_TYPE.MEDIAN);
         break;
       case West:
+        StitchingExecutor.stitchingStatistics.setNumRowsCols(dir, grid.getExtentWidth());
         missingRowOrCol = OptimizationUtils.fixInvalidTranslationsPerCol(this.grid, dir, OP_TYPE.MEDIAN);
         break;
       default:
         break;
     }
+
 
     StitchingExecutor.stitchingStatistics.setEmptyRowsCols(dir, missingRowOrCol);
 
