@@ -88,6 +88,7 @@ public class OptimizationRepeatability<T> {
   private double userDefinedVerticalOverlap;
   private double userDefinedOverlapError;
   private StitchingAppParams params;
+  private StitchingStatistics stitchingStatistics;
 
   private List<OptimizationRepeatabilityWorker<T>> optimizationWorkers;
   private List<Thread> executionThreads;
@@ -100,8 +101,9 @@ public class OptimizationRepeatability<T> {
    * @param grid the grid of image tiles
    * @param progressBar a progress bar (or null if no progress bar is needed)
    * @param params the stitching app parameters
+   * @param stitchingStatistics the statistics file
    */
-  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params)
+  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params, StitchingStatistics stitchingStatistics)
   {
     this.grid = grid;    
     this.progressBar = progressBar;
@@ -114,7 +116,7 @@ public class OptimizationRepeatability<T> {
 
 
     this.isUserDefinedRepeatability = this.userDefinedRepeatability != 0;
-
+    this.stitchingStatistics = stitchingStatistics;
     this.isCancelled = false;
   }
 
@@ -294,7 +296,7 @@ public class OptimizationRepeatability<T> {
     // get the overlap for the current direction
     double overlap = getOverlap(dir, dispValue, percOverlapError);
 
-    StitchingExecutor.stitchingStatistics.setComputedOverlap(dir, overlap);
+    this.stitchingStatistics.setComputedOverlap(dir, overlap);
 
     // check that an overlap value has been computed
     if(Double.isNaN(overlap)) {
@@ -304,14 +306,14 @@ public class OptimizationRepeatability<T> {
     }
     // limit the overlap to reasonable values
     overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
-    StitchingExecutor.stitchingStatistics.setOverlap(dir, overlap);
+    this.stitchingStatistics.setOverlap(dir, overlap);
     Log.msg(LogType.VERBOSE, "Computed overlap: " + overlap);
 
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
     HashSet<ImageTile<T>> validTranslations;
-    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap, this.params.getAdvancedParams().getNumCPUThreads());
+    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap, this.params.getAdvancedParams().getNumCPUThreads(), this.stitchingStatistics);
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
@@ -332,8 +334,8 @@ public class OptimizationRepeatability<T> {
       if(this.isUserDefinedRepeatability)
         r = this.userDefinedRepeatability;
 
-      StitchingExecutor.stitchingStatistics.setRepeatability(dir, r);
-      StitchingExecutor.stitchingStatistics.setNumValidTilesAfterFilter(dir, 0);
+      this.stitchingStatistics.setRepeatability(dir, r);
+      this.stitchingStatistics.setNumValidTilesAfterFilter(dir, 0);
 
       Log.msg(LogType.MANDATORY, "Please check the statistics file for more details.");
 
@@ -381,8 +383,8 @@ public class OptimizationRepeatability<T> {
                                    + ").");
       }
     }
-    
-    StitchingExecutor.stitchingStatistics.setRepeatability(dir, repeatability);
+
+    this.stitchingStatistics.setRepeatability(dir, repeatability);
 
 
     Log.msg(LogType.HELPFUL, "Repeatability for " + dir.name() + ": " + repeatability);
@@ -401,8 +403,8 @@ public class OptimizationRepeatability<T> {
         break;
 
     }
-       
-    StitchingExecutor.stitchingStatistics
+
+    this.stitchingStatistics
     .setNumValidTilesAfterFilter(dir, validTranslations.size());
 
     if (validTranslations.size() == 0) {
@@ -434,11 +436,11 @@ public class OptimizationRepeatability<T> {
     List<Integer> missingRowOrCol = null;
     switch (dir) {
       case North:
-        StitchingExecutor.stitchingStatistics.setNumRowsCols(dir, grid.getExtentHeight());
+        this.stitchingStatistics.setNumRowsCols(dir, grid.getExtentHeight());
         missingRowOrCol = OptimizationUtils.fixInvalidTranslationsPerRow(this.grid, dir, OP_TYPE.MEDIAN);
         break;
       case West:
-        StitchingExecutor.stitchingStatistics.setNumRowsCols(dir, grid.getExtentWidth());
+        this.stitchingStatistics.setNumRowsCols(dir, grid.getExtentWidth());
         missingRowOrCol = OptimizationUtils.fixInvalidTranslationsPerCol(this.grid, dir, OP_TYPE.MEDIAN);
         break;
       default:
@@ -446,7 +448,7 @@ public class OptimizationRepeatability<T> {
     }
 
 
-    StitchingExecutor.stitchingStatistics.setEmptyRowsCols(dir, missingRowOrCol);
+    this.stitchingStatistics.setEmptyRowsCols(dir, missingRowOrCol);
 
     if (missingRowOrCol != null && missingRowOrCol.size() > 0) {
       

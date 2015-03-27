@@ -116,7 +116,7 @@ public class StitchingExecutor implements Runnable {
   /**
    * The stitching statistics for stitching
    */
-  public static StitchingStatistics stitchingStatistics = null;
+  public StitchingStatistics stitchingStatistics;
 
   private static final String outOfMemoryMessage =
       "Error: Insufficient memory to execute stitching.\n" + "Please increase JVM maximum memory.";
@@ -166,6 +166,7 @@ public class StitchingExecutor implements Runnable {
     this.progressLabel = null;
     this.isCancelled = false;
     this.imageExporter = null;
+    stitchingStatistics = new StitchingStatistics(this.params);
   }
 
   @Override
@@ -381,9 +382,8 @@ public class StitchingExecutor implements Runnable {
     }
 
     Log.msg(LogType.MANDATORY, "STITCHING BEGINS!");
-    stitchingStatistics = new StitchingStatistics(this.params);
-    stitchingStatistics.setExecutionType(this.params.getAdvancedParams().getProgramType());
-    stitchingStatistics.startEndToEndTimer();
+    this.stitchingStatistics.setExecutionType(this.params.getAdvancedParams().getProgramType());
+    this.stitchingStatistics.startEndToEndTimer();
 
     if (this.params.getAdvancedParams().getNumFFTPeaks() != 0)
       Stitching.NUM_PEAKS = this.params.getAdvancedParams().getNumFFTPeaks();
@@ -403,8 +403,8 @@ public class StitchingExecutor implements Runnable {
           return;
         }
 
-        StitchingStatistics.setCurrentTimeSlice(timeSlice);
-        stitchingStatistics.addTimeSlice(timeSlice);                  
+        this.stitchingStatistics.setCurrentTimeSlice(timeSlice);
+        this.stitchingStatistics.addTimeSlice(timeSlice);
 
 
         if (this.params.getInputParams().isTimeSlicesEnabled())
@@ -420,9 +420,9 @@ public class StitchingExecutor implements Runnable {
 
         checkMemoryRequirementsForPixelData(grid.getSubGridTile(0, 0));
 
-        stitchingStatistics.startTimer(RunTimers.TotalStitchingTime);
+        this.stitchingStatistics.startTimer(RunTimers.TotalStitchingTime);
         initProgressBar();
-        stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
+        this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
         try {
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
@@ -438,18 +438,18 @@ public class StitchingExecutor implements Runnable {
           continue;
         }
 
-        stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
+        this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
 
         boolean optimizationSuccessful = optimizeAndComposeGrid(this.params, grid, this.progressBar, assembleFromMeta);
 
-        stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
+        this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
 
         if (this.params.getInputParams().isTimeSlicesEnabled())
         {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
-                  + stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + " time slice: "
+                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + " time slice: "
                   + timeSlice + " of " + maxTimeSlice);
         }
         else
@@ -457,7 +457,7 @@ public class StitchingExecutor implements Runnable {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
-                  + stitchingStatistics.getDuration(RunTimers.TotalStitchingTime));
+                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime));
         }
 
         // Always create the output directory even if optimization was not successful
@@ -477,8 +477,8 @@ public class StitchingExecutor implements Runnable {
       }
     }
 
-    stitchingStatistics.stopEndToEndTimer();
-    stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
+    this.stitchingStatistics.stopEndToEndTimer();
+    this.stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
 
     this.executor.cleanup();
   }
@@ -512,8 +512,8 @@ public class StitchingExecutor implements Runnable {
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Computing optimization");
 
 
-    stitchingStatistics.startTimer(RunTimers.GlobalOptimizationTime);
-    this.globalOptimization = new GlobalOptimization<T>(grid, progressBar, params);
+    this.stitchingStatistics.startTimer(RunTimers.GlobalOptimizationTime);
+    this.globalOptimization = new GlobalOptimization<T>(grid, progressBar, params, this.stitchingStatistics);
     Thread optimizationThread = new Thread(this.globalOptimization);
     optimizationThread.start();
 
@@ -523,12 +523,12 @@ public class StitchingExecutor implements Runnable {
       return false;
     }
 
-    stitchingStatistics.stopTimer(RunTimers.GlobalOptimizationTime);
+    this.stitchingStatistics.stopTimer(RunTimers.GlobalOptimizationTime);
 
     Log.msg(
         LogType.HELPFUL,
         "Complete Global Optimization in "
-            + stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime));
+            + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime));
 
     if (this.globalOptimization.isExceptionThrown())
     {
@@ -537,7 +537,7 @@ public class StitchingExecutor implements Runnable {
 
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Composing tiles");
 
-    stitchingStatistics.startTimer(RunTimers.GlobalPositionTime);
+    this.stitchingStatistics.startTimer(RunTimers.GlobalPositionTime);
     Thread t = new Thread(new Runnable() {
 
       @Override
@@ -554,10 +554,10 @@ public class StitchingExecutor implements Runnable {
       return false;
     }
 
-    stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
+    this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 
     Log.msg(LogType.HELPFUL,
-        "Complete MSP in " + stitchingStatistics.getDuration(RunTimers.GlobalPositionTime));
+        "Complete MSP in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime));
 
     StitchingGuiUtils.updateProgressBarCompleted(progressBar);
 
@@ -637,7 +637,7 @@ public class StitchingExecutor implements Runnable {
     Log.msg(LogType.MANDATORY, "Writing full image to: " + imageFile.getAbsolutePath()
         + "  Width: " + width + " Height: " + height);
 
-    stitchingStatistics.startTimer(RunTimers.OutputFullImageTileTime);
+    this.stitchingStatistics.startTimer(RunTimers.OutputFullImageTileTime);
     Blender blend = null;
 
     try {
@@ -666,7 +666,7 @@ public class StitchingExecutor implements Runnable {
         img = imageExporter.exportImage(imageFile);
 
 
-        stitchingStatistics.stopTimer(RunTimers.OutputFullImageTileTime);
+        this.stitchingStatistics.stopTimer(RunTimers.OutputFullImageTileTime);
 
         Log.msg(LogType.MANDATORY, "Finished saving full image: " + imageFile.getAbsolutePath());
       } else {

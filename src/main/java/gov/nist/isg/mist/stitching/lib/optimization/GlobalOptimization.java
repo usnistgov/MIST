@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.stitching.lib.optimization;
 
+import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -89,6 +90,7 @@ public class GlobalOptimization<T> implements Runnable {
   private StitchingAppParams params;
   private OptimizationRepeatability<T> optimizationRepeatability;
   private boolean exceptionThrown;
+  private StitchingStatistics stitchingStatistics;
 
   /**
    * Constructs a global optimization execution for a grid of tiles
@@ -96,14 +98,16 @@ public class GlobalOptimization<T> implements Runnable {
    * @param grid the grid of tiles
    * @param progressBar the progress bar (null if none)
    * @param params the stitching parameters
+   * @param stitchingStatistics the stitching statistics
    */
   public GlobalOptimization(TileGrid<ImageTile<T>> grid, final JProgressBar progressBar,
-      StitchingAppParams params) {
+      StitchingAppParams params, StitchingStatistics stitchingStatistics) {
     this.grid = grid;
     this.progressBar = progressBar;
     this.params = params;
     this.optimizationRepeatability = null;
     this.exceptionThrown = false;
+    this.stitchingStatistics = stitchingStatistics;
   }
 
   @Override
@@ -117,7 +121,7 @@ public class GlobalOptimization<T> implements Runnable {
       case COMPUTEREPEATABILITY:
       case DEFAULT:
         this.optimizationRepeatability =
-            new OptimizationRepeatability<T>(this.grid, this.progressBar, this.params);
+            new OptimizationRepeatability<T>(this.grid, this.progressBar, this.params, this.stitchingStatistics);
         try {
           this.optimizationRepeatability.computeGlobalOptimizationRepeatablity();
         } catch (GlobalOptimizationException e) {

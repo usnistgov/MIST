@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.stitching.lib.optimization;
 
+import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
 import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.common.MinMaxElement;
@@ -760,10 +761,11 @@ public class OptimizationUtils {
    * @param percOverlapError the percent overlap of error
    * @param overlap the overlap between tiles
    * @param numStdDevThreads the number of standard deviation threads used for filtering
+   * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
-      Direction dir, double percOverlapError, double overlap, int numStdDevThreads) throws FileNotFoundException  {
+      Direction dir, double percOverlapError, double overlap, int numStdDevThreads, StitchingStatistics stitchingStatistics) throws FileNotFoundException  {
     Log.msg(LogType.INFO, "Filtering translations:");
     DisplacementValue dispValue = null;
     switch (dir) {
@@ -777,9 +779,9 @@ public class OptimizationUtils {
         break;
     }
     
-    HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid);
+    HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
        
-    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir, overlap, percOverlapError, numStdDevThreads);
+    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir, overlap, percOverlapError, numStdDevThreads, stitchingStatistics);
     
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 
@@ -788,7 +790,7 @@ public class OptimizationUtils {
 
   
   private static <T> HashSet<ImageTile<T>> filterTilesFromOverlapAndCorrelation(Direction dir, DisplacementValue dispValue, double overlap, double
-      percOverlapError, TileGrid<ImageTile<T>>grid) throws FileNotFoundException
+      percOverlapError, TileGrid<ImageTile<T>>grid, StitchingStatistics stitchingStatistics) throws FileNotFoundException
   {    
     double minCorrelation = CorrelationThreshold;
 
@@ -822,8 +824,8 @@ public class OptimizationUtils {
 
     }
 
-    StitchingExecutor.stitchingStatistics.setMinFilterThreshold(dir, t_min);
-    StitchingExecutor.stitchingStatistics.setMaxFilterThreshold(dir, t_max);
+    stitchingStatistics.setMinFilterThreshold(dir, t_min);
+    stitchingStatistics.setMaxFilterThreshold(dir, t_max);
 
     Log.msg(LogType.VERBOSE, "min,max threshold: " + t_min + "," + t_max);
     
@@ -876,7 +878,7 @@ public class OptimizationUtils {
   }
   
   private static <T> HashSet<ImageTile<T>> filterTilesFromStdDev(HashSet<ImageTile<T>> validTiles, 
-      TileGrid<ImageTile<T>>grid, Direction dir, double overlap, double percOverlapError, int numThreads)
+      TileGrid<ImageTile<T>>grid, Direction dir, double overlap, double percOverlapError, int numThreads, StitchingStatistics stitchingStatistics)
   {
     
     Log.msg(LogType.VERBOSE, "Filtering by standard deviation with " + validTiles.size()
@@ -982,7 +984,7 @@ public class OptimizationUtils {
 
     double stdDevThreshold = StatisticUtils.median(stdDevValues);
 
-    StitchingExecutor.stitchingStatistics.setStdDevThreshold(dir, stdDevThreshold);
+    stitchingStatistics.setStdDevThreshold(dir, stdDevThreshold);
 
     List<ImageTile<T>> removedTiles = new ArrayList<ImageTile<T>>();
     for (ImageTile<T> tile : validTiles) {
