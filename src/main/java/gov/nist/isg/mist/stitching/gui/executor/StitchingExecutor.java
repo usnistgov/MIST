@@ -115,7 +115,7 @@ public class StitchingExecutor implements Runnable {
   /**
    * The stitching statistics for stitching
    */
-  public StitchingStatistics stitchingStatistics;
+  private StitchingStatistics stitchingStatistics;
 
   private static final String outOfMemoryMessage =
       "Error: Insufficient memory to execute stitching.\n" + "Please increase JVM maximum memory.";
@@ -165,7 +165,7 @@ public class StitchingExecutor implements Runnable {
     this.progressLabel = null;
     this.isCancelled = false;
     this.imageExporter = null;
-    stitchingStatistics = new StitchingStatistics(this.params);
+    this.stitchingStatistics = new StitchingStatistics(this.params);
   }
 
   @Override
