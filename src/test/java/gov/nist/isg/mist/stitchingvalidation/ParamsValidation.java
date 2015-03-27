@@ -3,6 +3,7 @@ package gov.nist.isg.mist.stitchingvalidation;
 import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -98,7 +99,12 @@ public class ParamsValidation {
         if (!f.exists()) {
           System.out.println("Nb Peaks: " + nbPeaks);
           StitchingExecutor executor = new StitchingExecutor(params);
-          executor.runStitching(false, false);
+          try {
+            executor.runStitching(false, false, false);
+          } catch(StitchingException e )
+          {
+            Log.msg(LogType.MANDATORY, e.getMessage());
+          }
         }
 
 

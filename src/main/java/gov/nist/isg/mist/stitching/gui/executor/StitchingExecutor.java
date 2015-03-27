@@ -30,6 +30,7 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import ij.ImagePlus;
 import ij.macro.Interpreter;
 import ij.plugin.frame.Recorder;
@@ -171,30 +172,34 @@ public class StitchingExecutor implements Runnable {
   @Override
   public void run() {
 
-    switch (this.executionType) {
-      case RunStitching:
-        runStitchingWithGUI();
-        break;
-      case RunStitchingMacro:
-        runStitchingWithMacro();
-        break;
-      case RunStitchingFromMeta:
-        runStitchingFromMeta();
-        break;
-      case PreviewNoOverlap:
+    try {
+      switch (this.executionType) {
+        case RunStitching:
+          runStitchingWithGUI();
+          break;
+        case RunStitchingMacro:
+          runStitchingWithMacro();
+          break;
+        case RunStitchingFromMeta:
+          runStitchingFromMeta();
+          break;
+        case PreviewNoOverlap:
           try {
-              previewNoOverlap();
-          } catch (FileNotFoundException e)
-          {
-              Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage() + " Cancelling preview.");
+            previewNoOverlap();
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage() + " Cancelling preview.");
           }
-        break;
-      case LoadParams:
-      case RunStitchingFromMetaMacro:
-      case SaveParams:
-      default:
-        break;
+          break;
+        case LoadParams:
+        case RunStitchingFromMetaMacro:
+        case SaveParams:
+        default:
+          break;
 
+      }
+    } catch(StitchingException e)
+    {
+      Log.msg(LogType.MANDATORY, e.getMessage());
     }
 
     if (this.stitchingExecutionFrame != null)
@@ -239,7 +244,7 @@ public class StitchingExecutor implements Runnable {
   }
 
 
-  private void runStitchingWithGUI() {
+  private void runStitchingWithGUI() throws StitchingException {
     Log.msg(LogType.MANDATORY, "Checking args for stitching:");
 
     if (this.stitchingGUI.checkAndParseGUI(this.params)) {
@@ -249,28 +254,28 @@ public class StitchingExecutor implements Runnable {
         this.params.recordMacro();
       }
 
-      runStitching(false, true);
+      runStitching(false, true, false);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
               + "Invalid values are highlighted in red");
     }
   }
 
-  private void runStitchingWithMacro() {
+  private void runStitchingWithMacro() throws StitchingException {
     this.params.loadMacro();
 
     if (this.params.checkParams()) {
       if (this.params.getInputParams().isAssembleFromMetadata())
         runStitchingFromMeta();
       else
-        runStitching(false, true);
+        runStitching(false, true, false);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
           + "Check the console for information. (increase logging " + "level for more details)");
     }
   }
 
-  private void runStitchingFromMeta() {
+  private void runStitchingFromMeta() throws StitchingException {
     Log.msg(LogType.MANDATORY, "Checking args for stitching:");
 
     if (this.stitchingGUI == null || this.stitchingGUI.checkAndParseGUI(this.params)) {
@@ -289,7 +294,7 @@ public class StitchingExecutor implements Runnable {
 
   }
 
-  private void assembleFromMeta() {
+  private void assembleFromMeta() throws StitchingException {
 
     this.params.getOutputParams().setOutputMeta(false);       
 
@@ -301,7 +306,7 @@ public class StitchingExecutor implements Runnable {
       return;
     }
 
-    runStitching(true, true);       
+    runStitching(true, true, false);
   }
 
   /**
@@ -309,9 +314,10 @@ public class StitchingExecutor implements Runnable {
    * 
    * @param assembleFromMeta whether to assemble from meta data or not
    * @param displayGui whether to display any gui or not
+   * @param stopExecutionIfFileNotFound sets whether to throws a stitching exception if a file not found exception is found
    */
   @SuppressWarnings("unchecked")
-  public <T> void runStitching(boolean assembleFromMeta, boolean displayGui) {
+  public <T> void runStitching(boolean assembleFromMeta, boolean displayGui, boolean stopExecutionIfFileNotFound) throws StitchingException {
 
     if (GraphicsEnvironment.isHeadless() || Interpreter.isBatchMode())
       displayGui = false;
@@ -427,14 +433,19 @@ public class StitchingExecutor implements Runnable {
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
-          return;              
+          throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage);
         } catch (CudaException e) {
           showError("CUDA exception thrown: " + e.getMessage());
-          return;
+          throw new StitchingException("CUDA exception thrown: " + e.getMessage());
         }
         catch (FileNotFoundException e) {
+
           Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: " + timeSlice);
-          continue;
+
+          if (stopExecutionIfFileNotFound)
+            throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice);
+          else
+            continue;
         }
 
         this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
@@ -468,7 +479,7 @@ public class StitchingExecutor implements Runnable {
                 outputGrid(grid, this.progressBar, timeSlice);
             } catch (FileNotFoundException e)
             {
-                Log.msg(LogType.MANDATORY, "Unable find file: " + e.getMessage() + ". Cancelling output grid.");
+                Log.msg(LogType.MANDATORY, "Unable find file: " + e.getMessage() + ". Cancelling writing full image.");
             }
         }
 
