@@ -860,7 +860,12 @@ public class StitchingStatistics {
   }
 
 
-  private void runErrorChecks(FileWriter writer, int timeSlice) throws IOException
+  /**
+   * Runs error checks on the statistics file
+   * @param timeSlice the timeslice you want to check
+   * @return the string of errors
+   */
+  public String runErrorChecks(int timeSlice)
   {
     String newLine = "\n";
 
@@ -868,7 +873,7 @@ public class StitchingStatistics {
 
     // Check no valid translations
     for (Direction dir : Direction.values()) {
-      int numValid = getNumValidTilesAfterFilter(Direction.North, timeSlice);
+      int numValid = getNumValidTilesAfterFilter(dir, timeSlice);
       if (numValid == 0)
       {
         updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
@@ -904,14 +909,15 @@ public class StitchingStatistics {
       }
     }
 
-    writer.write("Error report: " + getErrorReportStatus(timeSlice) + newLine);
-    writer.write(errorMessage);
+    String output = "Error report: " + getErrorReportStatus(timeSlice) + newLine;
+    output += errorMessage;
 
     if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED)
     {
-      writer.write(DEVELOPER_MESSAGE + newLine);
+      output += DEVELOPER_MESSAGE + newLine;
     }
 
+    return output;
   }
 
 
@@ -922,8 +928,9 @@ public class StitchingStatistics {
    */
   public void writeStatistics(File file) {
     Log.msg(LogType.MANDATORY, "Saving Statistics to \"" + file.getAbsolutePath() + "\"");
-    String newLine = "\n";    
-    
+    String newLine = "\n";
+    DecimalFormat df = new DecimalFormat("#.#");
+
     try {
       FileWriter writer = new FileWriter(file);
 
@@ -1006,7 +1013,7 @@ public class StitchingStatistics {
             }
 
             writer.write(dir + " valid tiles after filter: "
-                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + newLine);
+                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + " (" + df.format(getNumValidTilesAfterFilter(dir, timeSlice)/totalTiles*100.0) + "%)" + newLine);
           }
 
           if (hasMinFilterThreshold(dir, timeSlice))
@@ -1026,13 +1033,12 @@ public class StitchingStatistics {
             writer.write(dir + " missing row/col: "
                     + Arrays.toString(emptyRowColsLst.toArray()) + newLine);
 
-            DecimalFormat df = new DecimalFormat("#.#");
             writer.write(dir + " percentage missing row/col: " + df.format(emptyRowColsLst.size() / getNumRowCols(dir, timeSlice) * 100.0) + "%" + newLine);
           }
           writer.write(newLine);
         }
 
-        runErrorChecks(writer, timeSlice);
+        writer.write(runErrorChecks(timeSlice));
 
         writer.write(newLine);
       }
