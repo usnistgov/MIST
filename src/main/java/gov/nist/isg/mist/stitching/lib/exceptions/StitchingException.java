@@ -42,5 +42,7 @@ public class StitchingException extends Exception {
   public StitchingException(String message) {
     super(message);
   }
-  
+
+  public StitchingException(String message, Throwable cause) { super(message, cause); }
+
 }

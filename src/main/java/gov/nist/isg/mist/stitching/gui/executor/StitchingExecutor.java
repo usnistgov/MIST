@@ -433,17 +433,17 @@ public class StitchingExecutor implements Runnable {
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
-          throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage);
+          throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage, e);
         } catch (CudaException e) {
           showError("CUDA exception thrown: " + e.getMessage());
-          throw new StitchingException("CUDA exception thrown: " + e.getMessage());
+          throw new StitchingException("CUDA exception thrown: " + e.getMessage(), e);
         }
         catch (FileNotFoundException e) {
 
           Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: " + timeSlice);
 
           if (stopExecutionIfFileNotFound)
-            throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice);
+            throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice, e);
           else
             continue;
         }
