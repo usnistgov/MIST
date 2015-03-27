@@ -253,7 +253,7 @@ public class StitchingExecutor implements Runnable {
       runStitching(false, true);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
-          + "Invalid values are highlighted in red");
+              + "Invalid values are highlighted in red");
     }
   }
 
@@ -635,7 +635,7 @@ public class StitchingExecutor implements Runnable {
     int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
     Log.msg(LogType.MANDATORY, "Writing full image to: " + imageFile.getAbsolutePath()
-        + "  Width: " + width + " Height: " + height);
+            + "  Width: " + width + " Height: " + height);
 
     this.stitchingStatistics.startTimer(RunTimers.OutputFullImageTileTime);
     Blender blend = null;
@@ -892,7 +892,16 @@ public class StitchingExecutor implements Runnable {
     }
   }
 
-  
+  /**
+   * Gets the stitching statistics associated with this stitching executor
+   * @return the stitching statistics
+   */
+  public StitchingStatistics getStitchingStatistics()
+  {
+    return this.stitchingStatistics;
+  }
+
+
   private static void showError(String details) {
     Log.msg(LogType.MANDATORY, details);
 
@@ -901,5 +910,7 @@ public class StitchingExecutor implements Runnable {
           + "Check log for more details.", "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
+
+
 
 }
