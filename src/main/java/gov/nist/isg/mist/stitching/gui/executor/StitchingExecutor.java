@@ -69,7 +69,6 @@ import java.util.List;
  * 
  * @author Tim Blattner
  * @version 1.0
- * @param <T> 
  * 
  */
 public class StitchingExecutor implements Runnable {
