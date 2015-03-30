@@ -120,11 +120,12 @@ public class GPUStitchingThreadExecutor<T> {
     this.producers = new ArrayList<TileProducer<T>>();
     this.bkQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     this.ccfQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
-    double gWidth = grid.getExtentWidth();
-    double gHeight = grid.getExtentHeight();
-
+    
     // 20 is added to reduce the amount of throttling
-    int memoryPoolSize = (int) Math.ceil(Math.sqrt(gWidth * gWidth + gHeight * gHeight)) + 20;
+    int gWidth = grid.getExtentWidth();
+    int gHeight = grid.getExtentHeight();
+
+    int memoryPoolSize = Math.min(gWidth, gHeight) + 2;
 
     Log.msg(LogType.MANDATORY, "Memory pool size: " + memoryPoolSize);
 

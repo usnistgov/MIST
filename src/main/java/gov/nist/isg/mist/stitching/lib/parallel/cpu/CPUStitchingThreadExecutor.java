@@ -95,10 +95,10 @@ public class CPUStitchingThreadExecutor<T> {
     this.bkQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     this.workQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     
-    double gWidth = grid.getExtentWidth();
-    double gHeight = grid.getExtentHeight();
+    int gWidth = grid.getExtentWidth();
+    int gHeight = grid.getExtentHeight();
 
-    int memoryPoolSize = (int) Math.ceil(Math.sqrt(gWidth * gWidth + gHeight * gHeight)) + 2;
+    int memoryPoolSize = Math.min(gWidth, gHeight) + 2;
 
     Log.msg(LogType.MANDATORY, "memory pool size: " + memoryPoolSize);
 
