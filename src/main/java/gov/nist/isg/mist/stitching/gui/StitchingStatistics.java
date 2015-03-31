@@ -60,6 +60,8 @@ public class StitchingStatistics {
   private static final String ERROR_REPORT_MESSAGE = "This could indicate calibration problems or problematic image data.";
   private static final String ERROR_OVERLAP_MESSAGE = "Clipped value can be adjusted using the percent overlap uncertainty or you can specify the overlap";
   private static final String DEVELOPER_MESSAGE = "The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or https://github.com/NIST-ISG/MIST/issues.";
+  private static final double MISSING_ROW_COL_WARNING_THRESHOLD = 75.0; // the percentage missing rows or columns required to generate Error Report warning
+
   /**
    * The version number for the stitching statistics
    */
@@ -900,9 +902,9 @@ public class StitchingStatistics {
       List<Integer> emptyRowColsLst = getEmptyRowCols(dir, timeSlice);
 
       if (hasEmptyRowCols(dir, timeSlice)) {
-        double percMissingRowCol = emptyRowColsLst.size() / getNumRowCols(dir, timeSlice) * 100.0;
+        double percMissingRowCol = 100.0 * emptyRowColsLst.size() / getNumRowCols(dir, timeSlice);
 
-        if (percMissingRowCol > 80.0) {
+        if (percMissingRowCol > MISSING_ROW_COL_WARNING_THRESHOLD) {
           updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
           errorMessage += "- Percentage missing " + dir + " rows/cols is high." + newLine + ERROR_REPORT_MESSAGE + newLine;
         }
@@ -954,7 +956,7 @@ public class StitchingStatistics {
       if (this.executionType != null) {
         switch (this.executionType) {
           case AUTO:
-            writer.write("Error in selecting execution type" + newLine);
+            //writer.write("Error in selecting execution type" + newLine);
             break;
           case CUDA:
             List<CudaDeviceParam> cudaDevices = this.runParams.getAdvancedParams().getCudaDevices();
@@ -1013,7 +1015,7 @@ public class StitchingStatistics {
             }
 
             writer.write(dir + " valid tiles after filter: "
-                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + " (" + df.format(getNumValidTilesAfterFilter(dir, timeSlice)/totalTiles*100.0) + "%)" + newLine);
+                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + " (" + df.format(100.0*getNumValidTilesAfterFilter(dir, timeSlice)/totalTiles) + "%)" + newLine);
           }
 
           if (hasMinFilterThreshold(dir, timeSlice))
@@ -1033,7 +1035,8 @@ public class StitchingStatistics {
             writer.write(dir + " missing row/col: "
                     + Arrays.toString(emptyRowColsLst.toArray()) + newLine);
 
-            writer.write(dir + " percentage missing row/col: " + df.format(emptyRowColsLst.size() / getNumRowCols(dir, timeSlice) * 100.0) + "%" + newLine);
+            writer.write(dir + " percentage missing row/col: " + df.format(
+                100.0 * emptyRowColsLst.size() / getNumRowCols(dir, timeSlice)) + "%" + newLine);
           }
           writer.write(newLine);
         }

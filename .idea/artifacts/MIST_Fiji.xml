@@ -4,8 +4,8 @@
     <root id="root">
       <element id="directory" name="plugins">
         <element id="archive" name="MIST_.jar">
-          <element id="module-output" name="MIST" />
           <element id="file-copy" path="$PROJECT_DIR$/plugins.config" />
+          <element id="module-output" name="MIST_" />
         </element>
       </element>
       <element id="directory" name="jars">
