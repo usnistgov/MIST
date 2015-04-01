@@ -185,7 +185,7 @@ public class GPUStitchingThreadExecutor<T> {
       TileGPUPciamWorker<T> pciamWorker;
       pciamWorker =
           new TileGPUPciamWorker<T>(this.pciamQueues[i], this.bkQueue, this.ccfQueue, 
-              this.memories[i], initTile, devIDs[i], i, this.contexts[i], contexts, devIDs);
+              this.memories[i], initTile.getWidth(), initTile.getHeight(), devIDs[i], i, this.contexts[i], contexts, devIDs);
 
      
       this.fftWorkers.add(fftWorker);

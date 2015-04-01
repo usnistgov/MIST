@@ -30,7 +30,6 @@ package gov.nist.isg.mist.stitching.lib.optimization;
 
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.common.MinMaxElement;
@@ -39,8 +38,14 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
+import gov.nist.isg.mist.stitching.lib.memorypool.ImageAllocator;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.Direction;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.DisplacementValue;
+import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
+import gov.nist.isg.mist.stitching.lib.optimization.workflow.tasks.OptimizationRepeatabilityWorker;
+import gov.nist.isg.mist.stitching.lib.optimization.workflow.tasks.BookKeeper;
+import gov.nist.isg.mist.stitching.lib.optimization.workflow.tasks.TileProducer;
 import gov.nist.isg.mist.stitching.lib.statistics.StatisticUtils.OP_TYPE;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
@@ -91,6 +96,8 @@ public class OptimizationRepeatability<T> {
   private StitchingStatistics stitchingStatistics;
 
   private List<OptimizationRepeatabilityWorker<T>> optimizationWorkers;
+  private TileProducer<T> producer;
+  private BookKeeper<T> bk;
   private List<Thread> executionThreads;
   private volatile boolean isCancelled;
 
@@ -178,6 +185,7 @@ public class OptimizationRepeatability<T> {
         for (int c = 0; c < this.grid.getExtentWidth(); c++) {
           this.grid.getSubGridTile(r, c).resetPixelReleaseCount(this.grid.getExtentWidth(),
               this.grid.getExtentHeight(), this.grid.getStartRow(), this.grid.getStartCol());
+          this.grid.getSubGridTile(r, c).releasePixels();
         }
       }
     }
@@ -190,29 +198,52 @@ public class OptimizationRepeatability<T> {
     TileGridTraverser<ImageTile<T>> traverser =
         TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, this.grid);
 
-    BlockingQueue<ImageTile<T>> queue = new ArrayBlockingQueue<ImageTile<T>>(this.grid.getSubGridSize());
 
-    for (ImageTile<T> tile : traverser) {
-      queue.add(tile);
+
+    DynamicMemoryPool<short[]> memoryPool = null;
+
+    if (ImageTile.freePixelData())
+    {
+      ImageTile<?> initTile = grid.getSubGridTile(0, 0);
+      if (!initTile.isTileRead())
+        initTile.readTile();
+      int memoryPoolSize = Math.min(grid.getExtentWidth(), grid.getExtentHeight()) + 2 + numThreads;
+      memoryPool = new DynamicMemoryPool<short[]>(memoryPoolSize, false, new ImageAllocator(), initTile.getWidth(), initTile.getHeight());
+      initTile.releasePixels();
     }
 
+    BlockingQueue<OptimizationData<T>> tileQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
+    BlockingQueue<OptimizationData<T>> bkQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
+
+    this.producer = new TileProducer<T>(traverser, bkQueue, memoryPool);
+    this.bk = new BookKeeper<T>(bkQueue, tileQueue, memoryPool, grid);
+
     for (int i = 0; i < numThreads; i++) {
-      OptimizationRepeatabilityWorker<T> worker;
-      worker =
-          new OptimizationRepeatabilityWorker<T>(queue, this.grid, computedRepeatability, this.progressBar);
+      OptimizationRepeatabilityWorker<T> worker = new OptimizationRepeatabilityWorker<T>(tileQueue, bkQueue, this.grid, computedRepeatability, this.progressBar);
       this.optimizationWorkers.add(worker);
       this.executionThreads.add(new Thread(worker));
     }
 
+    Thread producer = new Thread(this.producer);
+    Thread bk = new Thread(this.bk);
+
+    producer.start();
+    bk.start();
+
     for (Thread thread : this.executionThreads)
       thread.start();
 
-    for (Thread thread : this.executionThreads) {
-      try {
+    try {
+      producer.join();
+      bk.join();
+
+      for (Thread thread : this.executionThreads) {
+
         thread.join();
-      } catch (InterruptedException e) {
-        Log.msg(LogType.MANDATORY, e.getMessage());
+
       }
+    } catch (InterruptedException e) {
+      Log.msg(LogType.MANDATORY, e.getMessage());
     }
 
   }
@@ -227,6 +258,12 @@ public class OptimizationRepeatability<T> {
         worker.cancelExecution();
     }
 
+    if (this.bk != null)
+      this.bk.cancel();
+
+    if (this.producer != null)
+      this.producer.cancel();
+
     if (this.executionThreads != null) {
       for (Thread t : this.executionThreads)
         try {
@@ -234,6 +271,8 @@ public class OptimizationRepeatability<T> {
         } catch (InterruptedException e) {
         }
     }
+
+
   }
 
 

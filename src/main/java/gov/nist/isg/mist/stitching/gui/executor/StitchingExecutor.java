@@ -672,6 +672,7 @@ public class StitchingExecutor implements Runnable {
       if (blend != null) {
         blend.init(width, height, initImg.getImagePlus());
 
+
         imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
         img = imageExporter.exportImage(imageFile);
 
@@ -686,6 +687,8 @@ public class StitchingExecutor implements Runnable {
 
     } catch (OutOfMemoryError e) {
       Log.msg(LogType.MANDATORY, "Error: Insufficient memory to save image.");
+      showError("Out of memory error: " + e.getMessage());
+
       return null;
     } catch (NegativeArraySizeException e) {
       Log.msg(LogType.MANDATORY, "Error: Java does not support sizes of size width*height > "
@@ -693,6 +696,7 @@ public class StitchingExecutor implements Runnable {
       return null;
     }
 
+    initImg.releasePixels();
 
     return img;
   }
@@ -734,6 +738,7 @@ public class StitchingExecutor implements Runnable {
         }
       } catch (OutOfMemoryError e) {
         Log.msg(LogType.MANDATORY, "Error: Insufficient memory to save image.");
+        showError(e.getMessage());
         return;
       } catch (NegativeArraySizeException e) {
         Log.msg(LogType.MANDATORY, "Error: Java does not support sizes of size width*height > "
@@ -746,16 +751,32 @@ public class StitchingExecutor implements Runnable {
           if ( this.isCancelled)
               return;
 
-        blend.init(width, height, initImg.getImagePlus());
+        try {
+          blend.init(width, height, initImg.getImagePlus());
 
-        imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
-        img = imageExporter.exportImage(null);
+          imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
+          img = imageExporter.exportImage(null);
+        } catch (OutOfMemoryError e)
+        {
+          Log.msg(LogType.MANDATORY, "Error: Insufficient memory for image.");
+          showError("Out of memory error: " + e.getMessage());
+          return;
+        }
+        catch (NegativeArraySizeException e) {
+          Log.msg(LogType.MANDATORY, "Error: Java does not support sizes of size width*height > "
+                  + Integer.MAX_VALUE);
+          showError("Error: Java does not support sizes of size width*height > "
+                  + Integer.MAX_VALUE);
+
+          return;
+        }
 
       } else {
         Log.msg(LogType.MANDATORY,
             "Error: Unable to initialize blending mode: " + this.params.getOutputParams().getBlendingMode());
       }
 
+      initImg.releasePixels();
     }
 
     if (img == null) {
@@ -857,7 +878,8 @@ public class StitchingExecutor implements Runnable {
       img = imageExporter.exportImageNoOverlap(null);
 
     } catch (OutOfMemoryError e) {
-      Log.msg(LogType.MANDATORY, "Error: Insufficient memory to save image.");
+      Log.msg(LogType.MANDATORY, "Error: Insufficient memory for image.");
+      showError("Out of memory error: " + e.getMessage());
       return;
     } catch (NegativeArraySizeException e) {
       Log.msg(LogType.MANDATORY, "Error: Java does not support sizes of size width*height > "
@@ -874,6 +896,7 @@ public class StitchingExecutor implements Runnable {
       img.show();
     }
 
+    initImg.releasePixels();
 
     StitchingGuiUtils.updateProgressBarCompleted(this.progressBar);
 

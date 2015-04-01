@@ -110,6 +110,8 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
         new GPUStitchingThreadExecutor<CUdeviceptr>(contexts.length, 12, tile, grid, contexts,
             devIDs);
 
+    tile.releasePixels();
+
     Log.msg(LogType.INFO, "Computing translations");
     TimeUtil.tick();
     executor.execute();

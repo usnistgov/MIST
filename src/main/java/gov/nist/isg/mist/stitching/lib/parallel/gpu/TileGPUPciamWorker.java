@@ -84,7 +84,8 @@ public class TileGPUPciamWorker<T> implements Runnable {
 
   private StitchingExecutor executor;
 
-  private ImageTile<T> initTile;
+  private int tileWidth;
+  private int tileHeight;
   
   private volatile boolean isCancelled;
 
@@ -96,7 +97,8 @@ public class TileGPUPciamWorker<T> implements Runnable {
    * @param bkQueue the bookkeeper queue
    * @param ccfQueue the CCF queue
    * @param memory the tile worker memory
-   * @param initTile the initial tile
+   * @param tileWidth the width of the image tile
+   * @param tileHeight the height of the image tile
    * @param devID the device ID associated with this thread
    * @param threadID the thread ID associated with this thread
    * @param context the context associated with this thread
@@ -106,7 +108,7 @@ public class TileGPUPciamWorker<T> implements Runnable {
   public TileGPUPciamWorker(PriorityBlockingQueue<StitchingTask<T>> workQueue,
       PriorityBlockingQueue<StitchingTask<T>> bkQueue, PriorityBlockingQueue<StitchingTask<T>> ccfQueue,
       TileWorkerMemory memory,
-      ImageTile<T> initTile, int devID, int threadID, CUcontext context, CUcontext[] peerContexts,
+      int tileWidth, int tileHeight, int devID, int threadID, CUcontext context, CUcontext[] peerContexts,
       int[] peerDevIds) {
     bkDone = false;
     this.memory = memory;
@@ -124,7 +126,8 @@ public class TileGPUPciamWorker<T> implements Runnable {
     this.devMem = new CUdeviceptr();
     this.peerContextMap = new HashMap<Integer, CUcontext>();
     this.isCancelled = false;
-    this.initTile = initTile;
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
   }
 
   @Override
@@ -137,7 +140,7 @@ public class TileGPUPciamWorker<T> implements Runnable {
     
     // Allocate phase correlation matrix memory
     CUdeviceptr pcm = new CUdeviceptr();
-    res = JCudaDriver.cuMemAlloc(pcm, this.initTile.getWidth() * this.initTile.getHeight() * Sizeof.DOUBLE);    
+    res = JCudaDriver.cuMemAlloc(pcm, this.tileWidth * this.tileHeight * Sizeof.DOUBLE);
     checkCudaOutOfMemoryError(res);
     
     this.stream = new CUstream();

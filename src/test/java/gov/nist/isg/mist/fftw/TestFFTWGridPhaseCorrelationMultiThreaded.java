@@ -111,6 +111,8 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
     CPUStitchingThreadExecutor<Pointer<Double>> executor =
         new CPUStitchingThreadExecutor<Pointer<Double>>(1, 8, tile, grid);
 
+    tile.releasePixels();
+
     Log.msg(LogType.INFO, "Computing translations");
     TimeUtil.tick();
     executor.execute();

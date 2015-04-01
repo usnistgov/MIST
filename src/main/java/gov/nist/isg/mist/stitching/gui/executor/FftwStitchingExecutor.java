@@ -105,6 +105,8 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     }
     
     this.fftwExecutor = new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid, progressBar);
+
+    tile.releasePixels();
     
     this.fftwExecutor.execute();
     

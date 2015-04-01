@@ -28,11 +28,11 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.memory;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
 import jcuda.driver.JCudaDriver;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import org.bridj.Pointer;
 
@@ -64,11 +64,11 @@ public class CudaTileWorkerMemory extends TileWorkerMemory {
 
   /**
    * Initializes the CUDA tile worker memory
-   * 
+   *
    * @param initTile the initial tile
    */
   public CudaTileWorkerMemory(ImageTile<?> initTile) {
-    super(initTile);
+    super(initTile.getWidth(), initTile.getHeight());
 
     this.fftIn = new CUdeviceptr();
     this.pcmIn = new CUdeviceptr();

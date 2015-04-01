@@ -48,12 +48,13 @@ public abstract class TileWorkerMemory {
 
   /**
    * Initializes tile worker memory
-   * 
-   * @param initTile a tile to initialize with
-   */
-  public TileWorkerMemory(ImageTile<?> initTile) {
-    this.width = initTile.getWidth();
-    this.height = initTile.getHeight();
+   *
+   * @param tileWidth the width of the image tile
+   * @param tileHeight the height of the image tile
+   * */
+  public TileWorkerMemory(int tileWidth, int tileHeight) {
+    this.width = tileWidth;
+    this.height = tileHeight;
   }
 
   /**

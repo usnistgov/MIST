@@ -104,6 +104,7 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(false);
+      params.getOutputParams().setDisplayStitching(false);
       for (StitchingType t : StitchingType.values())
       {
         if (t == StitchingType.AUTO)

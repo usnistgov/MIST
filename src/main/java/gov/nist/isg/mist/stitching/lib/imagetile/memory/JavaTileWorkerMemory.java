@@ -52,7 +52,7 @@ public class JavaTileWorkerMemory extends TileWorkerMemory {
    * @param initTile the initial tile
    */
   public JavaTileWorkerMemory(ImageTile<?> initTile) {
-    super(initTile);
+    super(initTile.getWidth(), initTile.getHeight());
 
     int fftWidth = JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2;
     int fftHeight = JavaImageTile.fftPlan.getFrequencySampling2().getCount();

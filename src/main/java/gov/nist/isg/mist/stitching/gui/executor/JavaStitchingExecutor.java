@@ -100,7 +100,11 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
         new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid,
             progressBar);
 
+    tile.releasePixels();
+
     StitchingGuiUtils.updateProgressBar(progressBar, false, null);
+
+
 
     this.executor.execute();        
   }

@@ -85,6 +85,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   private String fpath;
   private String fname;
 
+  private boolean pixelsLoaded;
   private short[] pixels;
   private int bitDepth;
 
@@ -162,6 +163,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    */
   public ImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
       int startCol, boolean read) {
+    this.pixelsLoaded = false;
     this.fpath = file.getAbsolutePath();
     this.fname = file.getName();
 
@@ -806,7 +808,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @return true if the tile has been read, otherwise false
    */
   public boolean isTileRead() {
-    return this.pixels != null;
+    return this.pixelsLoaded;
   }
 
   /**
@@ -846,7 +848,62 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
       ImageProcessor ip = image.getProcessor().convertToShort(false);
 
       this.pixels = (short[]) ip.getPixels();
+
     }
+
+    this.pixelsLoaded = true;
+  }
+
+  public void readTile(short[] memory) throws FileNotFoundException
+  {
+    // If we dont have to free pixel data, then no need to wait/use the memoryPool
+    if (!freePixelData)
+    {
+      readTile();
+      return;
+    }
+
+    // Get pixel data from memory pool. This will wait until memory is available (throttling things if multiple readers)
+    this.pixels = memory;
+
+    Log.msg(LogType.INFO, "Loading image: " + this.fpath);
+
+    ImagePlus image = new ImagePlus(this.fpath);
+
+    this.width = image.getWidth();
+    this.height = image.getHeight();
+
+    if (this.width == 0 || this.height == 0) {
+      Log.msg(LogType.MANDATORY, "Error: Unable to read file: " + this.fpath);
+      Log.msg(LogType.MANDATORY,
+              "Please ensure your grid parameters are correctly setup (origin, direction, width, height)");
+
+      throw new FileNotFoundException(this.fpath);
+    }
+
+    this.bitDepth = image.getBitDepth();
+
+    short[] tempBuffer;
+
+    if (image.getBitDepth() == 16) {
+      tempBuffer = (short[]) image.getProcessor().getPixels();
+    } else {
+
+      if (image.getBitDepth() > 16) {
+        Log.msg(Log.LogType.MANDATORY, "Warning: Down-Converting " + "Image To 16bit grayscale: "
+                + getFileName());
+      } else {
+        Log.msg(Log.LogType.INFO, "Up-Converting Image To 16bit grayscale: " + getFileName());
+      }
+
+      ImageProcessor ip = image.getProcessor().convertToShort(false);
+
+      tempBuffer = (short[]) ip.getPixels();
+    }
+
+    System.arraycopy(tempBuffer, 0, this.pixels, 0, this.width*this.height);
+
+    this.pixelsLoaded = true;
   }
 
   /**
@@ -882,8 +939,10 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * Releases pixels only if the freePixelData flag is enabled
    */
   public void releasePixels() {
-    if (freePixelData)
+    if (freePixelData) {
       this.pixels = null;
+      this.pixelsLoaded = false;
+    }
   }
 
   /**
@@ -891,6 +950,20 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    */
   public void releasePixelsNow() {
     this.pixels = null;
+    this.pixelsLoaded = false;
+  }
+
+
+  public void releasePixels(DynamicMemoryPool<short[]> memoryPool)
+  {
+    memoryPool.addMemory(this.pixels);
+    this.pixelsLoaded = false;
+  }
+
+  public void releasePixelsNow(DynamicMemoryPool<short[]> memoryPool)
+  {
+    memoryPool.addMemory(this.pixels);
+    this.pixelsLoaded = false;
   }
 
 
