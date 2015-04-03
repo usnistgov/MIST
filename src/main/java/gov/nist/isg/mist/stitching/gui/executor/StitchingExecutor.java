@@ -121,8 +121,6 @@ public class StitchingExecutor implements Runnable {
   private static final String outOfMemoryMessage =
       "Error: Insufficient memory to execute stitching.\n" + "Please increase JVM maximum memory.";
 
-  private static final long OneGB = 1073741824L;
-
 
   private StitchingGUIFrame stitchingGUI;
   private StitchingStatusFrame stitchingExecutionFrame;
@@ -434,6 +432,9 @@ public class StitchingExecutor implements Runnable {
           if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
             ImageTile.enableFreePixelData();
             if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
+
+              // TODO add in a check whether there would be enough memory to compute if the memory pool was reduced by the number of threads
+
               Log.msg(LogType.MANDATORY, "Insufficient memory to perform stitching, Skipping timeslice: " + timeSlice);
               Log.msg(LogType.MANDATORY, "Lowering the number of compute threads lowers the memory requirements");
               continue;

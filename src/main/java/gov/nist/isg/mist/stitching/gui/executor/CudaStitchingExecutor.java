@@ -227,6 +227,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
     }
 
+    // TODO add in check whether there is enough GPU memory to perform stitching
+
     // pad with 100MB
     requiredMemoryBytes += 100L*1024L*1024L;
 
