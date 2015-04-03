@@ -57,6 +57,7 @@ public abstract class TileWorkerMemory {
     this.height = tileHeight;
   }
 
+
   /**
    * @return the width
    */

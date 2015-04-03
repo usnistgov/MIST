@@ -49,7 +49,8 @@ public interface StitchingExecutorInterface<T> {
    * @param timeSlice the timeslice
    * @return the grid initialized using the stitching app params
    */
-  public abstract TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice);
+  public abstract TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
+      throws FileNotFoundException;
   
   /**
    * Cancels the execution
@@ -81,5 +82,15 @@ public interface StitchingExecutorInterface<T> {
    * Cleans-up / releases any resources used by the executor
    */
   public abstract void cleanup();
+
+
+  /**
+   * Checks to see if the JVM has enough memory to launch this grid
+   * @param grid the image tile grid
+   * @param numWorkers the number of worker threads
+   */
+  public abstract <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
+      throws FileNotFoundException;
+
   
 }

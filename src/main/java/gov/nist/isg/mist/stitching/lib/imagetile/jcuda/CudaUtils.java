@@ -490,4 +490,16 @@ public class CudaUtils {
     return sb.toString();
   }
 
+
+  public static long getFreeCudaMemory(CUcontext context)
+  {
+    JCudaDriver.cuCtxSetCurrent(context);
+    long [] free = new long[1];
+    long [] total = new long[1];
+    JCudaDriver.cuMemGetInfo(free, total);
+
+    return free[0];
+  }
+
+
 }

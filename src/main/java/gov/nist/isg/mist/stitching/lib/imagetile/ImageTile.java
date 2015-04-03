@@ -232,6 +232,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     this.pixels = null;
   }
 
+
   /**
    * Computes the release count that is based on how many neighbors this tile has
    * assuming that there are tiles on the 

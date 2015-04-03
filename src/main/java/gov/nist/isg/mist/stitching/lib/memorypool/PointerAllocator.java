@@ -45,7 +45,7 @@ public class PointerAllocator implements Allocator<Pointer<Double>> {
 
   @Override
   public Pointer<Double> allocate(int... n) {
-    int size = 1;
+    long size = 1;
     for (int val : n) {
       size *= val;
     }

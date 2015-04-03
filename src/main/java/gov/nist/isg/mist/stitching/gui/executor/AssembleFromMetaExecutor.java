@@ -120,4 +120,8 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   public void cleanup() {    
   }
 
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
+    return true;
+  }
+
 }

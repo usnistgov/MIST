@@ -27,6 +27,7 @@
 package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -162,4 +163,50 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   public void cleanup() {    
   }
 
+
+  @Override
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
+      throws FileNotFoundException {
+
+    long requiredMemoryBytes = 0;
+    long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
+
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+    // Account for image pixel data
+    if(ImageTile.freePixelData()) {
+      // If freeing image pixel data
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    }else{
+      // If not freeing image pixel data
+      // must hold whole image grid in memory
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+    }
+
+    // Account for image pixel data up conversion
+    long byteDepth = tile.getBitDepth()/8;
+    if(byteDepth != 2) {
+      // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
+      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+    }
+
+    long size = (tile.getWidth() / 2 + 1) * tile.getHeight();
+    requiredMemoryBytes += memoryPoolCount * size * 2 * 8; // fftw_alloc_real(size*2)
+
+    // Account for FFTW fft data
+    long perWorkerMemory = 0;
+    perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L; // pcmP fftw_alloc_real
+    perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L; // fftInP fftw_alloc_real
+    perWorkerMemory += size * 16L; // pcmInP fftw_alloc_complex
+    perWorkerMemory += (long)Stitching.NUM_PEAKS * 4L; // peaks Pointer.allocateInts
+
+    requiredMemoryBytes = requiredMemoryBytes + (perWorkerMemory * (long)numWorkers);
+
+    // pad with 100MB
+    requiredMemoryBytes += 100L*1024L*1024L;
+
+    return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
+
+  }
 }

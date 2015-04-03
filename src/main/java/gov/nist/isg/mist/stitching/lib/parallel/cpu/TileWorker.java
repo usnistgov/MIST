@@ -102,6 +102,7 @@ public class TileWorker<T> implements Runnable {
     this.isCancelled = false;
   }
 
+
   @Override
   public void run() {
 

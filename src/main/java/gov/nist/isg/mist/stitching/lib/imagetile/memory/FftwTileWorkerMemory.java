@@ -58,11 +58,11 @@ public class FftwTileWorkerMemory extends TileWorkerMemory {
    */
   public FftwTileWorkerMemory(ImageTile<?> initTile) {
     super(initTile.getWidth(), initTile.getHeight());
+
     this.pcmP = FFTW3Library.fftw_alloc_real(super.getWidth() * super.getHeight());
     this.fftInP = FFTW3Library.fftw_alloc_real(super.getWidth() * super.getHeight());
     this.pcmInP = FFTW3Library.fftw_alloc_complex(FftwImageTile.fftSize);
     this.peaks = Pointer.allocateInts(Stitching.NUM_PEAKS);
-
   }
 
   @Override

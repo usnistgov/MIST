@@ -257,7 +257,7 @@ public class StitchingExecutor implements Runnable {
       runStitching(false, true, false);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
-              + "Invalid values are highlighted in red");
+                                 + "Invalid values are highlighted in red");
     }
   }
 
@@ -339,7 +339,7 @@ public class StitchingExecutor implements Runnable {
           // If the libs are not available for FFTW, then check Java
           if (!stitchingExecutorInf.checkForLibs(this.params, displayGui))
           {
-            stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();                     
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
           }
 
           break;
@@ -418,18 +418,33 @@ public class StitchingExecutor implements Runnable {
               maxTimeSlice, group, timeSlices.size());
         }
 
-        TileGrid<ImageTile<T>> grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
 
-        if (grid == null)
-          return;
-
-        checkMemoryRequirementsForPixelData(grid.getSubGridTile(0, 0));
-
-        this.stitchingStatistics.startTimer(RunTimers.TotalStitchingTime);
-        initProgressBar();
-        this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
-
+        TileGrid<ImageTile<T>> grid;
         try {
+
+          grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
+
+          if (grid == null)
+            return;
+
+
+          ImageTile.disableFreePixelData();
+          // Check if there is enough memory to process this grid
+          // TODO output metadata about memory requirements (things to insert into stats file
+          if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
+            ImageTile.enableFreePixelData();
+            if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
+              Log.msg(LogType.MANDATORY, "Insufficient memory to perform stitching, Skipping timeslice: " + timeSlice);
+              Log.msg(LogType.MANDATORY, "Lowering the number of compute threads lowers the memory requirements");
+              continue;
+            }
+          }
+
+          this.stitchingStatistics.startTimer(RunTimers.TotalStitchingTime);
+          initProgressBar();
+          this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
+
+
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
@@ -476,10 +491,14 @@ public class StitchingExecutor implements Runnable {
         
         if (optimizationSuccessful) {
             try {
+              if (checkOutputGridMemory(grid)) {
                 outputGrid(grid, this.progressBar, timeSlice);
-            } catch (FileNotFoundException e)
-            {
-                Log.msg(LogType.MANDATORY, "Unable find file: " + e.getMessage() + ". Cancelling writing full image.");
+              }else {
+                Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
+              }
+            } catch (FileNotFoundException e) {
+              Log.msg(LogType.MANDATORY,
+                      "Unable find file: " + e.getMessage() + ". Cancelling writing full image.");
             }
         }
 
@@ -622,10 +641,12 @@ public class StitchingExecutor implements Runnable {
     Stitching.outputAbsolutePositions(grid, this.params.getOutputParams().getAbsPosFile(timeSlice));
 
     // relative positions
-    Stitching.outputRelativeDisplacements(grid, this.params.getOutputParams().getRelPosFile(timeSlice));
+    Stitching.outputRelativeDisplacements(grid,
+                                          this.params.getOutputParams().getRelPosFile(timeSlice));
 
     // relative positions no optimization
-    Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams().getRelPosNoOptFile(timeSlice));
+    Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams()
+        .getRelPosNoOptFile(timeSlice));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
@@ -645,7 +666,7 @@ public class StitchingExecutor implements Runnable {
     int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
     Log.msg(LogType.MANDATORY, "Writing full image to: " + imageFile.getAbsolutePath()
-            + "  Width: " + width + " Height: " + height);
+                               + "  Width: " + width + " Height: " + height);
 
     this.stitchingStatistics.startTimer(RunTimers.OutputFullImageTileTime);
     Blender blend = null;
@@ -904,27 +925,6 @@ public class StitchingExecutor implements Runnable {
   }
 
 
-  private <T> void checkMemoryRequirementsForPixelData(ImageTile<T> initTile) {
-    long maxMem = Runtime.getRuntime().maxMemory();
-
-    long totalMemTilesBytes =
-        (long) initTile.getWidth() * (long) initTile.getHeight() * 2L * this.params.getInputParams().getExtentWidth()
-        * this.params.getInputParams().getExtentHeight();
-
-    // Add two additional GBs for various other memory allocations
-    totalMemTilesBytes += OneGB * 2L;
-
-    if (maxMem > totalMemTilesBytes) {
-      ImageTile.disableFreePixelData();
-      Log.msg(LogType.MANDATORY, "Releasing image tile memory disabled. There is "
-          + "enough RAM to hold all image tiles.");
-    } else {
-      ImageTile.enableFreePixelData();
-      Log.msg(LogType.MANDATORY, "Releasing image tile memory enabled. Insufficient "
-          + "RAM to hold all image tiles.");
-    }
-  }
-
   /**
    * Gets the stitching statistics associated with this stitching executor
    * @return the stitching statistics
@@ -942,6 +942,80 @@ public class StitchingExecutor implements Runnable {
       JOptionPane.showMessageDialog(null, "Error: Cancelling stitching.\n"
           + "Check log for more details.", "Error", JOptionPane.ERROR_MESSAGE);
     }
+  }
+
+
+  public <T> boolean checkOutputGridMemory(TileGrid<ImageTile<T>> grid)
+      throws FileNotFoundException {
+
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+    long width = TileGridUtils.getFullImageWidth(grid, tile.getWidth());
+    long height = TileGridUtils.getFullImageHeight(grid, tile.getHeight());
+
+    long numberPixels = width*height;
+    if(numberPixels >= (long)Integer.MAX_VALUE)
+      return false;
+
+    long byteDepth = tile.getBitDepth()/8;
+
+    // Account for the memory required to hold a single image
+    // Output image is build by read, copy into output, free sequentially
+    long requiredMemoryBytes = tile.getHeight() * tile.getWidth() * byteDepth;
+
+    switch(this.params.getOutputParams().getBlendingMode()) {
+      case OVERLAY:
+        // requires enough memory to hold the output image
+        requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+        break;
+
+      case AVERAGE:
+        // Account for average blend data
+        if (byteDepth == 3) {
+          requiredMemoryBytes +=
+              numberPixels * 3 * 4; // sums = new float[this.numChannels][height][width];
+          requiredMemoryBytes +=
+              numberPixels * 3 * 4; // counts = new int[this.numChannels][height][width];
+        } else {
+          requiredMemoryBytes +=
+              numberPixels * 4; // sums = new float[this.numChannels][height][width];
+          requiredMemoryBytes +=
+              numberPixels * 4; // counts = new int[this.numChannels][height][width];
+        }
+        requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+
+        break;
+      case LINEAR:
+        // Account for the pixel weights
+        requiredMemoryBytes +=
+            tile.getHeight() * tile.getWidth()
+            * 8; // lookupTable = new double[initImgHeight][initImgWidth];
+
+        // Account for average blend data
+        if (byteDepth == 3) {
+          requiredMemoryBytes +=
+              numberPixels * 8; // pixelSums = new double[this.numChannels][height][width];
+          requiredMemoryBytes +=
+              numberPixels * 8; // weightSums = new double[this.numChannels][height][width];
+        } else {
+          requiredMemoryBytes +=
+              numberPixels * 8; // pixelSums = new double[this.numChannels][height][width];
+          requiredMemoryBytes +=
+              numberPixels * 8; // weightSums = new double[this.numChannels][height][width];
+        }
+
+        requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+        break;
+
+      default:
+        break;
+    }
+
+    // pad with 10%
+    requiredMemoryBytes *= 1.1;
+
+    return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }
 
 

@@ -111,6 +111,7 @@ public class CPUStitchingThreadExecutor<T> {
 
     if (initTile instanceof FftwImageTile) {
       int[] size = {FftwImageTile.fftSize};
+
       this.memoryPool =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<Pointer<Double>>(memoryPoolSize, false,
               new PointerAllocator(), size);
@@ -119,6 +120,7 @@ public class CPUStitchingThreadExecutor<T> {
       int[] size =
           {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
               JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+
       this.memoryPool =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<float[][]>(memoryPoolSize, false,
               new JavaAllocator(), size);

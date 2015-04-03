@@ -84,30 +84,11 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     
     List<CudaDeviceParam> devices = params.getAdvancedParams().getCudaDevices();
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    tile.readTile();
+    if(!tile.isTileRead()) tile.readTile();
 
-    
-    
-    if (!this.init)
-    {
-      StitchingGuiUtils.updateProgressBar(progressBar, true, "Initializing GPU(s)");
-      
-      if (devices.size() == 0) {
-        this.devIDs = new int[] {0};
-        Log.msg(LogType.MANDATORY, "No device selected from " + "table. Using default (0)");
-        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile);
-      } else {
-        Log.msg(LogType.MANDATORY, devices.size() + " device(s) selected from table.");
-        this.contexts = CudaUtils.initJCUDA(devices, tile);
-        this.devIDs = new int[devices.size()];
-        for (int j = 0; j < devices.size(); j++)
-          this.devIDs[j] = devices.get(j).getId();
-      }
 
-      this.executor.initProgressBar();
-      
-      this.init = true;
-    }
+
+    this.executor.initProgressBar();
 
 
     if (this.contexts == null)
@@ -160,7 +141,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
   }
   
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
+      throws FileNotFoundException {
         
     TileGrid<ImageTile<T>> grid = null;
     
@@ -180,7 +162,32 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }    
+    }
+
+    List<CudaDeviceParam> devices = params.getAdvancedParams().getCudaDevices();
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+
+    if (!this.init)
+    {
+
+      if (devices.size() == 0) {
+        this.devIDs = new int[] {0};
+        Log.msg(LogType.MANDATORY, "No device selected from " + "table. Using default (0)");
+        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile);
+      } else {
+        Log.msg(LogType.MANDATORY, devices.size() + " device(s) selected from table.");
+        this.contexts = CudaUtils.initJCUDA(devices, tile);
+        this.devIDs = new int[devices.size()];
+        for (int j = 0; j < devices.size(); j++)
+          this.devIDs[j] = devices.get(j).getId();
+      }
+
+      this.init = true;
+    }
+
+
     
     return grid;
   }
@@ -190,5 +197,40 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     CudaUtils.destroyJCUDA(this.contexts.length);    
   }
 
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
+      throws FileNotFoundException {
+
+    long requiredMemoryBytes = 0;
+    long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2L + numWorkers;
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+    // Account for image pixel data
+    if(ImageTile.freePixelData()) {
+      // If freeing image pixel data
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    }else{
+      // If not freeing image pixel data
+      // must hold whole image grid in memory
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+    }
+
+    // Account for image pixel data up conversion
+    long byteDepth = tile.getBitDepth()/2;
+    if(byteDepth != 2) {
+      // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
+      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+    }
+
+    long minGPUMemory = Long.MAX_VALUE;
+    for(CUcontext c : contexts) {
+      minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
+    }
+
+    // pad with 100MB
+    requiredMemoryBytes += 100L*1024L*1024L;
+
+    return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
+  }
 
 }

@@ -89,12 +89,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   CudaException, FileNotFoundException {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    tile.readTile();
-
-    if (!this.init) {
-      JavaImageTile.initJavaPlan(tile);
-      this.init = true;
-    }
+    if(!tile.isTileRead()) tile.readTile();
 
     this.executor =
         new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid,
@@ -110,7 +105,8 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   }
 
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
+      throws FileNotFoundException {
 
     TileGrid<ImageTile<T>> grid = null;
 
@@ -130,13 +126,63 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }    
+    }
+
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+    JavaImageTile.initJavaPlan(tile);
+    this.init = true;
 
     return grid;
   }
 
   @Override
   public void cleanup() {    
+  }
+
+
+  @Override
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
+      throws FileNotFoundException {
+
+    long requiredMemoryBytes = 0;
+    long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
+    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    if(!tile.isTileRead()) tile.readTile();
+
+    // Account for image pixel data
+    if(ImageTile.freePixelData()) {
+      // If freeing image pixel data
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    }else{
+      // If not freeing image pixel data
+      // must hold whole image grid in memory
+      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+    }
+
+    // Account for image pixel data up conversion
+    long byteDepth = tile.getBitDepth()/8;
+    if(byteDepth != 2) {
+      // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
+      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+    }
+
+    // Account for Java FFT data
+    int[] n =
+        {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
+         JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+    long size = 1;
+    for(int val : n)
+      size *= val;
+    requiredMemoryBytes += memoryPoolCount * size * 4L; // float[n1][n2]
+
+    requiredMemoryBytes += size * 4L; // new float[fftHeight][fftWidth];
+
+    // pad with 100MB
+    requiredMemoryBytes += 100L*1024L*1024L;
+
+    return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }
 
 }

@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -51,9 +52,9 @@ public class ImageStitchingValidationDatasets {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-  private static String validationRootFolder = "F:\\StitchingData\\Image_Stitching_Validation_Datasets";
-  private static String fftwPlanPath = "C:\\Users\\tjb3\\Desktop\\Fiji.app\\fftPlans";
-  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Desktop\\Fiji.app\\lib\\fftw";
+  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets";
+  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
+  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
 
   public static void main(String [] args)
@@ -79,7 +80,8 @@ public class ImageStitchingValidationDatasets {
     JFrame frame = new JFrame("Select CUDA Devices");    
     JOptionPane.showMessageDialog(frame, cudaPanel);    
 
-    Log.setLogLevel(LogType.NONE);
+//    Log.setLogLevel(LogType.NONE);
+    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
@@ -87,11 +89,11 @@ public class ImageStitchingValidationDatasets {
 
     for (File r : roots)
     {      
-      
-      System.out.println("Running: " + r.getAbsolutePath());
-      if (!r.isDirectory())
+
+      if (!r.isDirectory() || !r.getName().contains("Scott"))
         continue;
-      
+
+      System.out.println("Running: " + r.getAbsolutePath());
       params = new StitchingAppParams();
 
       File paramFile = new File(r, STITCHING_PARAMS_FILE);
@@ -105,9 +107,11 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
+//      params.getAdvancedParams().setNumCPUThreads(8);
+
       for (StitchingType t : StitchingType.values())
       {
-        if (t == StitchingType.AUTO)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.CUDA)
           continue;
 
         if (t == StitchingType.CUDA)
