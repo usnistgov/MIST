@@ -201,7 +201,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     perWorkerMemory += size * 16L; // pcmInP fftw_alloc_complex
     perWorkerMemory += (long)Stitching.NUM_PEAKS * 4L; // peaks Pointer.allocateInts
 
-    requiredMemoryBytes = requiredMemoryBytes + (perWorkerMemory * (long)numWorkers);
+    requiredMemoryBytes += perWorkerMemory * (long)numWorkers;
 
     // pad with 100MB
     requiredMemoryBytes += 100L*1024L*1024L;

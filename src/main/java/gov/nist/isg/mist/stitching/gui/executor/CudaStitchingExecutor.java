@@ -81,8 +81,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
       JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException, FileNotFoundException {
-    
-    List<CudaDeviceParam> devices = params.getAdvancedParams().getCudaDevices();
+
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if(!tile.isTileRead()) tile.readTile();
 
@@ -91,8 +90,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     this.executor.initProgressBar();
 
 
-    if (this.contexts == null)
-    {
+    if (this.contexts == null) {
       Log.msg(LogType.MANDATORY, "Error initializing CUDA");
       throw new CudaException("Error initializing CUDA");
     }
@@ -200,7 +198,10 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
   public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
       throws FileNotFoundException {
 
-    long requiredMemoryBytes = 0;
+    // Check the CPU side memory
+    long requiredCPUMemoryBytes = 0;
+    long requiredGPUMemoryBytes = 0;
+
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2L + numWorkers;
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if(!tile.isTileRead()) tile.readTile();
@@ -208,29 +209,38 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     // Account for image pixel data
     if(ImageTile.freePixelData()) {
       // If freeing image pixel data
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+      // only memorypool size tiles are stored
+      requiredCPUMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
     }else{
       // If not freeing image pixel data
       // must hold whole image grid in memory
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+      requiredCPUMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
     }
 
-    // Account for image pixel data up conversion
+    // Account for image pixel data type conversion
     long byteDepth = tile.getBitDepth()/2;
     if(byteDepth != 2) {
       // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
-      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+      requiredCPUMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
     }
 
+    // pad with 100MB
+    requiredCPUMemoryBytes += 100L*1024L*1024L;
+
+
+    // TODO add in the logic to take care of the grid decomposition across multiple gpus
+
+    // Check GPU side memory
     long minGPUMemory = Long.MAX_VALUE;
     for(CUcontext c : contexts) {
       minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
     }
 
-    // pad with 100MB
-    requiredMemoryBytes += 100L*1024L*1024L;
 
-    return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
+
+
+
+    return requiredCPUMemoryBytes < Runtime.getRuntime().maxMemory();
   }
 
 }

@@ -430,13 +430,24 @@ public class StitchingExecutor implements Runnable {
 
           ImageTile.disableFreePixelData();
           // Check if there is enough memory to process this grid
-          // TODO output metadata about memory requirements (things to insert into stats file
           if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
             ImageTile.enableFreePixelData();
+            Log.msg(LogType.MANDATORY,
+                    "Insufficient memory to hold all image tiles in memory, turning on the freeing of pixel data");
+
             if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
-              Log.msg(LogType.MANDATORY, "Insufficient memory to perform stitching, Skipping timeslice: " + timeSlice);
-              Log.msg(LogType.MANDATORY, "Lowering the number of compute threads lowers the memory requirements");
-              continue;
+              Log.msg(LogType.MANDATORY,
+                      "Insufficient memory to perform stitching with " + params.getAdvancedParams()
+                          .getNumCPUThreads() + " threads, attempting with 1 thread for timeslice: "
+                      + timeSlice);
+              Log.msg(LogType.MANDATORY, "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
+              params.getAdvancedParams().setNumCPUThreads(1);
+              if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
+                Log.msg(LogType.MANDATORY,
+                        "Insufficient memory to perform stitching with 1 thread, skipping timeslide: "
+                        + timeSlice);
+                continue;
+              }
             }
           }
 
@@ -448,6 +459,8 @@ public class StitchingExecutor implements Runnable {
           stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
+          Log.msg(LogType.MANDATORY,
+                  "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
           throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage, e);
         } catch (CudaException e) {
           showError("CUDA exception thrown: " + e.getMessage());
