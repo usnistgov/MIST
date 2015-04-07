@@ -428,6 +428,8 @@ public class StitchingExecutor implements Runnable {
             return;
 
 
+
+
           ImageTile.disableFreePixelData();
           // Check if there is enough memory to process this grid
           if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
@@ -498,7 +500,7 @@ public class StitchingExecutor implements Runnable {
                   + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime));
         }
 
-        // Always create the output directory even if optimization was not successful
+        // Always create the output directory
         File outputDir = new File(this.params.getOutputParams().getOutputPath());
         outputDir.mkdirs();
         

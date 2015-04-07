@@ -152,7 +152,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getStatsFile()
   {
-    return new File(this.outputPath, this.getStatFileName());
+    return new File(this.metadataPath, this.getStatFileName());
   }
 
   /**

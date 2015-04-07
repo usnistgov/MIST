@@ -934,6 +934,10 @@ public class StitchingStatistics {
     DecimalFormat df = new DecimalFormat("#.#");
 
     try {
+      // ensure the directory to write the statistics file to exists
+      File parent = file.getParentFile();
+      if(!parent.exists()) parent.mkdir();
+
       FileWriter writer = new FileWriter(file);
 
       writer.write("System information:" + newLine);
