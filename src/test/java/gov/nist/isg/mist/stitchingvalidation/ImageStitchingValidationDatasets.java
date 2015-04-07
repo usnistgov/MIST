@@ -52,7 +52,7 @@ public class ImageStitchingValidationDatasets {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets";
+  private static String validationRootFolder = "C:\\majurski\\image-data\\Image_Stitching_Validation_Datasets";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -80,17 +80,15 @@ public class ImageStitchingValidationDatasets {
     JFrame frame = new JFrame("Select CUDA Devices");    
     JOptionPane.showMessageDialog(frame, cudaPanel);    
 
-//    Log.setLogLevel(LogType.NONE);
-    Log.setLogLevel(LogType.MANDATORY);
+    Log.setLogLevel(LogType.NONE);
+//    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
-
-    long startTime = System.currentTimeMillis();
 
     for (File r : roots)
     {      
 
-      if (!r.isDirectory() || !r.getName().contains("Scott"))
+      if (!r.isDirectory())
         continue;
 
       System.out.println("Running: " + r.getAbsolutePath());
@@ -107,11 +105,11 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-//      params.getAdvancedParams().setNumCPUThreads(8);
+      params.getAdvancedParams().setNumCPUThreads(8);
 
       for (StitchingType t : StitchingType.values())
       {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.CUDA)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA)
           continue;
 
         if (t == StitchingType.CUDA)
@@ -127,6 +125,8 @@ public class ImageStitchingValidationDatasets {
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);
 
+        params.getAdvancedParams().setNumFFTPeaks(2);
+
 
         StitchingExecutor executor = new StitchingExecutor(params);
 
@@ -139,35 +139,6 @@ public class ImageStitchingValidationDatasets {
       }     
     }
 
-    long endTime = System.currentTimeMillis();
-
-    System.out.println("Total time: " + (endTime-startTime));
-    
-    File results = new File("validationDataSetResults.txt");
-
-    FileWriter writer = null;
-    try {
-      writer = new FileWriter(results);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    try
-    {
-      if (writer != null)
-        writer.write("Runtime for " + roots.length + " experiements: " + (endTime-startTime));
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    try
-    {
-      if (writer != null)
-        writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
 
     System.exit(1);
   }

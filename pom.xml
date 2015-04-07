@@ -25,12 +25,14 @@
             <groupId>org.jcuda</groupId>
             <artifactId>jcuda</artifactId>
             <version>6.5</version>
+            <!--<version>5.0</version>-->
         </dependency>
 
         <dependency>
             <groupId>org.jcuda</groupId>
             <artifactId>jcufft</artifactId>
             <version>6.5</version>
+            <!--<version>5.0</version>-->
         </dependency>
 
 

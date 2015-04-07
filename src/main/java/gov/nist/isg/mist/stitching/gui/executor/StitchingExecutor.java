@@ -506,6 +506,10 @@ public class StitchingExecutor implements Runnable {
         
         if (optimizationSuccessful) {
             try {
+              if (this.params.getOutputParams().isOutputMeta()) {
+                this.outputMeta(grid, this.progressBar, timeSlice);
+              }
+
               if (checkOutputGridMemory(grid)) {
                 outputGrid(grid, this.progressBar, timeSlice);
               }else {
@@ -618,10 +622,6 @@ public class StitchingExecutor implements Runnable {
 
     if (this.isCancelled)
       return;
-
-    if (this.params.getOutputParams().isOutputMeta()) {
-      this.outputMeta(grid, progress, timeSlice);
-    }
 
     ImagePlus img = null;    
 

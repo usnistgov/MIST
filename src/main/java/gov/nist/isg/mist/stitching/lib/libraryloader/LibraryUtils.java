@@ -47,6 +47,7 @@ import java.lang.reflect.Field;
 public class LibraryUtils {
 
     public static final String JCUDA_VERSION = "6.5";
+//  public static final String JCUDA_VERSION = "5.0";
 
   /**
    * The operating sytem
