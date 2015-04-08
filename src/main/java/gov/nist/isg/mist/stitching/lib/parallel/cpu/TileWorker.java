@@ -64,7 +64,7 @@ public class TileWorker<T> implements Runnable {
   private PriorityBlockingQueue<StitchingTask<T>> bkQueue;
   private DynamicMemoryPool<T> memoryPool;
 
-  
+
   private static boolean readDone = false;
   private static boolean bkDone = false;
 
