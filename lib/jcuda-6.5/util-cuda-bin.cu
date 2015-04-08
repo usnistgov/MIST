@@ -31,7 +31,7 @@
 #include<float.h>
 
 #define THREADS_PER_BLOCK 256
-#define MIN_DISTANCE 100.0
+#define MIN_DISTANCE 1.0
 
 // ================================================================
 __device__ double distance(int x1, int x2, int y1, int y2)
@@ -50,10 +50,13 @@ __device__ bool checkDistance(int *maxesRow,
 	double dist;
 	for (j = 0; j < nMax; j++)
 	{
-		dist = distance(maxesRow[j], row, maxesCol[j], col);
+			if (maxesRow[j] == row && maxesCol[j] == col)
+  			return false;
 
-		if (dist < MIN_DISTANCE)
-			return false;
+		//dist = distance(maxesRow[j], row, maxesCol[j], col);
+
+		//if (dist < MIN_DISTANCE)
+		//	return false;
 
 
 	}
@@ -71,10 +74,14 @@ __device__ bool checkDistance(volatile int *maxesRow,
 	double dist;
 	for (j = 0; j < nMax; j++)
 	{
-		dist = distance(maxesRow[j], row, maxesCol[j], col);
 
-		if (dist < MIN_DISTANCE)
+		if (maxesRow[j] == row && maxesCol[j] == col)
 			return false;
+
+//		dist = distance(maxesRow[j], row, maxesCol[j], col);
+
+//		if (dist < MIN_DISTANCE)
+//			return false;
 
 
 	}
@@ -487,9 +494,9 @@ reduce_max_filter_final(double *g_idata, double *g_odata,
 	{
 		if (myMax < g_idata[i])
 		{
-			if (checkDistance(smaxesRow, smaxesCol, 
+			if (checkDistance(smaxesRow, smaxesCol,
 						nMax, max_idx[i], width))
-			{		
+			{
 				myMax = g_idata[i];
 				myMaxIndex = max_idx[i];
 			}
