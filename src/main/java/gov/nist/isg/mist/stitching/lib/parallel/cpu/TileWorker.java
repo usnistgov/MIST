@@ -65,7 +65,6 @@ public class TileWorker<T> implements Runnable {
   private DynamicMemoryPool<T> memoryPool;
 
 
-  // TODO determine if these static variables will cause problems with multiple stitching instances running at one time
   private static boolean readDone = false;
   private static boolean bkDone = false;
 
