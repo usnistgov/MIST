@@ -424,6 +424,8 @@ public class StitchingExecutor implements Runnable {
         }
 
 
+
+        boolean runSequential = false;
         TileGrid<ImageTile<T>> grid;
         boolean optimizationSuccessful;
         try {
@@ -432,10 +434,6 @@ public class StitchingExecutor implements Runnable {
 
           if (grid == null)
             return;
-
-          boolean runSequential = false;
-
-
 
 
           ImageTile.disableFreePixelData();
@@ -451,15 +449,13 @@ public class StitchingExecutor implements Runnable {
                           .getNumCPUThreads() + " threads, attempting with 1 thread for timeslice: "
                       + timeSlice);
               Log.msg(LogType.MANDATORY, "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
-// TODO add this back in
-//              params.getAdvancedParams().setNumCPUThreads(1);
+
+              params.getAdvancedParams().setNumCPUThreads(1);
               if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
                 Log.msg(LogType.MANDATORY,
-                        "Insufficient memory to perform stitching with 1 thread, skipping timeslide: "
+                        "Attempting to use sequential stitching, (please be patient), timeslide: "
                         + timeSlice);
-//                continue;
                 runSequential = true;
-
 
               }
             }
@@ -470,12 +466,13 @@ public class StitchingExecutor implements Runnable {
           this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
           if(runSequential) {
-            // TODO create a new stitching exectuor interface to call the sequential version
             stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
             grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
 
-//            TileGridTraverser<T> traverser = TileGridTraverserFactory.makeTraverser(
-//                TileGridTraverser.Traversals.DIAGONAL_CHAINED, grid);
+            TileGridTraverser<ImageTile<T>> traverser = TileGridTraverserFactory.makeTraverser(
+                TileGridTraverser.Traversals.DIAGONAL_CHAINED, grid);
+
+            Stitching.stitchGridJava(traverser, grid, this.progressBar);
 
 
           }else {
@@ -492,6 +489,7 @@ public class StitchingExecutor implements Runnable {
 
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
+//          e.printStackTrace();
           Log.msg(LogType.MANDATORY,
                   "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
           throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage, e);

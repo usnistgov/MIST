@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile;
 
+import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.common.Array2DView;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
@@ -55,6 +56,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.*;
 
 /**
  * Utility functions for stitching image tiles.
@@ -179,16 +182,31 @@ public class Stitching {
 
   /**
    * Stitchings a grid of tiles using a traverser
-   * 
+   *
    * @param <T>
    * @param traverser the traverser on how to traverse the grid
    * @param grid the grid of tiles to stitch
    */
   public static <T> void stitchGridJava(TileGridTraverser<ImageTile<T>> traverser,
-      TileGrid<ImageTile<T>> grid) throws FileNotFoundException {
+                                        TileGrid<ImageTile<T>> grid) throws FileNotFoundException
+  {
+    Stitching.stitchGridJava(traverser, grid, null);
+  }
+
+  /**
+   * Stitchings a grid of tiles using a traverser
+   * 
+   * @param <T>
+   * @param traverser the traverser on how to traverse the grid
+   * @param grid the grid of tiles to stitch
+   * @param progressBar the progressBar (or null to ignore)
+   */
+  public static <T> void stitchGridJava(TileGridTraverser<ImageTile<T>> traverser,
+      TileGrid<ImageTile<T>> grid, JProgressBar progressBar) throws FileNotFoundException {
     TileWorkerMemory memory = null;
     for (ImageTile<T> t : traverser) {
       t.setThreadID(0);
+
 
       if (!t.isTileRead())
         t.readTile();
@@ -202,6 +220,7 @@ public class Stitching {
       t.computeFft();
 
       if (col > grid.getStartCol()) {
+
         ImageTile<T> west = grid.getTile(row, col - 1);
         t.setWestTranslation(Stitching.phaseCorrelationImageAlignment(west, t, memory));
 
@@ -214,6 +233,9 @@ public class Stitching {
         west.releaseFftMemory();
         west.releasePixels();
 
+        if (progressBar != null)
+          StitchingGuiUtils.incrementProgressBar(progressBar);
+
       }
 
       if (row > grid.getStartRow()) {
@@ -224,11 +246,14 @@ public class Stitching {
         Log.msgNoTime(
             LogType.HELPFUL,
             " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName() + "\"): "
-                + t.getNorthTranslation());
+            + t.getNorthTranslation());
 
 
         north.releaseFftMemory();
         north.releasePixels();
+
+        if (progressBar != null)
+          StitchingGuiUtils.incrementProgressBar(progressBar);
       }
 
       t.releaseFftMemory();

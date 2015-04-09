@@ -30,60 +30,60 @@ package gov.nist.isg.mist.stitching.lib.tilegrid.traverser;
 
 /**
  * Traversal interface, describing a traverser
- * 
+ *
+ * @param <T>
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public interface TileGridTraverser<T> extends Iterable<T> {
 
-  /**
-   * Different types of traversers
-   */
-  public static enum Traversals {
     /**
-     * Row traversal (combed)
+     * Different types of traversers
      */
-    ROW,
+    public static enum Traversals {
+        /**
+         * Row traversal (combed)
+         */
+        ROW,
+
+        /**
+         * Row chained traversal
+         */
+        ROW_CHAINED,
+
+        /**
+         * Column traversal (combed)
+         */
+        COLUMN,
+
+        /**
+         * Column chained traversal
+         */
+        COLUMN_CHAINED,
+
+        /**
+         * Diagonal traversal
+         */
+        DIAGONAL,
+
+        /**
+         * Diagonal chained traversal
+         */
+        DIAGONAL_CHAINED
+    }
 
     /**
-     * Row chained traversal
+     * Gets the current row of the traverser
+     *
+     * @return the current row of the traverser
      */
-    ROW_CHAINED,
+    public int getCurrentRow();
 
     /**
-     * Column traversal (combed)
+     * Gets the current column of the traverser
+     *
+     * @return the current column of hte traverser
      */
-    COLUMN,
-
-    /**
-     * Column chained traversal
-     */
-    COLUMN_CHAINED,
-
-    /**
-     * Diagonal traversal
-     */
-    DIAGONAL,
-
-    /**
-     * Diagonal chained traversal
-     */
-    DIAGONAL_CHAINED
-  }
-
-  /**
-   * Gets the current row of the traverser
-   * 
-   * @return the current row of the traverser
-   */
-  public int getCurrentRow();
-
-  /**
-   * Gets the current column of the traverser
-   * 
-   * @return the current column of hte traverser
-   */
-  public int getCurrentColumn();
+    public int getCurrentColumn();
 
 }

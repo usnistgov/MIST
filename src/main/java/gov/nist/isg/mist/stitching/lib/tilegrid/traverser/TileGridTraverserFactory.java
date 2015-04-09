@@ -28,44 +28,45 @@
 
 package gov.nist.isg.mist.stitching.lib.tilegrid.traverser;
 
+
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 /**
  * Traversal utility function for creating a traversal based on a type bound to a grid of tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
 public class TileGridTraverserFactory {
 
-  /**
-   * Generates a traversal surrounding a tile grid
-   * 
-   * @param <T>
-   * @param type the type of traversal
-   * @param grid the subgrid to traverse
-   * @return the traverser
-   */
-  public static <T> TileGridTraverser<ImageTile<T>> makeTraverser(
-      TileGridTraverser.Traversals type, TileGrid<ImageTile<T>> grid) {
-    switch (type) {
-      case ROW:
-        return new TileGridRowTraverser<T>(grid);
-      case COLUMN:
-        return new TileGridColumnTraverser<T>(grid);
-      case COLUMN_CHAINED:
-        return new TileGridColumnChainedTraverser<T>(grid);
-      case DIAGONAL:
-        return new TileGridDiagonalTraverser<T>(grid);
-      case DIAGONAL_CHAINED:
-        return new TileGridDiagonalChainedTraverser<T>(grid);
-      case ROW_CHAINED:
-        return new TileGridRowChainedTraverser<T>(grid);
-      default:
-        return new TileGridRowTraverser<T>(grid);
+    /**
+     * Generates a traversal surrounding a tile grid
+     *
+     * @param <T>
+     * @param type the type of traversal
+     * @param grid the subgrid to traverse
+     * @return the traverser
+     */
+    public static <T extends ImageTile<?>> TileGridTraverser<T> makeTraverser(
+            TileGridTraverser.Traversals type, TileGrid<T> grid) {
+        switch (type) {
+            case ROW:
+                return new TileGridRowTraverser<T>(grid);
+            case COLUMN:
+                return new TileGridColumnTraverser<T>(grid);
+            case COLUMN_CHAINED:
+                return new TileGridColumnChainedTraverser<T>(grid);
+            case DIAGONAL:
+                return new TileGridDiagonalTraverser<T>(grid);
+            case DIAGONAL_CHAINED:
+                return new TileGridDiagonalChainedTraverser<T>(grid);
+            case ROW_CHAINED:
+                return new TileGridRowChainedTraverser<T>(grid);
+            default:
+                return new TileGridRowTraverser<T>(grid);
 
+        }
     }
-  }
 
 }

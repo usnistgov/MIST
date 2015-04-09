@@ -28,88 +28,90 @@
 
 package gov.nist.isg.mist.stitching.lib.tilegrid.traverser;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import java.util.Iterator;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+
 /**
  * Traversal type for traversing by row (combed)
- * 
+ *
+ * @param <T>
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
-public class TileGridRowTraverser<T> implements TileGridTraverser<ImageTile<T>>, Iterator<ImageTile<T>> {
+public class TileGridRowTraverser<T extends ImageTile<?>> implements TileGridTraverser<T>, Iterator<T> {
 
-  private TileGrid<ImageTile<T>> subGrid;
-  private int currentRowPosition;
-  private int currentColumnPosition;
-  private int linear;
-  /**
-   * Initializes a row traverser given a subgrid
-   * 
-   * @param subgrid
-   */
-  public TileGridRowTraverser(TileGrid<ImageTile<T>> subgrid) {
-    this.subGrid = subgrid;
-    this.currentRowPosition = 0;
-    this.currentColumnPosition = 0;
-    this.linear = 0;
-  }
+    private TileGrid<T> subGrid;
+    private int currentRowPosition;
+    private int currentColumnPosition;
+    private int linear;
 
-  @Override
-  public Iterator<ImageTile<T>> iterator() {
-    return this;
-  }
-
-  /**
-   * Gets the current row of the traverser
-   */
-  @Override
-  public int getCurrentRow() {
-    return this.currentRowPosition;
-  }
-
-  /**
-   * Gets the current column of the traverser
-   */
-  @Override
-  public int getCurrentColumn() {
-    return this.currentColumnPosition;
-  }
-
-  @Override
-  public String toString() {
-    return "Traversing by row: " + this.subGrid;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return this.linear < this.subGrid.getSubGridSize();
-  }
-
-  @Override
-  public ImageTile<T> next() {
-    ImageTile<T> actualTile =
-        this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
-            + this.subGrid.getStartCol());
-
-    this.linear++;
-
-    this.currentColumnPosition++;
-
-    if (this.currentColumnPosition >= this.subGrid.getExtentWidth()) {
-      this.currentColumnPosition = 0;
-      this.currentRowPosition++;
+    /**
+     * Initializes a row traverser given a subgrid
+     *
+     * @param subgrid
+     */
+    public TileGridRowTraverser(TileGrid<T> subgrid) {
+        this.subGrid = subgrid;
+        this.currentRowPosition = 0;
+        this.currentColumnPosition = 0;
+        this.linear = 0;
     }
 
-    return actualTile;
-  }
+    @Override
+    public Iterator<T> iterator() {
+        return this;
+    }
 
-  @Override
-  public void remove() {
-    // Not implemented/not needed
-  }
+    /**
+     * Gets the current row of the traverser
+     */
+    @Override
+    public int getCurrentRow() {
+        return this.currentRowPosition;
+    }
+
+    /**
+     * Gets the current column of the traverser
+     */
+    @Override
+    public int getCurrentColumn() {
+        return this.currentColumnPosition;
+    }
+
+    @Override
+    public String toString() {
+        return "Traversing by row: " + this.subGrid;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.linear < this.subGrid.getSubGridSize();
+    }
+
+    @Override
+    public T next() {
+        T actualTile =
+                this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
+                        + this.subGrid.getStartCol());
+
+        this.linear++;
+
+        this.currentColumnPosition++;
+
+        if (this.currentColumnPosition >= this.subGrid.getExtentWidth()) {
+            this.currentColumnPosition = 0;
+            this.currentRowPosition++;
+        }
+
+        return actualTile;
+    }
+
+    @Override
+    public void remove() {
+        // Not implemented/not needed
+    }
 
 }

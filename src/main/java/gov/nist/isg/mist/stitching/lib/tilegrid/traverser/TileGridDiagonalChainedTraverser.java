@@ -28,112 +28,115 @@
 
 package gov.nist.isg.mist.stitching.lib.tilegrid.traverser;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+
 
 import java.util.Iterator;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+
 /**
  * Traversal type for traversing a grid diagonal chained
- * 
+ *
+ * @param <T>
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
-public class TileGridDiagonalChainedTraverser<T> implements TileGridTraverser<ImageTile<T>>, Iterator<ImageTile<T>> {
+public class TileGridDiagonalChainedTraverser<T extends ImageTile<?>> implements TileGridTraverser<T>, Iterator<T> {
 
-  private TileGrid<ImageTile<T>> subGrid;
-  private int currentRowPosition;
-  private int currentColumnPosition;
-  private int linear;
+    private TileGrid<T> subGrid;
+    private int currentRowPosition;
+    private int currentColumnPosition;
+    private int linear;
 
-  private int dirRow;
-  private int dirCol;
-  /**
-   * Initializes a diagonal-chained traverser given a subgrid
-   * 
-   * @param subgrid
-   */
-  public TileGridDiagonalChainedTraverser(TileGrid<ImageTile<T>> subgrid) {
-    this.subGrid = subgrid;
-    this.currentRowPosition = 0;
-    this.currentColumnPosition = 0;
-    this.linear = 0;
-    this.dirRow = -1;
-    this.dirCol = 1;
-  }
+    private int dirRow;
+    private int dirCol;
 
-  @Override
-  public Iterator<ImageTile<T>> iterator() {
-    return this;
-  }
-
-  /**
-   * Gets the current row of the traverser
-   */
-  @Override
-  public int getCurrentRow() {
-    return this.currentRowPosition;
-  }
-
-  /**
-   * Gets the current column of the traverser
-   */
-  @Override
-  public int getCurrentColumn() {
-    return this.currentColumnPosition;
-  }
-
-  @Override
-  public String toString() {
-    return "Traversing by diagonal chained: " + this.subGrid;
-  }
-  
-  @Override
-  public boolean hasNext() {
-    return this.linear < this.subGrid.getSubGridSize();
-  }
-
-  @Override
-  public ImageTile<T> next() {
-    int tempRow = this.currentRowPosition;
-    int tempCol = this.currentColumnPosition;
-
-    ImageTile<T> actualTile =
-        this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
-            + this.subGrid.getStartCol());
-
-    this.linear++;
-
-    this.currentRowPosition += this.dirRow;
-    this.currentColumnPosition += this.dirCol;
-
-    if (hasNext()) {
-      if (this.currentColumnPosition < 0 || this.currentColumnPosition >= this.subGrid.getExtentWidth()) {
-        this.currentRowPosition = tempRow + 1;
-        this.currentColumnPosition = tempCol;
-
-        if (this.currentRowPosition >= this.subGrid.getExtentHeight()) {
-          this.currentRowPosition = tempRow;
-          this.currentColumnPosition = tempCol + 1;
-        }
-
-        this.dirRow = -this.dirRow;
-        this.dirCol = -this.dirCol;
-      } else if (this.currentRowPosition < 0 || this.currentRowPosition >= this.subGrid.getExtentHeight()) {
-        this.currentRowPosition = tempRow;
-        this.currentColumnPosition = tempCol + 1;
-        this.dirRow = -this.dirRow;
-        this.dirCol = -this.dirCol;
-      }
+    /**
+     * Initializes a diagonal-chained traverser given a subgrid
+     *
+     * @param subgrid
+     */
+    public TileGridDiagonalChainedTraverser(TileGrid<T> subgrid) {
+        this.subGrid = subgrid;
+        this.currentRowPosition = 0;
+        this.currentColumnPosition = 0;
+        this.linear = 0;
+        this.dirRow = -1;
+        this.dirCol = 1;
     }
 
-    return actualTile;
-  }
+    @Override
+    public Iterator<T> iterator() {
+        return this;
+    }
 
-  @Override
-  public void remove() {
-    // Not implemented/not needed
-  }
+    /**
+     * Gets the current row of the traverser
+     */
+    @Override
+    public int getCurrentRow() {
+        return this.currentRowPosition;
+    }
+
+    /**
+     * Gets the current column of the traverser
+     */
+    @Override
+    public int getCurrentColumn() {
+        return this.currentColumnPosition;
+    }
+
+    @Override
+    public String toString() {
+        return "Traversing by diagonal chained: " + this.subGrid;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.linear < this.subGrid.getSubGridSize();
+    }
+
+    @Override
+    public T next() {
+        int tempRow = this.currentRowPosition;
+        int tempCol = this.currentColumnPosition;
+
+        T actualTile =
+                this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
+                        + this.subGrid.getStartCol());
+
+        this.linear++;
+
+        this.currentRowPosition += this.dirRow;
+        this.currentColumnPosition += this.dirCol;
+
+        if (hasNext()) {
+            if (this.currentColumnPosition < 0 || this.currentColumnPosition >= this.subGrid.getExtentWidth()) {
+                this.currentRowPosition = tempRow + 1;
+                this.currentColumnPosition = tempCol;
+
+                if (this.currentRowPosition >= this.subGrid.getExtentHeight()) {
+                    this.currentRowPosition = tempRow;
+                    this.currentColumnPosition = tempCol + 1;
+                }
+
+                this.dirRow = -this.dirRow;
+                this.dirCol = -this.dirCol;
+            } else if (this.currentRowPosition < 0 || this.currentRowPosition >= this.subGrid.getExtentHeight()) {
+                this.currentRowPosition = tempRow;
+                this.currentColumnPosition = tempCol + 1;
+                this.dirRow = -this.dirRow;
+                this.dirCol = -this.dirCol;
+            }
+        }
+
+        return actualTile;
+    }
+
+    @Override
+    public void remove() {
+        // Not implemented/not needed
+    }
 
 }
