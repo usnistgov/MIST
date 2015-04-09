@@ -57,7 +57,7 @@ import java.util.concurrent.PriorityBlockingQueue;
  * @version 1.0
  * @param <T>
  */
-public class CPUStitchingThreadExecutor<T> {
+public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHandler {
 
   private static final int BlockingQueueSize = 300;
 
@@ -73,6 +73,9 @@ public class CPUStitchingThreadExecutor<T> {
   private JProgressBar progressBar;
 
   private DynamicMemoryPool<T> memoryPool;
+
+  private boolean exceptionThrown;
+  private Throwable workerThrowable;
 
   /**
    * Creates a CPU stitching thread executor
@@ -94,6 +97,9 @@ public class CPUStitchingThreadExecutor<T> {
 
     this.bkQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     this.workQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
+
+    this.exceptionThrown = false;
+    this.workerThrowable = null;
     
     int gWidth = grid.getExtentWidth();
     int gHeight = grid.getExtentHeight();
@@ -134,13 +140,17 @@ public class CPUStitchingThreadExecutor<T> {
 
     Log.msg(LogType.VERBOSE, "Initializing threads");
 
+    Thread tmp;
+
     for (int i = 0; i < numProducers; i++) {
       TileProducer<T> producer;
       producer = new TileProducer<T>(gridTraverser, this.workQueue, this.memoryPool, numProducers);
 
       this.producers.add(producer);
 
-      this.threads.add(new Thread(producer));
+      tmp = new Thread(producer);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
     }
 
     for (int i = 0; i < numWorkers; i++) {
@@ -150,7 +160,9 @@ public class CPUStitchingThreadExecutor<T> {
 
       this.workers.add(worker);
 
-      this.threads.add(new Thread(worker));
+      tmp = new Thread(worker);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
     }
 
     BookKeeper<T> bookKeeper;
@@ -158,7 +170,9 @@ public class CPUStitchingThreadExecutor<T> {
 
     this.bookKeepers.add(bookKeeper);
 
-    this.threads.add(new Thread(bookKeeper));
+    tmp = new Thread(bookKeeper);
+    tmp.setUncaughtExceptionHandler(this);
+    this.threads.add(tmp);
 
   }
 
@@ -201,8 +215,6 @@ public class CPUStitchingThreadExecutor<T> {
    * Cancels the stitching executor threads
    */
   public void cancel() {
-    Log.msg(LogType.MANDATORY, "Cancelling stitching thread executor");
-
     for (TileProducer<T> producer : this.producers)
       producer.cancel();
 
@@ -213,5 +225,21 @@ public class CPUStitchingThreadExecutor<T> {
       bookKeeper.cancel();
 
   }
+
+
+  @Override
+  public void uncaughtException(Thread t, Throwable e) {
+    this.exceptionThrown = true;
+    this.workerThrowable = e;
+    this.cancel();
+  }
+
+  public boolean isExceptionThrown() {
+    return this.exceptionThrown;
+  }
+  public Throwable getWorkerThrowable() { return this.workerThrowable; }
+
+
+
 
 }

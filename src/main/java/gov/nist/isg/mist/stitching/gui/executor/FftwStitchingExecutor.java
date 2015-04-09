@@ -28,7 +28,6 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
-import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
@@ -71,7 +70,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
-      JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException, FileNotFoundException {
+      JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
@@ -110,6 +109,9 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     tile.releasePixels();
     
     this.fftwExecutor.execute();
+
+    if(this.fftwExecutor.isExceptionThrown())
+      throw this.fftwExecutor.getWorkerThrowable();
     
    
   }
@@ -132,7 +134,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
           
     return this.librariesInitialized;
   }
-  
+
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
         
@@ -160,8 +162,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   }
 
   @Override
-  public void cleanup() {    
-  }
+  public void cleanup() {}
 
 
   @Override

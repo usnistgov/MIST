@@ -63,7 +63,7 @@ import java.util.concurrent.PriorityBlockingQueue;
  * @version 1.0
  * @param <T>
  */
-public class GPUStitchingThreadExecutor<T> {
+public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHandler {
 
   private static final int BlockingQueueSize = 300;
 
@@ -88,6 +88,10 @@ public class GPUStitchingThreadExecutor<T> {
   private JProgressBar progressBar;
 
   private int numGPUs;
+
+
+  private boolean exceptionThrown;
+  private Throwable workerThrowable;
 
   /**
    * Initializes stitching thread executor
@@ -120,7 +124,11 @@ public class GPUStitchingThreadExecutor<T> {
     this.producers = new ArrayList<TileProducer<T>>();
     this.bkQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     this.ccfQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
-    
+
+    this.exceptionThrown = false;
+    this.workerThrowable = null;
+
+
     // 20 is added to reduce the amount of throttling
     int gWidth = grid.getExtentWidth();
     int gHeight = grid.getExtentHeight();
@@ -164,6 +172,9 @@ public class GPUStitchingThreadExecutor<T> {
               new CudaAllocator(), sz);
     }
 
+
+    Thread tmp;
+
     for (int i = 0; i < this.numGPUs; i++) {
       TileGridTraverser<ImageTile<T>> gridTraverser;
       gridTraverser = TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, grids.get(i));
@@ -173,7 +184,9 @@ public class GPUStitchingThreadExecutor<T> {
 
       this.producers.add(producer);
 
-      this.threads.add(new Thread(producer));
+      tmp = new Thread(producer);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
     }
 
     for (int i = 0; i < this.numGPUs; i++) {
@@ -191,9 +204,13 @@ public class GPUStitchingThreadExecutor<T> {
       this.fftWorkers.add(fftWorker);
       this.pciamWorkers.add(pciamWorker);
 
+      tmp = new Thread(fftWorker);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
 
-      this.threads.add(new Thread(fftWorker));
-      this.threads.add(new Thread(pciamWorker));
+      tmp = new Thread(pciamWorker);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
 
     }
 
@@ -204,7 +221,9 @@ public class GPUStitchingThreadExecutor<T> {
 
       this.ccfWorkers.add(ccfWorker);
 
-      this.threads.add(new Thread(ccfWorker));
+      tmp = new Thread(ccfWorker);
+      tmp.setUncaughtExceptionHandler(this);
+      this.threads.add(tmp);
     }
 
     BookKeeper<T> bookKeeper;
@@ -212,7 +231,9 @@ public class GPUStitchingThreadExecutor<T> {
 
     this.bookKeepers.add(bookKeeper);
 
-    this.threads.add(new Thread(bookKeeper));
+    tmp = new Thread(bookKeeper);
+    tmp.setUncaughtExceptionHandler(this);
+    this.threads.add(tmp);
 
     JCudaDriver.setExceptionsEnabled(false);
 
@@ -262,7 +283,6 @@ public class GPUStitchingThreadExecutor<T> {
    * Cancels the executor
    */
   public void cancel() {
-    Log.msg(LogType.MANDATORY, "Cancelling stitching thread executor");
     for (TileProducer<T> producer : this.producers)
       producer.cancel();
 
@@ -278,6 +298,21 @@ public class GPUStitchingThreadExecutor<T> {
     for (BookKeeper<T> bookKeeper : this.bookKeepers)
       bookKeeper.cancel();
 
+  }
+
+
+  @Override
+  public void uncaughtException(Thread t, Throwable e) {
+    this.exceptionThrown = true;
+    this.workerThrowable = e;
+    this.cancel();
+  }
+
+  public boolean isExceptionThrown() {
+    return this.exceptionThrown;
+  }
+  public Throwable getWorkerThrowable() {
+    return this.workerThrowable;
   }
 
 }

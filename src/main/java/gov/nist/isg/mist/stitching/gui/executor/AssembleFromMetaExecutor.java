@@ -54,9 +54,7 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   }
 
   @Override
-  public void cancelExecution() {
-
-  }
+  public void cancelExecution() {}
 
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
@@ -88,8 +86,9 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
     {
       throw new FileNotFoundException("Error parsing: " + absPosFile.getAbsolutePath());
     }
+
   }
-  
+
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
         
@@ -117,9 +116,9 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   }
 
   @Override
-  public void cleanup() {    
-  }
+  public void cleanup() {}
 
+  @Override
   public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
     return true;
   }

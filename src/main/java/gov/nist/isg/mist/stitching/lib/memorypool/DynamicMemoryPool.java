@@ -124,4 +124,8 @@ public class DynamicMemoryPool<T> {
     }
   }
 
+
+  public int getSize() {
+    return this.memoryQueue.size();
+  }
 }

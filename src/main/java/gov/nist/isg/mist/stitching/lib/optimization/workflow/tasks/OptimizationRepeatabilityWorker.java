@@ -36,10 +36,12 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
+import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -91,13 +93,18 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
     while (!this.isCancelled && !bkDone) {
       OptimizationData<T> task;
+
       try {
         task = this.tiles.take();
 
+        if (task.getType() == OptimizationData.TaskType.CANCELLED) {
+          this.isCancelled = true;
+        }
+
+
         ImageTile<T> tile = task.getTile();
 
-        if (task.getType() == OptimizationData.TaskType.OPTIMIZE_NORTH)
-        {
+        if (task.getType() == OptimizationData.TaskType.OPTIMIZE_NORTH) {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple northTrans = tile.getNorthTranslation();
@@ -138,10 +145,8 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
           task.setType(OptimizationData.TaskType.BK_CHECK_MEMORY);
           bkQueue.add(task);
-        }
 
-        else if (task.getType() == OptimizationData.TaskType.OPTIMIZE_WEST)
-        {
+        } else if (task.getType() == OptimizationData.TaskType.OPTIMIZE_WEST) {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple westTrans = tile.getWestTranslation();
@@ -181,10 +186,11 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
           task.setType(OptimizationData.TaskType.BK_CHECK_MEMORY);
           bkQueue.add(task);
-        } else if (task.getType() == OptimizationData.TaskType.BK_DONE)
-        {
+
+        } else if (task.getType() == OptimizationData.TaskType.BK_DONE) {
           bkDone = true;
           tiles.add(task);
+
         }
 
         StitchingGuiUtils.incrementProgressBar(this.progressBar);

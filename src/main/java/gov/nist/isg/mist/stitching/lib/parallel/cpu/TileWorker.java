@@ -49,6 +49,7 @@ import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 
 import javax.swing.*;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**

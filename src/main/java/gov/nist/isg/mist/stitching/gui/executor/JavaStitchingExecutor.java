@@ -28,7 +28,6 @@
 package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
@@ -58,11 +57,13 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     this.executor = null;
   }
 
+
   @Override
   public void cancelExecution() {
     if (this.executor != null)
       this.executor.cancel();
   }
+
 
 
   @Override
@@ -84,9 +85,9 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     return true;
   }
 
+
   @Override
-  public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
-  CudaException, FileNotFoundException {
+  public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if(!tile.isTileRead()) tile.readTile();
@@ -100,9 +101,12 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     StitchingGuiUtils.updateProgressBar(progressBar, false, null);
 
 
+    this.executor.execute();
+    if(this.executor.isExceptionThrown())
+      throw this.executor.getWorkerThrowable();
 
-    this.executor.execute();        
   }
+
 
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)

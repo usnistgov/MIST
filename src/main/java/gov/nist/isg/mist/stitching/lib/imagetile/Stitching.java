@@ -208,16 +208,11 @@ public class Stitching {
         Log.msgNoTime(
             LogType.HELPFUL,
             " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-                + t.getWestTranslation());
+            + t.getWestTranslation());
 
-        t.decrementFftReleaseCount();
-        west.decrementFftReleaseCount();
 
-        if (t.getFftReleaseCount() == 0)
-          t.releaseFftMemory();
-
-        if (west.getFftReleaseCount() == 0)
-          west.releaseFftMemory();
+        west.releaseFftMemory();
+        west.releasePixels();
 
       }
 
@@ -231,16 +226,14 @@ public class Stitching {
             " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName() + "\"): "
                 + t.getNorthTranslation());
 
-        t.decrementFftReleaseCount();
-        north.decrementFftReleaseCount();
 
-        if (t.getFftReleaseCount() == 0)
-          t.releaseFftMemory();
-
-        if (north.getFftReleaseCount() == 0)
-          north.releaseFftMemory();
-
+        north.releaseFftMemory();
+        north.releasePixels();
       }
+
+      t.releaseFftMemory();
+      t.releasePixels();
+
     }
 
   }

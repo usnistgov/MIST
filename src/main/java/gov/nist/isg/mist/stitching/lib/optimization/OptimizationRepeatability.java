@@ -69,7 +69,7 @@ import java.util.concurrent.BlockingQueue;
  * @version 1.0
  * @param <T>
  */
-public class OptimizationRepeatability<T> {
+public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHandler {
 
   public enum MissingSwitch
   {
@@ -101,6 +101,11 @@ public class OptimizationRepeatability<T> {
   private List<Thread> executionThreads;
   private volatile boolean isCancelled;
 
+
+  private volatile boolean exceptionThrown;
+  private Throwable workerThrowable;
+
+
   /**
    * 
    * Initializes the optimization technique using repeatability
@@ -125,6 +130,9 @@ public class OptimizationRepeatability<T> {
     this.isUserDefinedRepeatability = this.userDefinedRepeatability != 0;
     this.stitchingStatistics = stitchingStatistics;
     this.isCancelled = false;
+
+    this.exceptionThrown = false;
+    this.workerThrowable = null;
   }
 
 
@@ -218,14 +226,20 @@ public class OptimizationRepeatability<T> {
     this.producer = new TileProducer<T>(traverser, bkQueue, memoryPool);
     this.bk = new BookKeeper<T>(bkQueue, tileQueue, memoryPool, grid);
 
+    Thread tmp;
     for (int i = 0; i < numThreads; i++) {
       OptimizationRepeatabilityWorker<T> worker = new OptimizationRepeatabilityWorker<T>(tileQueue, bkQueue, this.grid, computedRepeatability, this.progressBar);
       this.optimizationWorkers.add(worker);
-      this.executionThreads.add(new Thread(worker));
+      tmp = new Thread(worker);
+      tmp.setUncaughtExceptionHandler(this);
+      tmp.setName("OptimizationWorker");
+      this.executionThreads.add(tmp);
     }
 
     Thread producer = new Thread(this.producer);
+    producer.setName("OptimizationProducer");
     Thread bk = new Thread(this.bk);
+    bk.setName("OptimizationBk");
 
     producer.start();
     bk.start();
@@ -255,7 +269,7 @@ public class OptimizationRepeatability<T> {
     this.isCancelled = true;
     if (this.optimizationWorkers != null) {
       for (OptimizationRepeatabilityWorker<T> worker : this.optimizationWorkers)
-        worker.cancelExecution();
+          worker.cancelExecution();
     }
 
     if (this.bk != null)
@@ -263,15 +277,6 @@ public class OptimizationRepeatability<T> {
 
     if (this.producer != null)
       this.producer.cancel();
-
-    if (this.executionThreads != null) {
-      for (Thread t : this.executionThreads)
-        try {
-          t.join();
-        } catch (InterruptedException e) {
-        }
-    }
-
 
   }
 
@@ -547,6 +552,21 @@ public class OptimizationRepeatability<T> {
     }
 
     return repeatability;
+  }
+
+  @Override
+  public void uncaughtException(Thread t, Throwable e) {
+    this.exceptionThrown = true;
+    this.workerThrowable = e;
+
+    this.cancelOptimization();
+  }
+
+  public boolean isExceptionThrown() {
+    return this.exceptionThrown;
+  }
+  public Throwable getWorkerThrowable() {
+    return this.workerThrowable;
   }
 
 }

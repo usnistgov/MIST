@@ -92,6 +92,9 @@ public class GlobalOptimization<T> implements Runnable {
   private boolean exceptionThrown;
   private StitchingStatistics stitchingStatistics;
 
+  private Throwable workerThrowable;
+
+
   /**
    * Constructs a global optimization execution for a grid of tiles
    * 
@@ -108,7 +111,9 @@ public class GlobalOptimization<T> implements Runnable {
     this.optimizationRepeatability = null;
     this.exceptionThrown = false;
     this.stitchingStatistics = stitchingStatistics;
+    this.workerThrowable = null;
   }
+
 
   @Override
   public void run() {
@@ -124,13 +129,20 @@ public class GlobalOptimization<T> implements Runnable {
             new OptimizationRepeatability<T>(this.grid, this.progressBar, this.params, this.stitchingStatistics);
         try {
           this.optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+
+          if(this.optimizationRepeatability.isExceptionThrown()) {
+            this.exceptionThrown = true;
+            this.workerThrowable = this.optimizationRepeatability.getWorkerThrowable();
+            Log.msg(LogType.MANDATORY,
+                    "Error occurred in optimization worker thread(s): " + workerThrowable
+                        .getMessage());
+          }
         } catch (GlobalOptimizationException e) {
           this.exceptionThrown = true;
-        }
-           catch (FileNotFoundException ex)
-           {
+          this.workerThrowable = e;
+        } catch (FileNotFoundException ex) {
                Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
-           }
+        }
         break;        
       case NONE:
         break;
@@ -153,10 +165,8 @@ public class GlobalOptimization<T> implements Runnable {
    * Gets whether an exception was thrown or not
    * @return true if an exception was thrown, otherwise false
    */
-  public boolean isExceptionThrown()
-  {
-    return this.exceptionThrown;
-  }
+  public boolean isExceptionThrown() { return this.exceptionThrown; }
 
+  public Throwable getWorkerThrowable() { return this.workerThrowable; }
 
 }

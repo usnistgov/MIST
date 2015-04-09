@@ -30,7 +30,12 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
+import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
+import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 import ij.ImagePlus;
 import ij.macro.Interpreter;
 import ij.plugin.frame.Recorder;
@@ -420,12 +425,15 @@ public class StitchingExecutor implements Runnable {
 
 
         TileGrid<ImageTile<T>> grid;
+        boolean optimizationSuccessful;
         try {
 
           grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
 
           if (grid == null)
             return;
+
+          boolean runSequential = false;
 
 
 
@@ -443,12 +451,16 @@ public class StitchingExecutor implements Runnable {
                           .getNumCPUThreads() + " threads, attempting with 1 thread for timeslice: "
                       + timeSlice);
               Log.msg(LogType.MANDATORY, "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
-              params.getAdvancedParams().setNumCPUThreads(1);
+// TODO add this back in
+//              params.getAdvancedParams().setNumCPUThreads(1);
               if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
                 Log.msg(LogType.MANDATORY,
                         "Insufficient memory to perform stitching with 1 thread, skipping timeslide: "
                         + timeSlice);
-                continue;
+//                continue;
+                runSequential = true;
+
+
               }
             }
           }
@@ -457,8 +469,27 @@ public class StitchingExecutor implements Runnable {
           initProgressBar();
           this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
+          if(runSequential) {
+            // TODO create a new stitching exectuor interface to call the sequential version
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
+            grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
 
-          stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
+//            TileGridTraverser<T> traverser = TileGridTraverserFactory.makeTraverser(
+//                TileGridTraverser.Traversals.DIAGONAL_CHAINED, grid);
+
+
+          }else {
+            stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
+          }
+
+          this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
+
+          optimizationSuccessful = optimizeAndComposeGrid(grid, this.progressBar, assembleFromMeta);
+
+          this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
+
+
+
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
           Log.msg(LogType.MANDATORY,
@@ -469,20 +500,19 @@ public class StitchingExecutor implements Runnable {
           throw new StitchingException("CUDA exception thrown: " + e.getMessage(), e);
         }
         catch (FileNotFoundException e) {
-
-          Log.msg(LogType.MANDATORY, "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: " + timeSlice);
+          Log.msg(LogType.MANDATORY,
+                  "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: "
+                  + timeSlice);
 
           if (stopExecutionIfFileNotFound)
             throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice, e);
           else
             continue;
+        } catch (Throwable e) {
+          Log.msg(LogType.MANDATORY, "Error occurred in stitching worker: " + e.getMessage());
+          throw new StitchingException("Error occurred in stitching worker", e);
         }
 
-        this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
-
-        boolean optimizationSuccessful = optimizeAndComposeGrid(this.params, grid, this.progressBar, assembleFromMeta);
-
-        this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
 
         if (this.params.getInputParams().isTimeSlicesEnabled())
         {
@@ -550,8 +580,8 @@ public class StitchingExecutor implements Runnable {
   /*
    * Returns true if the optimization was successful, otherwise false.
    */
-  private <T> boolean optimizeAndComposeGrid(StitchingAppParams params,
-      final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta) {
+  private <T> boolean optimizeAndComposeGrid(final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta)
+      throws Throwable {
 
     if (this.isCancelled)
       return false;
@@ -561,17 +591,33 @@ public class StitchingExecutor implements Runnable {
 
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Computing optimization");
 
-
     this.stitchingStatistics.startTimer(RunTimers.GlobalOptimizationTime);
-    this.globalOptimization = new GlobalOptimization<T>(grid, progressBar, params, this.stitchingStatistics);
-    Thread optimizationThread = new Thread(this.globalOptimization);
-    optimizationThread.start();
 
-    try {
-      optimizationThread.join();
-    } catch (InterruptedException e) {
-      return false;
+    GlobalOptimization.GlobalOptimizationType type = this.params.getAdvancedParams().getGlobalOpt();
+    Stitching.USE_HILLCLIMBING = this.params.getAdvancedParams().isUseHillClimbing();
+
+
+    OptimizationUtils.backupTranslations(grid);
+
+    switch (type) {
+      case COMPUTEREPEATABILITY:
+      case DEFAULT:
+        OptimizationRepeatability optimizationRepeatability =
+            new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
+                                             this.stitchingStatistics);
+
+          optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+
+          if (optimizationRepeatability.isExceptionThrown())
+            throw optimizationRepeatability.getWorkerThrowable();
+
+        break;
+      case NONE:
+        break;
+      default:
+        break;
     }
+
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalOptimizationTime);
 
@@ -580,29 +626,10 @@ public class StitchingExecutor implements Runnable {
         "Complete Global Optimization in "
             + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime));
 
-    if (this.globalOptimization.isExceptionThrown())
-    {
-      return false;
-    }
-
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Composing tiles");
 
     this.stitchingStatistics.startTimer(RunTimers.GlobalPositionTime);
-    Thread t = new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        TileGridUtils.traverseMaximumSpanningTree(grid);
-      }
-    });
-
-    t.start();
-
-    try {
-      t.join();
-    } catch (InterruptedException e) {
-      return false;
-    }
+    TileGridUtils.traverseMaximumSpanningTree(grid);
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 
@@ -704,7 +731,6 @@ public class StitchingExecutor implements Runnable {
           break;
         default:
           break;
-
       }
 
       if (blend != null) {

@@ -43,6 +43,7 @@ import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**
@@ -107,6 +108,7 @@ public class TileGPUFftWorker<T> implements Runnable {
     try {
       while (!this.isCancelled && (!this.readDone || this.workQueue.size() > 0)) {
         StitchingTask<T> task = this.workQueue.take();
+
         Debug.msg(DebugType.VERBOSE,
             "WP Task acquired: " + task.getTask() + "  size: " + this.workQueue.size());
         if (task.getTask() == TaskType.FFT) {

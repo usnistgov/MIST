@@ -155,7 +155,6 @@ public class BookKeeper<T> implements Runnable {
     public void cancel() {
         this.isCancelled = true;
         this.bkQueue.add(new OptimizationData<T>(null, null, OptimizationData.TaskType.CANCELLED));
-
     }
 
 }

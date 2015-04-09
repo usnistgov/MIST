@@ -34,7 +34,6 @@ import jcuda.driver.CUcontext;
 import jcuda.driver.JCudaDriver;
 import jcuda.jcufft.JCufft;
 import jcuda.runtime.cudaError;
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
@@ -80,7 +79,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
-      JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException, FileNotFoundException {
+      JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if(!tile.isTileRead()) tile.readTile();
@@ -99,7 +98,11 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
     tile.releasePixels();
 
-    this.gpuExecutor.execute();       
+    this.gpuExecutor.execute();
+
+    if(this.gpuExecutor.isExceptionThrown())
+      throw this.gpuExecutor.getWorkerThrowable();
+
   }
 
   @Override
@@ -137,7 +140,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       return false;
     }
   }
-  
+
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
       throws FileNotFoundException {
@@ -195,6 +198,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     CudaUtils.destroyJCUDA(this.contexts.length);    
   }
 
+  @Override
   public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
       throws FileNotFoundException {
 

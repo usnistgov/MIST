@@ -49,13 +49,13 @@ public interface StitchingExecutorInterface<T> {
    * @param timeSlice the timeslice
    * @return the grid initialized using the stitching app params
    */
-  public abstract TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
+  TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
       throws FileNotFoundException;
   
   /**
    * Cancels the execution
    */
-  public abstract void cancelExecution();
+  void cancelExecution();
 
   /**
    * Launches stitching
@@ -63,11 +63,10 @@ public interface StitchingExecutorInterface<T> {
    * @param params the stitching application parameters
    * @param progressBar the progress bar
    * @param timeSlice the timeslice
-   * @throws OutOfMemoryError
-   * @throws CudaException
-   * @throws FileNotFoundException
+   * @throws Throwable
    */
-  public abstract void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError, CudaException, FileNotFoundException;
+  void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice)
+      throws Throwable;
 
   /**
    * Checks for required libraries.
@@ -75,13 +74,13 @@ public interface StitchingExecutorInterface<T> {
    * @param displayGui whether to display gui or not
    * @return true if the libraries are available, otherwise false
    */
-  public abstract boolean checkForLibs(StitchingAppParams params, boolean displayGui);
+  boolean checkForLibs(StitchingAppParams params, boolean displayGui);
 
   
   /**
    * Cleans-up / releases any resources used by the executor
    */
-  public abstract void cleanup();
+  void cleanup();
 
 
   /**
@@ -89,7 +88,7 @@ public interface StitchingExecutorInterface<T> {
    * @param grid the image tile grid
    * @param numWorkers the number of worker threads
    */
-  public abstract <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
+  <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
       throws FileNotFoundException;
 
   

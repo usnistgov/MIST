@@ -121,11 +121,7 @@ public class ExistingFilesChecker implements Comparator<String> {
           JOptionPane.showConfirmDialog(null, panel, "Warning: Overwritting files",
               JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null);
 
-
-      if (val == JOptionPane.YES_OPTION) {
-        return true;
-      }
-      return false;
+      return val == JOptionPane.YES_OPTION;
     }
 
 

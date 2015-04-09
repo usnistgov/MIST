@@ -78,7 +78,10 @@ public class TileProducer<T> implements Runnable {
         if (pool == null) {
           tile.readTile();
         } else {
-          tile.readTile(pool.getMemory());
+          short[] tmp = pool.getMemory();
+          if(tmp.length == (tile.getWidth()*tile.getHeight()))
+            tile.readTile(tmp);
+
         }
       } catch (FileNotFoundException e) {
         Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
@@ -96,5 +99,8 @@ public class TileProducer<T> implements Runnable {
    */
   public void cancel() {
     this.isCancelled = true;
+    if(this.pool.getSize() == 0) {
+      this.pool.addMemory(new short[1]);
+    }
   }
 }
