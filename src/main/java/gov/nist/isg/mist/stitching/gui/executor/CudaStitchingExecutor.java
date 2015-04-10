@@ -29,6 +29,7 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import jcuda.CudaException;
 import jcuda.driver.CUcontext;
 import jcuda.driver.JCudaDriver;
@@ -228,11 +229,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       requiredCPUMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
     }
 
-    // pad with 100MB
-    requiredCPUMemoryBytes += 100L*1024L*1024L;
-
-
-    // TODO add in the logic to take care of the grid decomposition across multiple gpus
+// TODO test that contexts has just the GPUs selected by the user in the GUI
 
     // Check GPU side memory
     long minGPUMemory = Long.MAX_VALUE;
@@ -240,11 +237,34 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
     }
 
+    long perGPUPinnedMemory = 0;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUPinnedMemory += (long) Stitching.NUM_PEAKS * 4L;
+
+    long perGPUmemory = 0;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * 8L;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * 8L;
 
 
+    perGPUmemory += memoryPoolCount * ((long)CudaImageTile.fftSize * 2L * 8L);
 
 
-    return requiredCPUMemoryBytes < Runtime.getRuntime().maxMemory();
+    requiredCPUMemoryBytes += perGPUPinnedMemory;
+    requiredGPUMemoryBytes += (perGPUmemory + perGPUPinnedMemory);
+
+
+    // pad with 100MB
+    requiredCPUMemoryBytes += 100L*1024L*1024L;
+    requiredGPUMemoryBytes += 100L*1024L*1024L;
+
+    return (requiredCPUMemoryBytes < Runtime.getRuntime().maxMemory()) && (requiredGPUMemoryBytes < minGPUMemory);
   }
 
 }

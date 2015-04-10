@@ -290,12 +290,13 @@ public class Stitching {
       if (col > grid.getStartCol()) {
         ImageTile<?> west = grid.getTile(row, col - 1);
         t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) west,
-                (FftwImageTile) t, memory));
+                                                                          (FftwImageTile) t,
+                                                                          memory));
 
         Log.msgNoTime(
-                LogType.HELPFUL,
-                " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-                        + t.getWestTranslation());
+            LogType.HELPFUL,
+            " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
+            + t.getWestTranslation());
 
         t.decrementFftReleaseCount();
         west.decrementFftReleaseCount();
@@ -938,11 +939,11 @@ public class Stitching {
       int curYIndex = curY - minBoundY;
       int curXIndex = curX - minBoundX;
 
-      // check current
-      if (Double.isNaN(curPeak)) {
-        curPeak = getCCFUD(i1, i2, curX, curY, height, width);
-        peaks[curYIndex][curXIndex] = curPeak;
-      }
+        // check current
+        if (Double.isNaN(curPeak)) {
+          curPeak = getCCFUD(i1, i2, curX, curY, height, width);
+          peaks[curYIndex][curXIndex] = curPeak;
+        }
 
       HillClimbDirection direction = HillClimbDirection.NoMove;
 

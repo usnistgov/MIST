@@ -353,6 +353,8 @@ public class OptimizationUtils {
 
     // Compute the top stdDev based on their x,y translation
     for (ImageTile<T> tile : topTiles) {
+      if(!tile.isTileRead()) tile.readTile();
+
       ImageTile<T> neighbor = null;
       switch (dir) {
         case North:
@@ -366,6 +368,8 @@ public class OptimizationUtils {
       if (neighbor == null)
         continue;
 
+      if(!neighbor.isTileRead()) neighbor.readTile();
+
       switch (dir) {
         case North:
           tile.computeStdDevNorth(neighbor);
@@ -376,6 +380,9 @@ public class OptimizationUtils {
           stdDevList.add(tile.getLowestStdDevWest());
           break;
       }
+
+      tile.releasePixels();
+      neighbor.releasePixels();
     }
 
     double medStdDev = StatisticUtils.median(stdDevList);

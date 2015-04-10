@@ -140,16 +140,15 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    * Computes a global optimization based on computed repeatability for an image grid. This method
    * first, computes the repeatability based on 'good' tile translations. Then using the
    * repeatability provides a search range for computing an exhaustive cross correlation.
-   * @throws GlobalOptimizationException 
+   * @throws GlobalOptimizationException
    */
-  public void computeGlobalOptimizationRepeatablity() throws GlobalOptimizationException, FileNotFoundException {
-
+  public void computeGlobalOptimizationRepeatablitySequential() throws GlobalOptimizationException, FileNotFoundException {
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
-        "Optimization...", 0, 0, 0, false);
+                                        "Optimization...", 0, 0, 0, false);
 
     File directory = new File(this.params.getOutputParams().getMetadataPath());
     directory.mkdirs();
-    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(StitchingStatistics.currentTimeSlice);
+    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
     Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
     double percOverlapError = OverlapError;
@@ -164,7 +163,171 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
 
     // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
-    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(StitchingStatistics.currentTimeSlice);
+    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
+
+
+    Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
+
+    computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
+
+    if (this.isUserDefinedRepeatability) {
+      computedRepeatability = this.userDefinedRepeatability;
+    }
+
+
+    if (this.isCancelled) {
+      return;
+    }
+
+    computedRepeatability = 2 * computedRepeatability + 1;
+
+    Log.msg(LogType.HELPFUL, "Calculated Repeatability: " + computedRepeatability);
+
+    StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
+                                        this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
+
+    TileGridTraverser<ImageTile<T>> traverser =
+        TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, this.grid);
+
+    // loop over the image tiles
+    for (ImageTile<T> t : traverser) {
+      if(!t.isTileRead()) t.readTile();
+
+      int row = t.getRow();
+      int col = t.getCol();
+
+      // optimize with west neighbor
+      if (col > grid.getStartCol()) {
+        ImageTile<T> west = grid.getTile(row, col - 1);
+        if(!west.isTileRead()) west.readTile();
+        CorrelationTriple westTrans = t.getWestTranslation();
+
+        int xMin = westTrans.getX() - computedRepeatability;
+        int xMax = westTrans.getX() + computedRepeatability;
+        int yMin = westTrans.getY() - computedRepeatability;
+        int yMax = westTrans.getY() + computedRepeatability;
+
+        double oldCorr = westTrans.getCorrelation();
+        CorrelationTriple bestWest;
+        try {
+          if (Stitching.USE_HILLCLIMBING) {
+
+            bestWest =
+                Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                                                     westTrans.getY(), west, t);
+
+          } else {
+            bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, west, t);
+          }
+
+          t.setWestTranslation(bestWest);
+
+          if (!Double.isNaN(oldCorr)) {
+            // If the old correlation was a number, then it was a good translation.
+            // Increment the new translation by the value of the old correlation to increase beyond 1
+            // This will enable these tiles to have higher priority in minimum spanning tree search
+            t.getWestTranslation().incrementCorrelation(Math.floor(oldCorr));
+          }
+
+          if (t.getTileCorrelation() < bestWest.getCorrelation())
+            t.setTileCorrelation(bestWest.getCorrelation());
+
+        } catch (NullPointerException e) {
+        } finally {
+          if (progressBar != null)
+            StitchingGuiUtils.incrementProgressBar(progressBar);
+
+          west.releasePixels();
+        }
+      }
+
+
+      // optimize with north neighbor
+      if (row > grid.getStartRow()) {
+        ImageTile<T> north = grid.getTile(row - 1, col);
+        if(!north.isTileRead()) north.readTile();
+        CorrelationTriple northTrans = t.getNorthTranslation();
+
+        int xMin = northTrans.getX() - computedRepeatability;
+        int xMax = northTrans.getX() + computedRepeatability;
+        int yMin = northTrans.getY() - computedRepeatability;
+        int yMax = northTrans.getY() + computedRepeatability;
+
+        double oldCorr = northTrans.getCorrelation();
+        CorrelationTriple bestNorth;
+        try {
+          if (Stitching.USE_HILLCLIMBING) {
+
+            bestNorth =
+                Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                                                     northTrans.getY(), north, t);
+
+          } else {
+            bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, north, t);
+          }
+
+          t.setNorthTranslation(bestNorth);
+
+          if (!Double.isNaN(oldCorr)) {
+            // If the old correlation was a number, then it was a good translation.
+            // Increment the new translation by the value of the old correlation to increase beyond 1
+            // This will enable these tiles to have higher priority in minimum spanning tree search
+            t.getNorthTranslation().incrementCorrelation(Math.floor(oldCorr));
+          }
+
+          if (t.getTileCorrelation() < bestNorth.getCorrelation())
+            t.setTileCorrelation(bestNorth.getCorrelation());
+
+        } catch (NullPointerException e) {
+        } finally {
+          if (progressBar != null)
+            StitchingGuiUtils.incrementProgressBar(progressBar);
+
+          north.releasePixels();
+        }
+
+
+
+      }
+
+
+      t.releasePixels();
+    }
+
+
+
+
+  }
+
+  /**
+   * Computes a global optimization based on computed repeatability for an image grid. This method
+   * first, computes the repeatability based on 'good' tile translations. Then using the
+   * repeatability provides a search range for computing an exhaustive cross correlation.
+   * @throws GlobalOptimizationException 
+   */
+  public void computeGlobalOptimizationRepeatablity() throws GlobalOptimizationException, FileNotFoundException {
+
+    StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
+        "Optimization...", 0, 0, 0, false);
+
+    File directory = new File(this.params.getOutputParams().getMetadataPath());
+    directory.mkdirs();
+    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
+    Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
+
+    double percOverlapError = OverlapError;
+
+    if (!Double.isNaN(this.userDefinedOverlapError))
+      percOverlapError = this.userDefinedOverlapError;
+
+    int computedRepeatability;
+
+    int repeatabilityNorth = correctTranslationsModel(percOverlapError, Direction.North);
+
+    int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
+
+    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
+    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
 
     
     Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);

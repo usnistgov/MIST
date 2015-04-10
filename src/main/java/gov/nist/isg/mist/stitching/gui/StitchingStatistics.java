@@ -66,11 +66,11 @@ public class StitchingStatistics {
    * The version number for the stitching statistics
    */
   public static final double VERSION = 1.0;
+  private int currentTimeslice;
 
-  /**
-   * The current time slice number
-   */
-  public static int currentTimeSlice = 0;
+  public int getCurrentTimeslice() {
+    return currentTimeslice;
+  }
 
   /**
    * Enum representing what error report status
@@ -136,6 +136,7 @@ public class StitchingStatistics {
   // Global variables across all time-slices
   private String name;
   private StitchingAppParams runParams;
+  private int currentTimeSlice;
 
   // Used to distinguish between what actual mode was used when AUTO was
   // selected
@@ -145,6 +146,7 @@ public class StitchingStatistics {
   private long endTimeforEverything;
 
   // Variables across each time-slice
+  private List<Boolean> isRunSequential;
   private List<HashMap<String, Long>> startTimers;
   private List<HashMap<String, Long>> endTimers;
   private List<HashMap<Direction, Integer>> repeatabilities;
@@ -186,6 +188,7 @@ public class StitchingStatistics {
     this.name = name;
     this.runParams = runParams;
 
+    this.isRunSequential = new ArrayList<Boolean>();
     this.startTimers = new ArrayList<HashMap<String, Long>>();
     this.endTimers = new ArrayList<HashMap<String, Long>>();
     this.repeatabilities = new ArrayList<HashMap<Direction, Integer>>();
@@ -203,6 +206,7 @@ public class StitchingStatistics {
     this.computedOverlaps = new ArrayList<HashMap<Direction, Double>>();
     this.hasHighRepeatability = new ArrayList<HashMap<Direction, Boolean>>();
     this.hasHighPercentMissingRowCol = new ArrayList<HashMap<Direction, Boolean>>();
+    this.currentTimeSlice = 0;
 
     // Initialize HashMaps for all time slices
     int numTimeSlices = 0;
@@ -237,6 +241,7 @@ public class StitchingStatistics {
       HashMap<Direction, Boolean> highRepeatability = new HashMap<Direction, Boolean>();
       HashMap<Direction, Boolean> highPercMissRowCol = new HashMap<Direction, Boolean>();
 
+      this.isRunSequential.add(false);
       this.errorReportStatus.add(ErrorReportStatus.PASSED);
       this.startTimers.add(startTimer);
       this.endTimers.add(endTimer);
@@ -260,7 +265,7 @@ public class StitchingStatistics {
    * 
    * @param timeslice the current time slice
    */
-  public static void setCurrentTimeSlice(int timeslice) {
+  public void setCurrentTimeSlice(int timeslice) {
     currentTimeSlice = timeslice;
   }
 
@@ -346,6 +351,15 @@ public class StitchingStatistics {
   public void setOverlap(Direction dir, double overlap) {
     HashMap<Direction, Double> overlapMap = this.overlaps.get(currentTimeSlice);
     overlapMap.put(dir, overlap);
+  }
+
+  /**
+   * Sets whether the stitching experiment is running the sequential version or not
+   * for the current timeslice
+   * @param val true if running sequential, otherwise false
+   */
+  public void setIsRunSequential(boolean val) {
+    this.isRunSequential.set(currentTimeSlice, val);
   }
 
   /**
@@ -533,6 +547,17 @@ public class StitchingStatistics {
    */
   public double getOverlap(Direction dir) {
     return getOverlap(dir, currentTimeSlice);
+  }
+
+
+  /**
+   * Gets whether a timeslice is running sequential or not
+   * @param timeslice the timeslice
+   * @return true if running sequential, otherwise false
+   */
+  public boolean isRunSequential(int timeslice)
+  {
+    return this.isRunSequential.get(timeslice);
   }
 
   /**
@@ -991,6 +1016,9 @@ public class StitchingStatistics {
 
         if (this.runParams.getInputParams().isTimeSlicesEnabled())
           writer.write("Time slice: " + timeSlice + newLine);
+
+        if (this.isRunSequential(timeSlice))
+          writer.write("Running sequential version (LOW MEMORY)" + newLine);
 
         for (RunTimers timer : RunTimers.values()) {
           if (this.hasDuration(timer, timeSlice)) {

@@ -453,9 +453,9 @@ public class StitchingExecutor implements Runnable {
               params.getAdvancedParams().setNumCPUThreads(1);
               if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
                 Log.msg(LogType.MANDATORY,
-                        "Attempting to use sequential stitching, (please be patient), timeslide: "
-                        + timeSlice);
+                        "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
                 runSequential = true;
+                this.stitchingStatistics.setIsRunSequential(true);
 
               }
             }
@@ -481,7 +481,7 @@ public class StitchingExecutor implements Runnable {
 
           this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
 
-          optimizationSuccessful = optimizeAndComposeGrid(grid, this.progressBar, assembleFromMeta);
+          optimizationSuccessful = optimizeAndComposeGrid(grid, this.progressBar, assembleFromMeta, runSequential);
 
           this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
 
@@ -507,7 +507,10 @@ public class StitchingExecutor implements Runnable {
           else
             continue;
         } catch (Throwable e) {
-          Log.msg(LogType.MANDATORY, "Error occurred in stitching worker: " + e.getMessage());
+
+          Log.msg(LogType.MANDATORY, "Error occurred in stitching worker: " + e.toString());
+          for(StackTraceElement st : e.getStackTrace())
+            Log.msg(LogType.MANDATORY, st.toString());
           throw new StitchingException("Error occurred in stitching worker", e);
         }
 
@@ -578,7 +581,7 @@ public class StitchingExecutor implements Runnable {
   /*
    * Returns true if the optimization was successful, otherwise false.
    */
-  private <T> boolean optimizeAndComposeGrid(final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta)
+  private <T> boolean optimizeAndComposeGrid(final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta, boolean runSequential)
       throws Throwable {
 
     if (this.isCancelled)
@@ -604,7 +607,11 @@ public class StitchingExecutor implements Runnable {
             new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
                                              this.stitchingStatistics);
 
+        if(runSequential)
+          optimizationRepeatability.computeGlobalOptimizationRepeatablitySequential();
+        else
           optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+
 
           if (optimizationRepeatability.isExceptionThrown())
             throw optimizationRepeatability.getWorkerThrowable();

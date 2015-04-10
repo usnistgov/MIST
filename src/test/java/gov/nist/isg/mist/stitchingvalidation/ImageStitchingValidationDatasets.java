@@ -109,7 +109,7 @@ public class ImageStitchingValidationDatasets {
 
       for (StitchingType t : StitchingType.values())
       {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
+        if (t == StitchingType.AUTO || t == StitchingType.CUDA || t == StitchingType.FFTW)
           continue;
 
         if (t == StitchingType.CUDA)
@@ -120,8 +120,8 @@ public class ImageStitchingValidationDatasets {
 
         System.out.println("Stitching Type: " + t);
 
-        File metaDataPath = new File(r, t.name().toLowerCase());
-//        File metaDataPath = new File(r, "cuda5");
+//        File metaDataPath = new File(r, t.name().toLowerCase());
+        File metaDataPath = new File(r, "seq");
         params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());  
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);
