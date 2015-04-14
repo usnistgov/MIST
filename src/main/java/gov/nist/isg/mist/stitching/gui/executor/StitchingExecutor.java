@@ -541,12 +541,10 @@ public class StitchingExecutor implements Runnable {
                 this.outputMeta(grid, this.progressBar, timeSlice);
               }
 
-              if(this.params.getOutputParams().isOutputFullImage()) {
-                if (checkOutputGridMemory(grid)) {
-                  outputGrid(grid, this.progressBar, timeSlice);
-                } else {
-                  Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
-                }
+              if (checkOutputGridMemory(grid)) {
+                outputGrid(grid, this.progressBar, timeSlice);
+              } else {
+                Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
               }
             } catch (FileNotFoundException e) {
               Log.msg(LogType.MANDATORY,
