@@ -8,7 +8,7 @@ Microscopy Image Stitching Tool (MIST) is developed at the National Institute of
 
 ## Applicable Domain
 
-MIST is designed to stitch 2D image datasets. It does not address volumetric or 3d stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
+MIST is designed to stitch 2D image datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
 
 
 ## Sample Data Sets
