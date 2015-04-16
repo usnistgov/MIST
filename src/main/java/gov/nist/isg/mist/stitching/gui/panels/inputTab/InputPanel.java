@@ -194,7 +194,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     numberingOriginPanel.add(numberingPanel);
     
     
-    JButton qButton = new JButton("?");
+    JButton qButton = new JButton("Help?");
     HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("input-parameters");
     qButton.addActionListener(helpDialog);
     

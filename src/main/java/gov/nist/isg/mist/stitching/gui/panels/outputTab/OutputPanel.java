@@ -174,7 +174,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     blendingTooltipText += "</html>";
     this.blendingType.setToolTipText(blendingTooltipText);
 
-    JButton qButton = new JButton("?");
+    JButton qButton = new JButton("Help?");
     qButton.addActionListener(new HelpDocumentationViewer("output-parameters"));
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;

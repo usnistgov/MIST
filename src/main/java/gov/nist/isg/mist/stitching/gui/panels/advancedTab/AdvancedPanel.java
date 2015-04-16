@@ -128,7 +128,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
 
     GridBagConstraints c = new GridBagConstraints();
 
-    JButton qButton = new JButton("?");
+    JButton qButton = new JButton("Help?");
     
     qButton.addActionListener(new HelpDocumentationViewer("advanced-parameters-optional-"));
     
