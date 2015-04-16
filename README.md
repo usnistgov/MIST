@@ -10,14 +10,6 @@ Microscopy Image Stitching Tool (MIST) is developed at the National Institute of
 ####- [Frequently Asked Questions](https://github.com/NIST-ISG/MIST/wiki/FAQ)
 ####- Technical Documentation (Coming Soon)
 
-
-|[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|
-|[Wiki](https://github.com/NIST-ISG/MIST/wiki)|
-|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Install-Guide)|
-|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|
-|Technical Documentation (Coming Soon)|
-|-|
-
 ## Applicable Domain
 
 MIST is designed to stitch 2D image datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
