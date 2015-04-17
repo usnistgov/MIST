@@ -361,7 +361,8 @@ pre.editor-colors[mini] .scroll-view,
 <li><a href="#my-stitching-performance-is-not-good">My stitching performance is not good</a></li>
 <li><a href="#i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</a></li>
 <li><a href="#how-to-stitch-from-metadata">How to stitch from metadata</a></li>
-<li><a href="#stitching-time-slices-or-multiple-channels">Stitching time-slices or multiple channels</a></li>
+<li><a href="#stitching-time-slices">Stitching Time-Slices</a></li>
+<li><a href="#stitching-multiple-channels">Stitching Multiple Channels</a></li>
 <li><a href="#submitting-issue-or-bug-report">Submitting issue or bug report</a></li>
 </ol>
 </li>
@@ -684,7 +685,8 @@ Possible Options:</p>
 <li><a href="#my-stitching-performance-is-not-good">My stitching performance is not good</a></li>
 <li><a href="#i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</a></li>
 <li><a href="#how-to-stitch-from-metadata">How to stitch from metadata</a></li>
-<li><a href="#stitching-time-slices-or-multiple-channels">Stitching time-slices or multiple channels</a></li>
+<li><a href="#stitching-time-slices">Stitching Time-Slices</a></li>
+<li><a href="#stitching-multiple-channels">Stitching Multiple Channels</a></li>
 <li><a href="#submitting-issue-or-bug-report">Submitting issue or bug report</a></li>
 </ol>
 <hr>
@@ -737,7 +739,7 @@ Possible Options:</p>
 <p>The FFTW and CUDA modes are more memory intensive than the Java mode.</p>
 <p><strong>If you are having memory problems first attempt to stitch using the slower, but less memory intensive Java mode.</strong></p>
 <h4 id="general-memory-management">General Memory Management</h4>
-<p>MIST will attempt to avoid out of memory problems by detecting the available memory and adjusting the execution accordingly. MIST will first attempt to store all the image tiles in the image grid in memory to prevent spending time re-reading. If there is not enough memory to do this, it will enable the releasing of image tiles which will result in holding just the memory pool size images in memory and re-reading image tiles as required. If there is still not enough memory, MIST will lower the number of compute threads being used to reduce the size of the required memory pool. If all these strategies fail, MIST will run the stitching using a sequential Java version which requires a two images and two FFT data arrays in memory. With the sequential Java version the developers were able to stitch a 20x30 image tile gird consisting of 12MB image tiles using just 200MB of JVM memory. </p>
+<p>MIST will attempt to avoid out of memory problems by detecting the available memory and adjusting the execution accordingly. MIST will first attempt to store all the image tiles in the image grid in memory to prevent spending time re-reading. If there is not enough memory to do this, it will enable the releasing of image tiles which will result in holding just the memory pool size images in memory and re-reading image tiles as required. If there is still not enough memory, MIST will lower the number of compute threads being used to reduce the size of the required memory pool. If all these strategies fail, MIST will run the stitching using a sequential Java version which requires enough memory to hold two images and two FFT data arrays. </p>
 <h4 id="java-mode">Java Mode</h4>
 <p>If the Java mode does not have enough memory the first try increasing the amount of memory Java is allowed to use. </p>
 <p>If MIST is being run through ImageJ/Fiji there is a menu option controlling the amount memory it is allowed to use. Select the menu option &quot;Edit&quot; &gt;&gt; &quot;Options&quot; &gt;&gt; &quot;Memory &amp; Threads ...&quot; which opens a dialog box containing an option &quot;Maximum memory:&quot; in MB. Increase this value and select &quot;Ok&quot;. A reasonable value is about 75% of the available system memory. Restart Fiji to apply the new memory limit and re-launch MIST to see if the memory problem persists. </p>
@@ -757,41 +759,32 @@ Possible Options:</p>
 <p>The following are possible reasons for incorrect looking stitching:</p>
 <ul>
 <li><a href="#incorrect-input-parameters">Incorrect Input Parameters</a></li>
-<li><a href="#image-overlap-assumptions">Image Overlap Assumptions</a></li>
-<li><a href="#stage-actuator-movement-model">Stage Actuator Movement Model</a></li>
-<li><a href="#advanced-parameters-required">Advanced Parameters Required</a></li>
-<li><a href="#input-image-issues">Input Image Issues</a></li>
+<li><a href="#unexpected-image-overlap-variability">Unexpected Image Overlap Variability</a></li>
+<li><a href="#bad-stage-repeatability-estimate">Bad Stage Repeatability Estimate</a></li>
+<li><a href="#noisy-input-images">Noisy Input Images</a></li>
 </ul>
-<p>An explanation of the Advanced parameters is included for more detailed control</p>
 <h4 id="incorrect-input-parameters">Incorrect Input Parameters</h4>
 <p>The best way to verify the input parameters is by previewing the image grid using zero percent overlap between images. This allows you to visually check that neighboring regions look like they should overlap, and that the arrangement of images is reasonable. </p>
-<p>To generate a zero percent overlap mosaic go to the Output tab in the GUI and select <strong>Preview Mosaic With No Overlap</strong>. This will construct a no overlap mosaic. Visually ensure that the image grid look properly organized. Check for corresponding image features between regions that should overlap. Common errors include an incorrect <strong>Starting Point</strong>, <strong>Direction</strong>, <strong>Grid Width</strong>, or <strong>Grid Height</strong>.</p>
+<p>To preview a zero percent overlap mosaic go to the Output tab in the GUI and select <strong>Preview Mosaic With No Overlap</strong>. Visually ensure that the image grid looks properly organized. Check for corresponding image features between regions that should overlap. Common errors include an incorrect <strong>Starting Point</strong>, <strong>Direction</strong>, <strong>Grid Width</strong>, or <strong>Grid Height</strong>.</p>
 <p>If the zero percent overlap is taking too long to generate you can define a sub-grid using the Subgrid tab and the preview will only be generated for the subgrid.</p>
-<h4 id="image-overlap-assumptions">Image Overlap Assumptions</h4>
-<p>There are several assumptions that must hold for MIST to be able to stitch a dataset. </p>
-<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The overlaps between images must be approximately constant in the horizontal direction and approximately constant in the vertical direction. For example, the overlap between each image tile and its northern neighbor should be 10% &plusmn; 5%. The percent <strong>Overlap Uncertainty</strong> (5% in this example) is an advanced parameter with a default value of 5%. The uncertainty allows for errors in the stage movement.</p>
-<h4 id="stage-actuator-movement-model">Stage Actuator Movement Model</h4>
-<p>A motorized mechanical XY-Stage is used to move a sample with respect to the microscope&#39;s optical imaging system. This movement is done by two independent stepper motor linear actuators, one for each direction.</p>
-<p>It is important to understand the mechanical limitations of a stepper motor linear actuator with regards to its repeatability.</p>
-<p><em>Repeatability</em>: Repeatability is the ability of a device to reach a specific location multiple times. It does not take into account the trueness of the position but rather the ability to go back to that position. Many times the actuator will follow a slightly bowed or twisted path due to imperfect construction. The repeatability is the measure of uncertainty relative to a given actuator movement. The repeatability cannot be calibrated, but it can be measured for any microscope stage. Each time the stage controller requests a position value, the actual resulting position is within repeatability of the requested value.</p>
-<p>In a grid tiling, the positions (x,y), that the stage will go to, have an uncertainty equal to the stage repeatability (x &plusmn; r,y &plusmn; r). However, translations (dx,dy) computed in the vertical or horizontal directions between consecutive tiles are differences between respective positions. Thus, the uncertainty on the computed translation values is 2*repeatability (dx &plusmn; 2r,dy &plusmn; 2r).</p>
-<p>When computing vertical translations between two consecutive tiles, the dx and dy components will correspond to the projection of the stage displacement on the camera coordinate systems (which might have a fixed rotational angle) with an uncertainty equal to 2*repeatability. </p>
-<p>We use this information to estimate the stage repeatability from the computed translations.</p>
-<h4 id="advanced-parameters-required">Advanced Parameters Required</h4>
-<p>If the input parameters are correct and the image grid conforms to the expectations, then there are several advanced parameters that can be adjusted.</p>
-<p>Under the Advanced tab of the MIST GUI there are two types of parameters, those tied to <strong>Stitching Program</strong> type (Auto, Java, FFTW, CUDA), and those that are not. The parameters tied to the <strong>Stitching Program</strong> type change based on which program type is selected and are used exclusively to control runtime details of how those techniques execute; no algorithm controls are found under the <strong>Stitching Program</strong> type options.</p>
-<p>The advanced parameters that control how the MIST algorithm operates are: (<strong>Number of FFT Peaks</strong>, <strong>Stage Repeatability</strong>, <strong>Horizontal Overlap</strong>, <strong>Vertical Overlap</strong>, <strong>Overlap Uncertainty</strong>). </p>
-<p>Of these three <strong>Horizontal Overlap</strong> and <strong>Vertical Overlap</strong> are concerned with the organization of the image grid. <strong>Overlap Uncertainty</strong> is concerned with how constant the overlaps between images are. </p>
-<p>To attempt to correct a stitching results, first ensure that the computed values (generated by MIST) for the vertical and horizontal overlap are correct. These values are output to both the Log and the statistics text file (in the specified <strong>Metadata Directory</strong>). If either value does not match expectations you can override the computed values by specifying the correct one using the <strong>Horizontal Overlap</strong> and <strong>Vertical Overlap</strong> advanced parameters.</p>
-<p><strong>Overlap Uncertainty</strong> defines the amount of error allowed in the overlap between image tiles. This value is set to 5% by default. Generally this value should be altered last of any of the advanced parameters as it can only improve the stitching results when the overlaps between image tiles vary greatly. As you increase the <strong>Overlap Uncertainty</strong> the translation range filtering considers more translations valid, which improves the results if the image overlaps are variable, but will harm the results otherwise.</p>
-<p><strong>Number of FFT Peaks</strong> determines how many potential translations are tested looking for an optimal one. Increasing this value can improve the stitching at the cost of compute time.</p>
-<p><strong>Stage Repeatability</strong> allows you to override the computed repeatability. See the section on the <a href="#stage-actuator-movement-model">Stage Actuator Movement Model</a> for an explanation of the repeatability. <strong>Stage Repeatability</strong> is measured in pixels. This value should be tied to the mechanical repeatability of the XY-stage used to acquire the image grid. MIST will compute a repeatability estimate from the translations as part of stitching. If MIST estimates an unreasonably large repeatability it is advisable to limit it. Conversely, if MIST estimates an unreasonably small stage repeatability it is advisable to increase it, allowing MIST to search a slightly larger space trying to find the optimal translations. The mechanical stages the developers tested with have repeatability values of 1-5 pixels. </p>
-<h4 id="input-image-issues">Input Image Issues</h4>
-<p>If trying several different combinations of advanced parameters has not been able to fix the stitching there might be something about the input images themselves that MIST struggles with.</p>
-<p>The error metric used to compare images is not robust against noise, so noisy image can cause stitching problems. </p>
-<p>When testing the algorithm the developers encountered a test case where the image background was just Gaussian noise. To stitch this example the developers had to run the images through a preprocessing median filter, stitch the filtered images to generate the global positions file, and then use MIST&#39;s <strong>Assemble From Metadata</strong> option to use the global positions computed on the filtered images to assemble the original unfiltered images into a stitched image.</p>
-<p>See the section on <a href="#how-to-stitch-from-metadata">how to stitch from metadata</a> for details on how to stitch from metadata.</p>
-<p>The other major input image issue encountered during testing was a lack of features in the overlap region. For example, if there is nothing but smooth background in the overlap region MIST is going to have trouble aligning those images. </p>
+<h4 id="unexpected-image-overlap-variability">Unexpected Image Overlap Variability</h4>
+<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The advanced parameter percent <strong>Overlap Uncertainty</strong> (default: 5%) reflects the uncertainty in the overlap between image tiles. </p>
+<p>Set the <strong>Overlap Uncertainty</strong> to reflect the variability in the overlaps between images in your dataset.</p>
+<h4 id="bad-stage-repeatability-estimate">Bad Stage Repeatability Estimate</h4>
+<p>MIST estimates the <strong>Stage Repeatability</strong> of the mechanical XY-Stage used to acquire the image grid. </p>
+<p>The estimated repeatability is printed in the Log windows as well as in the statistics file saved in the <strong>Metadata Directory</strong>.</p>
+<p>If MIST estimates an unreasonably large <strong>Stage Repeatability</strong> it is advisable to limit it to a value you know is reasonable for your stage. Conversely, if MIST estimates an unreasonably small <strong>Stage Repeatability</strong> it is advisable to increase it, allowing MIST to search a larger space trying to find the optimal translations.</p>
+<p><strong>Stage Repeatability</strong> is measured in pixels.</p>
+<h4 id="noisy-input-images">Noisy Input Images</h4>
+<p>If the images being stitched contain a high level of noise MIST can have trouble stitching.</p>
+<p>Two potential solutions are covered here:</p>
+<ol>
+<li><p>Set the advanced parameter <strong>Number of FFT Peaks</strong> (default: 2) which determines how many potential translations are tested looking for an optimal one. In noisy datasets increasing this value can improve the stitching at the cost of compute time.</p>
+</li>
+<li><p>Pre-filter the images to remove the noise before stitching. Since there are many varieties of de-noising filters, the selection and application of a reasonable one is up to the user.</p>
+</li>
+</ol>
+<p>If pre-filtering is used it is possible to generate a stitched image from the original images using the global positions computed from the filtered images. This is done by first stitching the filtered images (to generate the global positions metadata file) and then assembling together the stitched image from the original images and the global positions from the filtered images. See the question on <a href="#how-to-stitch-from-metadata">how to stitch from metadata</a> for details on how to perform stitching from metadata.</p>
 <p>The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or <a href="https://github.com/NIST-ISG/MIST/issues">MIST Github Issues Page</a>.</p>
 <hr>
 <h2 id="what-if-the-output-stitched-image-is-too-big-to-be-saved">What if the output stitched image is too big to be saved</h2>
@@ -823,7 +816,7 @@ Possible Options:</p>
 <p>Once FFTW in installed ensure that the &quot;FFTW Library File&quot; parameter under the MIST advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.so&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;. </p>
 <hr>
 <h2 id="my-stitching-performance-is-not-good">My stitching performance is not good</h2>
-<p>There are many factors that can impact the performance of the MIST stitching. </p>
+<p>There are many factors that can impact the performance of the MIST stitching:</p>
 <ul>
 <li><a href="#image-locality">Image Locality</a></li>
 <li><a href="#memory-capacity">Memory Capacity</a></li>
@@ -832,16 +825,14 @@ Possible Options:</p>
 <h4 id="image-locality">Image Locality</h4>
 <p>The largest factor in the stitching performance is where the images are located. </p>
 <p>MIST is designed with the expectation that the image to be stitched are stored on a local internal hard drive on the computer performing the stitching.</p>
-<p>Other image source options are included here ranked from slowest to fastest.</p>
-<ul>
+<p><strong>When possible copy the images to be stitched to a local hard drive before performing stitching.</strong></p>
+<p>Other image location options are included here ranked from slowest to fastest:</p>
+<ol>
 <li>Network hard drive connected using LAN (Ethernet)</li>
-<li>Any external drive connected using USB<ul>
-<li>USB 3.0 (the blue connector) is faster than USB 2.0</li>
-</ul>
-</li>
+<li>Any external drive connected using USB</li>
 <li>Local hard drive</li>
 <li>Local SSD</li>
-</ul>
+</ol>
 <p>If the images are not local, read time will dominate the stitching time.</p>
 <h4 id="memory-capacity">Memory Capacity</h4>
 <p>If the images are stored on a local disk, the next performance bottleneck is a lack of system memory. </p>
@@ -859,14 +850,14 @@ Possible Options:</p>
 <h2 id="how-to-stitch-from-metadata">How to stitch from metadata</h2>
 <p>To stitch from metadata there must be a previous execution of MIST that generated the metadata the current stitching will use. In the previous run, MIST output several metadata files into the directory indicated by the <strong>Metadata Directory</strong> specified in the Output tab. To setup the new stitching from metadata, enter the new image grid information into the Input tab. Turn the <strong>Assemble From Metadata</strong> checkbox on. In the Output tab enter into <strong>Metadata Directory</strong> the filepath to the directory holding the metadata files from which to stitch. If you don&#39;t want to overwrite the previous run, change the output <strong>Filename Prefix</strong> so that the image about to be created is named differently than the previous one. Alternately, the <strong>Output Directory</strong> and <strong>Metadata Directory</strong> can differ from the previous run of MIST as long as you copy the global positions text file from the previous run <strong>Metadata Directory</strong> into the current run <strong>Metadata Directory</strong>.</p>
 <hr>
-<h2 id="stitching-time-slices-or-multiple-channels">Stitching time-slices or multiple channels</h2>
-<p>MIST is designed to stitch 2D image grid datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension. However, MIST has the facility for handling a sequence of independent image grid. This ability to iterate over a series of independent image grids enables both time-lapse stitching, as well as z-stack stitching. Since each stitched image grid is independent, MIST does not care whether it is iterating over time-slices, or z-stacks.</p>
-<h4 id="time-slices">Time-slices</h4>
-<p>To control time-lapse (z-stack) stitching an new special format character needs to be added to the <strong>Filename Pattern</strong> to tell MIST where in the image filenames the time-slice number is. This new special character follows all of the rules laid out in the question: <a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a>. The special text for the time-slice is &quot;{ttt}&quot;. If MIST finds one or more &quot;t&quot; characters between curly braces when parsing the <strong>Filename Pattern</strong> it will know to look for time-slices. </p>
+<h2 id="stitching-time-slices">Stitching Time-Slices</h2>
+<p>MIST is designed to stitch 2D image grid datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension. </p>
+<p>However, MIST has the facility for handling a sequence of independent image grids. This ability to iterate over a series of independent image grids enables both time-lapse stitching, as well as z-stack stitching. Since each stitched image grid is independent, MIST does not care whether it is iterating over time-slices, or z-stacks.</p>
+<p>See <a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a> for details on how to setup the <strong>Filename Pattern</strong>.</p>
 <p>To control which time-slices are stitched there is a field in the Input tab called <strong>Timeslices</strong> which takes a comma separated list and/or number range to specify the time-slice numbers you want MIST to stitch. For example, the <strong>Timeslices</strong> input could be &quot;1-25,35,45&quot; which would stitch timeslices 1 through 25, 35, and 45. </p>
-<p>See <a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a> for example <strong>Filename Pattern</strong>s.</p>
-<p>Anytime the concept time-slices was used here it can be replaced with z-slices, or any other independent set of image girds.</p>
-<h4 id="multiple-channels">Multiple channels</h4>
+<p>Any series of independent image grids can be input into MIST as time-slices in order to stitch them.</p>
+<hr>
+<h2 id="stitching-multiple-channels">Stitching Multiple Channels</h2>
 <p>MIST does not currently support the direct stitching of multiple image channels. </p>
 <p>However, by taking advantage of the assemble from metadata functionality one can perform the same task. If you have a dataset with two channels that you want to stitch, first select which channel to use for stitching. Setup and run MIST for this channel. To assemble the second channel using the same translations the first channel generated, re-launch MIST. In the input tab update the <strong>Filename Pattern</strong> to reflect the second channel. Select <strong>Assemble From Metadata</strong>. In the output tab keep the same <strong>Output Directory</strong> and <strong>Metadata Directory</strong>. Change the output filename prefix to something different than what was used for the first channel. Select <strong>Begin Stitching</strong> and MIST will use the global positions file it finds in the <strong>Metadata Directory</strong> to assemble the new channel into a stitched image. So long as the <strong>filename Prefix</strong> is different per channel there should be no name conflicts.</p>
 <p>The global positions metadata file is what MIST uses to assemble from metadata. If you want to put each channel into a different <strong>Output Directory</strong> and <strong>Metadata Directory</strong>, simply ensure that you have copied the global positions text file into the <strong>Metadata Directory</strong> of the channel you are trying to assemble from metadata.</p>
@@ -887,6 +878,5 @@ Possible Options:</p>
 </ul>
 </li>
 </ol>
-<p>If you have questions or issues regarding MIST feel free to email the developers at:</p>
-<p>nist-mist@nist.gov</p></body>
+<p>If you have questions or issues regarding MIST feel free to email the developers at: nist-mist@nist.gov</p></body>
 </html>
