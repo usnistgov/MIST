@@ -186,22 +186,12 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
     double tempJ[] = new double[super.getWidth() * super.getHeight()];
 
-    for (int i = 0; i < super.getPixels().length; i++) {
-      short val = super.getPixels()[i];
-      int temp;
-      
-      if (val < 0)
+
+    for (int r = 0; r < super.getHeight(); r++)
+      for (int c = 0; c < super.getWidth(); c++)
       {
-        temp = val & 0x7fff;
-        temp |= 0x8000;
+        tempJ[r*super.getWidth()+c] = super.getPixels().getPixelValue(c, r);
       }
-      else
-      {
-        temp = val;
-      }
-      
-      tempJ[i] = temp;
-    }
 
     this.fft = new CUdeviceptr();
     CUdeviceptr ptr = new CUdeviceptr();
@@ -235,21 +225,11 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
     ByteBuffer dBuffer = memory.getImageBuffer();
 
-    for (int i = 0; i < super.getPixels().length; i++) {
-      short val = super.getPixels()[i];
-      int temp;
-      
-      if (val < 0)
+    for (int r = 0; r < super.getHeight(); r++)
+      for (int c = 0; c < super.getWidth(); c++)
       {
-        temp = val & 0x7fff;
-        temp |= 0x8000;
+        dBuffer.putDouble((r*super.getWidth()+c)*Sizeof.DOUBLE, super.getPixels().getPixelValue(c, r));
       }
-      else
-      {
-        temp = val;
-      }
-      dBuffer.putDouble(i * Sizeof.DOUBLE, temp);
-    }
 
     CUdeviceptr fftIn = memory.getFftIn();
 

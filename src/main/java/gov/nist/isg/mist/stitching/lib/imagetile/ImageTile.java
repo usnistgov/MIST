@@ -40,6 +40,7 @@ import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.Semaphore;
 
 /**
  * Main image tile class that represents an image tile.
@@ -86,7 +87,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   private String fname;
 
   private boolean pixelsLoaded;
-  private short[] pixels;
+  private ImageProcessor pixels;
   private int bitDepth;
 
   private int rowIdx;
@@ -389,7 +390,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * @return the pixel array
    */
-  public short[] getPixels() {
+  public ImageProcessor getPixels() {
     return this.pixels;
   }
 
@@ -834,76 +835,8 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     }
 
     this.bitDepth = image.getBitDepth();
-
-    if (image.getBitDepth() == 16) {
-      this.pixels = (short[]) image.getProcessor().getPixels();
-    } else {
-
-      if (image.getBitDepth() > 16) {
-        Log.msg(Log.LogType.MANDATORY, "Warning: Down-Converting " + "Image To 16bit grayscale: "
-            + getFileName());
-      } else {
-        Log.msg(Log.LogType.INFO, "Up-Converting Image To 16bit grayscale: " + getFileName());
-      }
-
-      ImageProcessor ip = image.getProcessor().convertToShort(false);
-
-      this.pixels = (short[]) ip.getPixels();
-
-    }
-
-    this.pixelsLoaded = true;
-  }
-
-  public void readTile(short[] memory) throws FileNotFoundException
-  {
-    // If we dont have to free pixel data, then no need to wait/use the memoryPool
-    if (!freePixelData)
-    {
-      readTile();
-      return;
-    }
-
-    // Get pixel data from memory pool. This will wait until memory is available (throttling things if multiple readers)
-    this.pixels = memory;
-
-    Log.msg(LogType.INFO, "Loading image: " + this.fpath);
-
-    ImagePlus image = new ImagePlus(this.fpath);
-
-    this.width = image.getWidth();
-    this.height = image.getHeight();
-
-    if (this.width == 0 || this.height == 0) {
-      Log.msg(LogType.MANDATORY, "Error: Unable to read file: " + this.fpath);
-      Log.msg(LogType.MANDATORY,
-              "Please ensure your grid parameters are correctly setup (origin, direction, width, height)");
-
-      throw new FileNotFoundException(this.fpath);
-    }
-
-    this.bitDepth = image.getBitDepth();
-
-    short[] tempBuffer;
-
-    if (image.getBitDepth() == 16) {
-      tempBuffer = (short[]) image.getProcessor().getPixels();
-    } else {
-
-      if (image.getBitDepth() > 16) {
-        Log.msg(Log.LogType.MANDATORY, "Warning: Down-Converting " + "Image To 16bit grayscale: "
-                + getFileName());
-      } else {
-        Log.msg(Log.LogType.INFO, "Up-Converting Image To 16bit grayscale: " + getFileName());
-      }
-
-      ImageProcessor ip = image.getProcessor().convertToShort(false);
-
-      tempBuffer = (short[]) ip.getPixels();
-    }
-
-    System.arraycopy(tempBuffer, 0, this.pixels, 0, this.width*this.height);
-
+    this.pixels = image.getProcessor();
+    this.pixels.setCalibrationTable(null);
     this.pixelsLoaded = true;
   }
 
@@ -914,8 +847,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @return the image processor for the tile
    */
   public ImageProcessor getImageProcessor() {
-    ImagePlus image = new ImagePlus(this.fpath);
-    return image.getProcessor();
+    return this.pixels;
   }
 
   /**
@@ -955,16 +887,18 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   }
 
 
-  public void releasePixels(DynamicMemoryPool<short[]> memoryPool)
+  public void releasePixels(Semaphore sem)
   {
-    memoryPool.addMemory(this.pixels);
+    this.pixels = null;
     this.pixelsLoaded = false;
+    sem.release();
   }
 
-  public void releasePixelsNow(DynamicMemoryPool<short[]> memoryPool)
+  public void releasePixelsNow(Semaphore sem)
   {
-    memoryPool.addMemory(this.pixels);
+    this.pixels = null;
     this.pixelsLoaded = false;
+    sem.release();
   }
 
 
@@ -983,7 +917,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   @Override
   public String toString() {
     return "Image: " + this.fname + " path: " + this.fpath + " width: " + this.width + " height: " + this.height
-        + " contains pixels: " + (this.pixels == null ? "-1 (not loaded)" : this.pixels.length) + " abs x: "
+        + " contains pixels: " + (this.pixels == null ? "-1 (not loaded)" : this.pixels.getWidth()*this.pixels.getHeight()) + " abs x: "
         + this.absXPos + " abs y: " + this.absYPos;
   }
 

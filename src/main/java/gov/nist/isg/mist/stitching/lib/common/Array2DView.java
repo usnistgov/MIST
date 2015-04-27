@@ -31,6 +31,7 @@ package gov.nist.isg.mist.stitching.lib.common;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import ij.process.ImageProcessor;
 
 import java.awt.image.WritableRaster;
 
@@ -61,7 +62,7 @@ public class Array2DView {
   private int dataWidth;
   private int dataHeight;
 
-  private short[] data;
+  private ImageProcessor data;
 
   /**
    * @param tile
@@ -87,8 +88,8 @@ public class Array2DView {
    * @param col the column of the pixel
    * @return the value at row and column
    */
-  public double get(int row, int col) {    
-    return this.data[getIdx(row, col)];
+  public double get(int row, int col) {
+    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
   }
 
   /**
@@ -147,7 +148,7 @@ public class Array2DView {
   /**
    * @return the data
    */
-  public short[] getData() {
+  public ImageProcessor getData() {
     return this.data;
   }
 

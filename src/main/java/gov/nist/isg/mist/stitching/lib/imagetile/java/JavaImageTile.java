@@ -186,21 +186,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
       for (int c = 0; c < n1; c++) {
 
         if (r < this.getHeight() && c < this.getWidth()) {
-          
-          short val = super.getPixels()[r * this.getWidth() + c];
-          int temp;
-          
-          if (val < 0)
-          {
-            temp = val & 0x7fff;
-            temp |= 0x8000;
-          }
-          else
-          {
-            temp = val;
-          }
-          
-          this.fft[r][c] = temp;
+          this.fft[r][c] = super.getPixels().getPixelValue(c, r);
         } else {
           this.fft[r][c] = 0.0f;
         }

@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * Entry point for the global optimization: 'Optimization Repeatability'.
@@ -371,23 +372,20 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
 
 
-    DynamicMemoryPool<short[]> memoryPool = null;
+    Semaphore sem = null;
 
     if (ImageTile.freePixelData())
     {
-      ImageTile<?> initTile = grid.getSubGridTile(0, 0);
-      if (!initTile.isTileRead())
-        initTile.readTile();
-      int memoryPoolSize = Math.min(grid.getExtentWidth(), grid.getExtentHeight()) + 2 + numThreads;
-      memoryPool = new DynamicMemoryPool<short[]>(memoryPoolSize, false, new ImageAllocator(), initTile.getWidth(), initTile.getHeight());
-      initTile.releasePixels();
+      int numPermits = Math.min(grid.getExtentWidth(), grid.getExtentHeight()) + 2 + numThreads;
+      sem = new Semaphore(numPermits, true);
+
     }
 
     BlockingQueue<OptimizationData<T>> tileQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
     BlockingQueue<OptimizationData<T>> bkQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
 
-    this.producer = new TileProducer<T>(traverser, bkQueue, memoryPool);
-    this.bk = new BookKeeper<T>(bkQueue, tileQueue, memoryPool, grid);
+    this.producer = new TileProducer<T>(traverser, bkQueue, sem);
+    this.bk = new BookKeeper<T>(bkQueue, tileQueue, sem, grid);
 
     Thread tmp;
     for (int i = 0; i < numThreads; i++) {

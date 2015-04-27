@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import java.io.FileNotFoundException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * A thread dedicated to reading and allocating memory for image tiles.
@@ -49,7 +50,7 @@ public class TileProducer<T> implements Runnable {
 
   private TileGridTraverser<ImageTile<T>> traverser;
   private BlockingQueue<OptimizationData<T>> workQueue;
-  private DynamicMemoryPool<short[]> pool;
+  private Semaphore sem;
 
   private volatile boolean isCancelled;
 
@@ -61,10 +62,10 @@ public class TileProducer<T> implements Runnable {
    * @param pool the pool of memory
    */
   public TileProducer(TileGridTraverser<ImageTile<T>> traverser,
-                      BlockingQueue<OptimizationData<T>> workQueue, DynamicMemoryPool<short[]> pool) {
+                      BlockingQueue<OptimizationData<T>> workQueue, Semaphore sem) {
     this.traverser = traverser;
     this.workQueue = workQueue;
-    this.pool = pool;
+    this.sem = sem;
     this.isCancelled = false;
   }
 
@@ -75,20 +76,21 @@ public class TileProducer<T> implements Runnable {
         break;
 
       try {
-        if (pool == null) {
-          tile.readTile();
-        } else {
-          short[] tmp = pool.getMemory();
-          if(tmp.length == (tile.getWidth()*tile.getHeight()))
-            tile.readTile(tmp);
-
+        if (sem != null) {
+          sem.acquire();
         }
+
+        tile.readTile();
+
       } catch (FileNotFoundException e) {
         Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
         continue;
+      } catch (InterruptedException e) {
+        Log.msg(Log.LogType.MANDATORY, "Tile producer interupted");
+        return;
       }
 
-        this.workQueue.add(new OptimizationData<T>(tile, OptimizationData.TaskType.BK_CHECK_NEIGHBORS));
+      this.workQueue.add(new OptimizationData<T>(tile, OptimizationData.TaskType.BK_CHECK_NEIGHBORS));
 
     }
 
@@ -99,8 +101,7 @@ public class TileProducer<T> implements Runnable {
    */
   public void cancel() {
     this.isCancelled = true;
-    if(this.pool.getSize() == 0) {
-      this.pool.addMemory(new short[1]);
-    }
+    if (this.sem != null)
+      this.sem.release();
   }
 }
