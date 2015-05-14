@@ -55,15 +55,31 @@ public class ImageStitchingRunTime {
   private static String validationRootFolder = "C:\\Users\\tjb3\\StitchingPaperDatasets";
   private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
-  private static int NUM_RUNS = 10;
+  private static int NUM_RUNS = 25;
 
   public static void main(String [] args)
   {
 
-
     if (args.length > 0)
     {
-      validationRootFolder = args[0];
+      switch(args.length)
+      {
+        case 1:
+          validationRootFolder = args[0];
+          break;
+        case 2:
+          validationRootFolder = args[0];
+          fftwPlanPath = args[1];
+          break;
+        case 3:
+          validationRootFolder = args[0];
+          fftwPlanPath = args[1];
+          fftwLibraryPath = args[2];
+          break;
+        default:
+          System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath>");
+          break;
+      }
     }
 
 
@@ -87,7 +103,7 @@ public class ImageStitchingRunTime {
 
     StitchingAppParams params;
 
-    File runtimeResults = new File(validationRootFolder + "\\runtimes.txt");
+    File runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
     try {
       FileWriter writer = new FileWriter(runtimeResults);
       writer.write("testCase, relDispTime, globalOptTime, fullImageTime, totalTime" + "\n");
@@ -96,6 +112,11 @@ public class ImageStitchingRunTime {
 
         if (!r.isDirectory())
           continue;
+
+//        if (!r.getName().contains("Worms")) {
+//          System.out.println("Skipping " + r.getName());
+//          continue;
+//        }
 
         params = new StitchingAppParams();
 

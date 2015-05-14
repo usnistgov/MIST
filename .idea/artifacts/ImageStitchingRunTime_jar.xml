@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ImageStitchingRunTime.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ImageStitchingRunTime_jar</output-path>
+    <root id="archive" name="ImageStitchingRunTime.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="MIST_" />
+      <element id="module-test-output" name="MIST_" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/android/tools/dx/1.7/dx-1.7.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/nativelibs4java/bridj/0.6.2/bridj-0.6.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/edu/mines/mines-jtk/20100113/mines-jtk-20100113.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcufft/6.5/jcufft-6.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcuda/6.5/jcuda-6.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
