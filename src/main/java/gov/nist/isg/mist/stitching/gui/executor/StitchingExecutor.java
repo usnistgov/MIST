@@ -692,8 +692,9 @@ public class StitchingExecutor implements Runnable {
                                           this.params.getOutputParams().getRelPosFile(timeSlice));
 
     // relative positions no optimization
-    Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams()
-        .getRelPosNoOptFile(timeSlice));
+    if(this.params.getOutputParams().isOutputMeta())
+      Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams()
+          .getRelPosNoOptFile(timeSlice));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,

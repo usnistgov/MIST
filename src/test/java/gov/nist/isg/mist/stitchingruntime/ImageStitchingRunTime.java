@@ -42,6 +42,9 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ImageStitchingRunTime {
 
@@ -52,9 +55,14 @@ public class ImageStitchingRunTime {
   private static final String STITCHING_PARAMS_FILE = "statistics.txt";
 
 
-  private static String validationRootFolder = "C:\\Users\\tjb3\\StitchingPaperDatasets";
-  private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
-  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
+//  private static String validationRootFolder = "C:\\Users\\tjb3\\StitchingPaperDatasets";
+//private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
+//  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
+
+  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data";
+  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
+  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
+
   private static int NUM_RUNS = 25;
 
   public static void main(String [] args)
@@ -106,17 +114,21 @@ public class ImageStitchingRunTime {
     File runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
     try {
       FileWriter writer = new FileWriter(runtimeResults);
-      writer.write("testCase, relDispTime, globalOptTime, fullImageTime, totalTime" + "\n");
+      writer.write("testCase, totalTime" + "\n");
 
       for (File r : roots) {
 
         if (!r.isDirectory())
           continue;
 
-//        if (!r.getName().contains("Worms")) {
-//          System.out.println("Skipping " + r.getName());
-//          continue;
-//        }
+        if (!r.getName().contains("Paper_Sample")) {
+          System.out.println("Skipping " + r.getName());
+          continue;
+        }
+
+
+
+
 
         params = new StitchingAppParams();
 
@@ -135,20 +147,17 @@ public class ImageStitchingRunTime {
         params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
         params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
         params.getOutputParams().setOutputMeta(false);
-        params.getOutputParams().setOutputPath(r.getAbsolutePath() + "\\results");
+        params.getOutputParams().setOutputPath(r.getAbsolutePath() + File.separator + "RunTimeResults");
+        // set the metadata path to the output path
+        params.getOutputParams().setMetadataPath(r.getAbsolutePath() + File.separator + "meta");
 
-//      params.getOutputParams().setOutputFullImage(false);
-//      params.getOutputParams().setDisplayStitching(false);
+      params.getOutputParams().setOutputFullImage(false);
+      params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
 
         for (StitchingType t : StitchingType.values()) {
           String testCase = t.toString() + "-" + r.getName();
-
-          long globalOptTime = 0L;
-          long outputFullImageTime = 0L;
-          long relDispTime = 0L;
-          long totalTime = 0L;
 
           if (t == StitchingType.AUTO || t == StitchingType.JAVA)
             continue;
@@ -157,6 +166,9 @@ public class ImageStitchingRunTime {
             if (!cudaPanel.isCudaAvailable())
               continue;
           }
+
+
+          List<Long> runtimes = new ArrayList<Long>();
 
           for (int run = 0; run < NUM_RUNS; run++) {
 
@@ -179,14 +191,14 @@ public class ImageStitchingRunTime {
             }
 
             StitchingStatistics stats = executor.getStitchingStatistics();
-            globalOptTime += stats.getDuration(StitchingStatistics.RunTimers.GlobalOptimizationTime);
-            outputFullImageTime += stats.getDuration(StitchingStatistics.RunTimers.OutputFullImageTileTime);
-            relDispTime += stats.getDuration(StitchingStatistics.RunTimers.RelativeDisplacementTime);
-            totalTime += stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime);
+            runtimes.add(stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime));
 
           }
 
-          writer.write(testCase + ", " + relDispTime/NUM_RUNS + ", " + globalOptTime/NUM_RUNS + ", " + outputFullImageTime/NUM_RUNS + ", " + totalTime/NUM_RUNS + "\n");
+          Collections.sort(runtimes);
+          int midIdx = runtimes.size()/2;
+          double medianValue = runtimes.get(midIdx);
+          writer.write(testCase + ", " + medianValue + "\n");
           writer.flush();
         }
 

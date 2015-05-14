@@ -102,9 +102,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeslice the timeslice
    * @return the hill climbing starting position name
    */
-  public static String getHillClimbStartingPositionsName(int timeslice)
+  public String getHillClimbStartingPositionsName(int timeslice)
   {
-    return hillClimbPosFilename + "-" + timeslice + metadataSuffix;
+    return this.outFilePrefix + hillClimbPosFilename + "-" + timeslice + metadataSuffix;
   }
   
   /**
@@ -121,9 +121,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the absolute positions filename
    */
-  public static String getAbsPosFileName(int timeSlice)
+  public String getAbsPosFileName(int timeSlice)
   {
-    return absPosFilename + "-" + timeSlice + metadataSuffix;
+    return this.outFilePrefix +  absPosFilename + "-" + timeSlice + metadataSuffix;
   }
   
   /**
@@ -131,9 +131,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the relative positions filename
    */
-  public static String getRelPosFileName(int timeSlice)
+  public String getRelPosFileName(int timeSlice)
   {
-    return relPosFilename + "-" + timeSlice + metadataSuffix;
+    return this.outFilePrefix + relPosFilename + "-" + timeSlice + metadataSuffix;
   }
 
   /**
@@ -141,9 +141,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the relative positions before optimization filename
    */
-  public static String getRelPosNoOptFileName(int timeSlice)
+  public String getRelPosNoOptFileName(int timeSlice)
   {
-    return relPosNoOptFilename + "-" + timeSlice + metadataSuffix;
+    return this.outFilePrefix + relPosNoOptFilename + "-" + timeSlice + metadataSuffix;
   }
 
   /**
@@ -152,7 +152,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getStatsFile()
   {
-    return new File(this.metadataPath, this.getStatFileName());
+    return new File(this.outputPath, this.getStatFileName());
   }
 
   /**

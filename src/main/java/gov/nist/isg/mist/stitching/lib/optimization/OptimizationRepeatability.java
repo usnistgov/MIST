@@ -147,9 +147,12 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
                                         "Optimization...", 0, 0, 0, false);
 
     File directory = new File(this.params.getOutputParams().getMetadataPath());
-    directory.mkdirs();
+    if(this.params.getOutputParams().isOutputMeta())
+      directory.mkdirs();
+
     File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
-    Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
+    if(this.params.getOutputParams().isOutputMeta())
+      Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
     double percOverlapError = OverlapError;
 
@@ -166,7 +169,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
 
 
-    Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
+    if(this.params.getOutputParams().isOutputMeta())
+      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
 
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
@@ -311,9 +315,12 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         "Optimization...", 0, 0, 0, false);
 
     File directory = new File(this.params.getOutputParams().getMetadataPath());
-    directory.mkdirs();
+    if(this.params.getOutputParams().isOutputMeta())
+      directory.mkdirs();
+
     File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
-    Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
+    if(this.params.getOutputParams().isOutputMeta())
+      Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
     double percOverlapError = OverlapError;
 
@@ -329,8 +336,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
     File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
 
-    
-    Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
+    if(this.params.getOutputParams().isOutputMeta())
+      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
     
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
