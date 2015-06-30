@@ -103,13 +103,13 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
-      params.getOutputParams().setOutputFullImage(false);
+      params.getOutputParams().setOutputFullImage(true);
       params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
       for (StitchingType t : StitchingType.values())
       {
-        if (t == StitchingType.AUTO || t == StitchingType.CUDA || t == StitchingType.FFTW)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
           continue;
 
         if (t == StitchingType.CUDA)
@@ -121,7 +121,7 @@ public class ImageStitchingValidationDatasets {
         System.out.println("Stitching Type: " + t);
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
-        File metaDataPath = new File(r, "seq");
+        File metaDataPath = new File(r, "cuda");
         params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());  
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);

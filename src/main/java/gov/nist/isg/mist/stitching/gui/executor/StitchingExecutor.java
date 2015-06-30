@@ -36,7 +36,9 @@ import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.MessageDialog;
 import ij.macro.Interpreter;
 import ij.plugin.frame.Recorder;
 import jcuda.CudaException;
@@ -558,6 +560,31 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.stopEndToEndTimer();
     this.stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
+    
+    if(displayGui) {
+
+      boolean displayWarningDialog = false;
+      for (RangeParam timeSliceParam : timeSlices) {
+        int minTimeSlice = timeSliceParam.getMin();
+        int maxTimeSlice = timeSliceParam.getMax();
+
+        for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
+          String str = this.stitchingStatistics.runErrorChecks(timeSlice);
+          if(!str.equals(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
+            displayWarningDialog = true;
+          }
+        }
+      }
+
+      if(displayWarningDialog) {
+        File statsFile = this.params.getOutputParams().getStatsFile();
+        String warnStr = "Stitching experiment(s) generated warnings.\nFor details check the log or the statistics file:\n" + statsFile.getAbsolutePath();
+        new MessageDialog(IJ.getInstance(),"Stitching Warning",warnStr);
+      }
+
+
+    }
+
 
     this.executor.cleanup();
   }

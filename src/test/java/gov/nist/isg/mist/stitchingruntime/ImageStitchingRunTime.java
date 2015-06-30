@@ -121,10 +121,10 @@ public class ImageStitchingRunTime {
         if (!r.isDirectory())
           continue;
 
-        if (!r.getName().contains("Paper_Sample")) {
-          System.out.println("Skipping " + r.getName());
-          continue;
-        }
+//        if (!r.getName().contains("Paper_Sample")) {
+//          System.out.println("Skipping " + r.getName());
+//          continue;
+//        }
 
 
 
