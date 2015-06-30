@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationDa
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * A thread dedicated to managing the state, dependencies, and freeing memory of image tiles.
@@ -49,7 +50,7 @@ public class BookKeeper<T> implements Runnable {
 
     private BlockingQueue<OptimizationData<T>> bkQueue;
     private BlockingQueue<OptimizationData<T>> workQueue;
-    private DynamicMemoryPool<short[]> memoryPool;
+    private Semaphore sem;
 
     private int tile_count;
 
@@ -60,15 +61,15 @@ public class BookKeeper<T> implements Runnable {
     /**
      * @param bkQueue
      * @param workQueue
-     * @param memoryPool
+     * @param sem
      * @param grid
      */
     public BookKeeper(BlockingQueue<OptimizationData<T>> bkQueue,
-                      BlockingQueue<OptimizationData<T>> workQueue, DynamicMemoryPool<short[]> memoryPool,
+                      BlockingQueue<OptimizationData<T>> workQueue, Semaphore sem,
                       TileGrid<ImageTile<T>> grid) {
         this.bkQueue = bkQueue;
         this.workQueue = workQueue;
-        this.memoryPool = memoryPool;
+        this.sem = sem;
         this.tile_count = 0;
         this.grid = grid;
         this.isCancelled = false;
@@ -123,17 +124,17 @@ public class BookKeeper<T> implements Runnable {
                     neighbor.decrementPixelDataReleaseCount();
 
                     if (tile.getPixelDataReleaseCount() == 0) {
-                        if (memoryPool == null)
+                        if (sem == null)
                             tile.releasePixels();
                         else
-                            tile.releasePixels(memoryPool);
+                            tile.releasePixels(sem);
                     }
 
                     if (neighbor.getPixelDataReleaseCount() == 0) {
-                        if (memoryPool == null)
+                        if (sem == null)
                             neighbor.releasePixels();
                         else
-                            neighbor.releasePixels(memoryPool);
+                            neighbor.releasePixels(sem);
                     }
                 }
 

@@ -160,22 +160,12 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
     Pointer<Double> fftIn = FFTW3Library.fftw_alloc_real(super.getWidth() * super.getHeight());
     this.fft = FFTW3Library.fftw_alloc_complex(fftSize);
 
-    for (int i = 0; i < super.getPixels().length; i++) {
-      short val = super.getPixels()[i];
-      int temp;
-      
-      if (val < 0)
+
+    for (long r = 0; r < super.getHeight(); r++)
+      for (long c = 0; c < super.getWidth(); c++)
       {
-        temp = val & 0x7fff;
-        temp |= 0x8000;
+        fftIn.setDoubleAtIndex(r*super.getWidth()+c, super.getPixels().getPixelValue((int)c, (int)r));
       }
-      else
-      {
-        temp = val;
-      }
-      
-      fftIn.setDoubleAtIndex(i, temp);
-    }
 
     FFTW3Library.fftw_execute_dft_r2c(plan_fwd, fftIn, this.fft);
     FFTW3Library.fftw_free(fftIn);
@@ -192,24 +182,12 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
 
     if (super.isMemoryLoaded()) {
       this.fftIn = memory.getFFTInP();
-      for (int i = 0; i < super.getPixels().length; i++) {
-
-        short val = super.getPixels()[i];
-        int temp;
-        
-        if (val < 0)
+      int count = 0;
+      for (long r = 0; r < super.getHeight(); r++)
+        for (long c = 0; c < super.getWidth(); c++)
         {
-          temp = val & 0x7fff;
-          temp |= 0x8000;
+          fftIn.setDoubleAtIndex(r*super.getWidth()+c, super.getPixels().getPixelValue((int)c, (int)r));
         }
-        else
-        {
-          temp = val;
-        }
-        
-        this.fftIn.setDoubleAtIndex(i, temp);
-
-      }
 
       FFTW3Library.fftw_execute_dft_r2c(plan_fwd, this.fftIn, this.fft);
     }

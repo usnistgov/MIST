@@ -123,7 +123,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public String getAbsPosFileName(int timeSlice)
   {
-    return this.outFilePrefix +  absPosFilename + "-" + timeSlice + metadataSuffix;
+    return this.outFilePrefix + absPosFilename + "-" + timeSlice + metadataSuffix;
   }
   
   /**
@@ -152,7 +152,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getStatsFile()
   {
-    return new File(this.outputPath, this.getStatFileName());
+    return new File(this.metadataPath, this.getStatFileName());
   }
 
   /**
