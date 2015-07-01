@@ -560,10 +560,11 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.stopEndToEndTimer();
     this.stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
-    
+
     if(displayGui) {
 
-      boolean displayWarningDialog = false;
+      int displayWarningDialog = 0;
+      String accumulatedWarningString = "";
       for (RangeParam timeSliceParam : timeSlices) {
         int minTimeSlice = timeSliceParam.getMin();
         int maxTimeSlice = timeSliceParam.getMax();
@@ -571,18 +572,22 @@ public class StitchingExecutor implements Runnable {
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           String str = this.stitchingStatistics.runErrorChecks(timeSlice);
           if(!str.equals(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
-            displayWarningDialog = true;
+            displayWarningDialog++;
+            accumulatedWarningString = accumulatedWarningString + str + "\n";
           }
         }
       }
 
-      if(displayWarningDialog) {
+      if(displayWarningDialog > 0) {
         File statsFile = this.params.getOutputParams().getStatsFile();
-        String warnStr = "Stitching experiment(s) generated warnings.\nFor details check the log or the statistics file:\n" + statsFile.getAbsolutePath();
+        String warnStr = "Stitching experiment(s) generated warnings:\n \n";
+        if(displayWarningDialog == 1) {
+          warnStr = warnStr + accumulatedWarningString + "\n \n";
+        }
+        warnStr = warnStr + "For more details check the log or the statistics file:\n" + statsFile
+            .getAbsolutePath();
         new MessageDialog(IJ.getInstance(),"Stitching Warning",warnStr);
       }
-
-
     }
 
 
