@@ -34,17 +34,12 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
-import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
-import java.io.FileNotFoundException;
-import java.util.Random;
+
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class that represents a thread that computes a cross correlation search.
@@ -119,9 +114,15 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
           try {
             if (Stitching.USE_HILLCLIMBING) {
 
-              bestNorth =
-                      Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                              northTrans.getY(), neighbor, tile);
+              if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestNorth =
+                    Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                                                       northTrans.getY(), neighbor, tile);
+              }else{
+                bestNorth =
+                    Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                                                         northTrans.getY(), neighbor, tile);
+              }
 
 
             } else {
@@ -161,9 +162,15 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
           try {
             if (Stitching.USE_HILLCLIMBING) {
-              bestWest =
-                      Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                              westTrans.getY(), neighbor, tile);
+              if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestWest =
+                    Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                                                       westTrans.getY(), neighbor, tile);
+              }else {
+                bestWest =
+                    Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                                                         westTrans.getY(), neighbor, tile);
+              }
             } else {
               bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, neighbor, tile);
             }

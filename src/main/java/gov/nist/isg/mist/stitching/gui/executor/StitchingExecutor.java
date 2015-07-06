@@ -571,7 +571,7 @@ public class StitchingExecutor implements Runnable {
 
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           String str = this.stitchingStatistics.runErrorChecks(timeSlice);
-          if(!str.equals(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
+          if(!str.contains(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
             displayWarningDialog++;
             accumulatedWarningString = accumulatedWarningString + str + "\n";
           }

@@ -38,8 +38,6 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
-import gov.nist.isg.mist.stitching.lib.memorypool.ImageAllocator;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.Direction;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.DisplacementValue;
 import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
@@ -217,9 +215,15 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         try {
           if (Stitching.USE_HILLCLIMBING) {
 
-            bestWest =
-                Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+            if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+              bestWest =
+                  Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
                                                      westTrans.getY(), west, t);
+            }else{
+              bestWest =
+                  Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                                                       westTrans.getY(), west, t);
+            }
 
           } else {
             bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, west, t);
@@ -263,9 +267,15 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         try {
           if (Stitching.USE_HILLCLIMBING) {
 
-            bestNorth =
-                Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+            if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+              bestNorth =
+                  Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
                                                      northTrans.getY(), north, t);
+            }else{
+              bestNorth =
+                  Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                                                       northTrans.getY(), north, t);
+            }
 
           } else {
             bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, north, t);
@@ -533,11 +543,11 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
       if(this.isUserDefinedRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                   + " direction. Repeatability has been set to zero.");
-      }else{
-        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
                                    + " direction. Repeatability has been set to " +
                                    this.userDefinedRepeatability + " (advanced options value).");
+      }else{
+        Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
+                                   + " direction. Repeatability has been set to zero.");
       }
 
       // replace with translation estimated from overlap

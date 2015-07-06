@@ -72,6 +72,10 @@ public class Stitching {
    */
   public static boolean USE_HILLCLIMBING = true;
 
+  // use an exhaustive search of +-(2r+1) instead of hill climbing
+  public static boolean USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH = false;
+
+
   /**
    * The number of FFT peaks to check
    */
@@ -313,7 +317,8 @@ public class Stitching {
         ImageTile<?> north = grid.getTile(row - 1, col);
 
         t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) north,
-            (FftwImageTile) t, memory));
+                                                                           (FftwImageTile) t,
+                                                                           memory));
 
         Log.msgNoTime(
             LogType.HELPFUL,
@@ -404,10 +409,11 @@ public class Stitching {
         ImageTile<CUdeviceptr> north = grid.getTile(row - 1, col);
 
         t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentCuda((CudaImageTile) north,
-            (CudaImageTile) t, memory, stream));
+                                                                           (CudaImageTile) t,
+                                                                           memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName()
-            + "\"): " + t.getNorthTranslation());
+                                 + "\"): " + t.getNorthTranslation());
 
         t.decrementFftReleaseCount();
         north.decrementFftReleaseCount();
@@ -995,6 +1001,66 @@ public class Stitching {
     return new CorrelationTriple(curPeak, curX, curY);
   }
 
+
+  /**
+   * Computes cross correlation search with hill climbing (up-down)
+   *
+   * @param minBoundX min x boundary
+   * @param maxBoundX max x boundary
+   * @param minBoundY min y boundary
+   * @param maxBoundY max y bounadary
+   * @param startX start x position for hill climb
+   * @param startY start y position for hill climb
+   * @param i1 the first image for CCF computation (north/west neighbor)
+   * @param i2 the second image for CCF computation (current)
+   * @return the highest correlation triple within the bounding box using hill climbing
+   */
+  public static <T> CorrelationTriple computeCCF_Exhaustive_UD(int minBoundX, int maxBoundX,
+                                                                 int minBoundY, int maxBoundY, int startX, int startY, ImageTile<T> i1, ImageTile<T> i2) {
+    int width = i1.getWidth();
+    int height = i1.getHeight();
+
+    int maxX = startX;
+    int maxY = startY;
+    double curPeak = Double.NaN;
+    double maxPeak = Double.NEGATIVE_INFINITY;
+
+    minBoundY = Math.max(minBoundY, 0);
+    minBoundY = Math.min(minBoundY, height);
+
+    maxBoundY = Math.max(maxBoundY, 0);
+    maxBoundY = Math.min(maxBoundY, height);
+
+    minBoundX = Math.max(minBoundX, -width);
+    minBoundX = Math.min(minBoundX, width);
+
+    maxBoundX = Math.max(maxBoundX, -width);
+    maxBoundX = Math.min(maxBoundX, width);
+
+
+    for(int curX = minBoundX; curX <= maxBoundX; curX++) {
+      for(int curY = minBoundY; curY <= maxBoundY; curY++) {
+
+        curPeak = getCCFUD(i1, i2, curX, curY, height, width);
+        if(curPeak >= maxPeak) {
+          maxPeak = curPeak;
+          maxX = curX;
+          maxY = curY;
+        }
+
+      }
+    }
+
+    if (Double.isNaN(maxPeak) || Double.isInfinite(curPeak)) {
+      maxX = startX;
+      maxY = startY;
+      maxPeak = -1.0;
+    }
+
+    return new CorrelationTriple(maxPeak, maxX, maxY);
+  }
+
+
   /**
    * Computes the cross correlation function (up-down)
    * 
@@ -1188,6 +1254,67 @@ public class Stitching {
 
     return new CorrelationTriple(curPeak, curX, curY);
   }
+
+
+  /**
+   * Computes cross correlation search with hill climbing (left-right)
+   *
+   * @param minBoundX min x boundary
+   * @param maxBoundX max x boundary
+   * @param minBoundY min y boundary
+   * @param maxBoundY max y bounadary
+   * @param startX start x position for hill climb
+   * @param startY start y position for hill climb
+   * @param i1 the first image for CCF computation (north/west neighbor)
+   * @param i2 the second image for CCF computation (current)
+   * @return the highest correlation triple within the bounding box using hill climbing
+   */
+  public static CorrelationTriple computeCCF_Exhaustive_LR(int minBoundX, int maxBoundX,
+                                                             int minBoundY, int maxBoundY, int startX, int startY, ImageTile<?> i1, ImageTile<?> i2) {
+    int width = i1.getWidth();
+    int height = i1.getHeight();
+
+    int maxX = startX;
+    int maxY = startY;
+    double curPeak = Double.NaN;
+    double maxPeak = Double.NEGATIVE_INFINITY;
+
+    minBoundY = Math.max(minBoundY, -height);
+    minBoundY = Math.min(minBoundY, height);
+
+    maxBoundY = Math.max(maxBoundY, -height);
+    maxBoundY = Math.min(maxBoundY, height);
+
+    minBoundX = Math.max(minBoundX, 0);
+    minBoundX = Math.min(minBoundX, width);
+
+    maxBoundX = Math.max(maxBoundX, 0);
+    maxBoundX = Math.min(maxBoundX, width);
+
+    for(int curX = minBoundX; curX <= maxBoundX; curX++) {
+      for(int curY = minBoundY; curY <= maxBoundY; curY++) {
+
+        curPeak = getCCFLR(i1, i2, curX, curY, height, width);
+        if(curPeak >= maxPeak) {
+          maxPeak = curPeak;
+          maxX = curX;
+          maxY = curY;
+        }
+
+      }
+    }
+
+    if (Double.isNaN(maxPeak) || Double.isInfinite(curPeak)) {
+      maxX = startX;
+      maxY = startY;
+      maxPeak = -1.0;
+    }
+
+    return new CorrelationTriple(maxPeak, maxX, maxY);
+  }
+
+
+
 
 
   /**
