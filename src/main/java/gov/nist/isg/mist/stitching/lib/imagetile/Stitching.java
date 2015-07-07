@@ -73,6 +73,7 @@ public class Stitching {
   public static boolean USE_HILLCLIMBING = true;
 
   // use an exhaustive search of +-(2r+1) instead of hill climbing
+  // This is a debugging tool, it is computationally very expensive
   public static boolean USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH = false;
 
 
