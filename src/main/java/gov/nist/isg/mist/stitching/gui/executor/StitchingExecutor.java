@@ -171,7 +171,6 @@ public class StitchingExecutor implements Runnable {
     this.progressLabel = null;
     this.isCancelled = false;
     this.imageExporter = null;
-    this.stitchingStatistics = new StitchingStatistics(this.params);
   }
 
   @Override
@@ -323,7 +322,7 @@ public class StitchingExecutor implements Runnable {
    */
   @SuppressWarnings("unchecked")
   public <T> void runStitching(boolean assembleFromMeta, boolean displayGui, boolean stopExecutionIfFileNotFound) throws StitchingException {
-
+    this.stitchingStatistics = new StitchingStatistics(this.params);
     if (GraphicsEnvironment.isHeadless() || Interpreter.isBatchMode())
       displayGui = false;
 
@@ -500,12 +499,15 @@ public class StitchingExecutor implements Runnable {
         catch (FileNotFoundException e) {
           Log.msg(LogType.MANDATORY,
                   "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: "
-                  + timeSlice);
+                          + timeSlice);
 
           if (stopExecutionIfFileNotFound)
             throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice, e);
           else
             continue;
+        } catch (IllegalArgumentException e) {
+          throw new StitchingException("Illegal argument: " + e.getMessage(), e);
+
         } catch (Throwable e) {
 
           Log.msg(LogType.MANDATORY, "Error occurred in stitching worker: " + e.toString());

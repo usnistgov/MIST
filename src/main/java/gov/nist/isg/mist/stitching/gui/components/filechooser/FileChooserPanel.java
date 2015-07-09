@@ -101,6 +101,15 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
     this.input.setBackground(Color.WHITE);
   }
 
+  @Override
+  public void setEnabled(boolean enabled)
+  {
+    super.setEnabled(enabled);
+    label.setEnabled(enabled);
+    input.setEnabled(enabled);
+    button.setEnabled(enabled);
+  }
+
   /**
    * Sets the value for the file chooser
    * 

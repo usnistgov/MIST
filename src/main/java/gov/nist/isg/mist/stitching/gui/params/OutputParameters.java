@@ -54,8 +54,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String BLENDING_MODE = "blendingMode";
   private static final String BLENDING_ALPHA = "blendingAlpha";
   
-  private static final String metadataSuffix = ".txt";
-  private static final String absPosFilename = "global-positions";
+  public static final String metadataSuffix = ".txt";
+  public static final String absPosFilename = "global-positions";
   private static final String relPosFilename = "relative-positions";
   private static final String relPosNoOptFilename = "relative-positions-no-optimization";
   private static final String fullImgFilename = "stitched";
