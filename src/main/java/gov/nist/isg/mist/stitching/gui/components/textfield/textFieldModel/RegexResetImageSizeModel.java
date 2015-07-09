@@ -47,9 +47,10 @@ public class RegexResetImageSizeModel extends RegexModel {
    * @param regex the regex to check
    * @param errorText the error text associated with this validator
    * @param outputPanel the output panel to reset image size
+   * @param invalidStrings the invalid strings for this validator
    */
-  public RegexResetImageSizeModel(String regex, String errorText, OutputPanel outputPanel) {
-    super(regex, errorText);
+  public RegexResetImageSizeModel(String regex, String errorText, OutputPanel outputPanel, String ... invalidStrings) {
+    super(regex, errorText, invalidStrings);
     this.outputPanel = outputPanel;
   }
 

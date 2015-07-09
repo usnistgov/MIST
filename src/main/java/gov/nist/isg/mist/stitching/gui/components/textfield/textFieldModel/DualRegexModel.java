@@ -38,11 +38,10 @@ import java.util.regex.Pattern;
  * @version 1.0
  * 
  */
-public class DualRegexModel implements TextFieldModel<String> {
+public class DualRegexModel extends InvalidTextModel {
 
   private Pattern pattern1;
   private Pattern pattern2;
-  private String errorText;
 
   /**
    * Creates a regex validator based on a given regex
@@ -50,15 +49,19 @@ public class DualRegexModel implements TextFieldModel<String> {
    * @param regex1 the first regex to check
    * @param regex2 the second regex to check
    * @param errorText the error text associated with this validator
+   * @param invalidStrings the invalid strings for this validator
    */
-  public DualRegexModel(String regex1, String regex2, String errorText) {
+  public DualRegexModel(String regex1, String regex2, String errorText, String ... invalidStrings) {
+    super(errorText, invalidStrings);
     this.pattern1 = Pattern.compile(regex1);
     this.pattern2 = Pattern.compile(regex2);
-    this.errorText = errorText;
   }
 
   @Override
   public boolean validateText(String val) {
+    if (!super.validateText(val))
+      return false;
+
     Matcher matcher1 = this.pattern1.matcher(val);
     Matcher matcher2 = this.pattern2.matcher(val);
     if (!matcher1.find() || matcher1.groupCount() != 3 || !matcher2.find()
@@ -67,25 +70,5 @@ public class DualRegexModel implements TextFieldModel<String> {
     }
     return true;
   }
-
-  @Override
-  public String getErrorMessage() {
-    return this.errorText;
-  }
-
-  @Override
-  public String getModelValue(String val) {
-    return val;
-  }
-
-  @Override
-  public String setModelValue(String val) {
-    return val;
-  }
-
-  @Override
-  public void updateTextFields() {    
-  }
-
 
 }

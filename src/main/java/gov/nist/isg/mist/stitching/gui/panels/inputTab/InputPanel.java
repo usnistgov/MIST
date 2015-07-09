@@ -130,11 +130,11 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
     this.sequentialValidator =
         new RegexResetImageSizeModel(SequentialTileGridLoader.positionPattern,
-            SequentialTileGridLoader.patternExample, outputPanel);
+            SequentialTileGridLoader.patternExample, outputPanel, "%");
 
     this.rowColValidator =
         new DualRegexResetImageSizeModel(RowColTileGridLoader.rowPattern,
-            RowColTileGridLoader.colPattern, RowColTileGridLoader.patternExample, outputPanel);
+            RowColTileGridLoader.colPattern, RowColTileGridLoader.patternExample, outputPanel, "%");
 
 
     this.filenamePattern =

@@ -50,17 +50,17 @@ public class DualRegexResetImageSizeModel extends DualRegexModel {
    * @param regex2 the second regex to check
    * @param errorText the error text associated with this validator
    * @param outputPanel the output panel to reference to reset image size
+   * @param invalidStrings the invalid strings for this validator
    */
   public DualRegexResetImageSizeModel(String regex1, String regex2, String errorText,
-      OutputPanel outputPanel) {
-    super(regex1, regex2, errorText);
+      OutputPanel outputPanel, String ... invalidStrings) {
+    super(regex1, regex2, errorText, invalidStrings);
 
     this.outputPanel = outputPanel;
   }
 
   @Override
   public boolean validateText(String val) {
-
     if (super.validateText(val)) {
       this.outputPanel.resetImageDimensions();
       return true;

@@ -28,41 +28,62 @@
 
 package gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Validator that checks values based on a regex
+ * Validator that checks values based on a two regex
  * 
  * @author Tim Blattner
  * @version 1.0
  * 
  */
-public class RegexModel extends InvalidTextModel {
+public class InvalidTextModel implements TextFieldModel<String> {
 
-  private Pattern pattern;
+  private List<String> invalidText;
+  private String errorText;
 
   /**
    * Creates a regex validator based on a given regex
-   * 
-   * @param regex the regex to check
+   *
+   * @param invalidStrings the array of invalid strings
    * @param errorText the error text associated with this validator
    */
-  public RegexModel(String regex, String errorText, String ... invalidStrings) {
-    super(errorText, invalidStrings);
-    this.pattern = Pattern.compile(regex);
+  public InvalidTextModel(String errorText, String ... invalidStrings) {
+    this.invalidText = Arrays.asList(invalidStrings);
+    this.errorText = errorText;
   }
 
   @Override
   public boolean validateText(String val) {
-    if (!super.validateText(val))
-      return false;
+    for (String s : this.invalidText)
+      if (val.contains(s))
+        return false;
 
-    Matcher matcher = this.pattern.matcher(val);
-    if (!matcher.find() || matcher.groupCount() != 3) {
-      return false;
-    }
     return true;
   }
+
+  @Override
+  public String getErrorMessage() {
+    return this.errorText;
+  }
+
+  @Override
+  public String getModelValue(String val) {
+    return val;
+  }
+
+  @Override
+  public String setModelValue(String val) {
+    return val;
+  }
+
+  @Override
+  public void updateTextFields() {    
+  }
+
 
 }
