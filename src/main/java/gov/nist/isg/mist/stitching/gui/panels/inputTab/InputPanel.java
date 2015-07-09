@@ -28,7 +28,9 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.inputTab;
 
+import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
+import gov.nist.isg.mist.stitching.gui.params.OutputParameters;
 import ij.ImagePlus;
 import gov.nist.isg.mist.stitching.gui.components.filechooser.DirectoryChooserPanel;
 import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
@@ -103,6 +105,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   private JComboBox gridNumbering;
 
   private JCheckBox assembleFromMeta;
+  private FileChooserPanel globalPositionFile;
 
   private int startTimeSlice;
   private int endTimeSlice;
@@ -116,6 +119,8 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
   private GridDirection savedDirection;
 
+  private OutputPanel outputPanel;
+
   /**
    * Initializes the input panel
    * 
@@ -123,7 +128,8 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
    * @param outputPanel the output panel that contains image size
    */
   public InputPanel(SubgridPanel subgridPanel, OutputPanel outputPanel) {
-    
+    this.outputPanel = outputPanel;
+
     this.positionLoaded = false;
 
     this.filenamePatternType = new JComboBox(LoaderType.values());
@@ -154,6 +160,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.assembleFromMeta = new JCheckBox("Assemble from metadata", false);
     this.assembleFromMeta.setToolTipText("<html>Composes image based on metadata."
         + "<br>Uses absolute positions file from metadata directory</html>");
+    this.assembleFromMeta.addActionListener(this);
+
+    this.globalPositionFile = new FileChooserPanel("Global Positions File");
 
     this.timeSlices =
         new TextFieldInputPanel<List<RangeParam>>("Timeslices", "", new TimeslicesModel());
@@ -197,8 +206,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     JButton qButton = new JButton("Help?");
     HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("input-parameters");
     qButton.addActionListener(helpDialog);
-    
-    
+
+    updateGlobalPositionFile();
+
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;
     inputPanel.add(qButton, c);
@@ -220,14 +230,17 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     inputPanel.add(this.assembleFromMeta, c);
 
     c.gridy = 6;
-    inputPanel.add(widthHeightPanel, c);
+    inputPanel.add(globalPositionFile, c);
 
     c.gridy = 7;
+    inputPanel.add(widthHeightPanel, c);
+
+    c.gridy = 8;
     inputPanel.add(this.timeSlices, c);
 
     OrientationPanel orientationPanel = new OrientationPanel(this);
 
-    c.gridy = 8;
+    c.gridy = 9;
     c.anchor = GridBagConstraints.CENTER;
     inputPanel.add(orientationPanel, c);
 
@@ -273,6 +286,12 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     return this.fileChooser;
   }
 
+  /**
+   * Gets the global position file panel
+   *
+   * @return the global position file panel
+   */
+  public FileChooserPanel getGlobalPositionFile() { return this.globalPositionFile; }
 
 
   /**
@@ -556,6 +575,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.plateHeight.setValue(params.getInputParams().getGridHeight());
     this.filenamePattern.setValue(params.getInputParams().getFilenamePattern());
     this.assembleFromMeta.setSelected(params.getInputParams().isAssembleFromMetadata());
+    this.globalPositionFile.setValue(params.getInputParams().getGlobalPositionsFile());
 
     GridDirection numbering = params.getInputParams().getNumbering();    
     
@@ -581,6 +601,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
     this.filenamePatternType.setSelectedItem(lt);
 
+    updateGlobalPositionFile();
+
+    this.globalPositionFile.setValue(params.getInputParams().getGlobalPositionsFile());
 
     disableLoadingParams();
   }
@@ -676,6 +699,10 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     params.getInputParams().setOrigin(origin);
     params.getInputParams().setNumbering(numbering);
     params.getInputParams().setAssembleFromMetadata(this.assembleFromMeta.isSelected());
+    if (this.isAssembleWithMetadata())
+      params.getInputParams().setGlobalPositionsFile(this.globalPositionFile.getValue());
+    else
+      params.getInputParams().setGlobalPositionsFile("");
     params.getInputParams().setFilenamePatternLoaderType(lt);
     params.getInputParams().setTimeSlices(timeSliceParam);
     params.getInputParams().setTimeSlicesEnabled(this.hasTimeSlices);    
@@ -702,6 +729,20 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
           this.gridNumbering.setEnabled(true);
           break;
       }
+    }
+    else if (e.getSource() == this.assembleFromMeta)
+    {
+      this.updateGlobalPositionFile();
+    }
+  }
+
+  private void updateGlobalPositionFile()
+  {
+    this.globalPositionFile.setEnabled(this.isAssembleWithMetadata());
+    if (this.isAssembleWithMetadata())
+    {
+      // Update the field
+      this.globalPositionFile.setValue(this.outputPanel.getMetadataPath().getValue() + File.separator + this.outputPanel.getPrefix() + OutputParameters.absPosFilename + "-{t}" + OutputParameters.metadataSuffix);
     }
   }
 

@@ -27,6 +27,7 @@
 package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
 import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
@@ -65,7 +66,26 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
   CudaException, FileNotFoundException {
 
-    File absPosFile = params.getOutputParams().getAbsPosFile(timeSlice);
+    String absPosFilename = params.getInputParams().getGlobalPositionsFile();
+    String parsedFilename;
+
+    if (!TileGridLoaderUtils.hasTimeFilePattern(absPosFilename) && params.getInputParams().isTimeSlicesEnabled())
+    {
+      throw new IllegalArgumentException("Timeslices are being used. The global positions filename should contain '{t}' to represent the timeslice.");
+    }
+
+    if (TileGridLoaderUtils.hasTimeFilePattern(absPosFilename))
+    {
+      parsedFilename = TileGridLoaderUtils.parseTimeSlicePattern(absPosFilename, timeSlice, true);
+    }
+    else
+    {
+      parsedFilename = absPosFilename;
+    }
+
+
+
+    File absPosFile = new File(parsedFilename); //params.getOutputParams().getAbsPosFile(timeSlice);
 
     if (!absPosFile.exists()) {
       Log.msg(LogType.MANDATORY, "Error: Global position file does not exist for timeslice "

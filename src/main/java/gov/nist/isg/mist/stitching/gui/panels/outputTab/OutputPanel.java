@@ -226,6 +226,20 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
   }
 
   /**
+   * Gets the metadata path
+   * @return the metadata path
+   */
+  public DirectoryChooserPanel getMetadataPath()
+  {
+    return this.metadataPath;
+  }
+
+  public String getPrefix(){
+    return this.filePrefixName.getValue();
+  }
+
+
+  /**
    * Resets the image dimensions that is shown in the output panel
    */
   public void resetImageDimensions() {

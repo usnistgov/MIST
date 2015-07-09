@@ -309,10 +309,10 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   @Override
   public void loadParamsIntoGUI(StitchingAppParams params) {
     enableLoadingParams();
-    this.inputPanel.loadParamsIntoGUI(params);
     this.outputPanel.loadParamsIntoGUI(params);
     this.advancedPanel.loadParamsIntoGUI(params);
     this.subgridPanel.loadParamsIntoGUI(params);
+    this.inputPanel.loadParamsIntoGUI(params);
     this.helpPanel.loadParamsIntoGUI(params);
     disableLoadingParams();
   }

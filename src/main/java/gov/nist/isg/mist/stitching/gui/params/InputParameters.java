@@ -68,6 +68,8 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String EXTENT_HEIGHT = "extentHeight";
   private static final String TIME_SLICES = "timeSlices";
   private static final String IS_TIME_SLICES_ENABLED = "isTimeSlicesEnabled";
+  private static final String GLOBAL_POSITIONS_FILE = "globalPositionsFile";
+
   
   
   private int gridWidth;
@@ -79,6 +81,8 @@ public class InputParameters implements StitchingAppParamFunctions {
   private GridOrigin origin;
   private GridDirection numberingPattern;
   private boolean assembleFromMetadata;
+
+  private String globalPositionsFile;
 
   private int startRow;
   private int startCol;
@@ -100,6 +104,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = GridOrigin.UR;
     this.numberingPattern = GridDirection.VERTICALCOMBING;
     this.assembleFromMetadata = false;
+    this.globalPositionsFile = "";
 
     // Processing Options
     this.startRow = 0;
@@ -287,6 +292,8 @@ public class InputParameters implements StitchingAppParamFunctions {
               this.numberingPattern = GridDirection.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(ASSEMBLE_FROM_META))
               this.assembleFromMetadata = StitchingParamUtils.loadBoolean(contents[1], this.assembleFromMetadata);
+            else if (contents[0].equals(GLOBAL_POSITIONS_FILE))
+              this.globalPositionsFile = contents[1];
             else if (contents[0].equals(START_ROW))
               this.startRow = StitchingParamUtils.loadInteger(contents[1], this.startRow);
             else if (contents[0].equals(START_COL))
@@ -334,6 +341,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = PreferencesUtils.loadPrefGridOrigin(pref, GRID_ORIGIN, this.origin.name());
     this.numberingPattern = PreferencesUtils.loadPrefGridNumbering(pref, NUMBERING_PATTERN, this.numberingPattern.name());
     this.assembleFromMetadata = pref.getBoolean(ASSEMBLE_FROM_META, this.assembleFromMetadata);
+    this.globalPositionsFile = pref.get(GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
     this.startRow = pref.getInt(START_ROW, this.startRow);
     this.startCol = pref.getInt(START_COL, this.startCol);
     this.extentWidth = pref.getInt(EXTENT_WIDTH, this.extentWidth);
@@ -357,6 +365,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, GRID_ORIGIN + ": " + this.origin);
     Log.msg(logLevel, NUMBERING_PATTERN + ": " + this.numberingPattern);
     Log.msg(logLevel, ASSEMBLE_FROM_META + ": " + this.assembleFromMetadata);
+    Log.msg(logLevel, GLOBAL_POSITIONS_FILE + ": " + this.globalPositionsFile);
     Log.msg(logLevel, START_ROW + ": " + this.startRow);
     Log.msg(logLevel, START_COL + ": " + this.startCol);
     Log.msg(logLevel, EXTENT_WIDTH + ": " + this.extentWidth);
@@ -386,6 +395,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = MacroUtils.loadMacroGridOrigin(macroOptions, GRID_ORIGIN, this.origin.name());
     this.numberingPattern = MacroUtils.loadMacroGridNumbering(macroOptions, "numberingPattern", this.numberingPattern.name());
     this.assembleFromMetadata = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_FROM_META, this.assembleFromMetadata);
+    this.globalPositionsFile = MacroUtils.loadMacroString(macroOptions, GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
     this.startRow = MacroUtils.loadMacroInteger(macroOptions, START_ROW, this.startRow);
     this.startCol = MacroUtils.loadMacroInteger(macroOptions, START_COL, this.startCol);
     this.extentWidth = MacroUtils.loadMacroInteger(macroOptions, EXTENT_WIDTH, this.extentWidth);
@@ -405,6 +415,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordString(FILENAME_PATTERN_TYPE + ": ", this.filenamePatternType.name());
     MacroUtils.recordString(GRID_ORIGIN + ": ", this.origin.name());
     MacroUtils.recordBoolean(ASSEMBLE_FROM_META + ": ", this.assembleFromMetadata);
+    MacroUtils.recordString(GLOBAL_POSITIONS_FILE + ": ", this.globalPositionsFile);
     MacroUtils.recordString(NUMBERING_PATTERN + ": ", this.numberingPattern.name());
     MacroUtils.recordInteger(START_ROW + ": ", this.startRow);
     MacroUtils.recordInteger(START_COL + ": ", this.startCol);
@@ -425,6 +436,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     pref.put(FILENAME_PATTERN_TYPE, this.filenamePatternType.name());
     pref.put(GRID_ORIGIN, this.origin.name());
     pref.putBoolean(ASSEMBLE_FROM_META, this.assembleFromMetadata);
+    pref.put(GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
     pref.put(NUMBERING_PATTERN, this.numberingPattern.name());
     pref.putInt(START_ROW, this.startRow);
     pref.putInt(START_COL, this.startCol);
@@ -449,6 +461,7 @@ public class InputParameters implements StitchingAppParamFunctions {
       fw.write(GRID_ORIGIN + ": " + this.origin.name() + newLine);
       fw.write(NUMBERING_PATTERN + ": " + this.numberingPattern.name() + newLine);
       fw.write(ASSEMBLE_FROM_META + ": " + this.assembleFromMetadata + newLine);
+      fw.write(GLOBAL_POSITIONS_FILE + ": " + this.globalPositionsFile + newLine);
       fw.write(START_ROW + ": " + this.startRow + newLine);
       fw.write(START_COL + ": " + this.startCol + newLine);
       fw.write(EXTENT_WIDTH + ": " + this.extentWidth + newLine);
@@ -735,5 +748,19 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.timeSlices = timeSlices;
   }
 
+  /**
+   * Gets the global position file
+   * @return the global position file
+   */
+  public String getGlobalPositionsFile() {
+    return globalPositionsFile;
+  }
+
+  /**
+   * @param globalPositionsFile the global position file to set
+   */
+  public void setGlobalPositionsFile(String globalPositionsFile) {
+    this.globalPositionsFile = globalPositionsFile;
+  }
 
 }
