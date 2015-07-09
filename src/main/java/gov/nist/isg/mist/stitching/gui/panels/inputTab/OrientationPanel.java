@@ -30,6 +30,7 @@ package gov.nist.isg.mist.stitching.gui.panels.inputTab;
 import gov.nist.isg.mist.stitching.gui.images.AppImageHelper;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,6 +49,7 @@ public class OrientationPanel extends JPanel implements ActionListener {
   private static final long serialVersionUID = 1L;
   private JComboBox originComponent;
   private JComboBox gridNumberingComponent;
+  private JComboBox gridType;
   private String fileName;
 
   private JLabel picLabel;
@@ -62,6 +64,7 @@ public class OrientationPanel extends JPanel implements ActionListener {
     super(new BorderLayout());
     this.originComponent = inputPanel.getOriginComponent();
     this.gridNumberingComponent = inputPanel.getGridNumberingComponent();
+    this.gridType = inputPanel.getFilenamePatternType();
 
     updateFilename();
 
@@ -76,10 +79,19 @@ public class OrientationPanel extends JPanel implements ActionListener {
     String origin = this.originComponent.getSelectedItem().toString();
     String numbering = this.gridNumberingComponent.getSelectedItem().toString();
 
-    origin = origin.replace(" ", "");
-    numbering = numbering.replace(" ", "");
+    TileGridLoader.LoaderType filenameLoaderType = (TileGridLoader.LoaderType)this.gridType.getSelectedItem();
 
-    this.fileName = origin + "_" + numbering + ".png";
+    if(filenameLoaderType.equals(TileGridLoader.LoaderType.ROWCOL)) {
+      origin = origin.replace(" ", "");
+      this.fileName = "RowCol_" + origin + ".png";
+    }else{
+      // this is a sequential file loader
+      origin = origin.replace(" ", "");
+      numbering = numbering.replace(" ", "");
+      this.fileName = origin + "_" + numbering + ".png";
+    }
+
+
     try {
       this.icon = AppImageHelper.loadImage(this.fileName, 300, 200);
     } catch (FileNotFoundException e) {
@@ -91,7 +103,6 @@ public class OrientationPanel extends JPanel implements ActionListener {
       this.picLabel.setIcon(this.icon);
     }
     this.repaint();
-
 
   }
 
