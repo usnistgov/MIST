@@ -331,6 +331,16 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   }
 
   /**
+   * Gets the file pattern loader
+   *
+   * @return the file pattern loader
+   */
+  public JComboBox getFilenamePatternType() {
+    return this.filenamePatternType;
+  }
+
+
+  /**
    * Gets the grid numbering that the user specified
    * 
    * @return the grid numbering
