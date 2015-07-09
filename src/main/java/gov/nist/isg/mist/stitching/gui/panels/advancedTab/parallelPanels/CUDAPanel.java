@@ -85,14 +85,17 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
       this.isCudaAvailable = true;
 
     } catch (UnsatisfiedLinkError ex) {
-      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option. ("+ ex.getMessage() +")");
+      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
+      Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
     }
     catch (NoClassDefFoundError ex) {
-      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option. ("+ ex.getMessage() +")");
+      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
+      Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
     } catch (CudaException ex) {
-      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option. ("+ ex.getMessage() +")");
+      Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
+      Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
     }   
   }
