@@ -447,18 +447,23 @@ public class StitchingExecutor implements Runnable {
 
             if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
               Log.msg(LogType.MANDATORY,
-                      "Insufficient memory to perform stitching with " + params.getAdvancedParams()
-                          .getNumCPUThreads() + " threads, attempting with 1 thread for timeslice: "
+                      "Insufficient memory to perform stitching with " + params
+                          .getAdvancedParams()
+                          .getNumCPUThreads()
+                      + " threads, attempting with 1 thread for timeslice: "
                       + timeSlice);
-              Log.msg(LogType.MANDATORY, "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
+              Log.msg(LogType.MANDATORY,
+                      "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
 
               params.getAdvancedParams().setNumCPUThreads(1);
               if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
-                Log.msg(LogType.MANDATORY,
-                        "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
-                runSequential = true;
-                this.stitchingStatistics.setIsRunSequential(true);
-
+                // only perform stitching memory checks if not assembling from metadata
+                if(!params.getInputParams().isAssembleFromMetadata()) {
+                  Log.msg(LogType.MANDATORY,
+                          "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
+                  runSequential = true;
+                  this.stitchingStatistics.setIsRunSequential(true);
+                }
               }
             }
           }
