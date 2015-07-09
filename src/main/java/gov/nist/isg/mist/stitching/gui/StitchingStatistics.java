@@ -50,7 +50,7 @@ import java.util.List;
 
 /**
  * Creates an object that manages statistics for a stitching execution. Execution times, parameters
- * used, and observered results are stored (such as computed repeatability and overlap)
+ * used, and observed results are stored (such as computed repeatability and overlap)
  * 
  * @author Tim Blattner
  * @version 1.0
@@ -1007,10 +1007,10 @@ public class StitchingStatistics {
         }
       }
 
-      writer.write(newLine + "Execution timing (ms) and general information:" + newLine);
+      writer.write(newLine + "Execution timing and general information:" + newLine);
       writer.write("Statistics Output Version: " + VERSION + newLine);
       writer.write(newLine);
-      writer.write("Total time for experiment(s): " + this.getEndToEndDuration() + newLine);
+      writer.write("Total time for experiment (ms): " + this.getEndToEndDuration() + newLine);
 
       for (int timeSlice : this.timeSlicesRun) {
 
@@ -1022,7 +1022,7 @@ public class StitchingStatistics {
 
         for (RunTimers timer : RunTimers.values()) {
           if (this.hasDuration(timer, timeSlice)) {
-            writer.write(timer.toString() + ": " + this.getDuration(timer, timeSlice) + newLine);
+            writer.write(timer.toString() + " (ms): " + this.getDuration(timer, timeSlice) + newLine);
           }
         }
 
