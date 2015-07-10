@@ -473,7 +473,7 @@ public class OptimizationUtils {
     Log.msg(LogType.INFO, "Computing overlap for " + dir.name() + " direction using Maximum Likelihood Estimation.");
 
 
-    // TODO update this to use multipoint hill climbing (n points, half random half in grid)
+    // TODO update this to use multipoint hill climbing (n points in a grid)
 //    using n starting points, run hill climbing n times.
 //    half of the n points are randomly selected starting points, the other half form a grid within the valid search space.
 //    store the already computed ncc points so that if multiple hill climbs hit the same place it wont recompute.

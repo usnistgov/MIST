@@ -164,12 +164,10 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
 
-    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
-    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
-
-
-    if(this.params.getOutputParams().isOutputMeta())
-      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
+//    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
+//    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
+//    if(this.params.getOutputParams().isOutputMeta())
+//      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
 
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
@@ -344,11 +342,10 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
 
-    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
-    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
-
-    if(this.params.getOutputParams().isOutputMeta())
-      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
+//    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
+//    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
+//    if(this.params.getOutputParams().isOutputMeta())
+//      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
     
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 

@@ -456,7 +456,7 @@ public class StitchingExecutor implements Runnable {
 
               params.getAdvancedParams().setNumCPUThreads(1);
               if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
-                // only perform stitching memory checks if not assembling from metadata
+                // only run sequential stitching if not assembling from metadata
                 if(!params.getInputParams().isAssembleFromMetadata()) {
                   Log.msg(LogType.MANDATORY,
                           "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
