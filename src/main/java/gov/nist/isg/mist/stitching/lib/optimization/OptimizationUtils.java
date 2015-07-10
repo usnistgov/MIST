@@ -56,7 +56,7 @@ public class OptimizationUtils {
 
   private static final double CorrelationThreshold = 0.5;
   private static final int NumTopCorrelations = 5;
-  private static final double CorrelationWeight = 4.0;
+  private static final double CorrelationWeight = 3.0;
   public static OverlapType OVERLAP_TYPE = OverlapType.Heuristic;
   private static final double MLE_ACCURACY = 0.05;
 
