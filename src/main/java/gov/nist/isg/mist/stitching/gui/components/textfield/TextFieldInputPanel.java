@@ -144,8 +144,6 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
       questionButton.setMargin(insets);
 
       questionButton.addActionListener(this);
-      // TODO: Will need to remove this
-//      add(questionButton);
 
     }
 

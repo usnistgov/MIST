@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.GlobalOptimization.GlobalOptimizationType;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   // Global Optimization
   private GlobalOptimizationType globalOpt;
   private boolean useHillClimbing;
+  private OptimizationUtils.OverlapType overlapComputationType;
 
   // Advanced options
   private int stageRepeatability;
@@ -128,6 +130,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.verticalOverlap = Double.NaN;
     this.numFFTPeaks = 0;
     this.overlapUncertainty = Double.NaN;
+    // default overlap computation method is the heuristic
+    this.overlapComputationType = OptimizationUtils.OverlapType.Heuristic;
   }
 
   @Override
@@ -651,6 +655,18 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   public void setGlobalOpt(GlobalOptimizationType globalOpt) {
     this.globalOpt = globalOpt;
   }
+
+  /**
+   * @param optType the overlap computation type to set
+   */
+  public void setOverlapComputationType(OptimizationUtils.OverlapType optType) {
+    this.overlapComputationType = optType;
+  }
+
+  public OptimizationUtils.OverlapType getOverlapComputationType() {
+    return this.overlapComputationType;
+  }
+
 
   /**
    * @return the useHillClimbing

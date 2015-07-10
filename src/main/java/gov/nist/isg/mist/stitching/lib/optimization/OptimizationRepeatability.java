@@ -461,6 +461,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
   private double getOverlap(Direction dir, DisplacementValue dispValue, double percOverlapError) throws FileNotFoundException {
 
+    // TODO insert the overlap computation type control code
+    OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
+
     double overlap = Double.NaN;
     switch (dir) {
       case West:
@@ -469,7 +472,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
           overlap = this.userDefinedHorizontalOverlap;
         }else{
           // compute the overlap from translations
-          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError);
+          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError, overlapComputationType);
         }
         break;
       case North:
@@ -478,7 +481,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
           overlap = this.userDefinedVerticalOverlap;
         }else{
           // compute the overlap from translations
-          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError);
+          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError, overlapComputationType);
         }
         break;
       default:

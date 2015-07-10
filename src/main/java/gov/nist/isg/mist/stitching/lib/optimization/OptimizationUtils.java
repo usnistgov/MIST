@@ -472,6 +472,13 @@ public class OptimizationUtils {
   public static <T> double getOverlapMLE(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double pou) throws GlobalOptimizationException, FileNotFoundException{
     Log.msg(LogType.INFO, "Computing overlap for " + dir.name() + " direction using Maximum Likelihood Estimation.");
 
+
+    // TODO update this to use multipoint hill climbing (n points, half random half in grid)
+//    using n starting points, run hill climbing n times.
+//    half of the n points are randomly selected starting points, the other half form a grid within the valid search space.
+//    store the already computed ncc points so that if multiple hill climbs hit the same place it wont recompute.
+
+
     // get valid range for translations given the direction
     int range = getOverlapRange(grid, dispValue);
 
@@ -697,6 +704,7 @@ public class OptimizationUtils {
     return range;
   }
 
+
     /**
      * Calculates the overlap for a given direction
      *
@@ -704,19 +712,19 @@ public class OptimizationUtils {
      * @param dir the direction
      * @param dispValue the displacement value
      * @param percOverlapError the overlap error
+     * @param overlapType the type over overlap computation
      * @return the overlap
      */
   public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispValue, double percOverlapError) throws FileNotFoundException  {
+      DisplacementValue dispValue, double percOverlapError, OverlapType overlapType) throws FileNotFoundException  {
     Log.msg(LogType.VERBOSE,
         "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
-
 
     int size = getOverlapRange(grid, dispValue);
     double med;
     List<CorrelationTriple> topCorrelations;
     double overlap = 0;
-    switch(OVERLAP_TYPE) {
+    switch(overlapType) {
       case Heuristic:
         topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
         med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
