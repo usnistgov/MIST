@@ -446,7 +446,7 @@ pre.editor-colors[mini] .scroll-view,
 <p>* <strong>Image Directory</strong> - The directory where the source images are located. Select browse to open a directory browser.</p>
 <p>* <strong>Starting Point</strong> - The starting point of the microscope scan. Possible options: <strong>Upper Left</strong>, <strong>Upper Right</strong>, <strong>Lower Left</strong>, and <strong>Lower Right</strong>.</p>
 <p>* <strong>Direction</strong> - The direction the microscope moves. Possible options: <strong>Vertical Combing</strong>, <strong>Vertical Continuous</strong>, <strong>Horizontal Combing</strong>, and <strong>Horizontal Continuous</strong>.</p>
-<p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>:<em>You must specify the metadata directory in the <a href="#output-parameters">output tab</a> to refer to the metadata directory of your previous run.</em></p>
+<p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>: You must specify the global-positions file to use in the <strong>Global Positions File</strong> field. If your <strong>Filename Pattern</strong> has a time slice iterator &quot;{tt}&quot; the global-positions file specified must also.</p>
 <p>* <strong>Grid Width</strong> - The number of images in a row (The number of columns, the width of the image grid)</p>
 <p>* <strong>Grid Height</strong> - The number of images in a column. (The number of rows, the height of the image grid)</p>
 <p><strong>Timeslices</strong> - The number of timeslices to stitch. Leave this field blank to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Pattern</strong>. This input supports a comma separated list and/or a range using a &#39;-&#39;.
@@ -714,32 +714,32 @@ Possible Options:</p>
 </ol>
 <hr>
 <h2 id="my-image-filename-pattern-does-not-work">My image filename pattern does not work</h2>
-<p>The <strong>Filename Pattern</strong> is used to match specific image files within the <strong>Image Directory</strong>. </p>
+<p>The <strong>Filename Pattern</strong> is used to match specific image files within the <strong>Image Directory</strong>.</p>
 <p>There are two types of <strong>Filename Pattern</strong>, <a href="#sequential">Sequential</a> and <a href="#row-column">Row-Column</a>, both of which can handle <a href="#timeslices">Timeslices</a>.</p>
-<p>MIST adopts the ImageJ/Fiji notation of using curly brackets &quot;{&quot; and &quot;}&quot; to denote a block of characters that are replaced with numbers. The block &quot;{ppp}&quot;, where the character &quot;p&quot; is a placeholder for a number digit, represents numbers from 000 to 999. Each letter between two curly brackets is replaced with a digit between 0 and 9. </p>
+<p>MIST adopts the ImageJ/Fiji notation of using curly brackets &quot;{&quot; and &quot;}&quot; to denote a block of characters that are replaced with numbers. The block &quot;{ppp}&quot;, where the character &quot;p&quot; is a placeholder for a number digit, represents numbers from 000 to 999. Each letter between two curly brackets is replaced with a digit between 0 and 9.</p>
 <h4 id="sequential">Sequential</h4>
-<p>Sequential <strong>Filename Pattern Type</strong>s have only one set of curly brackets &quot;{}&quot; that denotes the image&#39;s position in the image grid. The special character &quot;p&quot; must be used between the curly brackets. Therefore, a valid sequential filename pattern must have one set of curly brackets &quot;{p}&quot; with at least one &quot;p&quot; character between the curly brackets. </p>
+<p>Sequential <strong>Filename Pattern Type</strong>s have only one set of curly brackets &quot;{}&quot; that denotes the image&#39;s position in the image grid. The special character &quot;p&quot; must be used between the curly brackets. Therefore, a valid sequential filename pattern must have one set of curly brackets &quot;{p}&quot; with at least one &quot;p&quot; character between the curly brackets.</p>
 <p>Examples:</p>
 <ul>
 <li>Img_pos001.tif = Img_pos{ppp}.tif</li>
 <li>Img0001.png = Img{pppp}.png</li>
 <li>ImageName01.tif = ImageName{pp}.tif</li>
 <li>If a dataset has a sequence of 789 files<ul>
-<li>common name &quot;Dataset01_&quot; </li>
+<li>common name &quot;Dataset01_&quot;</li>
 <li>with a 6 digit numbering (ex. Dataset01_000001.tif)</li>
 <li>Then a valid filename pattern is: &quot;Dataset01_000{ppp}.tif&quot; or &quot;Dataset01_{pppppp}.tif&quot;</li>
 </ul>
 </li>
 </ul>
 <h4 id="row-column">Row Column</h4>
-<p>Row-column <strong>Filename Pattern Type</strong>s have two sets of curly brackets &quot;{r}&quot; &quot;{c}&quot;. One block denotes the image&#39;s row index within the image grid and uses the special character &quot;r&quot;. The other block denotes the image&#39;s column index within the image grid and uses the special character &quot;c&quot;. For a valid row-column <strong>Filename Pattern</strong> there must be one &quot;{r}&quot; block with at least one &quot;r&quot; between the curly brackets and one &quot;{c}&quot; block with at least one &quot;c&quot; between the curly brackets. </p>
+<p>Row-column <strong>Filename Pattern Type</strong>s have two sets of curly brackets &quot;{r}&quot; &quot;{c}&quot;. One block denotes the image&#39;s row index within the image grid and uses the special character &quot;r&quot;. The other block denotes the image&#39;s column index within the image grid and uses the special character &quot;c&quot;. For a valid row-column <strong>Filename Pattern</strong> there must be one &quot;{r}&quot; block with at least one &quot;r&quot; between the curly brackets and one &quot;{c}&quot; block with at least one &quot;c&quot; between the curly brackets.</p>
 <p>Examples:</p>
 <ul>
 <li>Img_row01_col01.tif = Img_row{rr}_col{cc}.tif</li>
 <li>Img_r0001_c0001.png = Img_r{rrrr}_c{cccc}.png</li>
 <li>ImageName_001_001.tif = ImageName_{rrr}_{ccc}.tif</li>
 </ul>
-<p>The usage of &quot;{p}&quot; or &quot;{r}&quot; and &quot;{c}&quot; must match the <strong>Filename Pattern Type</strong> selected. If the <strong>Filename Pattern</strong> contains &quot;{p}&quot; the sequential <strong>Filename Pattern Type</strong> must be selected. If the <strong>Filename Pattern</strong> contains &quot;{r}&quot; and &quot;{c}&quot; then row-column <strong>Filename Pattern Type</strong> must be selected. </p>
+<p>The usage of &quot;{p}&quot; or &quot;{r}&quot; and &quot;{c}&quot; must match the <strong>Filename Pattern Type</strong> selected. If the <strong>Filename Pattern</strong> contains &quot;{p}&quot; the sequential <strong>Filename Pattern Type</strong> must be selected. If the <strong>Filename Pattern</strong> contains &quot;{r}&quot; and &quot;{c}&quot; then row-column <strong>Filename Pattern Type</strong> must be selected.</p>
 <h4 id="timeslices">Timeslices</h4>
 <p>MIST can also handle stitching a series of independent 2D image grids. For example a time-lapse series of image grids. The time-slice stitching is controlled by an additional set of curly brackets in the <strong>Filename Pattern</strong> with the &quot;{ttt}&quot; special text. Setting the <strong>Timeslices</strong> field in the input tab of the MIST GUI controls which of the available time-slices will be stitched. The special text &quot;{ttt}&quot; must be used regardless of whether the independent 2D image grid are time slices of z stack slices.</p>
 <p>Examples:</p>
@@ -758,11 +758,11 @@ Possible Options:</p>
 <li><a href="#fftw-mode">FFTW</a></li>
 <li><a href="#cuda-mode">CUDA</a></li>
 </ul>
-<p>The mode selection exists in the Advance options tab in the GUI. Auto mode uses the FFTW mode if it can find the required native libraries and the Java mode if not. </p>
+<p>The mode selection exists in the Advance options tab in the GUI. Auto mode uses the FFTW mode if it can find the required native libraries and the Java mode if not.</p>
 <p>The FFTW and CUDA modes are more memory intensive than the Java mode.</p>
 <p><strong>If you are having memory problems first attempt to stitch using the less memory intensive Java mode.</strong></p>
 <h4 id="general-memory-management">General Memory Management</h4>
-<p>MIST will attempt to avoid out of memory problems by detecting the available memory and adjusting the execution accordingly. MIST will first attempt to store all the image tiles in the image grid in memory to prevent spending time re-reading. If there is not enough memory to do this, it will enable the releasing of image tiles which will result in holding just the memory pool size images in memory and re-reading image tiles as required. If there is still not enough memory, MIST will lower the number of compute threads being used to reduce the size of the required memory pool. If all these strategies fail, MIST will run the stitching using a sequential Java version which requires enough memory to hold two images and two FFT data arrays. </p>
+<p>MIST will attempt to avoid out of memory problems by detecting the available memory and adjusting the execution accordingly. MIST will first attempt to store all the image tiles in the image grid in memory to prevent spending time re-reading. If there is not enough memory to do this, it will enable the releasing of image tiles which will result in holding just the memory pool size images in memory and re-reading image tiles as required. If there is still not enough memory, MIST will lower the number of compute threads being used to reduce the size of the required memory pool. If all these strategies fail, MIST will run the stitching using a sequential Java version which requires enough memory to hold two images and two FFT data arrays.</p>
 <h4 id="java-mode">Java Mode</h4>
 <p>The memory required by Java mode can be computed using the following formula, given the following four inputs.</p>
 <ul>
@@ -772,9 +772,9 @@ Possible Options:</p>
 <li><strong>s</strong> = Image Tile Size in MB</li>
 </ul>
 <p>Memory Required (MB) = 6<strong>s</strong>(min(<strong>w</strong>,<strong>h</strong>) + <strong>n</strong> + 2) + 4<strong>s</strong></p>
-<p>If the Java mode does not have enough memory, try increasing the amount of memory Java is allowed to use. </p>
-<p>If MIST is being run through ImageJ/Fiji there is a menu option controlling the amount memory it is allowed to use. Select the menu option &quot;Edit&quot; &gt;&gt; &quot;Options&quot; &gt;&gt; &quot;Memory &amp; Threads ...&quot; which opens a dialog box containing an option &quot;Maximum memory:&quot; in MB. Increase this value and select &quot;Ok&quot;. A reasonable value is about 75% of the available system memory. Restart Fiji to apply the new memory limit and re-launch MIST to see if the memory problem persists. </p>
-<p>The Fiji FAQ has a <a href="http://fiji.sc/Frequently_Asked_Questions#How_do_I_avoid_running_out_of_memory_.28OutOfMemoryError.29.3F">question</a> related to managing memory in Fiji. </p>
+<p>If the Java mode does not have enough memory, try increasing the amount of memory Java is allowed to use.</p>
+<p>If MIST is being run through ImageJ/Fiji there is a menu option controlling the amount memory it is allowed to use. Select the menu option &quot;Edit&quot; &gt;&gt; &quot;Options&quot; &gt;&gt; &quot;Memory &amp; Threads ...&quot; which opens a dialog box containing an option &quot;Maximum memory:&quot; in MB. Increase this value and select &quot;Ok&quot;. A reasonable value is about 75% of the available system memory. Restart Fiji to apply the new memory limit and re-launch MIST to see if the memory problem persists.</p>
+<p>The Fiji FAQ has a <a href="http://fiji.sc/Frequently_Asked_Questions#How_do_I_avoid_running_out_of_memory_.28OutOfMemoryError.29.3F">question</a> related to managing memory in Fiji.</p>
 <p>For more advanced Fiji memory management information see the <a href="http://fiji.sc/Java_Options">Java Options</a> page maintained by the Fiji developers.</p>
 <h4 id="fftw-mode">FFTW Mode</h4>
 <p>The memory required by FFTW mode can be computed using the following formula, given the following four inputs.</p>
@@ -799,7 +799,7 @@ Possible Options:</p>
 <p>CPU Memory Required (MB) = 2<strong>s</strong>(min(<strong>w</strong>,<strong>h</strong>) + <strong>n</strong> + 2) + 24<strong>sg</strong></p>
 <p>GPU Memory Required (MB) = 8<strong>s</strong>(min(<strong>w</strong>,<strong>h</strong>) + <strong>n</strong> + 2) + 24<strong>s</strong> + 48<strong>s</strong></p>
 <p>The CUDA mode has two types of memory, pinned memory that exists on both the GPU and the CPU and GPU resident memory. In addition to the pinned memory, the CUDA version needs enough CPU side memory to hold the pixel data for each image tile in the memory pool. For pinned memory, there are two double precision arrays the size of the images, and two integer arrays the size of the images. This memory is per GPU, not per memory pool element. The GPU resident memory required consists of four double precision arrays the same size of the images and one double complex array the size of the image per memory pool element. The size of the memory pool is defined by the size of the image grid, min(gridHeight, gridWidth) + 2. On the CPU side, one image tile (at 16bit precision) needs to be stored per memory pool element.</p>
-<p>Unlike the Java mode, CUDA allocates native memory on the GPU in addition to memory within the JVM. </p>
+<p>Unlike the Java mode, CUDA allocates native memory on the GPU in addition to memory within the JVM.</p>
 <hr>
 <h2 id="what-image-types-can-mist-handle">What image types can MIST handle</h2>
 <p>Any image type that Fiji/ImageJ can read. MIST uses the ImageJ image reader contained within Fiji/ImageJ. The relevant ImageJ image types and formats documentation can be found online in the ImageJ documentation. <a href="http://imagej.nih.gov/ij/docs/guide/146-7.html">ImageJ Documentation on Image Types</a>.</p>
@@ -813,14 +813,14 @@ Possible Options:</p>
 <li><a href="#noisy-input-images">Noisy Input Images</a></li>
 </ul>
 <h4 id="incorrect-input-parameters">Incorrect Input Parameters</h4>
-<p>The best way to verify the input parameters is by previewing the image grid using zero percent overlap between images. This allows you to visually check that neighboring regions look like they should overlap, and that the arrangement of images is reasonable. </p>
+<p>The best way to verify the input parameters is by previewing the image grid using zero percent overlap between images. This allows you to visually check that neighboring regions look like they should overlap, and that the arrangement of images is reasonable.</p>
 <p>To preview a zero percent overlap mosaic go to the Output tab in the GUI and select <strong>Preview Mosaic With No Overlap</strong>. Visually ensure that the image grid looks properly organized. Check for corresponding image features between regions that should overlap. Common errors include an incorrect <strong>Starting Point</strong>, <strong>Direction</strong>, <strong>Grid Width</strong>, or <strong>Grid Height</strong>.</p>
 <p>If the zero percent overlap is taking too long to generate you can define a sub-grid using the Subgrid tab and the preview will only be generated for the subgrid.</p>
 <h4 id="unexpected-image-overlap-variability">Unexpected Image Overlap Variability</h4>
-<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The advanced parameter percent <strong>Overlap Uncertainty</strong> (default: 5%) reflects the uncertainty in the overlap between image tiles. </p>
+<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The advanced parameter percent <strong>Overlap Uncertainty</strong> (default: 5%) reflects the uncertainty in the overlap between image tiles.</p>
 <p>Set the <strong>Overlap Uncertainty</strong> to reflect the variability in the overlaps between images in your dataset.</p>
 <h4 id="bad-stage-repeatability-estimate">Bad Stage Repeatability Estimate</h4>
-<p>MIST estimates the <strong>Stage Repeatability</strong> of the mechanical XY-Stage used to acquire the image grid. </p>
+<p>MIST estimates the <strong>Stage Repeatability</strong> of the mechanical XY-Stage used to acquire the image grid.</p>
 <p>The estimated repeatability is printed in the Log windows as well as in the statistics file saved in the <strong>Metadata Directory</strong>.</p>
 <p>If MIST estimates an unreasonably large <strong>Stage Repeatability</strong> it is advisable to limit it to a value you know is reasonable for your stage. Conversely, if MIST estimates an unreasonably small <strong>Stage Repeatability</strong> it is advisable to increase it, allowing MIST to search a larger space trying to find the optimal translations.</p>
 <p><strong>Stage Repeatability</strong> is measured in pixels.</p>
@@ -837,7 +837,7 @@ Possible Options:</p>
 <p>The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or <a href="https://github.com/NIST-ISG/MIST/issues">MIST Github Issues Page</a>.</p>
 <hr>
 <h2 id="what-if-the-output-stitched-image-is-too-big-to-be-saved">What if the output stitched image is too big to be saved</h2>
-<p>MIST is written in Java which has a maximum size for any array. The ImageJ image writer that MIST relies on uses a Java array to store the pixel data imposing a limit on the size of images that can be saved. </p>
+<p>MIST is written in Java which has a maximum size for any array. The ImageJ image writer that MIST relies on uses a Java array to store the pixel data imposing a limit on the size of images that can be saved.</p>
 <p><strong>If the number of pixels in the output stitched image exceeds 2147483647 (2<sup>31</sup>-1) then the stitched image cannot be saved.</strong></p>
 <p>In other words, the image height in pixels multiplied by the image width in pixels must be less than 2147483647.</p>
 <p>If the resulting stitched image cannot be saved using MIST there are two ways to get around this. The first is to stitch a sub-gid using the sub-grid options tab. This will stitch a smaller region and if that region is smaller than the maximum size then that image can be saved. The other option is to stitch the full grid without saving or displaying the resulting stitched image. This will allow MIST to stitch the images and generate the global positions metadata file. This file contains the global positions of every image in the grid. It can then be parsed and assembled using another software package.</p>
@@ -847,8 +847,8 @@ Possible Options:</p>
 <p>Alternatively, ensure that you have the correct version of the CUDA toolkit installed. See the <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">Install Guide</a> for details.</p>
 <hr>
 <h2 id="the-fftw-version-does-not-work">The FFTW version does not work</h2>
-<p>If the FFTW <strong>Stitching Program</strong> type does not work the most likely reason is MIST cannot find the required library file. </p>
-<p>FFTW uses compiled native libraries to perform fast Fourier Transforms. Without these native libraries the FFTW version cannot run. </p>
+<p>If the FFTW <strong>Stitching Program</strong> type does not work the most likely reason is MIST cannot find the required library file.</p>
+<p>FFTW uses compiled native libraries to perform fast Fourier Transforms. Without these native libraries the FFTW version cannot run.</p>
 <p>Details are available by operating system:</p>
 <ul>
 <li><a href="#windows">Windows</a></li>
@@ -859,10 +859,10 @@ Possible Options:</p>
 <p>For Windows the correct FFTW library file should have been included with the plugin installation. To confirm this navigate to the folder where Fiji is installed. Then confirm the file &quot;libfftw3.dll&quot; exists in the path &quot;lib&quot; &gt;&gt; &quot;fftw&quot; in the directory Fiji is installed. The file might not be named exactly &quot;libfftw3.dll&quot;, however it will always end in &quot;.dll&quot;. If that file exists then confirm that MIST is pointing at that location in the advanced parameters tab. Open MIST, select the Advanced tab, select the FFTW <strong>Stitching Program</strong> type. Verify that <strong>FFTW Library File</strong> contains the path to the &quot;libfftw3.dll&quot; file you confirmed exists. Ensure the path does not just point to the correct folder, make sure that it points right at the library file. For example, &quot;C:\Fiji.app\lib\fftw\libfftw3.dll&quot;.</p>
 <h4 id="osx">OSX</h4>
 <p>For OSX (Mac) you must install FFTW before you are able to use the FFTW <strong>Stitching Program</strong> type. See the FFTW <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
-<p>Once FFTW in installed ensure that the <strong>FFTW Library File</strong> parameter under the MIST Advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.dylib&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;. </p>
+<p>Once FFTW in installed ensure that the <strong>FFTW Library File</strong> parameter under the MIST Advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.dylib&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;.</p>
 <h4 id="linux">Linux</h4>
 <p>For Linux you must install FFTW before you are able to use the FFTW Stitching Program type. See the FFTW <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
-<p>Once FFTW in installed ensure that the &quot;FFTW Library File&quot; parameter under the MIST advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.so&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;. </p>
+<p>Once FFTW in installed ensure that the &quot;FFTW Library File&quot; parameter under the MIST advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.so&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;.</p>
 <hr>
 <h2 id="my-stitching-performance-is-not-good">My stitching performance is not good</h2>
 <p>There are many factors that can impact the performance of the MIST stitching:</p>
@@ -872,7 +872,7 @@ Possible Options:</p>
 <li><a href="#cpu-saturation">CPU Saturation</a></li>
 </ul>
 <h4 id="image-locality">Image Locality</h4>
-<p>The largest factor in the stitching performance is where the images are located. </p>
+<p>The largest factor in the stitching performance is where the images are located.</p>
 <p>MIST is designed with the expectation that the image to be stitched are stored on a local internal hard drive on the computer performing the stitching.</p>
 <p><strong>When possible copy the images to be stitched to a local hard drive before performing stitching.</strong></p>
 <p>Other image location options are included here ranked from slowest to fastest:</p>
@@ -884,13 +884,13 @@ Possible Options:</p>
 </ol>
 <p>If the images are not local, read time will dominate the stitching time.</p>
 <h4 id="memory-capacity">Memory Capacity</h4>
-<p>If the images are stored on a local disk, the next performance bottleneck is a lack of system memory. </p>
-<p>If the computer performing the stitching does not have enough memory to hold all image tiles in memory, tiles will be release and re-read as required slowing down the computation. </p>
+<p>If the images are stored on a local disk, the next performance bottleneck is a lack of system memory.</p>
+<p>If the computer performing the stitching does not have enough memory to hold all image tiles in memory, tiles will be release and re-read as required slowing down the computation.</p>
 <p>When possible MIST will trade memory usage for compute time, increasing the required memory to lower the compute time. MIST is able to stitch your data even with low memory, but it will just be slow. The ideal case is when the computer has enough memory to store all image tiles in memory to allow MIST to read each image tile once and only once.</p>
 <h4 id="cpu-saturation">CPU Saturation</h4>
-<p>If memory is not an issue then the next bottleneck is the CPU. </p>
+<p>If memory is not an issue then the next bottleneck is the CPU.</p>
 <p>Modern CPUs often have many cores and it might take several threads of compute work to saturate the CPU. MIST has an advanced parameter that controls how many <strong>CPU Worker Threads</strong> are used. By default this value is set to the number of cores available on the computer in an attempt to saturate the CPU by providing it enough work. Increasing the number of <strong>CPU Worker Threads</strong> beyond the default is strongly discouraged. The number of <strong>CPU Worker Threads</strong> should only be used to artificially throttle the CPU.</p>
-<p>If the fully saturated CPU is not providing the performance you require a GPU can be added to accelerate the MIST stitching computation. </p>
+<p>If the fully saturated CPU is not providing the performance you require a GPU can be added to accelerate the MIST stitching computation.</p>
 <p>One of the MIST <strong>Stitching Program</strong> types is CUDA, which utilizes an NVidia GPU to accelerate the computation. The GPU needs to be CUDA compute capable 2.0 or greater. Also only NVidia GPUs will work as MIST relies on the CUDA toolkit which only works with NVidia GPUs. It is recommended that any GPUs have at least 1GB of graphics memory, but the actual required memory depends on the size of the image grid. For larger grids, 2GB or 4GB of graphics memory might be required. See the question <a href="#mist-encountered-an-out-of-memory-problem">MIST encountered an Out of Memory problem</a>, specifically the <a href="#cuda-mode">CUDA Mode</a> subsection for details on the GPU memory required.</p>
 <hr>
 <h2 id="i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</h2>
@@ -900,22 +900,22 @@ Possible Options:</p>
 <p>To stitch from metadata there must be a previous execution of MIST that generated the metadata the current stitching will use. In the previous run, MIST output several metadata files into the directory indicated by the <strong>Metadata Directory</strong> specified in the Output tab. To setup the new stitching from metadata, enter the new image grid information into the Input tab. Turn the <strong>Assemble From Metadata</strong> checkbox on. In the Output tab enter into <strong>Metadata Directory</strong> the filepath to the directory holding the metadata files from which to stitch. If you don&#39;t want to overwrite the previous run, change the output <strong>Filename Prefix</strong> so that the image about to be created is named differently than the previous one. Alternately, the <strong>Output Directory</strong> and <strong>Metadata Directory</strong> can differ from the previous run of MIST as long as you copy the global positions text file from the previous run <strong>Metadata Directory</strong> into the current run <strong>Metadata Directory</strong>.</p>
 <hr>
 <h2 id="stitching-time-slices">Stitching Time-Slices</h2>
-<p>MIST is designed to stitch 2D image grid datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension. </p>
+<p>MIST is designed to stitch 2D image grid datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension.</p>
 <p>However, MIST has the facility for handling a sequence of independent image grids. This ability to iterate over a series of independent image grids enables both time-lapse stitching, as well as z-stack stitching. Since each stitched image grid is independent, MIST does not care whether it is iterating over time-slices, or z-stacks.</p>
 <p>See <a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a> for details on how to setup the <strong>Filename Pattern</strong>.</p>
-<p>To control which time-slices are stitched there is a field in the Input tab called <strong>Timeslices</strong> which takes a comma separated list and/or number range to specify the time-slice numbers you want MIST to stitch. For example, the <strong>Timeslices</strong> input could be &quot;1-25,35,45&quot; which would stitch timeslices 1 through 25, 35, and 45. </p>
+<p>To control which time-slices are stitched there is a field in the Input tab called <strong>Timeslices</strong> which takes a comma separated list and/or number range to specify the time-slice numbers you want MIST to stitch. For example, the <strong>Timeslices</strong> input could be &quot;1-25,35,45&quot; which would stitch timeslices 1 through 25, 35, and 45.</p>
 <p>Any series of independent image grids can be input into MIST as time-slices in order to stitch them.</p>
 <hr>
 <h2 id="stitching-multiple-channels">Stitching Multiple Channels</h2>
-<p>MIST does not currently support the direct stitching of multiple image channels. </p>
+<p>MIST does not currently support the direct stitching of multiple image channels.</p>
 <p>However, by taking advantage of the assemble from metadata functionality one can perform the same task. If you have a dataset with two channels that you want to stitch, first select which channel to use for stitching. Setup and run MIST for this channel. To assemble the second channel using the same translations the first channel generated, re-launch MIST. In the input tab update the <strong>Filename Pattern</strong> to reflect the second channel. Select <strong>Assemble From Metadata</strong>. In the output tab keep the same <strong>Output Directory</strong> and <strong>Metadata Directory</strong>. Change the output filename prefix to something different than what was used for the first channel. Select <strong>Begin Stitching</strong> and MIST will use the global positions file it finds in the <strong>Metadata Directory</strong> to assemble the new channel into a stitched image. So long as the <strong>filename Prefix</strong> is different per channel there should be no name conflicts.</p>
 <p>The global positions metadata file is what MIST uses to assemble from metadata. If you want to put each channel into a different <strong>Output Directory</strong> and <strong>Metadata Directory</strong>, simply ensure that you have copied the global positions text file into the <strong>Metadata Directory</strong> of the channel you are trying to assemble from metadata.</p>
 <hr>
 <h2 id="stitching-using-a-macro-script">Stitching using a Macro Script</h2>
-<p>ImageJ/Fiji has the ability to record and run Macro script to automate tasks. See an <a href="http://fiji.sc/Introduction_into_Macro_Programming">Introduction to Macro Programming</a> for a general overview of macro programming in Fiji. </p>
+<p>ImageJ/Fiji has the ability to record and run Macro script to automate tasks. See an <a href="http://fiji.sc/Introduction_into_Macro_Programming">Introduction to Macro Programming</a> for a general overview of macro programming in Fiji.</p>
 <p>To create a MIST stitching macro use the macro recorder.</p>
 <p>Select &quot;Plugins&quot; &gt;&gt; &quot;Macros&quot; &gt;&gt; &quot;Record&quot;</p>
-<p>This will open a window showing the macro script version of any commands you run in Fiji. </p>
+<p>This will open a window showing the macro script version of any commands you run in Fiji.</p>
 <p>Open the MIST plugin and setup the parameters to run your experiment and select &quot;Begin&quot;.</p>
 <p>The macro recorder should capture the information required to run MIST from a macro script. The captured command can be copied to a macro script and modified to run MIST from a macro.</p>
 <hr>
