@@ -304,11 +304,10 @@ public class StitchingExecutor implements Runnable {
 
     this.params.getOutputParams().setOutputMeta(false);       
 
-    // Get the global positions file for this time slice
-    File metaDataDir = new File(this.params.getOutputParams().getMetadataPath());
-    if (!metaDataDir.exists()) {
+    File metadataFile = new File(this.params.getInputParams().getGlobalPositionsFile());
+    if(!metadataFile.exists()) {
       Log.msg(LogType.MANDATORY,
-          "Error: Metadata directory does not exist: " + this.params.getOutputParams().getMetadataPath());
+              "Error: global positions file does not exist: " + this.params.getInputParams().getGlobalPositionsFile());
       return;
     }
 
