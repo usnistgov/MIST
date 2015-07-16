@@ -29,7 +29,6 @@
 package gov.nist.isg.mist.stitching.lib.optimization;
 
 import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.common.MinMaxElement;
 import gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
@@ -57,8 +56,6 @@ public class OptimizationUtils {
   private static final double CorrelationThreshold = 0.5;
   private static final int NumTopCorrelations = 5;
   private static final double CorrelationWeight = 3.0;
-  public static OverlapType OVERLAP_TYPE = OverlapType.Heuristic;
-  private static final double MLE_ACCURACY = 0.05;
 
   /**
    * The type of overlap computation
@@ -111,6 +108,12 @@ public class OptimizationUtils {
      */
     Y;
   }
+
+
+
+  public static double getCorrelationThreshold() { return CorrelationThreshold; }
+
+
 
   /**
    * Prints the values of a tile grid in a grid format similar to how Matlab displays values. Used
@@ -459,235 +462,10 @@ public class OptimizationUtils {
   }
 
 
-  /**
-   * Calculates the overlap for a given direction using Maximum Likelihood Estimation
-   *
-   * @param grid the grid of image tiles
-   * @param dir the direction
-   * @param dispValue the displacement value
-   * @param pou the percent overlap uncertainty
-   * @return the overlap
-   * @throws GlobalOptimizationException thrown if no valid tiles are found
-   */
-  public static <T> double getOverlapMLE(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double pou) throws GlobalOptimizationException, FileNotFoundException{
-    Log.msg(LogType.INFO, "Computing overlap for " + dir.name() + " direction using Maximum Likelihood Estimation.");
-
-
-    // TODO update this to use multipoint hill climbing (n points in a grid)
-//    using n starting points, run hill climbing n times.
-//    half of the n points are randomly selected starting points, the other half form a grid within the valid search space.
-//    store the already computed ncc points so that if multiple hill climbs hit the same place it wont recompute.
-
-
-    // get valid range for translations given the direction
-    int range = getOverlapRange(grid, dispValue);
-
-    List<Integer> translations = new ArrayList<Integer>();
-
-    // gather all relevant translations into an array
-    for (int row = 0; row < grid.getExtentHeight(); row++) {
-      for (int col = 0; col < grid.getExtentWidth(); col++) {
-        ImageTile<T> tile = grid.getSubGridTile(row, col);
-        switch (dir) {
-          case North:
-            if (tile.getNorthTranslation() != null) {
-              int t = 0;
-              switch(dispValue) {
-                case X:
-                   t = tile.getNorthTranslation().getX();
-                  break;
-                case Y:
-                  t = tile.getNorthTranslation().getY();
-                  break;
-              }
-              if (t > 0 && t < range
-                  && tile.getNorthTranslation().getCorrelation() >= CorrelationThreshold)
-                translations.add(t);
-
-            }
-            break;
-          case West:
-            if (tile.getWestTranslation() != null) {
-              int t = 0;
-              switch(dispValue) {
-                case X:
-                  t = tile.getWestTranslation().getX();
-                  break;
-                case Y:
-                  t = tile.getWestTranslation().getY();
-                  break;
-              }
-              if (t > 0 && t < range
-                  && tile.getWestTranslation().getCorrelation() >= CorrelationThreshold)
-                translations.add(t);
-            }
-            break;
-        }
-      }
-    }
-
-    double overlap;
-    try{
-      overlap = getOverlapMLE(translations, range, pou);
-    }catch(GlobalOptimizationException e) {
-      throw new GlobalOptimizationException("Unable to compute overlap for " + dir.name() + ", translation list is empty.");
-    }
-    return overlap;
-
-  }
-
-
-  /**
-   * Calculates the overlap for a given direction using Maximum Likelihood Estimation
-   *
-   * @param translations List of the translations to use in estimating overlap
-   * @param range the valid range of translations
-   * @param pou the percent overlap uncertainty
-   * @return the overlap
-   * @throws GlobalOptimizationException thrown if no valid tiles are found
-
-   */
-  public static double getOverlapMLE(List<Integer> translations, int range, double pou) throws GlobalOptimizationException {
-
-    if (translations.size() < 1) {
-      throw new GlobalOptimizationException("Unable to compute overlap, translation list is empty.");
-    }
-
-    // extract the translations into an primitive array
-    double[] T = new double[translations.size()];
-    for(int i = 0; i < translations.size(); i++)
-        T[i] = translations.get(i);
-    // allocate temp array to hold a malleable copy of T
-    double[] x = new double[T.length];
-
-    // determine MLE search space
-    double nBins = 100/(100*MLE_ACCURACY);
-    double pDelta = 1/nBins;
-    int mDelta = (int) Math.max(1, Math.round(range/nBins));
-    int sMax;
-    if(Double.isNaN(pou)) {
-      sMax = Math.round(range/2);
-    }else {
-      sMax = (int) Math.round((pou / 100) * range);
-    }
-    int sDelta = (int) Math.max(1, Math.round(sMax/nBins));
-
-    // init MLE model parameters
-    double PIuni = 0;
-    double mu = 0;
-    double sigma = 0;
-    double MLE_acc = Double.NEGATIVE_INFINITY;
-
-    // pre-compute constants
-    double sqrt2pi = Math.sqrt(2*Math.PI);
 
 
 
-    // perform exhaustive MLE search
-
-    // loop over the PIuni range
-    for(double p = 0; p <= 1; p=p+pDelta) {
-      // loop over the mu range
-      for(double m = 1; m <= range; m=m+mDelta) {
-
-        // subtract current m from T array while copying data into x
-        for(int i = 0; i < T.length; i++)
-          x[i] = T[i] - m;
-
-        // loop over sigma range
-        for(double s = 1; s <= sMax; s=s+sDelta) {
-
-          // loop over the elements the x array
-          double sv = 0; // init sum value
-          for(int i = 0; i < x.length; i++) {
-            double temp = x[i] / s;
-            temp = Math.exp(-0.5 * temp * temp);
-            sv = sv + Math.log(Math.abs((p/range) + (1-p)*(temp / (sqrt2pi * s))));
-          }
-
-          // If the current probability is higher than the old max
-          if(sv > MLE_acc) {
-            PIuni = p;
-            mu = m;
-            sigma = s;
-            MLE_acc = sv;
-          }
-        }
-      }
-    }
-
-
-    // refine the MLE model parameters using hill climbing
-    pDelta = 0.01;
-    mDelta = 1;
-    sDelta = 1;
-    boolean done = false;
-    while(!done) {
-
-      // setup search bounds
-      double pmin = Math.max(0,PIuni-pDelta);
-      double pmax = Math.min(1, PIuni+pDelta);
-      double mmin = Math.max(1,mu-mDelta);
-      double mmax = Math.min(range,mu+mDelta);
-      double smin = Math.max(1,sigma-sDelta);
-      double smax = Math.min(sMax,sigma+sDelta);
-      double mv = Double.NEGATIVE_INFINITY;
-
-      // init temp copies of model parameters to hold local changes
-      double tempPIuni = PIuni;
-      double tempMu = mu;
-      double tempSigma = sigma;
-
-
-      // search 3x3x3 neighborhood for a better solution
-
-      // loop over the PIuni range
-      for(double p = pmin; p <= pmax; p=p+pDelta) {
-        // loop over the mu range
-        for (double m = mmin; m <= mmax; m=m+mDelta) {
-
-          // subtract current m from T array, copying data to x
-          for (int i = 0; i < T.length; i++)
-            x[i] = T[i] - m;
-
-          // loop over sigma range
-          for (double s = smin; s <= smax; s=s+sDelta) {
-
-            // loop over the elements the x array
-            double sv = 0; // init sum value
-            for(int i = 0; i < x.length; i++) {
-              double temp = x[i] / s;
-              temp = Math.exp(-0.5 * temp * temp);
-              sv = sv + Math.log(Math.abs((p/range) + (1-p)*(temp / (sqrt2pi * s))));
-            }
-
-            // If the current probability is higher than the old max
-            if(sv > mv) {
-              tempPIuni = p;
-              tempMu = m;
-              tempSigma = s;
-              mv = sv;
-            }
-          }
-        }
-      }
-
-      // check if this hill climbing iteration found a better answer
-      if(mv > MLE_acc) {
-        PIuni = tempPIuni;
-        mu = tempMu;
-        sigma = tempSigma;
-        MLE_acc = mv;
-      }else{
-        done = true;
-      }
-    }
-
-    return Math.round(100*(range-mu)/range);
-  }
-
-
-  private static<T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue) throws FileNotFoundException  {
+  public static<T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue) throws FileNotFoundException  {
     // get valid range for translations given the direction
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if (!tile.isTileRead())
@@ -737,7 +515,7 @@ public class OptimizationUtils {
         break;
       case MLE:
         try {
-          overlap = getOverlapMLE(grid, dir, dispValue, percOverlapError);
+          overlap = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, percOverlapError);
         } catch (GlobalOptimizationException e) {
           e.printStackTrace();
         }
