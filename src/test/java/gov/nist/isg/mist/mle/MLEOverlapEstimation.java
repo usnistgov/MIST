@@ -22,13 +22,13 @@ public class MLEOverlapEstimation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-//  private static String stitchingImageDataFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets/SSEA4_5x_w01_c3";
-//  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
-//  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.dylib";
+  private static String stitchingImageDataFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets/SSEA4_5x_w01_c3";
+  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
+  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.dylib";
 
-  private static String stitchingImageDataFolder = "C:\\majurski\\image-data\\Stitch_Test\\";
-  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
-  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
+//  private static String stitchingImageDataFolder = "C:\\majurski\\image-data\\Stitch_Test\\";
+//  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
+//  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
 
 
 
