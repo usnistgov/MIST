@@ -460,7 +460,15 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
-    MuSigmaTuple translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedVerticalOverlap);
+    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
+    switch(dir) {
+      case West:
+        translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedHorizontalOverlap);
+        break;
+      case North:
+        translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedVerticalOverlap);
+        break;
+    }
 
     return translationsModel;
   }

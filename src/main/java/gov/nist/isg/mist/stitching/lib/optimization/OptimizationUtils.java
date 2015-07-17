@@ -499,27 +499,20 @@ public class OptimizationUtils {
 
     int size = getOverlapRange(grid, dispValue);
     MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
-    double med;
     List<CorrelationTriple> topCorrelations;
     switch(overlapType) {
       case Heuristic:
         if(Double.isNaN(userSpecifiedOverlap)) {
           topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
-          med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
+          double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
           translationsModel = new MuSigmaTuple(med, Double.NaN);
-        }else{
-          double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
-          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
         }
         break;
       case HeuristicFullStd:
         if(Double.isNaN(userSpecifiedOverlap)) {
           topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
-          med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
+          double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
           translationsModel = new MuSigmaTuple(med, Double.NaN);
-        }else{
-          double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
-          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
         }
         break;
       case MLE:
@@ -529,6 +522,11 @@ public class OptimizationUtils {
           e.printStackTrace();
         }
         break;
+    }
+
+    if(!Double.isNaN(userSpecifiedOverlap)) {
+      double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
+      translationsModel.mu = overlap; // ensure the overlap has not been changed
     }
 
     return translationsModel;
@@ -583,12 +581,17 @@ public class OptimizationUtils {
 
 
     HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
-    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
 
-//    HashSet<ImageTile<T>> finalValidTiles2 = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
-//                                                                   overlap, percOverlapError,
-//                                                                   numStdDevThreads,
-//                                                                   stitchingStatistics);
+    boolean useStdFilter = true;
+    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
+    if(useStdFilter) {
+      finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
+                                                                     overlap, percOverlapError,
+                                                                     numStdDevThreads,
+                                                                     stitchingStatistics);
+    }
+
+
 
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 

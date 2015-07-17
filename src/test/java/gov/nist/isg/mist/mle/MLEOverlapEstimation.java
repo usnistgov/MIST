@@ -83,7 +83,7 @@ public class MLEOverlapEstimation {
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
 
-      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
+//      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
 
       StitchingExecutor executor = new StitchingExecutor(params);
 
