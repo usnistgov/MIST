@@ -460,32 +460,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
+    MuSigmaTuple translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedVerticalOverlap);
 
-    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
-    switch (dir) {
-      case West:
-        if (!Double.isNaN(this.userDefinedHorizontalOverlap)) {
-          // use the specified overlap
-          double overlap = this.userDefinedHorizontalOverlap;
-          overlap = (overlap/100)*OptimizationUtils.getOverlapRange(this.grid, dispValue);
-          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
-        }else{
-          // compute the overlap from translations
-          translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
-        }
-        break;
-      case North:
-        if (!Double.isNaN(this.userDefinedVerticalOverlap)) {
-          // use the specified repeatability
-          double overlap = this.userDefinedVerticalOverlap;
-          overlap = (overlap/100)*OptimizationUtils.getOverlapRange(this.grid, dispValue);
-          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
-        }else{
-          // compute the overlap from translations
-          translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
-        }
-        break;
-    }
     return translationsModel;
   }
 
@@ -518,15 +494,16 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
 
     // get the overlap for the current direction
+    // TODO change the function name
     MuSigmaTuple translationsModel = getOverlap(dir, dispValue);
     // compute the image overlap from the translations model (mu, sigma)
     double range = OptimizationUtils.getOverlapRange(grid, dispValue);
     double overlap = Math.round(100 * (1.0 - translationsModel.mu / range));
-    if(!Double.isNaN(translationsModel.sigma)) {
-      // update the percent overlap uncertainty
-//      percOverlapError = Math.ceil(100 * 2 * translationsModel.sigma / range);
+    double userDefinedPercOverlapError = this.params.getAdvancedParams().getOverlapUncertainty();
+    if(!Double.isNaN(translationsModel.sigma) && Double.isNaN(userDefinedPercOverlapError)) {
       // percent overlap uncertainty is within 3 sigma or 99% of normal distribution
       percOverlapError = 100 * 3 * translationsModel.sigma / range;
+      percOverlapError = Math.min(percOverlapError , 5.0); // limit to max of 5 percent overlap error
       System.out.println("Percent Overlap Uncertainty: " + percOverlapError);
     }
 
@@ -589,15 +566,19 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     switch (dir) {
       case North:
-        minMaxVal =
-        OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.X);
+//        minMaxVal = OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.X);
+
+        minMaxVal = OptimizationUtils.getNoOutlierMinMaxValidTiles(validTranslations, dir, DisplacementValue.X);
 
         minMaxList =
-            OptimizationUtils.getMinMaxValidPerRow(this.grid, validTranslations, dir, DisplacementValue.Y);
+            OptimizationUtils.getMinMaxValidPerRow(this.grid, validTranslations, dir,
+                                                   DisplacementValue.Y);
         break;
       case West:
-        minMaxVal =
-        OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.Y);
+//        minMaxVal = OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.Y);
+
+        minMaxVal = OptimizationUtils.getNoOutlierMinMaxValidTiles(validTranslations, dir,
+                                                                   DisplacementValue.Y);
 
         minMaxList =
             OptimizationUtils.getMinMaxValidPerCol(this.grid, validTranslations, dir, DisplacementValue.X);

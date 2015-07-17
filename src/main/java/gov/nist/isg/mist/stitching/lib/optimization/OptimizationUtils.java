@@ -493,7 +493,7 @@ public class OptimizationUtils {
      * @return the overlap
      */
   public static <T> MuSigmaTuple getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispValue, OverlapType overlapType) throws FileNotFoundException  {
+      DisplacementValue dispValue, OverlapType overlapType, double userSpecifiedOverlap) throws FileNotFoundException  {
     Log.msg(LogType.VERBOSE,
             "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
@@ -503,20 +503,28 @@ public class OptimizationUtils {
     List<CorrelationTriple> topCorrelations;
     switch(overlapType) {
       case Heuristic:
-        topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
-        med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-        translationsModel = new MuSigmaTuple(med, Double.NaN);
-//        overlap = Math.round(100.0 * (1.0 - med / size));
+        if(Double.isNaN(userSpecifiedOverlap)) {
+          topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
+          med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
+          translationsModel = new MuSigmaTuple(med, Double.NaN);
+        }else{
+          double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
+          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
+        }
         break;
       case HeuristicFullStd:
-        topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
-        med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-        translationsModel = new MuSigmaTuple(med, Double.NaN);
-//        overlap = Math.round(100.0 * (1.0 - med / size));
+        if(Double.isNaN(userSpecifiedOverlap)) {
+          topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
+          med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
+          translationsModel = new MuSigmaTuple(med, Double.NaN);
+        }else{
+          double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
+          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
+        }
         break;
       case MLE:
         try {
-          translationsModel = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue);
+          translationsModel = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, userSpecifiedOverlap);
         } catch (GlobalOptimizationException e) {
           e.printStackTrace();
         }
@@ -575,12 +583,12 @@ public class OptimizationUtils {
 
 
     HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
+    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
 
-    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
-                                                                   overlap, percOverlapError,
-                                                                   numStdDevThreads,
-                                                                   stitchingStatistics);
-
+//    HashSet<ImageTile<T>> finalValidTiles2 = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
+//                                                                   overlap, percOverlapError,
+//                                                                   numStdDevThreads,
+//                                                                   stitchingStatistics);
 
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 
@@ -870,6 +878,81 @@ public class OptimizationUtils {
     return new MinMaxElement(min, max);
 
   }
+
+
+  /**
+   * Computes the min and max of the list of image tiles for a given direction and displacement
+   * value
+   *
+   * @param tiles the list of tiles
+   * @param dir the direction
+   * @param dispVal the displacement value to analyze
+   * @return the min and max (MinMaxElement)
+   */
+  public static <T> MinMaxElement getNoOutlierMinMaxValidTiles(HashSet<ImageTile<T>> tiles, Direction dir,
+                                                      DisplacementValue dispVal) {
+    double numStandardDeviations = 3;
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
+
+    List<Double> T = new ArrayList<Double>();
+
+    for (ImageTile<T> t : tiles) {
+      CorrelationTriple triple = null;
+      switch (dir) {
+        case North:
+          triple = t.getNorthTranslation();
+          break;
+        case West:
+          triple = t.getWestTranslation();
+          break;
+      }
+
+      if (triple == null || Double.isNaN(triple.getCorrelation()))
+        continue;
+
+      switch (dispVal) {
+        case X:
+          T.add((double)triple.getX());
+          break;
+        case Y:
+          T.add((double)triple.getY());
+          break;
+      }
+    }
+
+    double mean = 0;
+    for(Double t : T)
+      mean += t;
+    mean = mean/T.size();
+
+    double std = 0;
+    for(double d : T)
+      std += ((d - mean) * (d - mean));
+    std = Math.sqrt(std/(T.size()-1));
+
+    Iterator tItr = T.iterator();
+    double delta = numStandardDeviations*Math.abs(std);
+    while(tItr.hasNext()) {
+      double temp = ((Double)tItr.next());
+      boolean toRemove = false;
+      if(temp > mean+delta)
+        toRemove = true;
+      if(temp < mean-delta)
+        toRemove = true;
+      if(toRemove)
+        tItr.remove();
+    }
+
+    for(double d : T) {
+      int val = (int) d;
+      if(val < min) min = val;
+      if(val > max) max = val;
+    }
+
+    return new MinMaxElement(min, max);
+  }
+
 
   /**
    * Computes a list of min max elements, one for reach row in the grid of tiles for a given

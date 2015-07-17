@@ -8,6 +8,7 @@ import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
@@ -48,9 +49,6 @@ public class MLEOverlapEstimation {
     File[] roots = rootFolder.listFiles();
 
     CUDAPanel cudaPanel = new CUDAPanel();
-//
-//    JFrame frame = new JFrame("Select CUDA Devices");
-//    JOptionPane.showMessageDialog(frame, cudaPanel);
 
 
     Log.setLogLevel(Log.LogType.MANDATORY);
@@ -72,12 +70,13 @@ public class MLEOverlapEstimation {
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
-      params.getOutputParams().setOutputFullImage(false);
+      params.getOutputParams().setOutputFullImage(true);
       params.getOutputParams().setDisplayStitching(false);
-      params.getAdvancedParams().setNumCPUThreads(8);
+      params.getAdvancedParams().setNumCPUThreads(10);
 
 
-      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
+
+      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.FFTW;
       System.out.println("Stitching Type: " + t);
       File metaDataPath = new File(r, "mleTest");
       params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
