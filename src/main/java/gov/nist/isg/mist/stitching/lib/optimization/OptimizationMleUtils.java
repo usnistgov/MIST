@@ -15,7 +15,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 public class OptimizationMleUtils {
 
 
-  private static final int MLE_GRID_SEARCH_SIZE_PER_SIDE = 6;
+  private static final int MLE_GRID_SEARCH_SIZE_PER_SIDE = 8;
   private static final double SQRT2PI = Math.sqrt(2*Math.PI);
 
 
@@ -124,10 +124,6 @@ public class OptimizationMleUtils {
     for(int i = 0; i < translations.size(); i++)
       T[i] = translations.get(i);
 
-    for(int i = 0; i < translations.size(); i++)
-      System.out.print(T[i] + ";");
-    System.out.println("");
-
 
     // setup search bounds for sigma tied to the range
     int smax;
@@ -137,15 +133,20 @@ public class OptimizationMleUtils {
       smax = (int) Math.round((pou / 100) * range);
     }
 
-
     // init MLE model parameters
     MLEPoint bestPoint = new MLEPoint(-1,-1,-1,Double.NEGATIVE_INFINITY);
     List<MLEPoint> hcFoundPoints = new ArrayList<MLEPoint>();
 
 
-    // TODO setup the caching of MLE values
-    double[][][] likelihoodValues = new double[100][range][smax];
-
+    // allocate and init the matrix to hold cached likelihood values
+    double[][][] likelihoodValues = new double[100+1][range+1][smax+1];
+    for(int p = 0; p < 100+1; p++) {
+      for (int m = 0; m < range+1; m++) {
+        for (int s = 0; s < smax+1; s++) {
+          likelihoodValues[p][m][s] = Double.NaN;
+        }
+      }
+    }
 
     // loop over the grid of starting points
     int pSkip = Math.round(100/MLE_GRID_SEARCH_SIZE_PER_SIDE);
@@ -154,84 +155,82 @@ public class OptimizationMleUtils {
     for(int p = 1; p < 100; p += pSkip) {
       for (int m = 1; m < range; m += mSkip) {
         for (int s = 1; s < smax; s += sSkip) {
-          
+          // *********************************
+          // Perform hill climbing
 
-          MLEPoint stop = performMleHillClimb(T, new MLEPoint(p,m,s,Double.NEGATIVE_INFINITY), range, smax);
-          hcFoundPoints.add(stop);
+          MLEPoint point = new MLEPoint(p,m,s,Double.NEGATIVE_INFINITY);
+          MLEPoint temp = new MLEPoint(p,m,s, Double.NEGATIVE_INFINITY);
+          boolean done = false;
 
-          if(stop.likelihood > bestPoint.likelihood) {
-            bestPoint = stop;
+          while(!done) {
+            int pmin = Math.max(0, temp.PIuni - 1);
+            int pmax = Math.min(100, temp.PIuni + 1);
+            int mmin = Math.max(1, temp.mu - 1);
+            int mmax = Math.min(range, temp.mu + 1);
+            int smin = Math.max(1, temp.sigma - 1);
+
+            for (int hcP = pmin; hcP <= pmax; hcP++) {
+              for (int hcM = mmin; hcM <= mmax; hcM++) {
+                for (int hcS = smin; hcS <= smax; hcS++) {
+                  // check for a cached value first
+                  double l = likelihoodValues[hcP][hcM][hcS];
+                  if(Double.isNaN(l)) {
+                    l = computeMLEValue(T, hcP, hcM, hcS, range);
+                    likelihoodValues[hcP][hcM][hcS] = l;
+                  }
+
+                  if (l > temp.likelihood) {
+                    temp.PIuni = hcP;
+                    temp.mu = hcM;
+                    temp.sigma = hcS;
+                    temp.likelihood = l;
+                  }
+                }
+              }
+            }
+
+            if(temp.likelihood > point.likelihood) {
+              // record current best
+              point.PIuni = temp.PIuni;
+              point.mu = temp.mu;
+              point.sigma = temp.sigma;
+              point.likelihood = temp.likelihood;
+            }else{
+              done = true;
+            }
+          }
+          // end hill climbing
+          // *********************************
+
+          // add the point hill climbing found to the list
+          hcFoundPoints.add(point);
+          if(point.likelihood > bestPoint.likelihood) {
+            bestPoint = point;
           }
         }
       }
     }
 
+    int numHillClimbs = hcFoundPoints.size();
+    int numCorrectlyFoundPoints = 0;
+    for(MLEPoint p : hcFoundPoints) {
+      if(p.PIuni == bestPoint.PIuni && p.mu == bestPoint.mu && p.sigma == bestPoint.sigma)
+        numCorrectlyFoundPoints++;
+    }
 
-    // TODO find the number of hc iterations that found bestPoint
-//    System.out.println("MLE multipoint hill climb: " + numConverged + " out of " + totalNumGridPoints);
+
 
     long endTime = System.currentTimeMillis();
-    System.out.println("MLE multipoint hill climb took: " + (endTime-startTime) + "ms for grid of " + MLE_GRID_SEARCH_SIZE_PER_SIDE + "x" + MLE_GRID_SEARCH_SIZE_PER_SIDE + "x" + MLE_GRID_SEARCH_SIZE_PER_SIDE);
+    System.out.println("MLE multipoint hill climb took: " + (endTime-startTime) + "ms for grid of "
+                       + MLE_GRID_SEARCH_SIZE_PER_SIDE + "x"
+                       + MLE_GRID_SEARCH_SIZE_PER_SIDE + "x"
+                       + MLE_GRID_SEARCH_SIZE_PER_SIDE + ", "
+                       + (100*numCorrectlyFoundPoints/numHillClimbs) + "% converged");
+
 
     System.out.println("PIuni = " + bestPoint.PIuni + " mu = " + bestPoint.mu + " sigma = " + bestPoint.sigma + " likelihood = " + bestPoint.likelihood);
 
     return Math.round(100*(range-bestPoint.mu)/range);
-  }
-
-
-
-
-
-
-  private static MLEPoint performMleHillClimb(double[] T, MLEPoint point, int range, int smax) {
-
-
-
-    point.likelihood = Double.NEGATIVE_INFINITY;
-
-    MLEPoint temp = new MLEPoint(point.PIuni, point.mu, point.sigma, Double.NEGATIVE_INFINITY);
-    boolean done = false;
-
-
-    while(!done) {
-
-      int pmin = Math.max(0, temp.PIuni - 1);
-      int pmax = Math.min(100, temp.PIuni + 1);
-      int mmin = Math.max(1, temp.mu - 1);
-      int mmax = Math.min(range, temp.mu + 1);
-      int smin = Math.max(1, temp.sigma - 1);
-
-
-      for (int p = pmin; p <= pmax; p++) {
-        for (int m = mmin; m <= mmax; m++) {
-          for (int s = smin; s <= smax; s++) {
-            double l = computeMLEValue(T, p, m, s, range);
-            if (l > temp.likelihood) {
-              temp.PIuni = p;
-              temp.mu = m;
-              temp.sigma = s;
-              temp.likelihood = l;
-            }
-          }
-        }
-      }
-
-      if(temp.likelihood > point.likelihood) {
-        // record current best
-        point.PIuni = temp.PIuni;
-        point.mu = temp.mu;
-        point.sigma = temp.sigma;
-        point.likelihood = temp.likelihood;
-      }else{
-        done = true;
-      }
-
-    }
-
-//    System.out.println("PIuni = " + point.PIuni + " mu = " + point.mu + " sigma = " + point.sigma + " likelihood = " + point.likelihood);
-
-
-    return point;
   }
 
 
