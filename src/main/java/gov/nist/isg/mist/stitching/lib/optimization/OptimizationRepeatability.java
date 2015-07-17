@@ -456,36 +456,37 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   }
 
 
-  private double getOverlap(Direction dir, DisplacementValue dispValue, double percOverlapError) throws FileNotFoundException {
+  private MuSigmaTuple getOverlap(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
 
-    // TODO insert the overlap computation type control code
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
-    double overlap = Double.NaN;
+
+    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     switch (dir) {
       case West:
         if (!Double.isNaN(this.userDefinedHorizontalOverlap)) {
           // use the specified overlap
-          overlap = this.userDefinedHorizontalOverlap;
+          double overlap = this.userDefinedHorizontalOverlap;
+          overlap = (overlap/100)*OptimizationUtils.getOverlapRange(this.grid, dispValue);
+          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
         }else{
           // compute the overlap from translations
-          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError, overlapComputationType);
+          translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
         }
         break;
       case North:
         if (!Double.isNaN(this.userDefinedVerticalOverlap)) {
           // use the specified repeatability
-          overlap = this.userDefinedVerticalOverlap;
+          double overlap = this.userDefinedVerticalOverlap;
+          overlap = (overlap/100)*OptimizationUtils.getOverlapRange(this.grid, dispValue);
+          translationsModel = new MuSigmaTuple(overlap, Double.NaN);
         }else{
           // compute the overlap from translations
-          overlap = OptimizationUtils.getOverlap(this.grid, dir, dispValue, percOverlapError, overlapComputationType);
+          translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
         }
         break;
-      default:
-        break;
-
     }
-    return overlap;
+    return translationsModel;
   }
 
   /**
@@ -515,8 +516,20 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     }
 
+
     // get the overlap for the current direction
-    double overlap = getOverlap(dir, dispValue, percOverlapError);
+    MuSigmaTuple translationsModel = getOverlap(dir, dispValue);
+    // compute the image overlap from the translations model (mu, sigma)
+    double range = OptimizationUtils.getOverlapRange(grid, dispValue);
+    double overlap = Math.round(100 * (1.0 - translationsModel.mu / range));
+    if(!Double.isNaN(translationsModel.sigma)) {
+      // update the percent overlap uncertainty
+//      percOverlapError = Math.ceil(100 * 2 * translationsModel.sigma / range);
+      // percent overlap uncertainty is within 3 sigma or 99% of normal distribution
+      percOverlapError = 100 * 3 * translationsModel.sigma / range;
+      System.out.println("Percent Overlap Uncertainty: " + percOverlapError);
+    }
+
 
     this.stitchingStatistics.setComputedOverlap(dir, overlap);
 
@@ -535,7 +548,11 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
     HashSet<ImageTile<T>> validTranslations;
-    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError, overlap, this.params.getAdvancedParams().getNumCPUThreads(), this.stitchingStatistics);
+    validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError,
+                                                             overlap,
+                                                             this.params.getAdvancedParams()
+                                                                 .getNumCPUThreads(),
+                                                             this.stitchingStatistics);
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir

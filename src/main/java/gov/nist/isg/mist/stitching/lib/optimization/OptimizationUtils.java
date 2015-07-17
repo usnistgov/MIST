@@ -489,40 +489,41 @@ public class OptimizationUtils {
      * @param grid the grid of image tiles
      * @param dir the direction
      * @param dispValue the displacement value
-     * @param percOverlapError the overlap error
      * @param overlapType the type over overlap computation
      * @return the overlap
      */
-  public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispValue, double percOverlapError, OverlapType overlapType) throws FileNotFoundException  {
+  public static <T> MuSigmaTuple getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
+      DisplacementValue dispValue, OverlapType overlapType) throws FileNotFoundException  {
     Log.msg(LogType.VERBOSE,
-        "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
+            "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
     int size = getOverlapRange(grid, dispValue);
+    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     double med;
     List<CorrelationTriple> topCorrelations;
-    double overlap = 0;
     switch(overlapType) {
       case Heuristic:
         topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
         med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-        overlap = Math.round(100.0 * (1.0 - med / size));
+        translationsModel = new MuSigmaTuple(med, Double.NaN);
+//        overlap = Math.round(100.0 * (1.0 - med / size));
         break;
       case HeuristicFullStd:
         topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
         med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-        overlap = Math.round(100.0 * (1.0 - med / size));
+        translationsModel = new MuSigmaTuple(med, Double.NaN);
+//        overlap = Math.round(100.0 * (1.0 - med / size));
         break;
       case MLE:
         try {
-          overlap = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, percOverlapError);
+          translationsModel = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue);
         } catch (GlobalOptimizationException e) {
           e.printStackTrace();
         }
         break;
     }
 
-    return overlap;
+    return translationsModel;
   }
 
   /**
@@ -552,7 +553,7 @@ public class OptimizationUtils {
    * @param grid the grid of image tiles
    * @param dir the direction that is to be filtered
    * @param percOverlapError the percent overlap of error
-   * @param overlap the overlap between tiles
+   * @param overlap the overlap between images
    * @param numStdDevThreads the number of standard deviation threads used for filtering
    * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
@@ -571,11 +572,16 @@ public class OptimizationUtils {
       default:
         break;
     }
-    
+
+
     HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
-       
-    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir, overlap, percOverlapError, numStdDevThreads, stitchingStatistics);
-    
+
+    HashSet<ImageTile<T>> finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
+                                                                   overlap, percOverlapError,
+                                                                   numStdDevThreads,
+                                                                   stitchingStatistics);
+
+
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 
     return finalValidTiles;
