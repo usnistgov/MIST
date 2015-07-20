@@ -26,13 +26,13 @@ public class MLEOverlapEstimation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-  private static String validationRootFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets";
-  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
-  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.3.dylib";
+//  private static String validationRootFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets";
+//  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
+//  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.3.dylib";
 
-//  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets\\";
-//  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
-//  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
+  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets\\";
+  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
+  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
 
 
 
@@ -57,6 +57,12 @@ public class MLEOverlapEstimation {
       if (!r.isDirectory())
         continue;
 
+//      if(r.getAbsolutePath().contains("1h_Wet")) continue;
+//      if(r.getAbsolutePath().contains("24h_Dry")) continue;
+//      if(r.getAbsolutePath().contains("KB_")) continue;
+//      if(r.getAbsolutePath().contains("Keana_Scott_gauss3")) continue;
+
+
       System.out.println("Running: " + r.getAbsolutePath());
       params = new StitchingAppParams();
 
@@ -72,13 +78,16 @@ public class MLEOverlapEstimation {
       if(cudaPanel.isCudaAvailable())
         params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
 
-      params.getOutputParams().setOutputFullImage(true);
+      params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
 
+      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
+      if(r.getAbsolutePath().contains("Keana_Scott_gauss3"))
+         t = StitchingExecutor.StitchingType.FFTW;
 
-      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.JAVA;
+
       System.out.println("Stitching Type: " + t);
       File metaDataPath = new File(r, "mleTest");
       params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());

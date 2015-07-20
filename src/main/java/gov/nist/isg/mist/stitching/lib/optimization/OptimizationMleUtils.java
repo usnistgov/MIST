@@ -19,23 +19,7 @@ public class OptimizationMleUtils {
   private static final double SQRT2PI = Math.sqrt(2*Math.PI);
 
 
-  /**
-   * Calculates the overlap for a given direction using Maximum Likelihood Estimation
-   *
-   * @param grid the grid of image tiles
-   * @param dir the direction
-   * @param dispValue the displacement value
-   * @return the overlap
-   * @throws GlobalOptimizationException thrown if no valid tiles are found
-   */
-  public static <T> MuSigmaTuple getOverlapMLE(TileGrid<ImageTile<T>> grid, OptimizationUtils.Direction dir, OptimizationUtils.DisplacementValue dispValue, double userDefinedOverlap) throws GlobalOptimizationException,
-                                                                                                                                                                         FileNotFoundException {
-    Log.msg(Log.LogType.INFO, "Computing overlap for " + dir.name()
-                              + " direction using Maximum Likelihood Estimation.");
-
-    // get valid range for translations given the direction
-    int range = OptimizationUtils.getOverlapRange(grid, dispValue);
-
+  private static <T> List<Integer> getTranslationsFromGrid(TileGrid<ImageTile<T>> grid, OptimizationUtils.Direction dir, OptimizationUtils.DisplacementValue dispValue, int range, boolean filterLowCorrelationTranslations) {
     // allocate list to hold the translations
     List<Integer> translations = new ArrayList<Integer>();
 
@@ -55,9 +39,15 @@ public class OptimizationMleUtils {
                   t = tile.getNorthTranslation().getY();
                   break;
               }
-              if (t > 0 && t < range
-                  && tile.getNorthTranslation().getCorrelation() >= OptimizationUtils.getCorrelationThreshold())
-                translations.add(t);
+
+              if(filterLowCorrelationTranslations) {
+                if (t > 0 && t < range
+                    && tile.getNorthTranslation().getCorrelation() >= OptimizationUtils.getCorrelationThreshold())
+                  translations.add(t);
+              }else {
+                if (t > 0 && t < range)
+                  translations.add(t);
+              }
 
             }
             break;
@@ -72,20 +62,54 @@ public class OptimizationMleUtils {
                   t = tile.getWestTranslation().getY();
                   break;
               }
-              if (t > 0 && t < range
-                  && tile.getWestTranslation().getCorrelation() >= OptimizationUtils.getCorrelationThreshold())
-                translations.add(t);
+              if(filterLowCorrelationTranslations) {
+                if (t > 0 && t < range
+                    && tile.getWestTranslation().getCorrelation() >= OptimizationUtils.getCorrelationThreshold())
+                  translations.add(t);
+              }else {
+                if (t > 0 && t < range)
+                  translations.add(t);
+              }
             }
             break;
         }
       }
     }
 
-    MuSigmaTuple mleModel;
+    return translations;
+  }
+
+
+  // TODO update the javadoc for the modified functions
+  /**
+   * Calculates the overlap for a given direction using Maximum Likelihood Estimation
+   *
+   * @param grid the grid of image tiles
+   * @param dir the direction
+   * @param dispValue the displacement value
+   * @return the overlap
+   * @throws GlobalOptimizationException thrown if no valid tiles are found
+   */
+  public static <T> MuSigmaTuple getOverlapMLE(TileGrid<ImageTile<T>> grid, OptimizationUtils.Direction dir, OptimizationUtils.DisplacementValue dispValue, double userDefinedOverlap) throws
+                                                                                                                                                                         FileNotFoundException {
+    Log.msg(Log.LogType.INFO, "Computing overlap for " + dir.name()
+                              + " direction using Maximum Likelihood Estimation.");
+
+    // get valid range for translations given the direction
+    int range = OptimizationUtils.getOverlapRange(grid, dispValue);
+
+    List<Integer> translations = getTranslationsFromGrid(grid, dir, dispValue, range, false);
+//    if(translations.size() < 50) {
+//      System.out.println("To few translations above correlation threshold; fitting MLE model to all translations.");
+//      translations = getTranslationsFromGrid(grid, dir, dispValue, range, false);
+//    }
+
+
+    MuSigmaTuple mleModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     try{
       mleModel = getOverlapFromMultipointMleHillClimb(translations, range, userDefinedOverlap);
     }catch(GlobalOptimizationException e) {
-      throw new GlobalOptimizationException("Unable to compute overlap for " + dir.name() + ", translation list is empty.");
+      Log.msg(Log.LogType.MANDATORY, e.getMessage());
     }
     return mleModel;
 
@@ -112,7 +136,6 @@ public class OptimizationMleUtils {
 
     // TODO clean up this function to make is more readable
     // TODO remove all of the print statements, convert  the relevant ones to logger
-    // TODO ?add in MLE estimation timing to statistics file?
     // TODO add in the percent MLE convergence to the stats file as an indicator of the quality of the translations
     long startTime = System.currentTimeMillis();
 
@@ -120,10 +143,6 @@ public class OptimizationMleUtils {
     double[] T = new double[translations.size()];
     for(int i = 0; i < translations.size(); i++)
       T[i] = translations.get(i);
-
-    for(int i = 0; i < translations.size(); i++)
-      System.out.print(T[i] + ";");
-    System.out.println("");
 
     // init MLE model parameters
     MLEPoint bestPoint = new MLEPoint(-1,-1,-1,Double.NEGATIVE_INFINITY);
@@ -289,7 +308,7 @@ public class OptimizationMleUtils {
                        + (100*numCorrectlyFoundPoints/numHillClimbs) + "% converged");
 
 
-    System.out.println("PIuni = " + bestPoint.PIuni + " mu = " + bestPoint.mu + " sigma = " + bestPoint.sigma + " likelihood = " + bestPoint.likelihood);
+    System.out.println("PIuni = " + bestPoint.PIuni + " mu = " + bestPoint.mu + " sigma = " + bestPoint.sigma + " from " + translations.size() + " translations");
 
     return new MuSigmaTuple(bestPoint.mu, bestPoint.sigma);
   }

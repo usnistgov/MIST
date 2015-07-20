@@ -56,7 +56,6 @@ public class OptimizationUtils {
   private static final double CorrelationThreshold = 0.5;
   private static final int NumTopCorrelations = 5;
   private static final double CorrelationWeight = 3.0;
-  private static final double OUTLIER_IS_N_STANDARD_DEVIATIONS = 3;
 
   /**
    * The type of overlap computation
@@ -65,17 +64,23 @@ public class OptimizationUtils {
    * @version 1.0
    */
   public enum OverlapType {
-    /** Heuristic */
+    /**
+     * Heuristic
+     */
     Heuristic,
-    /** Heuristic Full Std Search */
+    /**
+     * Heuristic Full Std Search
+     */
     HeuristicFullStd,
-    /** MLE */
+    /**
+     * MLE
+     */
     MLE;
   }
 
   /**
    * The direction for optimization
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -93,12 +98,12 @@ public class OptimizationUtils {
 
   /**
    * The displacement value for optimization
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
   public enum DisplacementValue {
-    
+
     /**
      * X
      */
@@ -111,21 +116,21 @@ public class OptimizationUtils {
   }
 
 
-
-  public static double getCorrelationThreshold() { return CorrelationThreshold; }
-
+  public static double getCorrelationThreshold() {
+    return CorrelationThreshold;
+  }
 
 
   /**
    * Prints the values of a tile grid in a grid format similar to how Matlab displays values. Used
    * for comparison of Matlab and Java
-   * 
-   * @param grid the grid of image tiles
-   * @param dir the direction (north or west) you want to display
+   *
+   * @param grid    the grid of image tiles
+   * @param dir     the direction (north or west) you want to display
    * @param dispVal the displacement value that is to be printed (X, Y, C)
    */
   public static <T> void printGrid(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispVal) {
+                                   DisplacementValue dispVal) {
     Log.msgNoTime(LogType.MANDATORY, dir.name() + " : " + dispVal.name());
 
     for (int row = 0; row < grid.getExtentHeight(); row++) {
@@ -147,7 +152,7 @@ public class OptimizationUtils {
         String val = "0.0";
 
         if (triple != null) {
-          switch (dispVal) {         
+          switch (dispVal) {
             case X:
               val = triple.getMatlabFormatStrX();
               break;
@@ -169,8 +174,9 @@ public class OptimizationUtils {
   }
 
 
-  public static <T> List<CorrelationTriple> getTopCorrelationsFullStdCheck(TileGrid<ImageTile<T>> grid,
-                                                               final Direction dir, int numCorrelations) throws FileNotFoundException {
+  public static <T> List<CorrelationTriple> getTopCorrelationsFullStdCheck(
+      TileGrid<ImageTile<T>> grid,
+      final Direction dir, int numCorrelations) throws FileNotFoundException {
     List<CorrelationTriple> topTranslations = new ArrayList<CorrelationTriple>(numCorrelations);
     List<ImageTile<T>> topTiles = new ArrayList<ImageTile<T>>();
 
@@ -180,11 +186,13 @@ public class OptimizationUtils {
         ImageTile<T> tile = grid.getSubGridTile(row, col);
         switch (dir) {
           case North:
-            if (tile.getNorthTranslation() != null && tile.getNorthTranslation().getCorrelation() >= CorrelationThreshold)
+            if (tile.getNorthTranslation() != null
+                && tile.getNorthTranslation().getCorrelation() >= CorrelationThreshold)
               topTiles.add(tile);
             break;
           case West:
-            if (tile.getWestTranslation() != null && tile.getWestTranslation().getCorrelation() >= CorrelationThreshold)
+            if (tile.getWestTranslation() != null
+                && tile.getWestTranslation().getCorrelation() >= CorrelationThreshold)
               topTiles.add(tile);
             break;
         }
@@ -220,11 +228,10 @@ public class OptimizationUtils {
       }
     }
 
-
     // create the new metric (correlation + normalized std)
     double a = Double.NEGATIVE_INFINITY;
     double b = Double.POSITIVE_INFINITY;
-    for(Double v : stdDevList) {
+    for (Double v : stdDevList) {
       a = Math.max(a, v);
       b = Math.min(b, v);
     }
@@ -241,19 +248,19 @@ public class OptimizationUtils {
         double c2;
         switch (dir) {
           case North:
-            v1 = (t1.getLowestStdDevNorth() - minStdVal)/maxStdVal;
-            v2 = (t2.getLowestStdDevNorth() - minStdVal)/maxStdVal;
+            v1 = (t1.getLowestStdDevNorth() - minStdVal) / maxStdVal;
+            v2 = (t2.getLowestStdDevNorth() - minStdVal) / maxStdVal;
             c1 = t1.getNorthTranslation().getCorrelation();
             c2 = t2.getNorthTranslation().getCorrelation();
 
-            return Double.compare(v1+c1, v2+c2);
+            return Double.compare(v1 + c1, v2 + c2);
           case West:
-            v1 = (t1.getLowestStdDevWest() - minStdVal)/maxStdVal;
-            v2 = (t2.getLowestStdDevWest() - minStdVal)/maxStdVal;
+            v1 = (t1.getLowestStdDevWest() - minStdVal) / maxStdVal;
+            v2 = (t2.getLowestStdDevWest() - minStdVal) / maxStdVal;
             c1 = t1.getWestTranslation().getCorrelation();
             c2 = t2.getWestTranslation().getCorrelation();
 
-            return Double.compare(v1+c1, v2+c2);
+            return Double.compare(v1 + c1, v2 + c2);
           default:
             return 0;
         }
@@ -270,7 +277,6 @@ public class OptimizationUtils {
           break;
       }
     }
-
 
     // Get the top n tiles
     if (numCorrelations < topTiles.size()) {
@@ -300,14 +306,16 @@ public class OptimizationUtils {
 
   /**
    * Gets the top correlations from a grid of tiles
-   * 
-   * @param grid the grid of image tiles
-   * @param dir the direction (North or West)
+   *
+   * @param grid            the grid of image tiles
+   * @param dir             the direction (North or West)
    * @param numCorrelations the number of correlations
    * @return a list of correlations that are highest in the tile grid
    */
   public static <T> List<CorrelationTriple> getTopCorrelations(TileGrid<ImageTile<T>> grid,
-      final Direction dir, int numCorrelations) throws FileNotFoundException  {
+                                                               final Direction dir,
+                                                               int numCorrelations)
+      throws FileNotFoundException {
     List<CorrelationTriple> topTranslations = new ArrayList<CorrelationTriple>(numCorrelations);
     List<ImageTile<T>> topTiles = new ArrayList<ImageTile<T>>();
 
@@ -327,7 +335,6 @@ public class OptimizationUtils {
         }
       }
     }
-
 
     // Sort tiles based on correlation
     Collections.sort(topTiles, new Comparator<ImageTile<T>>() {
@@ -357,7 +364,8 @@ public class OptimizationUtils {
 
     // Compute the top stdDev based on their x,y translation
     for (ImageTile<T> tile : topTiles) {
-      if(!tile.isTileRead()) tile.readTile();
+      if (!tile.isTileRead())
+        tile.readTile();
 
       ImageTile<T> neighbor = null;
       switch (dir) {
@@ -372,7 +380,8 @@ public class OptimizationUtils {
       if (neighbor == null)
         continue;
 
-      if(!neighbor.isTileRead()) neighbor.readTile();
+      if (!neighbor.isTileRead())
+        neighbor.readTile();
 
       switch (dir) {
         case North:
@@ -390,7 +399,6 @@ public class OptimizationUtils {
     }
 
     double medStdDev = StatisticUtils.median(stdDevList);
-
 
     for (ImageTile<T> tile : topTiles) {
       switch (dir) {
@@ -422,14 +430,14 @@ public class OptimizationUtils {
 
   /**
    * Computes the op on a list of correlations
-   * 
+   *
    * @param corrList the list of correlations
-   * @param dispVal the displacement value that is to be averaged
-   * @param op the operation type
+   * @param dispVal  the displacement value that is to be averaged
+   * @param op       the operation type
    * @return op(corrList), where op is max, mean, median,..., etc.
    */
   public static double computeOpTranslations(List<CorrelationTriple> corrList,
-      DisplacementValue dispVal, OP_TYPE op) {
+                                             DisplacementValue dispVal, OP_TYPE op) {
     List<Double> trans = new ArrayList<Double>();
 
     for (CorrelationTriple t : corrList) {
@@ -463,10 +471,8 @@ public class OptimizationUtils {
   }
 
 
-
-
-
-  public static<T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue) throws FileNotFoundException  {
+  public static <T> int getOverlapRange(TileGrid<ImageTile<T>> grid, DisplacementValue dispValue)
+      throws FileNotFoundException {
     // get valid range for translations given the direction
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     if (!tile.isTileRead())
@@ -484,59 +490,58 @@ public class OptimizationUtils {
   }
 
 
-    /**
-     * Calculates the overlap for a given direction
-     *
-     * @param grid the grid of image tiles
-     * @param dir the direction
-     * @param dispValue the displacement value
-     * @param overlapType the type over overlap computation
-     * @return the overlap
-     */
+  /**
+   * Calculates the overlap for a given direction
+   *
+   * @param grid        the grid of image tiles
+   * @param dir         the direction
+   * @param dispValue   the displacement value
+   * @param overlapType the type over overlap computation
+   * @return the overlap
+   */
   public static <T> MuSigmaTuple getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-      DisplacementValue dispValue, OverlapType overlapType, double userSpecifiedOverlap) throws FileNotFoundException  {
+                                            DisplacementValue dispValue, OverlapType overlapType,
+                                            double userSpecifiedOverlap)
+      throws FileNotFoundException {
     Log.msg(LogType.VERBOSE,
             "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
     int size = getOverlapRange(grid, dispValue);
     MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     List<CorrelationTriple> topCorrelations;
-    switch(overlapType) {
+    switch (overlapType) {
       case Heuristic:
-        if(Double.isNaN(userSpecifiedOverlap)) {
+        if (Double.isNaN(userSpecifiedOverlap)) {
           topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
           double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
           translationsModel = new MuSigmaTuple(med, Double.NaN);
         }
         break;
       case HeuristicFullStd:
-        if(Double.isNaN(userSpecifiedOverlap)) {
+        if (Double.isNaN(userSpecifiedOverlap)) {
           topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
           double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
           translationsModel = new MuSigmaTuple(med, Double.NaN);
         }
         break;
       case MLE:
-        try {
-          translationsModel = OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, userSpecifiedOverlap);
-        } catch (GlobalOptimizationException e) {
-          e.printStackTrace();
-        }
+        translationsModel =
+            OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, userSpecifiedOverlap);
         break;
     }
 
     // if the user has specified an overlap, convert that into the model parameters
-    if(!Double.isNaN(userSpecifiedOverlap)) {
-      translationsModel.mu = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
+    if (!Double.isNaN(userSpecifiedOverlap)) {
+      translationsModel.mu = Math.round((1.0 - (userSpecifiedOverlap / 100)) * size);
     }
 
     return translationsModel;
   }
 
   /**
-   * Copies north and western translations into 'preOptimization' north and western translations. This
-   * saves the translations before optimization
-   * 
+   * Copies north and western translations into 'preOptimization' north and western translations.
+   * This saves the translations before optimization
+   *
    * @param grid the grid of image tiles
    */
   public static <T> void backupTranslations(TileGrid<ImageTile<T>> grid) {
@@ -554,19 +559,23 @@ public class OptimizationUtils {
   }
 
   /**
-   * Filters grid of image tiles based on calculated overlap, correlation, and standard deviation.
-   * A set of valid image tiles after filtering is returned.
-   * 
-   * @param grid the grid of image tiles
-   * @param dir the direction that is to be filtered
-   * @param percOverlapError the percent overlap of error
-   * @param overlap the overlap between images
-   * @param numStdDevThreads the number of standard deviation threads used for filtering
+   * Filters grid of image tiles based on calculated overlap, correlation, and standard deviation. A
+   * set of valid image tiles after filtering is returned.
+   *
+   * @param grid                the grid of image tiles
+   * @param dir                 the direction that is to be filtered
+   * @param percOverlapError    the percent overlap of error
+   * @param overlap             the overlap between images
+   * @param numStdDevThreads    the number of standard deviation threads used for filtering
    * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
-      Direction dir, double percOverlapError, double overlap, int numStdDevThreads, StitchingStatistics stitchingStatistics) throws FileNotFoundException  {
+                                                             Direction dir, double percOverlapError,
+                                                             double overlap, int numStdDevThreads,
+                                                             StitchingStatistics stitchingStatistics,
+                                                             boolean removeOutliers)
+      throws FileNotFoundException {
     Log.msg(LogType.INFO, "Filtering translations:");
     DisplacementValue dispValue = null;
     switch (dir) {
@@ -580,24 +589,139 @@ public class OptimizationUtils {
         break;
     }
 
+    HashSet<ImageTile<T>>
+        overlapCorrFilter =
+        filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid,
+                                             stitchingStatistics);
 
-    HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
-
-    // TODO validate that removing this does not hurt the stitching results on the validation data
-    boolean useStdFilter = true;
-    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
-    if(useStdFilter) {
-      finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
-                                                                     overlap, percOverlapError,
-                                                                     numStdDevThreads,
-                                                                     stitchingStatistics);
+    if (removeOutliers) {
+      switch(dir) {
+        case North:
+          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
+          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
+          break;
+        case West:
+          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
+          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
+          break;
+      }
     }
 
-
+    // TODO validate that removing this does not hurt the stitching results on the validation data
+    boolean useStdFilter = false;
+    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
+    if (useStdFilter) {
+      finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
+                                              overlap, percOverlapError,
+                                              numStdDevThreads,
+                                              stitchingStatistics);
+    }
 
     Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
 
     return finalValidTiles;
+  }
+
+
+  private static <T> HashSet<ImageTile<T>> filterTranslationsRemoveOutliers(HashSet<ImageTile<T>> tiles,
+                                                             Direction dir, DisplacementValue dispVal) {
+
+    HashSet<ImageTile<T>> validTiles = new HashSet<ImageTile<T>>();
+
+    List<Double> T = new ArrayList<Double>();
+
+    for (ImageTile<T> t : tiles) {
+      CorrelationTriple triple = null;
+      switch (dir) {
+        case North:
+          triple = t.getNorthTranslation();
+          break;
+        case West:
+          triple = t.getWestTranslation();
+          break;
+      }
+
+      if (triple == null || Double.isNaN(triple.getCorrelation()))
+        continue;
+
+      switch (dispVal) {
+        case X:
+          T.add((double)triple.getX());
+          break;
+        case Y:
+          T.add((double)triple.getY());
+          break;
+      }
+    }
+
+
+    // q1 is first quartile
+    // q2 is second quartile (median)
+    // q3 is third quartile
+    // filter based on (>q3 + w(q3-q1)) and (<q1 - w(q3-q1))
+
+    if(T.size() == 0)
+      return tiles;
+
+    double w = 3; // default outlier w (1.5)
+    double median = getMedian(T);
+    List<Double> lessThan = new ArrayList<Double>();
+    List<Double> greaterThan = new ArrayList<Double>();
+    for(Double d: T) {
+      if(d < median)
+        lessThan.add(d);
+      if(d > median)
+        greaterThan.add(d);
+    }
+    if(lessThan.size() == 0 || greaterThan.size() == 0)
+      return tiles;
+
+    double q1 = getMedian(lessThan);
+    double q3 = getMedian(greaterThan);
+    double iqd = Math.abs(q3 - q1);
+
+    for (ImageTile<T> t : tiles) {
+      CorrelationTriple triple = null;
+      switch (dir) {
+        case North:
+          triple = t.getNorthTranslation();
+          break;
+        case West:
+          triple = t.getWestTranslation();
+          break;
+      }
+
+      if (triple == null || Double.isNaN(triple.getCorrelation()))
+        continue;
+
+      double translation = Double.NaN;
+      switch (dispVal) {
+        case X:
+          translation = triple.getX();
+          break;
+        case Y:
+          translation = triple.getY();
+          break;
+      }
+
+      if (translation >= (q1 - w * iqd) && translation <= (q3 + w * iqd)) {
+        validTiles.add(t);
+      }
+    }
+
+    return validTiles;
+  }
+
+  private static double getMedian(List<Double> values) {
+
+    Collections.sort(values);
+    if (values.size() % 2 == 1) {
+      return values.get((values.size() + 1) / 2 - 1);
+    } else {
+      double upper = values.get(values.size() / 2 - 1);
+      double lower = values.get(values.size() / 2);
+      return (lower + upper) / 2.0;
+    }
   }
 
   
@@ -832,11 +956,10 @@ public class OptimizationUtils {
    * @param tiles the list of tiles
    * @param dir the direction
    * @param dispVal the displacement value to analyze
-   * @param discardOutliers controls whether 3*std outliers are removed or not before computing min/max value
    * @return the min and max (MinMaxElement)
    */
   public static <T> MinMaxElement getMinMaxValidTiles(HashSet<ImageTile<T>> tiles, Direction dir,
-                                                      DisplacementValue dispVal, boolean discardOutliers) {
+                                                      DisplacementValue dispVal) {
 
 
     List<Double> T = new ArrayList<Double>();
@@ -865,32 +988,6 @@ public class OptimizationUtils {
       }
     }
 
-    if(discardOutliers) {
-      // if the user wants to discard outliers before computing min/max values
-      double mean = 0;
-      for (Double t : T)
-        mean += t;
-      mean = mean / T.size();
-
-      double std = 0;
-      for (double d : T)
-        std += ((d - mean) * (d - mean));
-      std = Math.sqrt(std / (T.size() - 1));
-
-      Iterator tItr = T.iterator();
-      double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS * Math.abs(std);
-      while (tItr.hasNext()) {
-        double temp = ((Double) tItr.next());
-        boolean toRemove = false;
-        if (temp > mean + delta)
-          toRemove = true;
-        if (temp < mean - delta)
-          toRemove = true;
-        if (toRemove)
-          tItr.remove();
-      }
-    }
-
     int min = Integer.MAX_VALUE;
     int max = Integer.MIN_VALUE;
     for(double d : T) {
@@ -903,6 +1000,7 @@ public class OptimizationUtils {
   }
 
 
+
   /**
    * Computes a list of min max elements, one for reach row in the grid of tiles for a given
    * direction and displacement value per row.
@@ -911,11 +1009,10 @@ public class OptimizationUtils {
    * @param validTiles the set of valid tiles
    * @param dir the direction
    * @param dispVal the displacement value
-   * @param discardOutliers controls whether 3*std outliers are removed or not before computing min/max value
    * @return a list of MinMaxElements, one per row.
    */
   public static <T> List<MinMaxElement> getMinMaxValidPerRow(TileGrid<ImageTile<T>> grid,
-                                                             HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal, boolean discardOutliers) {
+                                                             HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
 
     List<MinMaxElement> minMaxPerRow = new ArrayList<MinMaxElement>(grid.getExtentHeight());
 
@@ -955,32 +1052,6 @@ public class OptimizationUtils {
         }
       }
 
-      if(discardOutliers) {
-        // if the user wants to discard outliers before computing min/max values
-        double mean = 0;
-        for (Double t : T)
-          mean += t;
-        mean = mean / T.size();
-
-        double std = 0;
-        for (double d : T)
-          std += ((d - mean) * (d - mean));
-        std = Math.sqrt(std / (T.size() - 1));
-
-        Iterator tItr = T.iterator();
-        double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS * Math.abs(std);
-        while (tItr.hasNext()) {
-          double temp = ((Double) tItr.next());
-          boolean toRemove = false;
-          if (temp > mean + delta)
-            toRemove = true;
-          if (temp < mean - delta)
-            toRemove = true;
-          if (toRemove)
-            tItr.remove();
-        }
-      }
-
       int min = Integer.MAX_VALUE;
       int max = Integer.MIN_VALUE;
       for(double d : T) {
@@ -1006,11 +1077,10 @@ public class OptimizationUtils {
    * @param validTiles the set of valid tiles
    * @param dir the direction
    * @param dispVal the displacement value to be operated on
-   * @param discardOutiers controls whether 3*std outliers are removed or not before computing min/max value
    * @return the list of mins and maxes (MinMaxElement), one for each column of the grid
    */
   public static <T> List<MinMaxElement> getMinMaxValidPerCol(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal, boolean discardOutiers) {
+      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
 
     List<MinMaxElement> minMaxPerCol = new ArrayList<MinMaxElement>(grid.getExtentWidth());
 
@@ -1046,32 +1116,6 @@ public class OptimizationUtils {
           case X:
             T.add((double)triple.getX());
             break;
-        }
-      }
-
-      if(discardOutiers) {
-        // if the user wants to discard outliers before computing min/max values
-        double mean = 0;
-        for(Double t : T)
-          mean += t;
-        mean = mean/T.size();
-
-        double std = 0;
-        for(double d : T)
-          std += ((d - mean) * (d - mean));
-        std = Math.sqrt(std/(T.size()-1));
-
-        Iterator tItr = T.iterator();
-        double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS*Math.abs(std);
-        while(tItr.hasNext()) {
-          double temp = ((Double)tItr.next());
-          boolean toRemove = false;
-          if(temp > mean+delta)
-            toRemove = true;
-          if(temp < mean-delta)
-            toRemove = true;
-          if(toRemove)
-            tItr.remove();
         }
       }
 
