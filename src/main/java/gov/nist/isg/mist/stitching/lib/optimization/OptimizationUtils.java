@@ -56,6 +56,7 @@ public class OptimizationUtils {
   private static final double CorrelationThreshold = 0.5;
   private static final int NumTopCorrelations = 5;
   private static final double CorrelationWeight = 3.0;
+  private static final double OUTLIER_IS_N_STANDARD_DEVIATIONS = 3;
 
   /**
    * The type of overlap computation
@@ -524,9 +525,9 @@ public class OptimizationUtils {
         break;
     }
 
+    // if the user has specified an overlap, convert that into the model parameters
     if(!Double.isNaN(userSpecifiedOverlap)) {
-      double overlap = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
-      translationsModel.mu = overlap; // ensure the overlap has not been changed
+      translationsModel.mu = Math.round((1.0 - (userSpecifiedOverlap/100))*size);
     }
 
     return translationsModel;
@@ -582,6 +583,7 @@ public class OptimizationUtils {
 
     HashSet<ImageTile<T>> overlapCorrFilter = filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid, stitchingStatistics);
 
+    // TODO validate that removing this does not hurt the stitching results on the validation data
     boolean useStdFilter = true;
     HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
     if(useStdFilter) {
@@ -822,66 +824,6 @@ public class OptimizationUtils {
     return validTiles;
   }
 
-  /**
-   * Computes the min and max of the list of image tiles for a given direction and displacement
-   * value
-   * 
-   * @param tiles the list of tiles
-   * @param dir the direction
-   * @param dispVal the displacement value to analyze
-   * @return the min and max (MinMaxElement)
-   */
-  public static <T> MinMaxElement getMinMaxValidTiles(HashSet<ImageTile<T>> tiles, Direction dir,
-      DisplacementValue dispVal) {
-    int min = Integer.MAX_VALUE;
-    int max = Integer.MIN_VALUE;
-
-    for (ImageTile<T> t : tiles) {
-      CorrelationTriple triple = null;
-
-      switch (dir) {
-        case North:
-          triple = t.getNorthTranslation();
-          break;
-        case West:
-          triple = t.getWestTranslation();
-          break;
-        default:
-          break;
-
-      }
-
-      if (triple == null || Double.isNaN(triple.getCorrelation()))
-        continue;
-
-      switch (dispVal) {
-        case X:
-          if (min > triple.getX())
-            min = triple.getX();
-
-          if (max < triple.getX())
-            max = triple.getX();
-
-          break;
-        case Y:
-          if (min > triple.getY())
-            min = triple.getY();
-
-          if (max < triple.getY())
-            max = triple.getY();
-
-          break;
-        default:
-          break;
-
-      }
-
-    }
-
-    return new MinMaxElement(min, max);
-
-  }
-
 
   /**
    * Computes the min and max of the list of image tiles for a given direction and displacement
@@ -890,13 +832,12 @@ public class OptimizationUtils {
    * @param tiles the list of tiles
    * @param dir the direction
    * @param dispVal the displacement value to analyze
+   * @param discardOutliers controls whether 3*std outliers are removed or not before computing min/max value
    * @return the min and max (MinMaxElement)
    */
-  public static <T> MinMaxElement getNoOutlierMinMaxValidTiles(HashSet<ImageTile<T>> tiles, Direction dir,
-                                                      DisplacementValue dispVal) {
-    double numStandardDeviations = 3;
-    int min = Integer.MAX_VALUE;
-    int max = Integer.MIN_VALUE;
+  public static <T> MinMaxElement getMinMaxValidTiles(HashSet<ImageTile<T>> tiles, Direction dir,
+                                                      DisplacementValue dispVal, boolean discardOutliers) {
+
 
     List<Double> T = new ArrayList<Double>();
 
@@ -924,29 +865,34 @@ public class OptimizationUtils {
       }
     }
 
-    double mean = 0;
-    for(Double t : T)
-      mean += t;
-    mean = mean/T.size();
+    if(discardOutliers) {
+      // if the user wants to discard outliers before computing min/max values
+      double mean = 0;
+      for (Double t : T)
+        mean += t;
+      mean = mean / T.size();
 
-    double std = 0;
-    for(double d : T)
-      std += ((d - mean) * (d - mean));
-    std = Math.sqrt(std/(T.size()-1));
+      double std = 0;
+      for (double d : T)
+        std += ((d - mean) * (d - mean));
+      std = Math.sqrt(std / (T.size() - 1));
 
-    Iterator tItr = T.iterator();
-    double delta = numStandardDeviations*Math.abs(std);
-    while(tItr.hasNext()) {
-      double temp = ((Double)tItr.next());
-      boolean toRemove = false;
-      if(temp > mean+delta)
-        toRemove = true;
-      if(temp < mean-delta)
-        toRemove = true;
-      if(toRemove)
-        tItr.remove();
+      Iterator tItr = T.iterator();
+      double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS * Math.abs(std);
+      while (tItr.hasNext()) {
+        double temp = ((Double) tItr.next());
+        boolean toRemove = false;
+        if (temp > mean + delta)
+          toRemove = true;
+        if (temp < mean - delta)
+          toRemove = true;
+        if (toRemove)
+          tItr.remove();
+      }
     }
 
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
     for(double d : T) {
       int val = (int) d;
       if(val < min) min = val;
@@ -960,22 +906,22 @@ public class OptimizationUtils {
   /**
    * Computes a list of min max elements, one for reach row in the grid of tiles for a given
    * direction and displacement value per row.
-   * 
+   *
    * @param grid the grid of tiles
    * @param validTiles the set of valid tiles
    * @param dir the direction
    * @param dispVal the displacement value
+   * @param discardOutliers controls whether 3*std outliers are removed or not before computing min/max value
    * @return a list of MinMaxElements, one per row.
    */
   public static <T> List<MinMaxElement> getMinMaxValidPerRow(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
+                                                             HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal, boolean discardOutliers) {
 
     List<MinMaxElement> minMaxPerRow = new ArrayList<MinMaxElement>(grid.getExtentHeight());
 
     for (int row = 0; row < grid.getExtentHeight(); row++) {
 
-      int min = Integer.MAX_VALUE;
-      int max = Integer.MIN_VALUE;
+      List<Double> T = new ArrayList<Double>();
 
       for (int col = 0; col < grid.getExtentWidth(); col++) {
         // get tile on row
@@ -994,8 +940,6 @@ public class OptimizationUtils {
           case West:
             triple = tile.getWestTranslation();
             break;
-          default:
-            break;
         }
 
         if (triple == null)
@@ -1003,24 +947,46 @@ public class OptimizationUtils {
 
         switch (dispVal) {
           case Y:
-            if (min > triple.getY())
-              min = triple.getY();
-
-            if (max < triple.getY())
-              max = triple.getY();
+            T.add((double)triple.getY());
             break;
           case X:
-            if (min > triple.getX())
-              min = triple.getX();
-
-            if (max < triple.getX())
-              max = triple.getX();
+            T.add((double)triple.getX());
             break;
-          default:
-            break;
-
         }
+      }
 
+      if(discardOutliers) {
+        // if the user wants to discard outliers before computing min/max values
+        double mean = 0;
+        for (Double t : T)
+          mean += t;
+        mean = mean / T.size();
+
+        double std = 0;
+        for (double d : T)
+          std += ((d - mean) * (d - mean));
+        std = Math.sqrt(std / (T.size() - 1));
+
+        Iterator tItr = T.iterator();
+        double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS * Math.abs(std);
+        while (tItr.hasNext()) {
+          double temp = ((Double) tItr.next());
+          boolean toRemove = false;
+          if (temp > mean + delta)
+            toRemove = true;
+          if (temp < mean - delta)
+            toRemove = true;
+          if (toRemove)
+            tItr.remove();
+        }
+      }
+
+      int min = Integer.MAX_VALUE;
+      int max = Integer.MIN_VALUE;
+      for(double d : T) {
+        int val = (int) d;
+        if(val < min) min = val;
+        if(val > max) max = val;
       }
 
       if (min != Integer.MAX_VALUE || max != Integer.MIN_VALUE)
@@ -1030,6 +996,8 @@ public class OptimizationUtils {
     return minMaxPerRow;
   }
 
+
+
   /**
    * Computes a list of min max elements, one for reach column in the grid of tiles for a given
    * direction and displacement value.
@@ -1038,18 +1006,17 @@ public class OptimizationUtils {
    * @param validTiles the set of valid tiles
    * @param dir the direction
    * @param dispVal the displacement value to be operated on
+   * @param discardOutiers controls whether 3*std outliers are removed or not before computing min/max value
    * @return the list of mins and maxes (MinMaxElement), one for each column of the grid
    */
-
   public static <T> List<MinMaxElement> getMinMaxValidPerCol(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
+      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal, boolean discardOutiers) {
 
     List<MinMaxElement> minMaxPerCol = new ArrayList<MinMaxElement>(grid.getExtentWidth());
 
     for (int col = 0; col < grid.getExtentWidth(); col++) {
 
-      int min = Integer.MAX_VALUE;
-      int max = Integer.MIN_VALUE;
+      List<Double> T = new ArrayList<Double>();
 
       for (int row = 0; row < grid.getExtentHeight(); row++) {
         // get tile on row
@@ -1067,8 +1034,6 @@ public class OptimizationUtils {
           case West:
             triple = tile.getWestTranslation();
             break;
-          default:
-            break;
         }
 
         if (triple == null)
@@ -1076,23 +1041,46 @@ public class OptimizationUtils {
 
         switch (dispVal) {
           case Y:
-            if (min > triple.getY())
-              min = triple.getY();
-
-            if (max < triple.getY())
-              max = triple.getY();
+            T.add((double)triple.getY());
             break;
           case X:
-            if (min > triple.getX())
-              min = triple.getX();
-
-            if (max < triple.getX())
-              max = triple.getX();
+            T.add((double)triple.getX());
             break;
-          default:
-            break;
-
         }
+      }
+
+      if(discardOutiers) {
+        // if the user wants to discard outliers before computing min/max values
+        double mean = 0;
+        for(Double t : T)
+          mean += t;
+        mean = mean/T.size();
+
+        double std = 0;
+        for(double d : T)
+          std += ((d - mean) * (d - mean));
+        std = Math.sqrt(std/(T.size()-1));
+
+        Iterator tItr = T.iterator();
+        double delta = OUTLIER_IS_N_STANDARD_DEVIATIONS*Math.abs(std);
+        while(tItr.hasNext()) {
+          double temp = ((Double)tItr.next());
+          boolean toRemove = false;
+          if(temp > mean+delta)
+            toRemove = true;
+          if(temp < mean-delta)
+            toRemove = true;
+          if(toRemove)
+            tItr.remove();
+        }
+      }
+
+      int min = Integer.MAX_VALUE;
+      int max = Integer.MIN_VALUE;
+      for(double d : T) {
+        int val = (int) d;
+        if(val < min) min = val;
+        if(val > max) max = val;
       }
 
       if (min != Integer.MIN_VALUE || max != Integer.MAX_VALUE)
@@ -1101,6 +1089,7 @@ public class OptimizationUtils {
     }
     return minMaxPerCol;
   }
+
 
   /**
    * Remove invalid translations that are less than 0.5 and not within the median per row for X and

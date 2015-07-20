@@ -33,15 +33,10 @@ public class OptimizationMleUtils {
     Log.msg(Log.LogType.INFO, "Computing overlap for " + dir.name()
                               + " direction using Maximum Likelihood Estimation.");
 
-
-    // TODO update this to use multipoint hill climbing (nxnxn grid)
-//    run hill climbing nxnxn times with different starting points in a grid
-//    store the already computed ncc points so that if multiple hill climbs hit the same place it wont recompute.
-
-
     // get valid range for translations given the direction
     int range = OptimizationUtils.getOverlapRange(grid, dispValue);
 
+    // allocate list to hold the translations
     List<Integer> translations = new ArrayList<Integer>();
 
     // gather all relevant translations into an array
@@ -114,6 +109,11 @@ public class OptimizationMleUtils {
       throw new GlobalOptimizationException("Unable to compute overlap, translation list is empty.");
     }
 
+
+    // TODO clean up this function to make is more readable
+    // TODO remove all of the print statements, convert  the relevant ones to logger
+    // TODO ?add in MLE estimation timing to statistics file?
+    // TODO add in the percent MLE convergence to the stats file as an indicator of the quality of the translations
     long startTime = System.currentTimeMillis();
 
     // extract the translations into an primitive array
@@ -121,6 +121,9 @@ public class OptimizationMleUtils {
     for(int i = 0; i < translations.size(); i++)
       T[i] = translations.get(i);
 
+    for(int i = 0; i < translations.size(); i++)
+      System.out.print(T[i] + ";");
+    System.out.println("");
 
     // init MLE model parameters
     MLEPoint bestPoint = new MLEPoint(-1,-1,-1,Double.NEGATIVE_INFINITY);

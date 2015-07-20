@@ -81,6 +81,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    */
   public static int MaxRepeatability = 10;
 
+  private static final boolean FILTER_OUTLIERS_BEFORE_REPEATABILITY_COMPUTATION = false;
   private static final MissingSwitch missingSwitch =  MissingSwitch.Median;
   private static final double OverlapError = 5.0;
 
@@ -456,7 +457,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   }
 
 
-  private MuSigmaTuple getOverlap(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
+  private MuSigmaTuple getTranslationModelParams(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
 
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
@@ -501,9 +502,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     }
 
 
-    // get the overlap for the current direction
-    // TODO change the function name
-    MuSigmaTuple translationsModel = getOverlap(dir, dispValue);
+    // TODO clean up this code
+    // get the translation model parameters for the current direction
+    MuSigmaTuple translationsModel = getTranslationModelParams(dir, dispValue);
     // compute the image overlap from the translations model (mu, sigma)
     double range = OptimizationUtils.getOverlapRange(grid, dispValue);
     double overlap = Math.round(100 * (1.0 - translationsModel.mu / range));
@@ -533,6 +534,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
     HashSet<ImageTile<T>> validTranslations;
+    // TODO validate and choose to turn the std filter on or off
     validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError,
                                                              overlap,
                                                              this.params.getAdvancedParams()
@@ -574,24 +576,19 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     switch (dir) {
       case North:
-//        minMaxVal = OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.X);
-
-        minMaxVal = OptimizationUtils.getNoOutlierMinMaxValidTiles(validTranslations, dir, DisplacementValue.X);
-
+        minMaxVal =
+            OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.X,
+                                                  FILTER_OUTLIERS_BEFORE_REPEATABILITY_COMPUTATION);
         minMaxList =
-            OptimizationUtils.getMinMaxValidPerRow(this.grid, validTranslations, dir,
-                                                   DisplacementValue.Y);
+            OptimizationUtils.getMinMaxValidPerRow(this.grid, validTranslations, dir, DisplacementValue.Y,
+                                                   FILTER_OUTLIERS_BEFORE_REPEATABILITY_COMPUTATION);
         break;
       case West:
-//        minMaxVal = OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.Y);
-
-        minMaxVal = OptimizationUtils.getNoOutlierMinMaxValidTiles(validTranslations, dir,
-                                                                   DisplacementValue.Y);
-
+        minMaxVal = OptimizationUtils.getMinMaxValidTiles(validTranslations, dir, DisplacementValue.Y,
+                                                          FILTER_OUTLIERS_BEFORE_REPEATABILITY_COMPUTATION);
         minMaxList =
-            OptimizationUtils.getMinMaxValidPerCol(this.grid, validTranslations, dir, DisplacementValue.X);
-        break;
-      default:
+            OptimizationUtils.getMinMaxValidPerCol(this.grid, validTranslations, dir, DisplacementValue.X,
+                                                   FILTER_OUTLIERS_BEFORE_REPEATABILITY_COMPUTATION);
         break;
     }
 

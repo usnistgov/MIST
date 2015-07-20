@@ -46,7 +46,7 @@ public class StitchingParamUtils {
     try {
       return Double.parseDouble(val.trim());
     } catch (NumberFormatException e) {
-      Log.msg(LogType.MANDATORY, "Erroring loading double value: " + val + " using default: " + def);
+      Log.msg(LogType.MANDATORY, "Error in loading double value: " + val + " using default: " + def);
       return def;
     }
   }
@@ -61,7 +61,7 @@ public class StitchingParamUtils {
     try {
       return Integer.parseInt(val.trim());
     } catch (NumberFormatException e) {
-      Log.msg(LogType.MANDATORY, "Erroring loading integer value: " + val + " using default: "
+      Log.msg(LogType.MANDATORY, "Error in loading integer value: " + val + " using default: "
           + def);
       return def;
     }
@@ -77,7 +77,7 @@ public class StitchingParamUtils {
     try {
       return Boolean.parseBoolean(val.trim());
     } catch (NumberFormatException e) {
-      Log.msg(LogType.MANDATORY, "Erroring loading boolean value: " + val + " using default: "
+      Log.msg(LogType.MANDATORY, "Error in loading boolean value: " + val + " using default: "
           + def);
       return def;
     }

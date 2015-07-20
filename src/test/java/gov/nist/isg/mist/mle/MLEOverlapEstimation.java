@@ -26,13 +26,13 @@ public class MLEOverlapEstimation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-//  private static String stitchingImageDataFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets/SSEA4_5x_w01_c3";
-//  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
-//  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.dylib";
+  private static String validationRootFolder = "/Users/mmajurski/Workspace/image-data/Image_Stitching_Validation_Datasets";
+  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
+  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.3.dylib";
 
-  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets\\";
-  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
-  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
+//  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets\\";
+//  private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
+//  private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
 
 
 
@@ -49,7 +49,6 @@ public class MLEOverlapEstimation {
     File[] roots = rootFolder.listFiles();
 
     CUDAPanel cudaPanel = new CUDAPanel();
-
 
     Log.setLogLevel(Log.LogType.MANDATORY);
     StitchingAppParams params;
@@ -69,21 +68,24 @@ public class MLEOverlapEstimation {
       params.getAdvancedParams().setNumCPUThreads(Runtime.getRuntime().availableProcessors());
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
-      params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
+
+      if(cudaPanel.isCudaAvailable())
+        params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
+
       params.getOutputParams().setOutputFullImage(true);
       params.getOutputParams().setDisplayStitching(false);
-      params.getAdvancedParams().setNumCPUThreads(10);
+//      params.getAdvancedParams().setNumCPUThreads(8);
 
 
 
-      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.FFTW;
+      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.JAVA;
       System.out.println("Stitching Type: " + t);
       File metaDataPath = new File(r, "mleTest");
       params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
 
-//      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
+      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
 
       StitchingExecutor executor = new StitchingExecutor(params);
 
