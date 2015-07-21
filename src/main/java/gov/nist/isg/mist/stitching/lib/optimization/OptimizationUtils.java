@@ -31,7 +31,6 @@ package gov.nist.isg.mist.stitching.lib.optimization;
 import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.common.MinMaxElement;
-import gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -499,43 +498,31 @@ public class OptimizationUtils {
    * @param overlapType the type over overlap computation
    * @return the overlap
    */
-  public static <T> MuSigmaTuple getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-                                            DisplacementValue dispValue, OverlapType overlapType,
-                                            double userSpecifiedOverlap)
+  public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
+                                            DisplacementValue dispValue, OverlapType overlapType)
       throws FileNotFoundException {
     Log.msg(LogType.VERBOSE,
             "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
-    int size = getOverlapRange(grid, dispValue);
-    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
+    double mu = Double.NaN;
     List<CorrelationTriple> topCorrelations;
     switch (overlapType) {
       case Heuristic:
-        if (Double.isNaN(userSpecifiedOverlap)) {
-          topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
-          double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-          translationsModel = new MuSigmaTuple(med, Double.NaN);
-        }
+        topCorrelations = getTopCorrelations(grid, dir, NumTopCorrelations);
+        mu = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
         break;
       case HeuristicFullStd:
-        if (Double.isNaN(userSpecifiedOverlap)) {
-          topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
-          double med = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
-          translationsModel = new MuSigmaTuple(med, Double.NaN);
-        }
+        topCorrelations = getTopCorrelationsFullStdCheck(grid, dir, NumTopCorrelations);
+        mu = computeOpTranslations(topCorrelations, dispValue, OP_TYPE.MEDIAN);
         break;
       case MLE:
-        translationsModel =
-            OptimizationMleUtils.getOverlapMLE(grid, dir, dispValue, userSpecifiedOverlap);
+        mu =
+            OptimizationMleUtils.getMleModelMu(grid, dir, dispValue);
         break;
     }
 
-    // if the user has specified an overlap, convert that into the model parameters
-    if (!Double.isNaN(userSpecifiedOverlap)) {
-      translationsModel.mu = Math.round((1.0 - (userSpecifiedOverlap / 100)) * size);
-    }
-
-    return translationsModel;
+    double size = getOverlapRange(grid, dispValue);
+    return Math.round(100.0 * (1.0 - mu/size));
   }
 
   /**
@@ -594,21 +581,21 @@ public class OptimizationUtils {
         filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid,
                                              stitchingStatistics);
 
-    if (removeOutliers) {
-      switch(dir) {
-        case North:
-          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
-          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
-          break;
-        case West:
-          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
-          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
-          break;
-      }
-    }
+//    if (removeOutliers) {
+//      switch(dir) {
+//        case North:
+//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
+//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
+//          break;
+//        case West:
+//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
+//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
+//          break;
+//      }
+//    }
 
     // TODO validate that removing this does not hurt the stitching results on the validation data
-    boolean useStdFilter = false;
+    boolean useStdFilter = true;
     HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
     if (useStdFilter) {
       finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,

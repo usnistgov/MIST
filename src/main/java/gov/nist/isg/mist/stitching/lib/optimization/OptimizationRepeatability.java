@@ -457,21 +457,31 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   }
 
 
-  private MuSigmaTuple getTranslationModelParams(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
+  private double getOverlap(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
 
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
-    MuSigmaTuple translationsModel = new MuSigmaTuple(Double.NaN, Double.NaN);
+    double overlap = Double.NaN;
     switch(dir) {
       case West:
-        translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedHorizontalOverlap);
+        if(Double.isNaN(this.userDefinedHorizontalOverlap)) {
+          overlap =
+              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
+        }else{
+          overlap = this.userDefinedHorizontalOverlap;
+        }
         break;
       case North:
-        translationsModel = OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, this.userDefinedVerticalOverlap);
+        if(Double.isNaN(this.userDefinedVerticalOverlap)) {
+          overlap =
+              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
+        }else{
+          overlap = this.userDefinedVerticalOverlap;
+        }
         break;
     }
 
-    return translationsModel;
+    return overlap;
   }
 
   /**
@@ -502,21 +512,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     }
 
 
-    // TODO clean up this code
-    // get the translation model parameters for the current direction
-    MuSigmaTuple translationsModel = getTranslationModelParams(dir, dispValue);
-    // compute the image overlap from the translations model (mu, sigma)
-    double range = OptimizationUtils.getOverlapRange(grid, dispValue);
-    double overlap = Math.round(100 * (1.0 - translationsModel.mu / range));
-    double userDefinedPercOverlapError = this.params.getAdvancedParams().getOverlapUncertainty();
-    if(!Double.isNaN(translationsModel.sigma) && Double.isNaN(userDefinedPercOverlapError)) {
-      // percent overlap uncertainty is within 3 sigma or 99% of normal distribution
-      percOverlapError = 100 * 3 * translationsModel.sigma / range;
-      percOverlapError = Math.min(percOverlapError , 5.0); // limit to max of 5 percent overlap error
-      System.out.println("Percent Overlap Uncertainty: " + percOverlapError);
-    }
-
-
+    // get the overlap for the current direction
+    double overlap = getOverlap(dir, dispValue);
     this.stitchingStatistics.setComputedOverlap(dir, overlap);
 
     // check that an overlap value has been computed

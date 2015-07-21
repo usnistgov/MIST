@@ -30,7 +30,7 @@ public class MLEOverlapEstimation {
 //  private static String fftwPlanPath = "/Applications/Fiji.app/lib/fftw/fftPlans";
 //  private static String fftwLibraryPath = "/usr/local/lib/libfftw3.3.dylib";
 
-  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets\\";
+  private static String validationRootFolder = "C:\\majurski\\image-data\\Image_Stitching_Validation_Datasets\\";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans\\";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
 
@@ -62,6 +62,8 @@ public class MLEOverlapEstimation {
 //      if(r.getAbsolutePath().contains("KB_")) continue;
 //      if(r.getAbsolutePath().contains("Keana_Scott_gauss3")) continue;
 
+//      if(!r.getAbsolutePath().contains("24h_Dry_20Perc")) continue;
+
 
       System.out.println("Running: " + r.getAbsolutePath());
       params = new StitchingAppParams();
@@ -80,7 +82,7 @@ public class MLEOverlapEstimation {
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-//      params.getAdvancedParams().setNumCPUThreads(8);
+//      params.getAdvancedParams().setNumCPUThreads(10);
 
 
       StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
@@ -89,12 +91,14 @@ public class MLEOverlapEstimation {
 
 
       System.out.println("Stitching Type: " + t);
-      File metaDataPath = new File(r, "mleTest");
+//      File metaDataPath = new File(r, "mleTest");
+//      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
+      File metaDataPath = new File(r, "heuristic_std");
+      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
+
       params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
-
-      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
 
       StitchingExecutor executor = new StitchingExecutor(params);
 

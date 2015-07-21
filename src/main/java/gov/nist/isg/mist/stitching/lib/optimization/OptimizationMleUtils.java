@@ -90,8 +90,9 @@ public class OptimizationMleUtils {
    * @return the overlap
    * @throws GlobalOptimizationException thrown if no valid tiles are found
    */
-  public static <T> MuSigmaTuple getOverlapMLE(TileGrid<ImageTile<T>> grid, OptimizationUtils.Direction dir, OptimizationUtils.DisplacementValue dispValue, double userDefinedOverlap) throws
-                                                                                                                                                                         FileNotFoundException {
+  public static <T> double getMleModelMu(TileGrid<ImageTile<T>> grid,
+                                         OptimizationUtils.Direction dir,
+                                         OptimizationUtils.DisplacementValue dispValue) throws FileNotFoundException {
     Log.msg(Log.LogType.INFO, "Computing overlap for " + dir.name()
                               + " direction using Maximum Likelihood Estimation.");
 
@@ -107,12 +108,11 @@ public class OptimizationMleUtils {
 
     MuSigmaTuple mleModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     try{
-      mleModel = getOverlapFromMultipointMleHillClimb(translations, range, userDefinedOverlap);
+      mleModel = getMleModelFromMultipointHillClimb(translations, range);
     }catch(GlobalOptimizationException e) {
       Log.msg(Log.LogType.MANDATORY, e.getMessage());
     }
-    return mleModel;
-
+    return mleModel.mu;
   }
 
 
@@ -127,7 +127,8 @@ public class OptimizationMleUtils {
    * @throws GlobalOptimizationException thrown if no valid tiles are found
 
    */
-  public static MuSigmaTuple getOverlapFromMultipointMleHillClimb(List<Integer> translations, int range, double userDefinedOverlap) throws GlobalOptimizationException {
+  public static MuSigmaTuple getMleModelFromMultipointHillClimb(List<Integer> translations,
+                                                                int range) throws GlobalOptimizationException {
 
     if (translations.size() < 1) {
       throw new GlobalOptimizationException("Unable to compute overlap, translation list is empty.");
@@ -151,21 +152,11 @@ public class OptimizationMleUtils {
     // perform hill climbing as percentage of range and sigma in range/4
     double factor = ((double)range)/100;
 
-    // if the user has specified the overlap, reduce that dimension
-    int[] mVals;
-    if(Double.isNaN(userDefinedOverlap)) {
-      mVals = new int[100];
-      for(int i = 0; i < 100; i++) mVals[i] = i;
-    }else{
-      mVals = new int[1];
-      mVals[0] =  100 - (int)Math.round(userDefinedOverlap);
-    }
-
 
     // allocate and init the matrix to hold cached likelihood values
-    double[][][] likelihoodValues = new double[100][mVals.length][25];
+    double[][][] likelihoodValues = new double[100][100][25];
     for(int p = 0; p < 100; p++) {
-      for (int m = 0; m < mVals.length; m++) {
+      for (int m = 0; m < 100; m++) {
         for (int s = 0; s < 25; s++) {
           likelihoodValues[p][m][s] = Double.NaN;
         }
@@ -177,7 +168,7 @@ public class OptimizationMleUtils {
     int mSkip = Math.round(100/MLE_GRID_SEARCH_SIZE_PER_SIDE);
     int sSkip = Math.round(25/MLE_GRID_SEARCH_SIZE_PER_SIDE);
     for(int p = 1; p < 100; p += pSkip) {
-      for (int m = 0; m < mVals.length; m += mSkip) {
+      for (int m = 0; m < 100; m += mSkip) {
         for (int s = 1; s < 25; s += sSkip) {
           // *********************************
           // Perform hill climbing
@@ -190,7 +181,7 @@ public class OptimizationMleUtils {
             int pmin = Math.max(1, temp.PIuni - 1);
             int pmax = Math.min(100-1, temp.PIuni + 1);
             int mmin = Math.max(0, temp.mu - 1);
-            int mmax = Math.min(mVals.length-1, temp.mu + 1);
+            int mmax = Math.min(100-1, temp.mu + 1);
             int smin = Math.max(0, temp.sigma - 1);
             int smax = Math.min(25-1, temp.sigma + 1);
 
@@ -200,7 +191,7 @@ public class OptimizationMleUtils {
                   // check for a cached value first
                   double l = likelihoodValues[hcP][hcM][hcS];
                   if(Double.isNaN(l)) {
-                    l = computeMLEValue(T, hcP, factor*mVals[hcM], factor*hcS, range);
+                    l = computeMLEValue(T, hcP, factor*hcM, factor*hcS, range);
                     likelihoodValues[hcP][hcM][hcS] = l;
                   }
 
@@ -246,18 +237,8 @@ public class OptimizationMleUtils {
 
 
     // convert from percent of range to translation values
-    bestPoint.mu = (int)Math.round(factor*mVals[bestPoint.mu]);
+    bestPoint.mu = (int)Math.round(factor*bestPoint.mu);
     bestPoint.sigma = (int)Math.round(factor*bestPoint.sigma);
-
-    int gMmin;
-    int gMmax;
-    if(mVals.length == 1) {
-      gMmin = (int) factor * mVals[0];
-      gMmax = (int) factor * mVals[0];
-    }else{
-      gMmin = 0;
-      gMmax = range-1;
-    }
 
     // perform refinement hill climb
     boolean done = false;
@@ -266,8 +247,8 @@ public class OptimizationMleUtils {
     while(!done) {
       int pmin = Math.max(1, temp.PIuni - 1);
       int pmax = Math.min(100 - 1, temp.PIuni + 1);
-      int mmin = Math.max(gMmin, temp.mu - 1);
-      int mmax = Math.min(gMmax, temp.mu + 1);
+      int mmin = Math.max(0, temp.mu - 1);
+      int mmax = Math.min(range-1, temp.mu + 1);
       int smin = Math.max(0, temp.sigma - 1);
       int smax = Math.min(range/4, temp.sigma + 1);
 
@@ -308,7 +289,7 @@ public class OptimizationMleUtils {
                        + (100*numCorrectlyFoundPoints/numHillClimbs) + "% converged");
 
 
-    System.out.println("PIuni = " + bestPoint.PIuni + " mu = " + bestPoint.mu + " sigma = " + bestPoint.sigma + " from " + translations.size() + " translations");
+    System.out.println("mu = " + bestPoint.mu + " sigma = " + bestPoint.sigma + " PIuni = " + bestPoint.PIuni);
 
     return new MuSigmaTuple(bestPoint.mu, bestPoint.sigma);
   }
