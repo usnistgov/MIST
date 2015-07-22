@@ -173,6 +173,15 @@ public class OptimizationUtils {
   }
 
 
+  /**
+   * Gets the top correlations from a grid of tiles performing a full standard deviation
+   * filtering on the translations
+   *
+   * @param grid            the grid of image tiles
+   * @param dir             the direction (North or West)
+   * @param numCorrelations the number of correlations
+   * @return a list of correlations that are highest in the tile grid
+   */
   public static <T> List<CorrelationTriple> getTopCorrelationsFullStdCheck(
       TileGrid<ImageTile<T>> grid,
       final Direction dir, int numCorrelations) throws FileNotFoundException {
@@ -517,7 +526,7 @@ public class OptimizationUtils {
         break;
       case MLE:
         mu =
-            OptimizationMleUtils.getMleModelMu(grid, dir, dispValue);
+            OptimizationMleUtils.getOverlapMle(grid, dir, dispValue);
         break;
     }
 
@@ -553,15 +562,13 @@ public class OptimizationUtils {
    * @param dir                 the direction that is to be filtered
    * @param percOverlapError    the percent overlap of error
    * @param overlap             the overlap between images
-   * @param numStdDevThreads    the number of standard deviation threads used for filtering
    * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
                                                              Direction dir, double percOverlapError,
-                                                             double overlap, int numStdDevThreads,
-                                                             StitchingStatistics stitchingStatistics,
-                                                             boolean removeOutliers)
+                                                             double overlap,
+                                                             StitchingStatistics stitchingStatistics)
       throws FileNotFoundException {
     Log.msg(LogType.INFO, "Filtering translations:");
     DisplacementValue dispValue = null;
@@ -576,37 +583,26 @@ public class OptimizationUtils {
         break;
     }
 
-    HashSet<ImageTile<T>>
-        overlapCorrFilter =
+    HashSet<ImageTile<T>> validTiles =
         filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid,
                                              stitchingStatistics);
 
-//    if (removeOutliers) {
-//      switch(dir) {
-//        case North:
-//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
-//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
-//          break;
-//        case West:
-//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.X);
-//          overlapCorrFilter = filterTranslationsRemoveOutliers(overlapCorrFilter,dir, DisplacementValue.Y);
-//          break;
-//      }
-//    }
-
-    // TODO validate that removing this does not hurt the stitching results on the validation data
-    boolean useStdFilter = true;
-    HashSet<ImageTile<T>> finalValidTiles = overlapCorrFilter;
-    if (useStdFilter) {
-      finalValidTiles = filterTilesFromStdDev(overlapCorrFilter, grid, dir,
-                                              overlap, percOverlapError,
-                                              numStdDevThreads,
-                                              stitchingStatistics);
+    // filter the translations to remove outliers
+    // this replaces the std filtering of the overlap region between images
+    switch(dir) {
+      case North:
+        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+        break;
+      case West:
+        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+        break;
     }
 
-    Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + finalValidTiles.size());
+    Log.msg(LogType.VERBOSE, "Finished filter - valid tiles: " + validTiles.size());
 
-    return finalValidTiles;
+    return validTiles;
   }
 
 

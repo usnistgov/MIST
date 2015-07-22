@@ -81,7 +81,6 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    */
   public static int MaxRepeatability = 10;
 
-  private static final boolean REMOVE_OUTLIERS_FROM_VALID_TRANSLATIONS = true;
   private static final MissingSwitch missingSwitch =  MissingSwitch.Median;
   private static final double OverlapError = 5.0;
 
@@ -531,13 +530,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
     HashSet<ImageTile<T>> validTranslations;
-    // TODO validate and choose to turn the std filter on or off
     validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError,
                                                              overlap,
-                                                             this.params.getAdvancedParams()
-                                                                 .getNumCPUThreads(),
-                                                             this.stitchingStatistics,
-                                                             REMOVE_OUTLIERS_FROM_VALID_TRANSLATIONS);
+                                                             this.stitchingStatistics);
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir

@@ -130,8 +130,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.verticalOverlap = Double.NaN;
     this.numFFTPeaks = 0;
     this.overlapUncertainty = Double.NaN;
-    // default overlap computation method is the heuristic
-    this.overlapComputationType = OptimizationUtils.OverlapType.Heuristic;
+    // default overlap computation method is the MLE
+    this.overlapComputationType = OptimizationUtils.OverlapType.MLE;
   }
 
   @Override

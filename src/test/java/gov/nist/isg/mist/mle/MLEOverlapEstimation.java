@@ -11,6 +11,7 @@ import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 /**
@@ -53,6 +54,8 @@ public class MLEOverlapEstimation {
     Log.setLogLevel(Log.LogType.MANDATORY);
     StitchingAppParams params;
 
+
+
     for (File r : roots) {
       if (!r.isDirectory())
         continue;
@@ -62,7 +65,6 @@ public class MLEOverlapEstimation {
 //      if(r.getAbsolutePath().contains("KB_")) continue;
 //      if(r.getAbsolutePath().contains("Keana_Scott_gauss3")) continue;
 
-//      if(!r.getAbsolutePath().contains("24h_Dry_20Perc")) continue;
 
 
       System.out.println("Running: " + r.getAbsolutePath());
@@ -82,32 +84,32 @@ public class MLEOverlapEstimation {
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-//      params.getAdvancedParams().setNumCPUThreads(10);
-
+      params.getAdvancedParams().setNumCPUThreads(8);
 
       StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
-      if(r.getAbsolutePath().contains("Keana_Scott_gauss3"))
+      if(r.getAbsolutePath().contains("Keana_Scott_"))
          t = StitchingExecutor.StitchingType.FFTW;
 
 
+      StitchingExecutor executor;
+
+      // Run the MLE stitching version
       System.out.println("Stitching Type: " + t);
-//      File metaDataPath = new File(r, "mleTest");
+      File metaDataPath = new File(r, "mleTest");
 //      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
-      File metaDataPath = new File(r, "heuristic_std");
-      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
 
       params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
 
-      StitchingExecutor executor = new StitchingExecutor(params);
-
+      executor = new StitchingExecutor(params);
       try {
         executor.runStitching(false, false, false);
       } catch (StitchingException e)
       {
         Log.msg(Log.LogType.MANDATORY, e.getMessage());
       }
+
     }
 
     System.exit(1);
