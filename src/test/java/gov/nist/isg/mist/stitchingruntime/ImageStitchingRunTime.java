@@ -33,10 +33,13 @@ import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -52,7 +55,7 @@ public class ImageStitchingRunTime {
     LibraryUtils.initalize();
   }  
 
-  private static final String STITCHING_PARAMS_FILE = "statistics.txt";
+  private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
 //  private static String validationRootFolder = "C:\\Users\\tjb3\\StitchingPaperDatasets";
@@ -63,12 +66,12 @@ public class ImageStitchingRunTime {
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
-  private static int NUM_RUNS = 25;
+  private static int NUM_RUNS = 10;
 
   public static void main(String [] args)
   {
 
-    if (args.length > 0)
+    if (args.length >= 0)
     {
       switch(args.length)
       {
@@ -91,6 +94,11 @@ public class ImageStitchingRunTime {
     }
 
 
+    System.out.println("rootDir: \"" + validationRootFolder + "\"");
+    System.out.println("fftwPlanPath: \"" + fftwPlanPath + "\"");
+    System.out.println("fftwLibPath: \"" + fftwLibraryPath + "\"");
+
+
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
     if (!rootFolder.exists() && !rootFolder.isDirectory())
@@ -103,8 +111,8 @@ public class ImageStitchingRunTime {
 
     CUDAPanel cudaPanel = new CUDAPanel();
 
-    JFrame frame = new JFrame("Select CUDA Devices");    
-    JOptionPane.showMessageDialog(frame, cudaPanel);    
+    JFrame frame = new JFrame("Select CUDA Devices");
+    JOptionPane.showMessageDialog(frame, cudaPanel);
 
     Log.setLogLevel(LogType.NONE);
 //    Log.setLogLevel(LogType.MANDATORY);
@@ -141,19 +149,50 @@ public class ImageStitchingRunTime {
 
         params.loadParams(paramFile);
 
+        List<CudaDeviceParam> cudaDevices = cudaPanel.getSelectedDevices();
+
+
+
+        List<CudaDeviceParam> run780 = new ArrayList<CudaDeviceParam>();
+        List<CudaDeviceParam> runOneC2070 = new ArrayList<CudaDeviceParam>();
+        List<CudaDeviceParam> runTwoC2070 = new ArrayList<CudaDeviceParam>();
+
+        for (CudaDeviceParam dev : cudaDevices)
+        {
+          if (dev.getName().contains("780")) {
+            System.out.println("Adding " + dev.getName() + " to 780 test");
+            run780.add(dev);
+          }
+          if (dev.getName().contains("Tesla") && runOneC2070.size() == 0) {
+            System.out.println("Adding " + dev.getName() + " to one 2070 test");
+            runOneC2070.add(dev);
+          }
+          if(dev.getName().contains("Tesla")) {
+            System.out.println("Adding " + dev.getName() + " to two 2070 test");
+            runTwoC2070.add(dev);
+          }
+        }
+
+
+
         params.getInputParams().setImageDir(r.getAbsolutePath());
         params.getAdvancedParams().setNumCPUThreads(Runtime.getRuntime().availableProcessors());
         params.getAdvancedParams().setPlanPath(fftwPlanPath);
         params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
+        params.getAdvancedParams().setFftwPlanType(FftwPlanType.MEASURE);
         params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
         params.getOutputParams().setOutputMeta(false);
-        params.getOutputParams().setOutputPath(r.getAbsolutePath() + File.separator + "RunTimeResults");
+        params.getOutputParams().setOutputPath(
+            r.getAbsolutePath() + File.separator + "RunTimeResults");
         // set the metadata path to the output path
         params.getOutputParams().setMetadataPath(r.getAbsolutePath() + File.separator + "meta");
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
+
+        params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
+        params.getAdvancedParams().setTranslationFilterType(OptimizationUtils.TranslationFilterType.StandardDeviation);
 
 
         for (StitchingType t : StitchingType.values()) {
@@ -168,38 +207,57 @@ public class ImageStitchingRunTime {
           }
 
 
-          List<Long> runtimes = new ArrayList<Long>();
 
-          for (int run = 0; run < NUM_RUNS; run++) {
+          for (int cudaRun = 0; cudaRun < 3; cudaRun++) {
+            double totalRunTime = 0;
 
+            if (t != StitchingType.CUDA)
+              cudaRun = 3;
+            else
+            {
+              switch(cudaRun) {
+                case 0:
+                  params.getAdvancedParams().setCudaDevices(run780);
+                  testCase = t.toString() + "-" + r.getName() + "-GTX780";
+                  break;
+                case 1:
+                  params.getAdvancedParams().setCudaDevices(runOneC2070);
+                  testCase = t.toString() + "-" + r.getName() + "-1C2070";
 
-            System.out.println("Run " + run + " Stitching Type: " + t);
+                  break;
+                case 2:
+                  params.getAdvancedParams().setCudaDevices(runTwoC2070);
+                  testCase = t.toString() + "-" + r.getName() + "-2C2070";
+                  break;
+              }
+            }
+            for (int run = 0; run < NUM_RUNS; run++) {
+
+              System.out.println("Run " + run + " Stitching Type: " + t + " " + testCase);
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
 //        File metaDataPath = new File(r, "seq");
 //        params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
-            params.getAdvancedParams().setProgramType(t);
-            params.getAdvancedParams().setNumFFTPeaks(2);
+              params.getAdvancedParams().setProgramType(t);
+              params.getAdvancedParams().setNumFFTPeaks(2);
 
+              StitchingExecutor executor = new StitchingExecutor(params);
 
-            StitchingExecutor executor = new StitchingExecutor(params);
+              try {
+                executor.runStitching(false, false, false);
+              } catch (StitchingException e) {
+                Log.msg(LogType.MANDATORY, e.getMessage());
+              }
 
-            try {
-              executor.runStitching(false, false, false);
-            } catch (StitchingException e) {
-              Log.msg(LogType.MANDATORY, e.getMessage());
+              StitchingStatistics stats = executor.getStitchingStatistics();
+              totalRunTime += stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime);
+
             }
 
-            StitchingStatistics stats = executor.getStitchingStatistics();
-            runtimes.add(stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime));
-
+            double avgRunTime = totalRunTime / ((double) NUM_RUNS);
+            writer.write(testCase + ", " + avgRunTime + "\n");
+            writer.flush();
           }
-
-          Collections.sort(runtimes);
-          int midIdx = runtimes.size()/2;
-          double medianValue = runtimes.get(midIdx);
-          writer.write(testCase + ", " + medianValue + "\n");
-          writer.flush();
         }
 
       }

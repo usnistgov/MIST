@@ -78,6 +78,23 @@ public class OptimizationUtils {
   }
 
   /**
+   * The type of translations filter
+   *
+   * @author Michael Majurski
+   * @version 1.0
+   */
+  public enum TranslationFilterType {
+    /**
+     * Outlier
+     */
+    Outlier,
+    /**
+     * StandardDeviation
+     */
+    StandardDeviation,
+  }
+
+  /**
    * The direction for optimization
    *
    * @author Tim Blattner
@@ -562,12 +579,15 @@ public class OptimizationUtils {
    * @param dir                 the direction that is to be filtered
    * @param percOverlapError    the percent overlap of error
    * @param overlap             the overlap between images
+   * @param numStdDevThreads the number of standard deviation worker threads
+   * @param filterType the type of filter used on the translations
    * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
    */
   public static <T> HashSet<ImageTile<T>> filterTranslations(TileGrid<ImageTile<T>> grid,
                                                              Direction dir, double percOverlapError,
-                                                             double overlap,
+                                                             double overlap, int numStdDevThreads,
+                                                             TranslationFilterType filterType,
                                                              StitchingStatistics stitchingStatistics)
       throws FileNotFoundException {
     Log.msg(LogType.INFO, "Filtering translations:");
@@ -587,16 +607,26 @@ public class OptimizationUtils {
         filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid,
                                              stitchingStatistics);
 
-    // filter the translations to remove outliers
-    // this replaces the std filtering of the overlap region between images
-    switch(dir) {
-      case North:
-        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
-        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+    switch(filterType) {
+      case Outlier:
+        // filter the translations to remove outliers
+        // this replaces the std filtering of the overlap region between images
+        switch(dir) {
+          case North:
+            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+            break;
+          case West:
+            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+            break;
+        }
         break;
-      case West:
-        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
-        validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+      case StandardDeviation:
+        validTiles = filterTilesFromStdDev(validTiles, grid, dir,
+                                           overlap, percOverlapError,
+                                           numStdDevThreads,
+                                           stitchingStatistics);
         break;
     }
 
@@ -646,7 +676,7 @@ public class OptimizationUtils {
     if(T.size() == 0)
       return tiles;
 
-    double w = 3; // default outlier w (1.5)
+    double w = 1.5; // default outlier w (1.5)
     double median = getMedian(T);
     List<Double> lessThan = new ArrayList<Double>();
     List<Double> greaterThan = new ArrayList<Double>();

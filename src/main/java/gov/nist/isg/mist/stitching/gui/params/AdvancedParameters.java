@@ -89,6 +89,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private GlobalOptimizationType globalOpt;
   private boolean useHillClimbing;
   private OptimizationUtils.OverlapType overlapComputationType;
+  private OptimizationUtils.TranslationFilterType translationFilterType;
 
   // Advanced options
   private int stageRepeatability;
@@ -132,6 +133,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.overlapUncertainty = Double.NaN;
     // default overlap computation method is the MLE
     this.overlapComputationType = OptimizationUtils.OverlapType.MLE;
+    // default translation filter type is Outlier
+    this.translationFilterType = OptimizationUtils.TranslationFilterType.Outlier;
   }
 
   @Override
@@ -667,6 +670,13 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     return this.overlapComputationType;
   }
 
+  public OptimizationUtils.TranslationFilterType getTranslationFilterType() {
+    return this.translationFilterType;
+  }
+
+  public void setTranslationFilterType(OptimizationUtils.TranslationFilterType filterType) {
+    this.translationFilterType = filterType;
+  }
 
   /**
    * @return the useHillClimbing

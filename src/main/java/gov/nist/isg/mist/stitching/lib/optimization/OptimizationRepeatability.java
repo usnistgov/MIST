@@ -529,9 +529,12 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
 
+    OptimizationUtils.TranslationFilterType filterType = this.params.getAdvancedParams().getTranslationFilterType();
+    int nbStdWorkerThreads = this.params.getAdvancedParams().getNumCPUThreads();
     HashSet<ImageTile<T>> validTranslations;
     validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError,
-                                                             overlap,
+                                                             overlap, nbStdWorkerThreads,
+                                                             filterType,
                                                              this.stitchingStatistics);
 
     if (validTranslations.size() == 0) {
