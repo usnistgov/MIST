@@ -185,7 +185,6 @@ public class ImageStitchingRunTime {
         params.getOutputParams().setOutputPath(
             r.getAbsolutePath() + File.separator + "RunTimeResults");
         // set the metadata path to the output path
-        params.getOutputParams().setMetadataPath(r.getAbsolutePath() + File.separator + "meta");
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);

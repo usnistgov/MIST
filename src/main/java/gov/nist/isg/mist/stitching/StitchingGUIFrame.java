@@ -68,6 +68,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   private JButton beginStitchingButton;
   private JButton loadParamsButton;
   private JButton saveParamsButton;
+  private JButton previewNoOverlapButton;
   private InputPanel inputPanel;
   private OutputPanel outputPanel;
   private AdvancedPanel advancedPanel;
@@ -90,8 +91,8 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   public StitchingGUIFrame(String title, Frame parent) {
     super(title);
 
-    this.setSize(new Dimension(570, 675));
-    this.setMinimumSize(new Dimension(570, 675));
+    this.setSize(new Dimension(570, 700));
+    this.setMinimumSize(new Dimension(570, 700));
 
     this.mainFrame = new JPanel(new GridBagLayout());
 
@@ -120,7 +121,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     JTabbedPane tabbedPane = new JTabbedPane();
 
     this.advancedPanel = new AdvancedPanel();
-    this.outputPanel = new OutputPanel(this);
+    this.outputPanel = new OutputPanel();
     this.subgridPanel = new SubgridPanel(this.outputPanel);
     this.inputPanel = new InputPanel(this.subgridPanel, this.outputPanel);
     this.helpPanel = new HelpPanel();
@@ -154,12 +155,21 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     this.mainFrame.add(tabbedPane, c);
 
     JPanel bottomPanel = new JPanel();
-    this.beginStitchingButton = new JButton("Begin Stitching");
-    this.beginStitchingButton.setPreferredSize(new Dimension(150, 40));
-    this.beginStitchingButton.setMinimumSize(new Dimension(150, 40));
+    this.beginStitchingButton = new JButton("<html><center>Begin<br>Stitching</html>");
+    this.beginStitchingButton.setPreferredSize(new Dimension(120, 40));
+    this.beginStitchingButton.setMinimumSize(new Dimension(120, 40));
+    this.beginStitchingButton.setToolTipText("Launch Stitching");
+
+    this.previewNoOverlapButton = new JButton("<html><center>Preview<br>(0% overlap)</html>");
+    this.previewNoOverlapButton.setPreferredSize(new Dimension(120, 40));
+    this.previewNoOverlapButton.setMinimumSize(new Dimension(120, 40));
+    this.previewNoOverlapButton.addActionListener(this);
+    this.previewNoOverlapButton.setToolTipText("Preview the mosaic image assuming 0% overlap.");
 
     this.saveParamsButton = new JButton("Save Params");
+    this.saveParamsButton.setToolTipText("Save parameters to disk");
     this.loadParamsButton = new JButton("Load Params");
+    this.loadParamsButton.setToolTipText("load parameters from disk");
 
 //    ImageIcon icon = null;
 //    JLabel picLabel = null;
@@ -175,7 +185,9 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 //      picLabel = new JLabel();
 //
 //    bottomPanel.add(picLabel);
+
     bottomPanel.add(this.saveParamsButton);
+    bottomPanel.add(this.previewNoOverlapButton);
     bottomPanel.add(this.beginStitchingButton);
     bottomPanel.add(this.loadParamsButton);
 
@@ -278,7 +290,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    if (!MIST.isStitching()) {
+    if(!MIST.isStitching()) {
       ExecutionType type = null;
       if (e.getSource().equals(this.beginStitchingButton)) {
         if (this.inputPanel.isAssembleWithMetadata())
@@ -292,8 +304,13 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
       StitchingSwingWorker executor = new StitchingSwingWorker(this, type);
       executor.execute();
-    } else {
+    }else{
       Log.msg(LogType.MANDATORY, "Stitching is already executing.");
+    }
+
+
+    if(e.getSource() == this.previewNoOverlapButton && !MIST.isStitching()) {
+      this.displayNoOverlap();
     }
   }
 

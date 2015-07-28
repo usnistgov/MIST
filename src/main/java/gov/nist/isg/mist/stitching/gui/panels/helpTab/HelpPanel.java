@@ -53,7 +53,7 @@ import java.net.URISyntaxException;
  * @version 1.0
  * 
  */
-public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListener {
+public class HelpPanel extends JPanel implements GUIParamFunctions {
 
   private static final String documentationURL =
       "https://github.com/NIST-ISG/MIST/wiki";
@@ -84,40 +84,25 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
 
   private JButton openLocalHelp;
 
-  private JComboBox loggingLevel;
-  private JComboBox debugLevel;
 
   /**
    * Initializes the help panel
    */
   public HelpPanel() {
 
-    this.openLocalHelp = new JButton("Open Local Help");
+    this.openLocalHelp = new JButton("Open Local Help Documentation");
       HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("mist-user-guide");
       this.openLocalHelp.addActionListener(helpDialog);
 
 
-    this.loggingLevel = new JComboBox(LogType.values());
-    this.debugLevel = new JComboBox(DebugType.values());
-
-
-    this.loggingLevel.setSelectedItem(Log.getLogLevel());
-    this.debugLevel.setSelectedItem(Debug.getDebugLevel());
-
-    this.openLocalHelp.setPreferredSize(new Dimension(150, 40));
+    this.openLocalHelp.setPreferredSize(new Dimension(220, 40));
 
     setFocusable(false);
 
     initControls();
-    initListeners();
 
   }
-  
-  private void initListeners()
-  {
-    this.loggingLevel.addActionListener(this);
-    this.debugLevel.addActionListener(this);
-  }
+
 
   private void initControls() {
     JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -126,41 +111,30 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
 
     GridBagConstraints c = new GridBagConstraints();
 
-    
-    JPanel logPanel = new JPanel(new GridBagLayout());
 
-    this.loggingLevel = new JComboBox(LogType.values());
-    c.gridy = 0;
-    c.anchor = GridBagConstraints.LINE_END;
-    logPanel.add(new JLabel("Log Level"), c);
-    c.gridy = 1;
-    logPanel.add(this.loggingLevel, c);
-
-    this.debugLevel = new JComboBox(DebugType.values());
-    c.gridy = 0;
-
-    logPanel.add(new JLabel("Debug Level"), c);
-    c.gridy = 1;
-    c.insets = new Insets(0, 10, 0, 0);
-    logPanel.add(this.debugLevel, c);
 
 
     c.gridy = 0;
     c.insets = new Insets(10, 10, 0, 0);
-    c.anchor = GridBagConstraints.FIRST_LINE_START;    
-    vertPanel.add(logPanel, c);
-    
+    c.anchor = GridBagConstraints.FIRST_LINE_START;
     
     c.fill = GridBagConstraints.HORIZONTAL;
 
-    c.gridy = 1;
 
+
+    JPanel helpButtonPanel = new JPanel();
+    helpButtonPanel.add(this.openLocalHelp);
+    vertPanel.add(helpButtonPanel, c);
+
+
+
+    c.gridy = 1;
       JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MIST" + "</a></html>");
       aboutUsLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
       vertPanel.add(aboutUsLink, c);
 
       c.gridy = 2;
-      JLabel link = new JLabel("<html><a href=\"" + documentationURL + "\">" + "Documentation" + "</a></html>");
+      JLabel link = new JLabel("<html><a href=\"" + documentationURL + "\">" + "Online Documentation" + "</a></html>");
 
     link.setCursor(new Cursor(Cursor.HAND_CURSOR));
     vertPanel.add(link, c);
@@ -179,11 +153,6 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
 
 
     c.gridy = 5;
-    JPanel helpButtonPanel = new JPanel();
-    helpButtonPanel.add(this.openLocalHelp);
-    vertPanel.add(helpButtonPanel, c);
-
-      c.gridy = 6;
       vertPanel.add(new JLabel(license), c);
 
     mainPanel.add(vertPanel);
@@ -255,37 +224,10 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
         });
     }
 
-  /**
-   * Gets the log level
-   * @return the log level
-   */
-  public LogType getLogLevel() {
-    return (LogType)this.loggingLevel.getSelectedItem();
-  }
-  
-  /**
-   * Gets the debug level
-   * @return the debug level
-   */
-  public DebugType getDebugLevel() {
-    return (DebugType)this.debugLevel.getSelectedItem();
-  }
+
   
   @Override
-  public void loadParamsIntoGUI(StitchingAppParams params) {
-    LogType logType = params.getLogParams().getLogLevel();
-    
-    if (logType == null)
-      logType = LogType.MANDATORY;
-    
-    DebugType debugType = params.getLogParams().getDebugLevel();
-    
-    if (debugType == null)
-      debugType = DebugType.NONE;
-    
-    this.loggingLevel.setSelectedItem(logType);
-    this.debugLevel.setSelectedItem(debugType);    
-  }
+  public void loadParamsIntoGUI(StitchingAppParams params) { }
 
   @Override
   public boolean checkAndParseGUI(StitchingAppParams params) {
@@ -321,28 +263,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions, ActionListen
   }
 
   @Override
-  public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) {
-    LogType logLevel = this.getLogLevel();
-    DebugType debugLevel = this.getDebugLevel();
-   
-    params.getLogParams().setLogLevel(logLevel);
-    params.getLogParams().setDebugLevel(debugLevel);
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent arg0) {
-    Object src = arg0.getSource();
-      if (src instanceof JComboBox) {
-      JComboBox action = (JComboBox) src;
-
-      if (action.equals(this.loggingLevel)) {
-        Log.setLogLevel((LogType)action.getSelectedItem());
-      } else if (action.equals(this.debugLevel)) {
-        Debug.setDebugLevel((DebugType)action.getSelectedItem());
-      }
-    } 
+  public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) { }
 
 
-
-  }
 }

@@ -143,7 +143,7 @@ public class ExistingFilesChecker implements Comparator<String> {
     }
 
     if (this.params.getOutputParams().isOutputMeta()) {
-      File metaDir = new File(this.params.getOutputParams().getMetadataPath());
+      File metaDir = new File(this.params.getOutputParams().getOutputPath());
 
       if (metaDir.exists()) {
         checkOutputMeta = true;

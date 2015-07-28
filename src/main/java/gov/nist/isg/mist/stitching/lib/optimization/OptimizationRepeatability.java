@@ -145,7 +145,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
                                         "Optimization...", 0, 0, 0, false);
 
-    File directory = new File(this.params.getOutputParams().getMetadataPath());
+    File directory = new File(this.params.getOutputParams().getOutputPath());
     if(this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
@@ -323,7 +323,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
         "Optimization...", 0, 0, 0, false);
 
-    File directory = new File(this.params.getOutputParams().getMetadataPath());
+    File directory = new File(this.params.getOutputParams().getOutputPath());
     if(this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 

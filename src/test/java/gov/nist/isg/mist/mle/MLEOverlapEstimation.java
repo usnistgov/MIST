@@ -98,7 +98,6 @@ public class MLEOverlapEstimation {
       File metaDataPath = new File(r, "mleTest");
 //      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
 
-      params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
 

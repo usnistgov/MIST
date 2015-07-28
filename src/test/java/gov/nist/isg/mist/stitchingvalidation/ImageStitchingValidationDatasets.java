@@ -122,7 +122,6 @@ public class ImageStitchingValidationDatasets {
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
         File metaDataPath = new File(r, "cuda");
-        params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());  
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);
 

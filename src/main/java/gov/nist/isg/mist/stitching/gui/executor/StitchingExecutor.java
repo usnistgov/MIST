@@ -717,7 +717,7 @@ public class StitchingExecutor implements Runnable {
       int timeSlice)
   {
 
-    File metaDir = new File(this.params.getOutputParams().getMetadataPath());
+    File metaDir = new File(this.params.getOutputParams().getOutputPath());
     metaDir.mkdirs();
 
     StitchingGuiUtils.updateProgressBar(progress, true, "Outputting metadata");

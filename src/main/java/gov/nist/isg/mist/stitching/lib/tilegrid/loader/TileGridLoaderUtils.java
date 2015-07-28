@@ -231,4 +231,31 @@ public class TileGridLoaderUtils {
     }
     return false;
   }
+
+
+  public static boolean checkRowColTile(String imageDir, String filePattern, int row, int col, boolean silent) {
+    String posMatcher = null;
+    String rowMatcher = RowColTileGridLoader.getRowMatcher(filePattern, silent);
+    if (rowMatcher != null) {
+      String colFilePattern = String.format(rowMatcher, row);
+      posMatcher = RowColTileGridLoader.getColMatcher(colFilePattern, silent);
+    }
+
+    if(posMatcher == null)
+      return false;
+
+    String fileName = String.format(posMatcher, col);
+    File file = new File(imageDir, fileName);
+
+    if (file.exists())
+      return true;
+
+    if (!silent) {
+      Log.msg(LogType.MANDATORY, "Could not find file: " + file.getAbsolutePath());
+      Log.msg(LogType.MANDATORY, "Please check your image directory, "
+                                 + "file pattern, and start tile to ensure they match the "
+                                 + "files in your image directory.");
+    }
+    return false;
+  }
 }

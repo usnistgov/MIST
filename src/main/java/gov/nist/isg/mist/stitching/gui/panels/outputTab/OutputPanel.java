@@ -57,12 +57,11 @@ import java.text.DecimalFormat;
  */
 public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentListener, ActionListener {
 
-  private static final String fileSizeLabel = "Estimated stitched image file size (0% overlap): ";
+  private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
 
   private static final long serialVersionUID = 1L;
 
   private boolean makingChanges;
-  private DirectoryChooserPanel metadataPath;
   private JCheckBox useImageDirectory;
   private DirectoryChooserPanel outputPath;
   private JCheckBox displayStitching;
@@ -78,25 +77,17 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
   private JLabel estimatedFileSizeLabel;
   private JButton updateBtn;
 
-  private JButton previewNoOverlapBtn;
-
   private InputPanel inputPanel;
   private SubgridPanel subGridPanel;
-
-  private StitchingGUIFrame mainGui;
 
   private int imageSize;
 
   /**
    * Creates the output panel
-   * 
-   * @param mainGui the reference to the main gui window
    */
-  public OutputPanel(StitchingGUIFrame mainGui) {
+  public OutputPanel() {
     this.makingChanges = false;
     setFocusable(false);
-
-    this.mainGui = mainGui;
 
     initControls();
     this.imageSize = 0;
@@ -122,10 +113,11 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.subGridPanel = subGridPanel;
   }
 
+  public DirectoryChooserPanel getOutputPath() {
+    return this.outputPath;
+  }
 
   private void initControls() {
-
-    this.metadataPath = new DirectoryChooserPanel("Metadata Directory");
 
     this.useImageDirectory = new JCheckBox("Use Image Directory as Output Directory");
     this.outputPath = new DirectoryChooserPanel("Output Directory");
@@ -159,6 +151,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
         new TextFieldInputPanel<String>("Filename Prefix", "out-file-", 20, new FilenameModel(
             "Prefix for output filenames. Must be valid file name"));
 
+
     JPanel blendingPanel = new JPanel();
     blendingPanel.add(new JLabel("Blending mode: "));
     blendingPanel.add(this.blendingType);
@@ -189,14 +182,15 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     vertPanel.add(this.outputPath, c);
     c.gridy = 3;
     vertPanel.add(this.filePrefixName, c);
-    c.gridy = 4;    
-    vertPanel.add(this.metadataPath, c);
+    c.gridy = 4;
+
     
     c.gridy = 5;
-    c.insets = new Insets(20, 0, 0, 0);
+    c.insets = new Insets(30, 0, 0, 0);
     vertPanel.add(blendingPanel, c);
     
     c.gridy = 6;
+    c.insets = new Insets(0,0,0,0);
     vertPanel.add(checkBoxPanel, c);
 
 
@@ -210,13 +204,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     c.gridy = 7;
     vertPanel.add(estimatedFileSizePanel, c);
 
-
-    this.previewNoOverlapBtn = new JButton("Preview Mosaic With No Overlap");
-    this.previewNoOverlapBtn.addActionListener(this);
-
-    c.gridy = 8;
-    vertPanel.add(this.previewNoOverlapBtn, c);
-
     mainPanel.add(vertPanel);
 
     add(mainPanel);
@@ -225,14 +212,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.outputPath.getInputField().getDocument().addDocumentListener(this);
   }
 
-  /**
-   * Gets the metadata path
-   * @return the metadata path
-   */
-  public DirectoryChooserPanel getMetadataPath()
-  {
-    return this.metadataPath;
-  }
 
   public String getPrefix(){
     return this.filePrefixName.getValue();
@@ -313,10 +292,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     } else if (e.getSource() == this.blendingType) {
       BlendingMode blendType = (BlendingMode) this.blendingType.getSelectedItem();          
       setAlphaEnabled(blendType.isRequiresAlpha());
-    } else if (e.getSource() == this.previewNoOverlapBtn) {
-      this.mainGui.displayNoOverlap();
     }
-
   }
 
   private void processDocumentEvent(DocumentEvent e)
@@ -362,7 +338,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.outputPath.setValue(params.getOutputParams().getOutputPath());
     this.displayStitching.setSelected(params.getOutputParams().isDisplayStitching());
     this.outputFullImage.setSelected(params.getOutputParams().isOutputFullImage());
-    this.metadataPath.setValue(params.getOutputParams().getMetadataPath());
 
     this.filePrefixName.setValue(params.getOutputParams().getOutFilePrefix());
 
@@ -411,7 +386,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   @Override
   public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) {
-    params.getOutputParams().setMetadataPath(this.metadataPath.getValue());
     params.getOutputParams().setOutputPath(this.outputPath.getValue());
     params.getOutputParams().setDisplayStitching(this.displayStitching.isSelected());
     params.getOutputParams().setOutputFullImage(this.outputFullImage.isSelected());

@@ -43,8 +43,7 @@ import java.util.prefs.Preferences;
  *
  */
 public class OutputParameters implements StitchingAppParamFunctions {
-  
-  private static final String METADATA_PATH = "metadataPath";
+
   private static final String OUTPUT_PATH = "outputPath";
   private static final String DISPLAY_STITCHING = "displayStitching";
   private static final String OUTPUT_FULL_IMAGE = "outputFullImage";
@@ -62,7 +61,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String statisticsFilename = "statistics";
   private static final String hillClimbPosFilename = "hillclimb-starting-positions";
 
-  private String metadataPath;
   private String outputPath;
   private boolean displayStitching;
   private boolean outputFullImage;
@@ -75,7 +73,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
 
   public OutputParameters()
   {
-    this.metadataPath = System.getProperty("user.home");
     this.outputPath = System.getProperty("user.home");
     this.displayStitching = false;
     this.outputFullImage = true;
@@ -152,7 +149,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getStatsFile()
   {
-    return new File(this.metadataPath, this.getStatFileName());
+    return new File(this.outputPath, this.getStatFileName());
   }
 
   /**
@@ -162,7 +159,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getHillClimbPositionFile(int timeSlice)
   {
-    return new File(this.metadataPath, getHillClimbStartingPositionsName(timeSlice));
+    return new File(this.outputPath, getHillClimbStartingPositionsName(timeSlice));
   }
   
   /**
@@ -182,7 +179,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getAbsPosFile(int timeSlice)
   {
-    return new File(this.metadataPath, getAbsPosFileName(timeSlice));
+    return new File(this.outputPath, getAbsPosFileName(timeSlice));
   }
 
   /**
@@ -192,7 +189,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getRelPosFile(int timeSlice)
   {
-    return new File(this.metadataPath, getRelPosFileName(timeSlice));
+    return new File(this.outputPath, getRelPosFileName(timeSlice));
   }
 
   /**
@@ -202,7 +199,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public File getRelPosNoOptFile(int timeSlice)
   {
-    return new File(this.metadataPath, getRelPosNoOptFileName(timeSlice));
+    return new File(this.outputPath, getRelPosNoOptFileName(timeSlice));
   }
 
 
@@ -238,8 +235,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
               this.outputPath = contents[1];
             else if (contents[0].equals(DISPLAY_STITCHING))
               this.displayStitching = StitchingParamUtils.loadBoolean(contents[1], this.displayStitching);
-            else if (contents[0].equals(METADATA_PATH))
-              this.metadataPath = contents[1];
             else if (contents[0].equals(OUTPUT_FULL_IMAGE))
               this.outputFullImage = StitchingParamUtils.loadBoolean(contents[1], this.outputFullImage);
             else if (contents[0].equals(OUTPUT_META))
@@ -277,7 +272,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
   @Override
   public boolean loadParams(Preferences pref) {
 
-    this.metadataPath = pref.get(METADATA_PATH, this.metadataPath);
     this.outputPath = pref.get(OUTPUT_PATH, this.outputPath);
     this.displayStitching = pref.getBoolean(DISPLAY_STITCHING, this.displayStitching);
     this.outputFullImage = pref.getBoolean(OUTPUT_FULL_IMAGE, this.outputFullImage);
@@ -293,8 +287,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
 
 
   @Override
-  public void printParams(LogType logLevel) {   
-    Log.msg(logLevel, METADATA_PATH + ": " + this.metadataPath);
+  public void printParams(LogType logLevel) {
     Log.msg(logLevel, OUTPUT_PATH + ": " + this.outputPath);
     Log.msg(logLevel, DISPLAY_STITCHING + ": " + this.displayStitching);
     Log.msg(logLevel, OUTPUT_FULL_IMAGE + ": " + this.outputFullImage);
@@ -307,8 +300,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
 
 
   @Override
-  public void loadMacro(String macroOptions) {   
-    this.metadataPath = MacroUtils.loadMacroString(macroOptions, METADATA_PATH, this.metadataPath);
+  public void loadMacro(String macroOptions) {
     this.outputPath = MacroUtils.loadMacroString(macroOptions, OUTPUT_PATH, this.outputPath);
     this.displayStitching = MacroUtils.loadMacroBoolean(macroOptions, DISPLAY_STITCHING, this.displayStitching);
     this.outputFullImage = MacroUtils.loadMacroBoolean(macroOptions, OUTPUT_FULL_IMAGE, this.outputFullImage);
@@ -321,8 +313,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
 
 
   @Override
-  public void recordMacro() {   
-    MacroUtils.recordString(METADATA_PATH + ": ", this.metadataPath);
+  public void recordMacro() {
     MacroUtils.recordString(OUTPUT_PATH + ": ", this.outputPath);
     MacroUtils.recordBoolean(DISPLAY_STITCHING + ": ", this.displayStitching);
     MacroUtils.recordBoolean(OUTPUT_FULL_IMAGE + ": ", this.outputFullImage);
@@ -336,7 +327,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
 
   @Override
   public void saveParams(Preferences pref) {
-    pref.put(METADATA_PATH, this.metadataPath);
     pref.put(OUTPUT_PATH, this.outputPath);
     pref.putBoolean(DISPLAY_STITCHING, this.displayStitching);
     pref.putBoolean(OUTPUT_FULL_IMAGE, this.outputFullImage);
@@ -353,7 +343,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
     String newLine = "\n";
     try {
 
-      fw.write(METADATA_PATH + ": " + this.metadataPath + newLine);
       fw.write(OUTPUT_PATH + ": " + this.outputPath + newLine);
       fw.write(DISPLAY_STITCHING + ": " + this.displayStitching + newLine);
       fw.write(OUTPUT_FULL_IMAGE + ": " + this.outputFullImage + newLine);
@@ -370,25 +359,6 @@ public class OutputParameters implements StitchingAppParamFunctions {
     }
     return false;    
   }
-
-
-
-  /**
-   * @return the metadataPath
-   */
-  public String getMetadataPath() {
-    return this.metadataPath;
-  }
-
-
-
-  /**
-   * @param metadataPath the metadataPath to set
-   */
-  public void setMetadataPath(String metadataPath) {
-    this.metadataPath = metadataPath;
-  }
-
 
 
   /**

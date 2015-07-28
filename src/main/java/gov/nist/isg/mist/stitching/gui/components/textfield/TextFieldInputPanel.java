@@ -56,6 +56,8 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
   private TextFieldModel<T> validator;
   private JTextArea helpTextArea;
 
+  private static final int defaultSize = 6;
+
   /**
    * Creates a text field input panel
    * 
@@ -64,7 +66,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
    * @param validator the validator associated with the text field
    */
   public TextFieldInputPanel(String label, String text, TextFieldModel<T> validator) {
-    this(label, text, 10, validator);
+    this(label, text, defaultSize, validator);
   }
 
 
@@ -77,7 +79,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
    * @param helpText the help text that describes this text field
    */
   public TextFieldInputPanel(String label, String text, TextFieldModel<T> validator, String helpText) {
-    this(label, text, 10, validator, helpText);
+    this(label, text, defaultSize, validator, helpText);
   }
 
   /**

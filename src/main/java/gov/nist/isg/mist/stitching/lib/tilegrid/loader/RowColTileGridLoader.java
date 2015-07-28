@@ -52,8 +52,8 @@ public class RowColTileGridLoader extends TileGridLoader {
    * Pattern example text
    */
   public static final String patternExample =
-      "<html>Format example:<br> File name = F_r01_c01_time02.tif"
-          + "<br>Format = F_r{rr}_c{cc}_time{tt}.tif"
+      "<html>Format example:<br> File name = img_r01_c01_time02.tif"
+          + "<br>Format = img_r{rr}_c{cc}_time{tt}.tif"
           + "<br>{rr} = row; {cc} = column; {tt} = timeslice (optional)</html>";
 
 

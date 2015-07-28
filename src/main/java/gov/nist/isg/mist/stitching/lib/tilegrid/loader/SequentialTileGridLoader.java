@@ -47,8 +47,8 @@ public class SequentialTileGridLoader extends TileGridLoader {
    * The pattern example
    */
   public static final String patternExample =
-      "<html>Format example:<br> File name = F_pos1234_time1234.tif"
-          + "<br>Format = F_pos{pppp}_time{tttt}.tif"
+      "<html>Format example:<br> File name = img_pos1234_time1234.tif"
+          + "<br>Format = img_pos{pppp}_time{tttt}.tif"
           + "<br>{pppp} = position; {tttt} = timeslice(optional)</html>";
 
 

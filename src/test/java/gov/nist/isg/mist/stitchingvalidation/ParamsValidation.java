@@ -105,7 +105,6 @@ public class ParamsValidation {
       System.out.println("Stitching Type: " + t);
 
       File metaDataPath = new File(r, t.name().toLowerCase());
-      params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);
       params.getOutputParams().setDisplayStitching(false);
@@ -119,8 +118,6 @@ public class ParamsValidation {
         params.getAdvancedParams().setNumFFTPeaks(nbPeaks);
 
         params.getOutputParams().setOutputPath(
-            basePath + File.separator + "peaks" + nbPeaks + File.separator);
-        params.getOutputParams().setMetadataPath(
             basePath + File.separator + "peaks" + nbPeaks + File.separator);
 
         File f = new File(params.getOutputParams().getOutputPath() + "img-statistics.txt");

@@ -34,9 +34,13 @@ import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.DblMo
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.IntModel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
+import gov.nist.isg.mist.stitching.lib.log.Debug;
+import gov.nist.isg.mist.stitching.lib.log.Log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Creates the advanced options panel
@@ -45,7 +49,7 @@ import java.awt.*;
  * @version 1.0
  * 
  */
-public class AdvancedPanel extends JPanel implements GUIParamFunctions {
+public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionListener {
 
   private static String repeatabilityHelp = "During optimization, uses the user-specified "
       + "repeatability of the stage. Leave this field blank to use the default. "
@@ -87,11 +91,20 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
   
 
   private ParallelOptPane parallelOptions;
+  private JComboBox loggingLevel;
+  private JComboBox debugLevel;
+
 
   /**
    * Initializes the advanced options panel
    */
   public AdvancedPanel() {
+
+    this.loggingLevel = new JComboBox(Log.LogType.values());
+    this.debugLevel = new JComboBox(Debug.DebugType.values());
+
+    this.loggingLevel.setSelectedItem(Log.getLogLevel());
+    this.debugLevel.setSelectedItem(Debug.getDebugLevel());
 
     this.numFFTPeaks =
         new TextFieldInputPanel<Integer>("Number of FFT Peaks", "", 
@@ -118,10 +131,18 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
     setFocusable(false);
 
     initControls();
+    initListeners();
 
   }
 
+  private void initListeners()
+  {
+    this.loggingLevel.addActionListener(this);
+    this.debugLevel.addActionListener(this);
+  }
+
   private void initControls() {
+
     JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
     JPanel vertPanel = new JPanel(new GridBagLayout());
@@ -135,28 +156,50 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;
     vertPanel.add(qButton, c);
-        
-    c.gridy = 1;
     c.fill = GridBagConstraints.HORIZONTAL;
     c.anchor = GridBagConstraints.LINE_START;
-    vertPanel.add(this.numFFTPeaks, c);
 
-    c.gridy = 2;
+    c.gridy = 1;
     vertPanel.add(this.maxRepeatability, c);
 
-    c.gridy = 3;
+    c.gridy = 2;
     vertPanel.add(this.horizontalOverlap, c);
 
-    c.gridy = 4;
+    c.gridy = 3;
     vertPanel.add(this.verticalOverlap, c);
 
-    c.gridy = 5;
+    c.gridy = 4;
     vertPanel.add(this.overlapUncertainty, c);
-    
+
+    c.gridy = 5;
+    vertPanel.add(this.numFFTPeaks, c);
+
+
+    JPanel logPanel = new JPanel(new GridBagLayout());
+    this.loggingLevel = new JComboBox(Log.LogType.values());
+    c.gridy = 0;
+    logPanel.add(new JLabel("Log Level"), c);
+    c.gridy = 1;
+    logPanel.add(this.loggingLevel, c);
+
+    this.debugLevel = new JComboBox(Debug.DebugType.values());
+    c.gridy = 0;
+
+    c.insets = new Insets(0, 10, 0, 0);
+    logPanel.add(new JLabel("Debug Level"), c);
+    c.gridy = 1;
+    logPanel.add(this.debugLevel, c);
+
     c.gridy = 6;
+    c.insets = new Insets(0,0,0,0);
+    vertPanel.add(logPanel,c);
+
+
+    
+    c.gridy = 7;
     vertPanel.add(this.parallelOptions.getStitchingTypePanel(), c);
 
-    c.gridy = 7;
+    c.gridy = 8;
     vertPanel.add(this.parallelOptions.getProgramPanel(), c);
 
     mainPanel.add(vertPanel);
@@ -170,9 +213,24 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
     this.horizontalOverlap.setValue(params.getAdvancedParams().getHorizontalOverlap());
     this.verticalOverlap.setValue(params.getAdvancedParams().getVerticalOverlap());
     this.overlapUncertainty.setValue(params.getAdvancedParams().getOverlapUncertainty());
-    this.parallelOptions.loadParamsIntoGUI(params);    
+    this.parallelOptions.loadParamsIntoGUI(params);
+
+    Log.LogType logType = params.getLogParams().getLogLevel();
+
+    if (logType == null)
+      logType = Log.LogType.MANDATORY;
+
+    Debug.DebugType debugType = params.getLogParams().getDebugLevel();
+
+    if (debugType == null)
+      debugType = Debug.DebugType.NONE;
+
+    this.loggingLevel.setSelectedItem(logType);
+    this.debugLevel.setSelectedItem(debugType);
 
   }
+
+
 
   @Override
   public boolean checkAndParseGUI(StitchingAppParams params) {
@@ -226,7 +284,47 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions {
     params.getAdvancedParams().setVerticalOverlap(this.verticalOverlap.getValue());
     params.getAdvancedParams().setNumFFTPeaks(this.numFFTPeaks.getValue());
     params.getAdvancedParams().setOverlapUncertainty(this.overlapUncertainty.getValue());
-        
+
+    Log.LogType logLevel = this.getLogLevel();
+    Debug.DebugType debugLevel = this.getDebugLevel();
+
+    params.getLogParams().setLogLevel(logLevel);
+    params.getLogParams().setDebugLevel(debugLevel);
+
     this.parallelOptions.saveParamsFromGUI(params, isClosing);
   }
+
+  /**
+   * Gets the log level
+   * @return the log level
+   */
+  public Log.LogType getLogLevel() {
+    return (Log.LogType)this.loggingLevel.getSelectedItem();
+  }
+
+  /**
+   * Gets the debug level
+   * @return the debug level
+   */
+  public Debug.DebugType getDebugLevel() {
+    return (Debug.DebugType)this.debugLevel.getSelectedItem();
+  }
+
+
+  @Override
+  public void actionPerformed(ActionEvent arg0) {
+    Object src = arg0.getSource();
+    if (src instanceof JComboBox) {
+      JComboBox action = (JComboBox) src;
+
+      if (action.equals(this.loggingLevel)) {
+        Log.setLogLevel((Log.LogType)action.getSelectedItem());
+      } else if (action.equals(this.debugLevel)) {
+        Debug.setDebugLevel((Debug.DebugType)action.getSelectedItem());
+      }
+    }
+  }
+
+
+
 }
