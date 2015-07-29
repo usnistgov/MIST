@@ -133,7 +133,7 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
     int gWidth = grid.getExtentWidth();
     int gHeight = grid.getExtentHeight();
 
-    int memoryPoolSize = Math.min(gWidth, gHeight) + 2;
+    int memoryPoolSize = Math.min(gWidth, gHeight) + 2 + numWorkers;
 
     Log.msg(LogType.MANDATORY, "Memory pool size: " + memoryPoolSize);
 

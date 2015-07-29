@@ -140,9 +140,10 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
     // Create table
     this.deviceTable.setModel(this.tableModel);
     this.deviceTable.setShowHorizontalLines(true);
-    this.deviceTable.setShowVerticalLines(true);    
-    
+    this.deviceTable.setShowVerticalLines(true);
+
     this.deviceTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
 //    TableColumnAdjuster tca = new TableColumnAdjuster(this.deviceTable);
 //    tca.adjustColumns();    
     
@@ -151,6 +152,13 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
    
     this.c.gridy = 4;
     JScrollPane scroll = new JScrollPane(this.deviceTable);
+
+    // tie the size of the table to the size of the scroll pane
+    Dimension prefSize = this.deviceTable.getPreferredSize();
+    prefSize.width = scroll.getPreferredSize().width;
+    this.deviceTable.setPreferredScrollableViewportSize(prefSize);
+    this.deviceTable.setFillsViewportHeight(true);
+
     add(scroll, this.c);
 
   }

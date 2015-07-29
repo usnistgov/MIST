@@ -351,8 +351,7 @@ pre.editor-colors[mini] .scroll-view,
   </head>
   <body class='markdown-preview'><h1 id="mist-user-guide">MIST User Guide</h1>
 <h2 id="contents">Contents</h2>
-<ul>
-<li><strong><a href="#mist-user-guide">MIST User Guide</a></strong><ol>
+<ol>
 <li><a href="#launching-mist">Launching MIST</a></li>
 <li><a href="#installation-validation-test">Installation Validation Test</a></li>
 <li><a href="#mist-graphical-user-interface">MIST Graphical User Interface</a><ol>
@@ -370,24 +369,6 @@ pre.editor-colors[mini] .scroll-view,
 </li>
 <li><a href="#mist-status-frame">MIST Status Frame</a></li>
 </ol>
-</li>
-<li><strong><a href="#mist-plugin-installation">MIST Plugin Installation</a></strong></li>
-<li><strong><a href="#mist-faq">MIST FAQ</a></strong><ol>
-<li><a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a></li>
-<li><a href="#mist-encountered-an-out-of-memory-problem">MIST encountered an Out of Memory problem</a></li>
-<li><a href="#what-image-types-can-mist-handle">What image types can MIST handle</a></li>
-<li><a href="#my-stitching-results-look-incorrect">My stitching results look incorrect</a></li>
-<li><a href="#what-if-the-output-stitched-image-is-too-big-to-be-saved">What if the output stitched image is too big to be saved</a></li>
-<li><a href="#the-fftw-version-does-not-work">The FFTW version does not work</a></li>
-<li><a href="#my-stitching-performance-is-not-good">My stitching performance is not good</a></li>
-<li><a href="#i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</a></li>
-<li><a href="#how-to-stitch-from-metadata">How to stitch from metadata</a></li>
-<li><a href="#stitching-time-slices">Stitching Time-Slices</a></li>
-<li><a href="#stitching-multiple-channels">Stitching Multiple Channels</a></li>
-<li><a href="#submitting-issue-or-bug-report">Submitting issue or bug report</a></li>
-</ol>
-</li>
-</ul>
 <hr>
 <h3 id="launching-mist">Launching MIST</h3>
 <ol>
@@ -415,7 +396,7 @@ pre.editor-colors[mini] .scroll-view,
 <li>Select the Output tab and update <strong>Output Directory</strong> and <strong>Metadata Directory</strong> to define where the output files are to be saved</li>
 <li>Set <strong>Blending Mode</strong>: to &#39;Overlay&#39;</li>
 <li>Update <strong>Display Stitched Image</strong> and <strong>Save Full Stitched Image</strong> to selected/enabled</li>
-<li>To check the parameters defining the image grid, select <strong>Preview Mosaic With No Overlap</strong> which should generate and display a zero percent overlap tiling of the input images</li>
+<li>To check the parameters defining the image grid, select <strong>Preview (0% overlap)</strong> which should generate and display a zero percent overlap tiling of the input images</li>
 <li>Click <strong>Begin Stitching</strong> to launch</li>
 <li>Compare the newly generated stitched image to the reference stitched image shipped with the test dataset<ol>
 <li>Open &#39;[extractionPath]/Small_Fluorescent_Test_Dataset/stitched-image/img-stitched-0.tif&#39; in Fiji.</li>
@@ -431,48 +412,49 @@ pre.editor-colors[mini] .scroll-view,
 <p>The MIST plugin consists of five tabs. Below, we outline each tab and discuss all of the parameters. All options labeled with an * are required in order to start stitching. Each tab contains a <strong>?</strong> button that, when clicked, generates a local copy of this documentation.</p>
 <hr>
 <h4 id="input-parameters">Input Parameters</h4>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\InputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Save Params</strong> Button - Saves all parameters in MIST to a file.</p>
+<p><strong>Preview (0% overlap)</strong> Button - Opens the image mosaic into Fiji assuming 0% overlap.</p>
 <p><strong>Begin Stitching</strong> Button - Launches the stitching experiment.</p>
 <p><strong>Load Params</strong> Button - Loads parameters from a file. Note: <em>Supports loading the statistics file that is generated after each experiment.</em></p>
-<p>* <strong>Filename Pattern Type</strong> - Used to specify the type of filename pattern. Possible options: <strong>Sequential</strong> and <strong>Row-Column</strong>. We support all filename types that ImageJ supports. For a list of supported types, please refer to <a href="http://rsb.info.nih.gov/ij/docs/guide/146-7.html">ImageJ User Guide</a>.</p>
-<p>* <strong>Filename Pattern</strong> - Used to load images from a directory. Changes based on the <strong>Filename Pattern Type</strong>. The character &quot;%&quot; cannot be used as part of a filename pattern.</p>
+<p>* <strong>Filename Pattern Type</strong> - Used to specify the type of filename pattern used in the acquired images. Possible options: <strong>Sequential</strong> and <strong>Row-Column</strong>.</p>
+<p>Sequential:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Sequential&nbsp;pattern&nbsp;images&nbsp;have&nbsp;a&nbsp;single&nbsp;number&nbsp;representing&nbsp;their&nbsp;position&nbsp;within&nbsp;the&nbsp;image&nbsp;grid.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;Example:&nbsp;img_pos001_c01.tif&nbsp;=&nbsp;img_pos{ppp}_c01.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;{ppp}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;position&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;p&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div></pre><p>Row-Column:</p>
+<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Row-Column&nbsp;pattern&nbsp;images&nbsp;have&nbsp;a&nbsp;pair&nbsp;of&nbsp;numbers&nbsp;representing&nbsp;their&nbsp;position&nbsp;within&nbsp;the&nbsp;image&nbsp;grid.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;Example:&nbsp;img_r01_c01.tif&nbsp;=&nbsp;img_r{rr}_c{cc}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;{rr}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;row&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;r&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;&nbsp;&nbsp;{cc}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;column&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;c&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div></pre><p>* <strong>Starting Point</strong> - The starting point of the microscope scan. Possible options: <strong>Upper Left</strong>, <strong>Upper Right</strong>, <strong>Lower Left</strong>, and <strong>Lower Right</strong>. This specifies the origin for the grid of images.</p>
+<p>* <strong>Direction</strong> - The direction and pattern of the microscope motion during acquisition. Possible options: <strong>Vertical Combing</strong>, <strong>Vertical Continuous</strong>, <strong>Horizontal Combing</strong>, and <strong>Horizontal Continuous</strong>.</p>
+<p>* <strong>Grid Width</strong> - The number of images in a row (The number of columns, the width of the image grid)</p>
+<p>* <strong>Grid Height</strong> - The number of images in a column. (The number of rows, the height of the image grid)</p>
+<p><strong>Timeslices</strong> - The number of timeslices to stitch. Leave this field blank to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Pattern</strong>. This input supports a comma separated list and/or a range using a &#39;-&#39;.
+         Example: &quot;1-25,35,45&quot; stitches timeslices 1 through 25, 35, and 45.</p>
+<p><strong>Discover Width/Height</strong> Button - Attempts to automatically discover the width and height of a row-column filename pattern type acquisition given a valid filename pattern and image directory.</p>
+<p>* <strong>Filename Pattern</strong> - Used to load images from a directory. Changes based on the <strong>Filename Pattern Type</strong>. Important: the character &quot;%&quot; cannot be used as part of a filename pattern.</p>
 <ul>
-<li><p>If the <strong>Filename Pattern Type</strong> = <strong>Sequential</strong>, then the <strong>Filename Pattern</strong> expects sequential style numbering.</p>
+<li><p>If the <strong>Filename Pattern Type</strong> = <strong>Sequential</strong>, then the <strong>Filename Pattern</strong> expects sequential style numbering. We support all filename types that ImageJ supports. For a list of supported types, please refer to <a href="http://rsb.info.nih.gov/ij/docs/guide/146-7.html">ImageJ User Guide</a></p>
 <pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_pos0001_c01.tif&nbsp;=&nbsp;Img_pos{pppp}_c01.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Examples&nbsp;2:&nbsp;Img_pos001_time001.tif&nbsp;=&nbsp;Img_pos{ppp}_time{ttt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ppp}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;position&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;p&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
 <li><p>If the <strong>Filename Pattern Type</strong> = <strong>Row-Column</strong>, then the <strong>Filename Pattern</strong> expects row-column style numbering.</p>
 <pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>Example&nbsp;1:&nbsp;Img_r1_c1.tif&nbsp;=&nbsp;Img_r{r}_c{c}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;Example&nbsp;2:&nbsp;Img_row01_col01_time01.tif&nbsp;=&nbsp;Img_row{rr}_col{cc}_time{tt}.tif</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{rr}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;row&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;r&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{cc}&nbsp;-&nbsp;Special&nbsp;text&nbsp;for&nbsp;column&nbsp;numbering&nbsp;between&nbsp;0&nbsp;and&nbsp;99.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;c&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{ttt}&nbsp;-&nbsp;Special&nbsp;text&nbsp;that&nbsp;represents&nbsp;timeslice&nbsp;number&nbsp;between&nbsp;0&nbsp;and&nbsp;999.&nbsp;Each&nbsp;value&nbsp;of&nbsp;{ttt}&nbsp;will&nbsp;be&nbsp;stitched&nbsp;independently.&nbsp;Increase&nbsp;the&nbsp;number&nbsp;of&nbsp;t&#39;s&nbsp;to&nbsp;represent&nbsp;larger&nbsp;numbers.&nbsp;Specifying&nbsp;time&nbsp;slices&nbsp;is&nbsp;optional.</span></span></span></div></pre></li>
 </ul>
 <p>* <strong>Image Directory</strong> - The directory where the source images are located. Select browse to open a directory browser.</p>
-<p>* <strong>Starting Point</strong> - The starting point of the microscope scan. Possible options: <strong>Upper Left</strong>, <strong>Upper Right</strong>, <strong>Lower Left</strong>, and <strong>Lower Right</strong>.</p>
-<p>* <strong>Direction</strong> - The direction the microscope moves. Possible options: <strong>Vertical Combing</strong>, <strong>Vertical Continuous</strong>, <strong>Horizontal Combing</strong>, and <strong>Horizontal Continuous</strong>.</p>
-<p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>: You must specify the global-positions file to use in the <strong>Global Positions File</strong> field. If your <strong>Filename Pattern</strong> has a time slice iterator &quot;{tt}&quot; the global-positions file specified must also.</p>
-<p>* <strong>Grid Width</strong> - The number of images in a row (The number of columns, the width of the image grid)</p>
-<p>* <strong>Grid Height</strong> - The number of images in a column. (The number of rows, the height of the image grid)</p>
-<p><strong>Timeslices</strong> - The number of timeslices to stitch. Leave this field blank to stitch all timeslices. To stitch timeslices you must add the spcial format text <strong>{ttt}</strong> to the <strong>File Pattern</strong>. This input supports a comma separated list and/or a range using a &#39;-&#39;.
-         Example: &quot;1-25,35,45&quot; stitches timeslices 1 through 25, 35, and 45.</p>
-<hr>
+<p><strong>Assemble from metadata</strong> - Generates the image mosaic using metadata from a previous run. <strong>Important</strong>: You must specify the global-positions file to use in the <strong>Global Positions File</strong> field. If your <strong>Filename Pattern</strong> has a time slice iterator &quot;{tt}&quot; then the global-positions file specified must also.</p>
+<p><strong>Global Positions File</strong> - The filepath to the global-positions file to use in assembling from metadata. Note: this must be the filepath of an individual global-positions file, not the directory containing a global-positions file. Note: If you <strong>Filename Pattern</strong> has a time slice iterator &quot;{tt}&quot; then the global-positions file specified must also.</p>
 </blockquote>
+<hr>
 <h4 id="output-parameters">Output Parameters</h4>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\OutputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use Image Directory as Output Directory</strong> - Sets the output directory to be the same as the input directory.</p>
 <p><strong>Output Directory</strong> - Specifies the location to save images and run statistics.</p>
 <p>Files that are saved:</p>
 <ul>
 <li><strong>{namePrefix}</strong>stitched-<strong>{#}</strong>.tiff</li>
-<li><p><strong>{namePrefix}</strong>statistics.txt</p>
-<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>{namePrefix}&nbsp;-&nbsp;the&nbsp;prefix&nbsp;used&nbsp;in&nbsp;&quot;Filename&nbsp;Prefix&quot;</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{#}&nbsp;-&nbsp;The&nbsp;timeslice&nbsp;number&nbsp;(0&nbsp;if&nbsp;no&nbsp;timeslices&nbsp;are&nbsp;used)</span></span></span></div></pre></li>
+<li><strong>{namePrefix}</strong>statistics.txt</li>
+<li>global-positions-<strong>{#}</strong>.txt</li>
+<li>relative-positions-<strong>{#}</strong>.txt</li>
+<li>relative-positions-no-optimization-<strong>{#}</strong>.txt</li>
+<li>hillclimb-startings-positions-<strong>{#}</strong>.txt<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>{namePrefix}&nbsp;-&nbsp;the&nbsp;prefix&nbsp;used&nbsp;in&nbsp;&quot;Filename&nbsp;Prefix&quot;</span></span></span></div><div class="line"><span class="text plain"><span class="meta paragraph text"><span>&nbsp;&nbsp;{#}&nbsp;-&nbsp;The&nbsp;timeslice&nbsp;number&nbsp;(0&nbsp;if&nbsp;no&nbsp;timeslices&nbsp;are&nbsp;used)</span></span></span></div></pre></li>
 </ul>
 <p><strong>Filename Prefix</strong> - The prefix given to output files.</p>
-<p><strong>Metadata Directory</strong> - The directory where metadata is written.</p>
-<p>Files that are saved:</p>
-<ul>
-<li>global-positions-{#}.txt</li>
-<li>relative-positions-{#}.txt</li>
-<li>relative-positions-no-optimization-{#}.txt</li>
-<li><p>hillclimb-startings-positions-{#}.txt</p>
-<pre class="editor-colors lang-text"><div class="line"><span class="text plain"><span>&nbsp;&nbsp;</span><span class="meta paragraph text"><span>{#}&nbsp;-&nbsp;The&nbsp;timeslice&nbsp;number&nbsp;(0&nbsp;if&nbsp;no&nbsp;timeslices&nbsp;are&nbsp;used)</span></span></span></div></pre></li>
-</ul>
 <p><strong>Blending mode</strong> - Selects the blending mode to be used for computing the mosaic image.
 Blending Types:</p>
 <ul>
@@ -484,11 +466,11 @@ Blending Types:</p>
 <p><strong>Display Stitched Image</strong> - Opens the blended image mosaic into Fiji.</p>
 <p><strong>Save Full Stitched Image</strong> - Writes the blended image mosaic to the <strong>Output Directory</strong>.</p>
 <p><strong>Update</strong> Button - Updates the estimated stitched image file size.</p>
-<p><strong>Preview Mosaic With No Overlap</strong> - Opens the image mosaic into Fiji assuming 0% overlap.</p>
 <p><strong>Warning</strong>: <em>Large image grids can cause out of memory errors. If the number of pixels in the output stitched image exceeds 2147483647 (2<sup>31</sup>-1), then the stitched image must be exported using an alternative method. (imagePixelWidth*imagePixelHeight &lt; 2147483647)</em></p>
 </blockquote>
 <hr>
 <h4 id="subgrid-parameters">Subgrid Parameters</h4>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\SubgridWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use full grid</strong> - Updates the subgrid to use the full grid of images.</p>
 <p><strong>Start Col</strong> - The start column for the subgrid.</p>
@@ -498,12 +480,33 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="advanced-parameters-optional-">Advanced Parameters (optional)</h4>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\AdvancedWindow.png" alt=""></p>
 <blockquote>
-<p><strong>Number of FFT Peaks</strong> - Specifies the number of peaks to check when computing the phase correlation image alignment method. We have determined that modifying this value can yield more accurate pre-optimization displacements. This value should not exceed 10. (Default: 2)</p>
 <p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm.</p>
 <p><strong>Horizontal overlap</strong> - Sets the horizontal overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic.</p>
 <p><strong>Vertical overlap</strong> - Sets the vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic.</p>
 <p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables.</p>
+<p><strong>Number of FFT Peaks</strong> - Specifies the number of peaks to check when computing the phase correlation image alignment method. We have determined that modifying this value can yield more accurate pre-optimization displacements. This value should not exceed 10. (Default: 2)</p>
+<p><strong>Log Level</strong> - Sets the log level for the user interface and the stitching execution.
+Possible Options:</p>
+<ul>
+<li>None - No logging</li>
+<li>Mandatory - Logs important information</li>
+<li>Helpful - Logs helpful information</li>
+<li>Info - Logs informative information</li>
+<li>Verbose - Logs all information</li>
+</ul>
+<p><em>Note: The lower logging stack includes the logging levels above. Example: Helpful, includes Mandatory.</em></p>
+<p><strong>Debug Level</strong> - Sets the debug level for the user interface and the stitching execution.
+Possible Options:</p>
+<ul>
+<li>None - No debug logging</li>
+<li>Mandatory - Logs important debug information</li>
+<li>Helpful - Logs helpful debug information</li>
+<li>Info - Logs informative debug information</li>
+<li>Verbose - Logs all debug information</li>
+</ul>
+<p><em>Note: The lower logging stack includes the logging levels above. Example: Helpful, includes Mandatory.</em></p>
 <p><strong>Stitching Program</strong> - Selects which type of program to execute.</p>
 <ul>
 <li>Auto - Determine which program to use. First checks if FFTW is available, if it is not then it falls back to Java.</li>
@@ -511,14 +514,16 @@ Blending Types:</p>
 <li>FFTW - Uses FFTW libraries.</li>
 <li>CUDA - Uses NVIDIA CUDA GPUs.</li>
 </ul>
-</blockquote>
 <hr>
+</blockquote>
 <h5 id="java-execution">Java Execution</h5>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\JavaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 </blockquote>
 <hr>
 <h5 id="fftw-execution">FFTW Execution</h5>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\FftwWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>FFTW Plan Type</strong> - The type of FFTW plan to generate</p>
@@ -542,6 +547,7 @@ Example Files:</p>
 </blockquote>
 <hr>
 <h5 id="cuda-execution">CUDA Execution</h5>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\CudaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>Execute Device Query</strong> - Queries for all GPUs installed on the system and prints the information to the log.</p>
@@ -552,31 +558,13 @@ Example Files:</p>
 </blockquote>
 <hr>
 <h4 id="help">Help</h4>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\HelpWindow.png" alt=""></p>
 <blockquote>
-<p><strong>Log Level</strong> - Sets the log level for the user interface and the stitching execution.
-Possible Options:</p>
-<ul>
-<li>None - No logging</li>
-<li>Mandatory - Logs important information</li>
-<li>Helpful - Logs helpful information</li>
-<li>Info - Logs informative information</li>
-<li>Verbose - Logs all information</li>
-</ul>
-<p><em>Note: The lower logging stack includes the logging levels above. Example: Helpful, includes Mandatory.</em></p>
-<p><strong>Debug Level</strong> - Sets the debug level for the user interface and the stitching execution.
-Possible Options:</p>
-<ul>
-<li>None - No debug logging</li>
-<li>Mandatory - Logs important debug information</li>
-<li>Helpful - Logs helpful debug information</li>
-<li>Info - Logs informative debug information</li>
-<li>Verbose - Logs all debug information</li>
-</ul>
-<p><em>Note: The lower logging stack includes the logging levels above. Example: Helpful, includes Mandatory.</em></p>
-<p><strong>Open Help (PDF)</strong> - Opens this document in PDF format.</p>
+<p><strong>Open Local Help Documentation</strong> - Opens this document without an Internet connection.</p>
 </blockquote>
 <hr>
 <h3 id="mist-status-frame">MIST Status Frame</h3>
+<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\MISTStatus.png" alt=""></p>
 <blockquote>
 <p><strong>Progress</strong> - If timeslices are used, shows the current timeslice, total timeslices, and number of groups (if entered as a comma separated list in the input parameters).</p>
 <p><strong>Progress bar</strong> - Shows the % progress made for the current experiment.</p>

@@ -92,7 +92,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
     ImageIcon icon = null;
     try {
-      icon = AppImageHelper.loadImage("Subgrid.png", 0.75);
+      icon = AppImageHelper.loadImage("Subgrid.png", 0.8);
     } catch (FileNotFoundException e) {
     } catch (IOException e1) {
     }

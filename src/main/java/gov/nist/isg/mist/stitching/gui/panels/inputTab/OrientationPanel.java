@@ -93,7 +93,8 @@ public class OrientationPanel extends JPanel implements ActionListener {
 
 
     try {
-      this.icon = AppImageHelper.loadImage(this.fileName, 300, 200);
+//      this.icon = AppImageHelper.loadImage(this.fileName, 300, 200);
+      this.icon = AppImageHelper.loadImage(this.fileName, 240, 160);
     } catch (FileNotFoundException e) {
       Log.msg(LogType.MANDATORY, "ERROR: Orentation panel image file not found.");
     }

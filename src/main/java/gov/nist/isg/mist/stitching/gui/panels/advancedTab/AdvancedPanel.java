@@ -38,6 +38,9 @@ import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,35 +54,38 @@ import java.awt.event.ActionListener;
  */
 public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionListener {
 
-  private static String repeatabilityHelp = "During optimization, uses the user-specified "
-      + "repeatability of the stage. Leave this field blank to use the default. "
+  private static final String repeatabilityHelp = "During translation optimization, uses the "
+      + "user-specified repeatability of the stage. Leave this field blank to use the default. "
       + "This value represents the uncertainty that the microscope stage has "
       + "related to the mechanics that move the stage. Setting this value may "
       + "increase the search space that is used to find the correct translation "
       + "between neighboring images.";
 
 
-  private static String horizontalOverlapHelp = "During optimization, uses the "
+  private static final String horizontalOverlapHelp = "During translation optimization, uses the "
       + "user-specified horizontal overlap for computing the repeatability of "
       + "the stage. Leave this field blank to use the default. Modifying this "
       + "field will aid in correcting translations that have low correlation in "
       + "the horizontal direction. By default we compute the horizontal overlap "
-      + "based on the translations of the highest correlated tiles.";
+      + "based on the translations.";
 
-  private static String verticalOverlapHelp = "During optimization, uses the "
+  private static final String verticalOverlapHelp = "During translation optimization, uses the "
       + "user-specified vertical overlap for computing the repeatability of the "
       + "stage. Leave this field blank to use the default. Modifying this field "
       + "will aid in correcting translations that have low correlation in the "
       + "vertical direction. By default we compute the vertical overlap based on "
-      + "the translations of the highest correlated tiles.";
+      + "the translations.";
   
-  private static String overlapUncertaintyHelp = "During optimization, uses the "
+  private static final String overlapUncertaintyHelp = "During translation optimization, uses the "
       + "user-specified overlap uncertainty for computing the repeatability of the "
       + "stage. Leave this field blank to use the default. Modifying this field "
       + "will aid in correcting translations where the overlap uncertainty should be increased."
-      + " TIP: Value should not exceed 20.0, default is set at 5.0";
+      + "\n\nTIP: Value should not exceed 20.0, default is 5.0";
   
-  
+  private static final String numFftPeaksHelp = "Specifies the number of peaks to check when"
+      + " computing the phase correlation image alignment method. Modifying this value can yield "
+      + "more accurate pre-optimization displacements. \n\nTIP: Value should not exceed 10.0, default is 2.0";
+
 
   private static final long serialVersionUID = 1L;
   
@@ -108,7 +114,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
 
     this.numFFTPeaks =
         new TextFieldInputPanel<Integer>("Number of FFT Peaks", "", 
-            new IntModel(1, 100, true));
+            new IntModel(1, 100, true), numFftPeaksHelp);
     
     this.maxRepeatability =
         new TextFieldInputPanel<Integer>("Stage Repeatability", "", new IntModel(1,
@@ -152,30 +158,28 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     JButton qButton = new JButton("Help?");
     
     qButton.addActionListener(new HelpDocumentationViewer("advanced-parameters-optional-"));
-    
-    c.anchor = GridBagConstraints.NORTHEAST;
+
+
+    // setup the stage model params Panel
+    JPanel stageModelPanel = new JPanel(new GridBagLayout());
+    stageModelPanel.setBorder(
+        new TitledBorder(new LineBorder(Color.BLACK), "Stage Model Parameters"));
+    c.insets = new Insets(0,0,0,0);
     c.gridy = 0;
-    vertPanel.add(qButton, c);
-    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridx = 0;
+    c.gridwidth = 1;
     c.anchor = GridBagConstraints.LINE_START;
-
+    stageModelPanel.add(this.maxRepeatability, c);
     c.gridy = 1;
-    vertPanel.add(this.maxRepeatability, c);
-
+    stageModelPanel.add(this.horizontalOverlap, c);
     c.gridy = 2;
-    vertPanel.add(this.horizontalOverlap, c);
-
+    stageModelPanel.add(this.verticalOverlap, c);
     c.gridy = 3;
-    vertPanel.add(this.verticalOverlap, c);
-
-    c.gridy = 4;
-    vertPanel.add(this.overlapUncertainty, c);
-
-    c.gridy = 5;
-    vertPanel.add(this.numFFTPeaks, c);
+    stageModelPanel.add(this.overlapUncertainty, c);
 
 
-    JPanel logPanel = new JPanel(new GridBagLayout());
+    // setup the logging panel
+    JPanel logPanel = new JPanel();
     this.loggingLevel = new JComboBox(Log.LogType.values());
     c.gridy = 0;
     logPanel.add(new JLabel("Log Level"), c);
@@ -189,17 +193,41 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     logPanel.add(new JLabel("Debug Level"), c);
     c.gridy = 1;
     logPanel.add(this.debugLevel, c);
-
-    c.gridy = 6;
     c.insets = new Insets(0,0,0,0);
-    vertPanel.add(logPanel,c);
+
+
+
+    // setup the other advanced params
+    JPanel otherAdvancedPanel = new JPanel(new GridBagLayout());
+    otherAdvancedPanel.setBorder(
+        new TitledBorder(new LineBorder(Color.BLACK), "Other Advanced Parameters"));
+    c.gridy = 0;
+    c.gridx = 0;
+    c.gridwidth = 1;
+    c.anchor = GridBagConstraints.LINE_START;
+    otherAdvancedPanel.add(this.numFFTPeaks, c);
+    c.gridy = 1;
+    otherAdvancedPanel.add(logPanel, c);
+
 
 
     
-    c.gridy = 7;
-    vertPanel.add(this.parallelOptions.getStitchingTypePanel(), c);
+    c.anchor = GridBagConstraints.NORTHEAST;
+    c.gridy = 0;
+    vertPanel.add(qButton, c);
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.anchor = GridBagConstraints.LINE_START;
 
-    c.gridy = 8;
+    c.gridy = 1;
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    vertPanel.add(stageModelPanel, c);
+    c.insets = new Insets(10,0,0,0);
+    c.gridy = 2;
+    vertPanel.add(otherAdvancedPanel,c);
+    c.gridy = 3;
+    vertPanel.add(this.parallelOptions.getStitchingTypePanel(), c);
+    c.gridy = 4;
     vertPanel.add(this.parallelOptions.getProgramPanel(), c);
 
     mainPanel.add(vertPanel);

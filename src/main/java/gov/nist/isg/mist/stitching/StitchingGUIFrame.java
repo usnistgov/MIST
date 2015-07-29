@@ -91,14 +91,17 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
   public StitchingGUIFrame(String title, Frame parent) {
     super(title);
 
-    this.setSize(new Dimension(570, 700));
-    this.setMinimumSize(new Dimension(570, 700));
-
     this.mainFrame = new JPanel(new GridBagLayout());
 
     init();
 
     add(this.mainFrame);
+    Dimension guiSize = new Dimension (550,620);
+    this.setPreferredSize(guiSize);
+    this.setSize(guiSize);
+    this.setMinimumSize(guiSize);
+
+
   }
 
   /**
@@ -133,6 +136,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     JScrollPane sp = new JScrollPane(this.advancedPanel);
     sp.getVerticalScrollBar().setUnitIncrement(8);
 
+    // TODO debug why these keybindings don't work
     tabbedPane.addTab("Input", this.inputPanel);
     tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -152,6 +156,9 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     GridBagConstraints c = new GridBagConstraints();
 
     c.gridy = 0;
+    c.fill = GridBagConstraints.BOTH;
+    c.weightx = 1.0;
+    c.weighty = 1.0;
     this.mainFrame.add(tabbedPane, c);
 
     JPanel bottomPanel = new JPanel();

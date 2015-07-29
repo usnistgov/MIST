@@ -39,6 +39,9 @@ import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,10 +72,12 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
   public ParallelOptPane() {
 
     this.programPanel = new JPanel(new GridBagLayout());
+    this.programPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Per Program Options"));
     this.c = new GridBagConstraints();
 
     this.stitchingExecutionType =
         new ButtonGroupPanel(StitchingType.values(), "Stitching Program");
+    this.stitchingExecutionType.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Stitching Program"));
 
 
     this.fftwPanel = new FFTWPanel();

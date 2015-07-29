@@ -41,6 +41,8 @@ import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -58,6 +60,11 @@ import java.text.DecimalFormat;
 public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentListener, ActionListener {
 
   private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
+
+  private static final String filenamePrefixHelpText = "The prefix prepended to each file saved in "
+       + "the output directory. \n\nMIST will query for confirmation before overwriting any files.";
+
+
 
   private static final long serialVersionUID = 1L;
 
@@ -149,7 +156,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
     this.filePrefixName =
         new TextFieldInputPanel<String>("Filename Prefix", "out-file-", 20, new FilenameModel(
-            "Prefix for output filenames. Must be valid file name"));
+            "Prefix for output filenames. Must be valid file name"), filenamePrefixHelpText);
 
 
     JPanel blendingPanel = new JPanel();
@@ -167,33 +174,25 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     blendingTooltipText += "</html>";
     this.blendingType.setToolTipText(blendingTooltipText);
 
-    JButton qButton = new JButton("Help?");
-    qButton.addActionListener(new HelpDocumentationViewer("output-parameters"));
-    c.anchor = GridBagConstraints.NORTHEAST;
+
+
+
+    // setup the Output Folder panel
+    JPanel outputFolderPanel = new JPanel(new GridBagLayout());
+    outputFolderPanel.setBorder(
+        new TitledBorder(new LineBorder(Color.BLACK), "Output Folder"));
     c.gridy = 0;
-    vertPanel.add(qButton, c);
-
-    c.insets = new Insets(0, 0, 0, 0);
+    c.gridx = 0;
+    c.gridwidth = 1;
+    c.anchor = GridBagConstraints.LINE_START;
+    outputFolderPanel.add(this.useImageDirectory, c);
     c.gridy = 1;
-    c.anchor = GridBagConstraints.LINE_START;   
-    vertPanel.add(this.useImageDirectory, c);
-            
+    outputFolderPanel.add(this.outputPath, c);
     c.gridy = 2;
-    vertPanel.add(this.outputPath, c);
-    c.gridy = 3;
-    vertPanel.add(this.filePrefixName, c);
-    c.gridy = 4;
-
-    
-    c.gridy = 5;
-    c.insets = new Insets(30, 0, 0, 0);
-    vertPanel.add(blendingPanel, c);
-    
-    c.gridy = 6;
-    c.insets = new Insets(0,0,0,0);
-    vertPanel.add(checkBoxPanel, c);
+    outputFolderPanel.add(this.filePrefixName, c);
 
 
+    // setup the estimated stitched image size panel
     JPanel estimatedFileSizePanel = new JPanel();
     this.updateBtn = new JButton("Update");
     this.updateBtn.addActionListener(this);
@@ -201,8 +200,41 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     estimatedFileSizePanel.add(this.estimatedFileSizeLabel);
     estimatedFileSizePanel.add(this.updateBtn);
 
-    c.gridy = 7;
-    vertPanel.add(estimatedFileSizePanel, c);
+
+    // setup the Stitched Image Panel
+    JPanel stitchedImagePanel = new JPanel(new GridBagLayout());
+    stitchedImagePanel.setBorder(
+        new TitledBorder(new LineBorder(Color.BLACK), "Stitched Image"));
+    c.gridy = 0;
+    c.gridx = 0;
+    c.gridwidth = 1;
+    c.anchor = GridBagConstraints.LINE_START;
+    stitchedImagePanel.add(blendingPanel, c);
+    c.gridy = 1;
+    stitchedImagePanel.add(checkBoxPanel, c);
+    c.gridy = 2;
+    stitchedImagePanel.add(estimatedFileSizePanel, c);
+
+
+
+
+
+    JButton qButton = new JButton("Help?");
+    qButton.addActionListener(new HelpDocumentationViewer("output-parameters"));
+    c.anchor = GridBagConstraints.NORTHEAST;
+    c.gridy = 0;
+    vertPanel.add(qButton, c);
+
+
+    c.insets = new Insets(20,0,0,0);
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.gridy = 1;
+    vertPanel.add(outputFolderPanel,c);
+    c.insets = new Insets(30,0,0,0);
+    c.gridy = 2;
+    vertPanel.add(stitchedImagePanel,c);
+
 
     mainPanel.add(vertPanel);
 

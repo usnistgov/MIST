@@ -52,13 +52,36 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   private JTextField input;
   private JButton button;
 
+  private JDialog helpDialog;
+  private JTextArea helpTextArea;
+
+  /**
+   * Creates a file chooser with the default being the user.home
+   *
+   * @param label the label associated with the file chooser
+   */
+  public FileChooserPanel(String label) {
+    this(label, null, System.getProperty("user.home"));
+  }
+
+  /**
+   * Creates a file chooser
+   *
+   * @param label the label associated with the file chooser
+   * @param helpText the help text
+   */
+  public FileChooserPanel(String label, String helpText) {
+    this(label, helpText, System.getProperty("user.home"));
+  }
+
   /**
    * Creates a file chooser
    * 
    * @param label the label associated with the file chooser
+   * @param helpText the help text
    * @param defLocation the default file
    */
-  public FileChooserPanel(String label, String defLocation) {
+  public FileChooserPanel(String label, String helpText, String defLocation) {
     super(new FlowLayout(FlowLayout.CENTER));
 
     File f = new File(defLocation);
@@ -76,16 +99,39 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
     add(this.label);
     add(this.input);
     add(this.button);
+
+    if (helpText != null) {
+      this.helpTextArea = new JTextArea(helpText, 10, 40);
+      this.helpTextArea.setLineWrap(true);
+      this.helpTextArea.setEditable(false);
+      this.helpTextArea.setWrapStyleWord(true);
+
+      this.helpDialog = new JDialog();
+
+      this.helpDialog.setSize(new Dimension(300, 300));
+      this.helpDialog.setLocationRelativeTo(this);
+      this.helpDialog.setTitle(this.label.getText() + " Help");
+
+      JScrollPane scroll = new JScrollPane(this.helpTextArea);
+      this.helpDialog.add(scroll);
+
+      // Add question mark
+      JButton questionButton = new JButton("?");
+      questionButton.setFocusable(false);
+
+      Insets insets = questionButton.getInsets();
+      insets.top = 0;
+      insets.bottom = 0;
+      insets.left = 0;
+      insets.right = 0;
+      questionButton.setMargin(insets);
+
+      questionButton.addActionListener(this);
+      add(questionButton);
+    }
   }
 
-  /**
-   * Creates a file chooser with the default being the user.home
-   * 
-   * @param label the label associated with the file chooser
-   */
-  public FileChooserPanel(String label) {
-    this(label, System.getProperty("user.home"));
-  }
+
 
   /**
    * Shows an error for this file chooser
@@ -129,6 +175,16 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   }
 
   /**
+   * Sets the help text for the help text area
+   *
+   * @param text the text to set the help text to
+   */
+  public void setHelpText(String text) {
+    if(text != null)
+      this.helpTextArea.setText(text);
+  }
+
+  /**
    * Gets the file for the file chooser
    * 
    * @return the file for the file chooser
@@ -149,14 +205,22 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
   @Override
   public void actionPerformed(ActionEvent arg0) {
-    JFileChooser chooser = new JFileChooser(FileChooserPanel.this.input.getText());
-    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-    int val = chooser.showOpenDialog(FileChooserPanel.this.button);
-    if (val == JFileChooser.APPROVE_OPTION) {
-      this.input.setText(chooser.getSelectedFile().getAbsolutePath());
+    if (arg0.getSource() instanceof JButton) {
+      JButton btn = (JButton) arg0.getSource();
+      if (btn.getText().equals("?")) {
+        // helpDialog.setLocationRelativeTo(this);
+        this.helpDialog.setVisible(true);
+      }
+    }else {
+      JFileChooser chooser = new JFileChooser(FileChooserPanel.this.input.getText());
+      chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+      int val = chooser.showOpenDialog(FileChooserPanel.this.button);
+      if (val == JFileChooser.APPROVE_OPTION) {
+        this.input.setText(chooser.getSelectedFile().getAbsolutePath());
+      }
     }
-
   }    
   
 

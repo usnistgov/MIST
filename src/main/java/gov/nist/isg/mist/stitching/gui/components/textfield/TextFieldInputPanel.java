@@ -146,6 +146,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
       questionButton.setMargin(insets);
 
       questionButton.addActionListener(this);
+      add(questionButton);
 
     }
 
@@ -158,7 +159,8 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
    * @param text the text to set the help text to
    */
   public void setHelpText(String text) {
-    this.helpTextArea.setText(text);
+    if(text != null)
+      this.helpTextArea.setText(text);
   }
 
   /**
@@ -266,7 +268,6 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
         this.helpDialog.setVisible(true);
       }
     }
-
   }
 
 
