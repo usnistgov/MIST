@@ -96,7 +96,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     init();
 
     add(this.mainFrame);
-    Dimension guiSize = new Dimension (550,620);
+    Dimension guiSize = new Dimension (560,620);
     this.setPreferredSize(guiSize);
     this.setSize(guiSize);
     this.setMinimumSize(guiSize);
@@ -163,13 +163,13 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
     JPanel bottomPanel = new JPanel();
     this.beginStitchingButton = new JButton("<html><center>Begin<br>Stitching</html>");
-    this.beginStitchingButton.setPreferredSize(new Dimension(120, 40));
-    this.beginStitchingButton.setMinimumSize(new Dimension(120, 40));
+    this.beginStitchingButton.setPreferredSize(new Dimension(130, 40));
+    this.beginStitchingButton.setMinimumSize(new Dimension(130, 40));
     this.beginStitchingButton.setToolTipText("Launch Stitching");
 
     this.previewNoOverlapButton = new JButton("<html><center>Preview<br>(0% overlap)</html>");
-    this.previewNoOverlapButton.setPreferredSize(new Dimension(120, 40));
-    this.previewNoOverlapButton.setMinimumSize(new Dimension(120, 40));
+    this.previewNoOverlapButton.setPreferredSize(new Dimension(130, 40));
+    this.previewNoOverlapButton.setMinimumSize(new Dimension(130, 40));
     this.previewNoOverlapButton.addActionListener(this);
     this.previewNoOverlapButton.setToolTipText("Preview the mosaic image assuming 0% overlap.");
 

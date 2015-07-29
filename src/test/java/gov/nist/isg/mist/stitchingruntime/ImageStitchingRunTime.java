@@ -71,8 +71,10 @@ public class ImageStitchingRunTime {
   public static void main(String [] args)
   {
 
-    if (args.length >= 0)
-    {
+
+    boolean useMLE = false;
+
+    if (args.length >= 0) {
       switch(args.length)
       {
         case 1:
@@ -87,10 +89,22 @@ public class ImageStitchingRunTime {
           fftwPlanPath = args[1];
           fftwLibraryPath = args[2];
           break;
+        case 4:
+          validationRootFolder = args[0];
+          fftwPlanPath = args[1];
+          fftwLibraryPath = args[2];
+          String tmp = args[3];
+          if(tmp.contains("-mle")) {
+            useMLE = true;
+            System.out.println("Using MLE and outlier filtering");
+          }
+          break;
         default:
-          System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath>");
+          System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath> <-mle>");
           break;
       }
+    }else{
+      System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath> <-mle>");
     }
 
 
@@ -114,8 +128,8 @@ public class ImageStitchingRunTime {
     JFrame frame = new JFrame("Select CUDA Devices");
     JOptionPane.showMessageDialog(frame, cudaPanel);
 
-    Log.setLogLevel(LogType.NONE);
-//    Log.setLogLevel(LogType.MANDATORY);
+//    Log.setLogLevel(LogType.NONE);
+    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
@@ -128,15 +142,6 @@ public class ImageStitchingRunTime {
 
         if (!r.isDirectory())
           continue;
-
-//        if (!r.getName().contains("Paper_Sample")) {
-//          System.out.println("Skipping " + r.getName());
-//          continue;
-//        }
-
-
-
-
 
         params = new StitchingAppParams();
 
@@ -190,8 +195,17 @@ public class ImageStitchingRunTime {
       params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
-        params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
-        params.getAdvancedParams().setTranslationFilterType(OptimizationUtils.TranslationFilterType.StandardDeviation);
+        if(useMLE) {
+          params.getAdvancedParams()
+              .setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
+          params.getAdvancedParams()
+              .setTranslationFilterType(OptimizationUtils.TranslationFilterType.Outlier);
+        }else {
+          params.getAdvancedParams()
+              .setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
+          params.getAdvancedParams()
+              .setTranslationFilterType(OptimizationUtils.TranslationFilterType.StandardDeviation);
+        }
 
 
         for (StitchingType t : StitchingType.values()) {
