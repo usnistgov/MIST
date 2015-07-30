@@ -90,7 +90,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     this.executor =
         new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid,
@@ -133,7 +133,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     }
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     JavaImageTile.initJavaPlan(tile);
     this.init = true;
@@ -153,7 +153,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     long requiredMemoryBytes = 0;
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     // Account for image pixel data
     if(ImageTile.freePixelData()) {

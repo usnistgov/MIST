@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.Direction;
+import ij.IJ;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -948,6 +949,29 @@ public class StitchingStatistics {
   }
 
 
+  public void writeLog(File file) {
+    // write the contents of the log file to disk
+    Log.msg(LogType.MANDATORY, "Saving Log to \"" + file.getAbsolutePath() + "\"");
+
+    try{
+      // ensure the directory to write the statistics file to exists
+      File parent = file.getParentFile();
+      if(!parent.exists()) parent.mkdir();
+
+      FileWriter writer = new FileWriter(file);
+      String logContents = IJ.getLog();
+      if(logContents != null)
+        writer.write(logContents);
+
+      writer.close();
+
+    }catch(IOException e) {
+      Log.msg(LogType.MANDATORY, "Saving Log contents to disk failed");
+      Log.msg(LogType.MANDATORY, e.getMessage());
+    }
+  }
+
+
   /**
    * Writes the statistics to a file
    * 
@@ -1084,7 +1108,9 @@ public class StitchingStatistics {
       writer.close();
 
     } catch (IOException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
+      Log.msg(LogType.MANDATORY, "Saving Log contents to disk failed");
+      Log.msg(LogType.MANDATORY, e.getMessage());
     }
   }
 

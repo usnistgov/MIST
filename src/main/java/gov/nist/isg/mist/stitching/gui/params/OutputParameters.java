@@ -59,6 +59,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String relPosNoOptFilename = "relative-positions-no-optimization";
   private static final String fullImgFilename = "stitched";
   private static final String statisticsFilename = "statistics";
+  private static final String logFilename = "log";
   private static final String hillClimbPosFilename = "hillclimb-starting-positions";
 
   private String outputPath;
@@ -113,6 +114,10 @@ public class OutputParameters implements StitchingAppParamFunctions {
     return this.outFilePrefix + statisticsFilename + metadataSuffix;
   }
 
+  public String getLogFileName() {
+    return this.outFilePrefix + logFilename + metadataSuffix;
+  }
+
   /**
    * Gets the absolute positions file name at a given timeslice
    * @param timeSlice the timeslice
@@ -151,6 +156,11 @@ public class OutputParameters implements StitchingAppParamFunctions {
   {
     return new File(this.outputPath, this.getStatFileName());
   }
+
+  public File getLogFile() {
+    return new File(this.outputPath, this.getLogFileName());
+  }
+
 
   /**
    * Gets the hill climb position file

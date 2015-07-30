@@ -36,13 +36,15 @@ public class OptimizationMleUtils {
     // get valid range for translations given the direction
     int range = OptimizationUtils.getOverlapRange(grid, dispValue);
 
-    boolean onlyGetValidCorrelationTranslations = false;
-    List<Integer> translations = getTranslationsFromGrid(grid, dir, dispValue, range, onlyGetValidCorrelationTranslations);
+    List<Integer> translations = getTranslationsFromGrid(grid, dir, dispValue, range, false);
 
 
     MuSigmaTuple mleModel = new MuSigmaTuple(Double.NaN, Double.NaN);
     try{
+      Log.msg(Log.LogType.INFO, "Translation used for MLE " + dir + ":");
+      Log.msg(Log.LogType.INFO, translations.toString());
       mleModel = getMleModelFromMultipointHillClimb(translations, range);
+      Log.msg(Log.LogType.MANDATORY, "MLE " + dir + " model parameters: mu=" + mleModel.mu + " sigma=" + mleModel.sigma);
     }catch(GlobalOptimizationException e) {
       Log.msg(Log.LogType.MANDATORY, e.getMessage());
     }
@@ -72,6 +74,7 @@ public class OptimizationMleUtils {
     double[] T = new double[translations.size()];
     for(int i = 0; i < translations.size(); i++)
       T[i] = translations.get(i);
+
 
     // init MLE model parameters
     MLEPoint bestPoint = new MLEPoint(-1,-1,-1,Double.NEGATIVE_INFINITY);

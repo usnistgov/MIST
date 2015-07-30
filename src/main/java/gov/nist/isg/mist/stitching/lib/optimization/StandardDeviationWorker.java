@@ -140,8 +140,7 @@ public class StandardDeviationWorker<T> implements Runnable {
    * @param tile the tile to be read
    */
   private static synchronized <T> void readTile(ImageTile<T> tile) throws FileNotFoundException {
-    if (!tile.isTileRead())
-      tile.readTile();
+    tile.readTile();
   }
 
   /**

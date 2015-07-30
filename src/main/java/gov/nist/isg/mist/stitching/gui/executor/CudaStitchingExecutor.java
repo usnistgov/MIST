@@ -83,7 +83,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
 
 
@@ -168,7 +168,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
     List<CudaDeviceParam> devices = params.getAdvancedParams().getCudaDevices();
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
 
     if (!this.init)
@@ -209,7 +209,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2L + numWorkers;
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     // Account for image pixel data
     if(ImageTile.freePixelData()) {

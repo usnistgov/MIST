@@ -173,7 +173,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     // Account for image pixel data
     if(ImageTile.freePixelData()) {

@@ -389,7 +389,6 @@ public class OptimizationUtils {
 
     // Compute the top stdDev based on their x,y translation
     for (ImageTile<T> tile : topTiles) {
-      if (!tile.isTileRead())
         tile.readTile();
 
       ImageTile<T> neighbor = null;
@@ -405,8 +404,7 @@ public class OptimizationUtils {
       if (neighbor == null)
         continue;
 
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      neighbor.readTile();
 
       switch (dir) {
         case North:
@@ -500,8 +498,7 @@ public class OptimizationUtils {
       throws FileNotFoundException {
     // get valid range for translations given the direction
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if (!tile.isTileRead())
-      tile.readTile();
+    tile.readTile();
     int range = 0;
     switch (dispValue) {
       case X:
@@ -749,8 +746,7 @@ public class OptimizationUtils {
     double t_max = 0;
 
     ImageTile<T> initTile = grid.getSubGridTile(0, 0);
-    if (!initTile.isTileRead())
-      initTile.readTile();
+    initTile.readTile();
 
     int width = initTile.getWidth();
     int height = initTile.getHeight();
@@ -1621,11 +1617,8 @@ public class OptimizationUtils {
 
         ImageTile<T> neighbor = grid.getSubGridTile(row - 1, col);
 
-        if (!neighbor.isTileRead())
-          neighbor.readTile();
-
-        if (!tile.isTileRead())
-          tile.readTile();
+        neighbor.readTile();
+        tile.readTile();
 
         tile.computeStdDevNorth(neighbor, overlap, percOverlapError);
 
@@ -1654,11 +1647,8 @@ public class OptimizationUtils {
           grid.getTile(highestStdDevTile.getRow() - 1, highestStdDevTile.getCol());
       CorrelationTriple bestNorth;
 
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
-
-      if (!highestStdDevTile.isTileRead())
-        highestStdDevTile.readTile();
+      neighbor.readTile();
+      highestStdDevTile.readTile();
 
       try {
         if (Stitching.USE_HILLCLIMBING) {
@@ -1723,11 +1713,8 @@ public class OptimizationUtils {
 
         ImageTile<T> neighbor = grid.getSubGridTile(row, col - 1);
 
-        if (!tile.isTileRead())
-          tile.readTile();
-
-        if (!neighbor.isTileRead())
-          neighbor.readTile();
+        tile.readTile();
+        neighbor.readTile();
 
         tile.computeStdDevWest(neighbor, overlap, percOverlapError);
 
@@ -1757,11 +1744,8 @@ public class OptimizationUtils {
 
       CorrelationTriple bestWest;
 
-      if (!highestStdDevTile.isTileRead())
-        highestStdDevTile.readTile();
-
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      highestStdDevTile.readTile();
+      neighbor.readTile();
 
       try {
         if (Stitching.USE_HILLCLIMBING) {

@@ -51,6 +51,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   private JLabel label;
   private JTextField input;
   private JButton button;
+  private JButton questionButton = null;
 
   private JDialog helpDialog;
   private JTextArea helpTextArea;
@@ -116,7 +117,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
       this.helpDialog.add(scroll);
 
       // Add question mark
-      JButton questionButton = new JButton("?");
+      questionButton = new JButton("?");
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();
@@ -206,13 +207,10 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   @Override
   public void actionPerformed(ActionEvent arg0) {
 
-    if (arg0.getSource() instanceof JButton) {
-      JButton btn = (JButton) arg0.getSource();
-      if (btn.getText().equals("?")) {
-        // helpDialog.setLocationRelativeTo(this);
+    if(arg0.getSource() == this.questionButton) {
         this.helpDialog.setVisible(true);
-      }
-    }else {
+    }
+    if(arg0.getSource() == this.button) {
       JFileChooser chooser = new JFileChooser(FileChooserPanel.this.input.getText());
       chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 

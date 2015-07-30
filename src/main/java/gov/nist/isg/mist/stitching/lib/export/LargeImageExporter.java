@@ -227,8 +227,7 @@ public class LargeImageExporter<T> {
         continue;
       }
 
-      if (!tile.isTileRead())
-        tile.readTile();
+      tile.readTile();
       Array2DView arrayView = new Array2DView(tile, tileY, tileHeight, tileX, tileWidth);
       this.blender.blend(tileStartX, tileStartY, arrayView, tile);
 
@@ -273,8 +272,7 @@ public class LargeImageExporter<T> {
             return null;
 
         ImageTile<T> tile = this.grid.getSubGridTile(row, col);
-        if (!tile.isTileRead())
-          tile.readTile();
+        tile.readTile();
 
         int absX = col * tile.getWidth();
         int absY = row * tile.getHeight();

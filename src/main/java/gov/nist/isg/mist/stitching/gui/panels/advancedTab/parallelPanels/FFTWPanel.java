@@ -75,11 +75,11 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
     this.fftwPlanGroup = new ButtonGroupPanel(FftwPlanType.values(), "FFTW Plan Type");
 
     this.fftwLibraryPath =
-        new FileChooserPanel("FFTW Library File", System.getProperty("user.dir") + File.separator
+        new FileChooserPanel("FFTW Library File", null, System.getProperty("user.dir") + File.separator
             + "lib" + File.separator + "fftw" + File.separator + "libfftw3.dll");
 
     this.savedPlan =
-        new FileChooserPanel("Plan Location (or file)", System.getProperty("user.dir")
+        new FileChooserPanel("Plan Location (or file)", null, System.getProperty("user.dir")
             + File.separator + "lib" + File.separator + "fftw" + File.separator + "fftPlans");
 
     int numProc = Runtime.getRuntime().availableProcessors();

@@ -150,6 +150,11 @@ public class ExistingFilesChecker implements Comparator<String> {
       }
     }
 
+    File logFile = this.params.getOutputParams().getLogFile();
+    if(logFile.exists())
+      fileList.add(logFile.getAbsolutePath());
+
+
     File statFile = this.params.getOutputParams().getStatsFile();
 
     if (statFile.exists())

@@ -182,7 +182,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
-    Log.msg(LogType.HELPFUL, "Calculated Repeatability: " + computedRepeatability);
+    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability);
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
                                         this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
@@ -192,7 +192,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     // loop over the image tiles
     for (ImageTile<T> t : traverser) {
-      if(!t.isTileRead()) t.readTile();
+      t.readTile();
 
       int row = t.getRow();
       int col = t.getCol();
@@ -200,7 +200,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       // optimize with west neighbor
       if (col > grid.getStartCol()) {
         ImageTile<T> west = grid.getTile(row, col - 1);
-        if(!west.isTileRead()) west.readTile();
+        west.readTile();
         CorrelationTriple westTrans = t.getWestTranslation();
 
         int xMin = westTrans.getX() - computedRepeatability;
@@ -252,7 +252,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       // optimize with north neighbor
       if (row > grid.getStartRow()) {
         ImageTile<T> north = grid.getTile(row - 1, col);
-        if(!north.isTileRead()) north.readTile();
+        north.readTile();
         CorrelationTriple northTrans = t.getNorthTranslation();
 
         int xMin = northTrans.getX() - computedRepeatability;
@@ -360,7 +360,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
-    Log.msg(LogType.HELPFUL, "Calculated Repeatability: " + computedRepeatability);
+    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability);
     
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
         this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
@@ -520,11 +520,13 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       Log.msg(LogType.MANDATORY, "Warning: Unable to compute overlap for " + dir
                                  + " direction. Please set your overlap in the advanced options");
       throw new GlobalOptimizationException("Unable to compute overlap for " + dir + " direction.");
+    }else{
+      Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap);
     }
     // limit the overlap to reasonable values
     overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
     this.stitchingStatistics.setOverlap(dir, overlap);
-    Log.msg(LogType.VERBOSE, "Computed overlap: " + overlap);
+    Log.msg(LogType.INFO, "Computed overlap: " + overlap);
 
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
@@ -604,7 +606,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     this.stitchingStatistics.setRepeatability(dir, repeatability);
 
 
-    Log.msg(LogType.HELPFUL, "Repeatability for " + dir.name() + ": " + repeatability);
+    Log.msg(LogType.MANDATORY, "Repeatability for " + dir.name() + ": " + repeatability);
 
     // Re-filter based on repeatability, the grid gets updated here
     switch (dir) {

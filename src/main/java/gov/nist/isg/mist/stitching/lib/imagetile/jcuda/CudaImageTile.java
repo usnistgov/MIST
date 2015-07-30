@@ -180,9 +180,8 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
     
     if (hasFft())
       return;
-    
-    if (!isTileRead())
-      readTile();
+
+    readTile();
 
     double tempJ[] = new double[super.getWidth() * super.getHeight()];
 
@@ -220,8 +219,8 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
   @Override
   public void computeFft(DynamicMemoryPool<CUdeviceptr> pool, TileWorkerMemory memory,
       CUstream stream) throws FileNotFoundException {
-    if (!isTileRead())
-      readTile();
+
+    readTile();
 
     ByteBuffer dBuffer = memory.getImageBuffer();
 

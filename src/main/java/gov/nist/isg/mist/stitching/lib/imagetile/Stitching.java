@@ -213,8 +213,7 @@ public class Stitching {
       t.setThreadID(0);
 
 
-      if (!t.isTileRead())
-        t.readTile();
+      t.readTile();
 
       if (memory == null) {
         memory = new JavaTileWorkerMemory(t);
@@ -281,8 +280,7 @@ public class Stitching {
     for (ImageTile<?> t : traverser) {
       t.setThreadID(0);
 
-      if (!t.isTileRead())
-        t.readTile();
+      t.readTile();
 
       if (memory == null) {
         memory = new FftwTileWorkerMemory(t);
@@ -369,8 +367,7 @@ public class Stitching {
       t.setDev(dev);
       t.setThreadID(0);
 
-      if (!t.isTileRead())
-        t.readTile();
+      t.readTile();
 
       if (memoryPool == null) {
         int[] size = {CudaImageTile.fftSize * Sizeof.DOUBLE * 2};

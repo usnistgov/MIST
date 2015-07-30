@@ -154,8 +154,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
     if (hasFft())
       return;
     
-    if (!isTileRead())
-      readTile();
+    readTile();
 
     Pointer<Double> fftIn = FFTW3Library.fftw_alloc_real(super.getWidth() * super.getHeight());
     this.fft = FFTW3Library.fftw_alloc_complex(fftSize);
@@ -177,8 +176,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    */
   @Override
   public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory) throws FileNotFoundException {
-    if (!isTileRead())
-      readTile();
+    readTile();
 
     if (super.isMemoryLoaded()) {
       this.fftIn = memory.getFFTInP();

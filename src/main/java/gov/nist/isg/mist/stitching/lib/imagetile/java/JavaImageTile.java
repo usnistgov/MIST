@@ -131,9 +131,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
     if (fftPlan == null)
       initJavaPlan(this);
 
-    if (!isTileRead()) {
-      readTile();
-    }
+    readTile();
 
     this.fft =
         new float[fftPlan.getFrequencySampling2().getCount()][fftPlan.getFrequencySampling1()
@@ -153,9 +151,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    */
   @Override
   public void computeFft(DynamicMemoryPool<float[][]> pool, TileWorkerMemory memory) throws FileNotFoundException {
-    if (!isTileRead()) {
-      readTile();
-    }
+    readTile();
 
     if (!super.isMemoryLoaded()) {
       this.fft = pool.getMemory();
@@ -202,8 +198,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    * @param tile the initial tile to get the width and height
    */
   public static void initJavaPlan(ImageTile<?> tile) throws FileNotFoundException {
-    if (!tile.isTileRead())
-      tile.readTile();
+    tile.readTile();
 
     Log.msg(LogType.VERBOSE, "Initializing Java FFT Plans.");
 

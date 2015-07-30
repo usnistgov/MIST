@@ -566,6 +566,10 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.stopEndToEndTimer();
     this.stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
+    this.stitchingStatistics.writeLog(this.params.getOutputParams().getLogFile());
+
+
+
 
     if(displayGui) {
 
@@ -664,7 +668,7 @@ public class StitchingExecutor implements Runnable {
 
     Log.msg(
         LogType.HELPFUL,
-        "Complete Global Optimization in "
+        "Completed Global Optimization in "
             + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime));
 
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Composing tiles");
@@ -675,7 +679,7 @@ public class StitchingExecutor implements Runnable {
     this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 
     Log.msg(LogType.HELPFUL,
-        "Complete MSP in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime));
+        "Completed MST in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime));
 
     StitchingGuiUtils.updateProgressBarCompleted(progressBar);
 
@@ -744,9 +748,7 @@ public class StitchingExecutor implements Runnable {
     File imageFile = this.params.getOutputParams().getOutputImageFile(timeSlice);
 
     ImageTile<T> initImg = grid.getSubGridTile(0, 0);
-
-    if (!initImg.isTileRead())
-      initImg.readTile();
+    initImg.readTile();
 
     int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
     int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
@@ -763,8 +765,7 @@ public class StitchingExecutor implements Runnable {
           blend = new AverageBlend();
           break;
         case LINEAR:
-          if (!initImg.isTileRead())
-            initImg.readTile();
+          initImg.readTile();
           blend =
               new LinearBlend(initImg.getWidth(), initImg.getHeight(), this.params.getOutputParams().getBlendingAlpha());
           break;
@@ -812,9 +813,7 @@ public class StitchingExecutor implements Runnable {
   {
     if (img == null) {
       ImageTile<T> initImg = grid.getSubGridTile(0, 0);
-
-      if (!initImg.isTileRead())
-        initImg.readTile();
+      initImg.readTile();
 
       int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
       int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
@@ -829,8 +828,7 @@ public class StitchingExecutor implements Runnable {
             blend = new AverageBlend();
             break;
           case LINEAR:
-            if (!initImg.isTileRead())
-              initImg.readTile();
+            initImg.readTile();
             blend =
                 new LinearBlend(initImg.getWidth(), initImg.getHeight(),
                     this.params.getOutputParams().getBlendingAlpha());
@@ -964,9 +962,7 @@ public class StitchingExecutor implements Runnable {
     ImagePlus img = null;
 
     ImageTile<T> initImg = grid.getSubGridTile(0, 0);
-
-    if (!initImg.isTileRead())
-      initImg.readTile();
+    initImg.readTile();
 
     int width = grid.getExtentWidth() * initImg.getWidth();
     int height = grid.getExtentHeight() * initImg.getHeight();
@@ -1034,7 +1030,7 @@ public class StitchingExecutor implements Runnable {
       throws FileNotFoundException {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
-    if(!tile.isTileRead()) tile.readTile();
+    tile.readTile();
 
     long width = TileGridUtils.getFullImageWidth(grid, tile.getWidth());
     long height = TileGridUtils.getFullImageHeight(grid, tile.getHeight());

@@ -559,8 +559,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     int y = translation.getY();
 
     if (Double.isNaN(getStdDevNorthOverlapOrigin())) {
-      if (!this.isTileRead())
-        this.readTile();
+      this.readTile();
 
       Array2DView originView = null;
       if (x >= 0) {
@@ -575,8 +574,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     }
 
     if (Double.isNaN(getStdDevNorthOverlapNeighbor())) {
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      neighbor.readTile();
 
       Array2DView neighborView = null;
 
@@ -607,8 +605,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     int y = translation.getY();
 
     if (Double.isNaN(getStdDevWestOverlapOrigin())) {
-      if (!this.isTileRead())
-        this.readTile();
+      this.readTile();
 
       Array2DView originView = null;
       if (y >= 0) {
@@ -623,8 +620,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     }
 
     if (Double.isNaN(getStdDevWestOverlapNeighbor())) {
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      neighbor.readTile();
 
       Array2DView neighborView = null;
 
@@ -649,8 +645,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    */
   public void computeStdDevNorth(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
     if (Double.isNaN(getStdDevNorthOverlapOrigin())) {
-      if (!this.isTileRead())
-        this.readTile();
+      this.readTile();
 
       Array2DView originView =
           new Array2DView(this, 0, (int) Math.round((overlap + percOverlapError) * this.getHeight()
@@ -660,8 +655,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     }
 
     if (Double.isNaN(getStdDevNorthOverlapNeighbor())) {
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      neighbor.readTile();
 
       Array2DView neighborView =
           new Array2DView(neighbor, neighbor.getHeight()
@@ -693,8 +687,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   public void computeStdDevWest(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
     if (Double.isNaN(getStdDevWestOverlapOrigin())) {
 
-      if (!this.isTileRead())
-        this.readTile();
+      this.readTile();
 
       Array2DView originView =
           new Array2DView(this, 0, this.getHeight(), 0,
@@ -704,8 +697,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     }
 
     if (Double.isNaN(getStdDevWestOverlapNeighbor())) {
-      if (!neighbor.isTileRead())
-        neighbor.readTile();
+      neighbor.readTile();
 
       Array2DView neighborView =
           new Array2DView(neighbor, 0, this.getHeight(), neighbor.getWidth()
@@ -819,6 +811,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @throws java.io.FileNotFoundException if the file does not exist
    */
   public void readTile() throws FileNotFoundException {
+    if(this.isTileRead()) return;
     Log.msg(LogType.INFO, "Loading image: " + this.fpath);
 
     ImagePlus image = new ImagePlus(this.fpath);
