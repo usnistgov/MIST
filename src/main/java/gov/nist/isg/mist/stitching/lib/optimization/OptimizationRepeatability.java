@@ -520,13 +520,11 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       Log.msg(LogType.MANDATORY, "Warning: Unable to compute overlap for " + dir
                                  + " direction. Please set your overlap in the advanced options");
       throw new GlobalOptimizationException("Unable to compute overlap for " + dir + " direction.");
-    }else{
-      Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap);
     }
     // limit the overlap to reasonable values
     overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
     this.stitchingStatistics.setOverlap(dir, overlap);
-    Log.msg(LogType.INFO, "Computed overlap: " + overlap);
+    Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap);
 
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
@@ -598,8 +596,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     }else{
       if (repeatability > MaxRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: the computed repeatability (" + repeatability
-                                   + ") is larger than the max repeatability (" + MaxRepeatability
-                                   + ").");
+                                   + ") is unusually large. Consider manually specifying the repeatability in the Advanced Parameters.");
       }
     }
 
