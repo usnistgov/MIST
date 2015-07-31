@@ -459,7 +459,11 @@ public class StitchingExecutor implements Runnable {
                 if(!params.getInputParams().isAssembleFromMetadata()) {
                   Log.msg(LogType.MANDATORY,
                           "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
+
                   runSequential = true;
+                  stitchingExecutorInf = (StitchingExecutorInterface<T>) new SequentialJavaStitchingExecutor<float[][]>();
+                  grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
+
                   this.stitchingStatistics.setIsRunSequential(true);
                 }
               }
@@ -470,19 +474,7 @@ public class StitchingExecutor implements Runnable {
           initProgressBar();
           this.stitchingStatistics.startTimer(RunTimers.RelativeDisplacementTime);
 
-          if(runSequential) {
-            stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
-            grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
-
-            TileGridTraverser<ImageTile<T>> traverser = TileGridTraverserFactory.makeTraverser(
-                TileGridTraverser.Traversals.DIAGONAL_CHAINED, grid);
-
-            Stitching.stitchGridJava(traverser, grid, this.progressBar);
-
-
-          }else {
-            stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
-          }
+          stitchingExecutorInf.launchStitching(grid, this.params, this.progressBar, timeSlice);
 
           this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
 
@@ -494,7 +486,6 @@ public class StitchingExecutor implements Runnable {
 
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
-//          e.printStackTrace();
           Log.msg(LogType.MANDATORY,
                   "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
           throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage, e);

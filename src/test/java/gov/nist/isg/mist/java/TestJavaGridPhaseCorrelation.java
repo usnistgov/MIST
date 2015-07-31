@@ -93,7 +93,9 @@ public class TestJavaGridPhaseCorrelation {
 
     Log.msg(LogType.HELPFUL, "Computing translations");
     TimeUtil.tick();
-    Stitching.stitchGridJava(gridTraverser, grid);
+
+    // TODO setup the SequentialExecutor in place of this function call
+//    Stitching.stitchGridJava(gridTraverser, grid);
 
     Log.msg(LogType.MANDATORY, "Completed Stitching in " + TimeUtil.tock() + " ms");
     Stitching.outputRelativeDisplacements(grid, new File(
