@@ -32,6 +32,7 @@ import gov.nist.isg.mist.stitching.gui.StitchingSwingWorker;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import ij.IJ;
 import ij.ImageJ;
 import ij.Macro;
 import ij.plugin.PlugIn;
@@ -229,6 +230,8 @@ public class MIST implements PlugIn {
 
   @Override
   public void run(String arg) {
+
+    IJ.log("\\Clear");
 
     Log.msg(LogType.MANDATORY, "Launching MIST");
 

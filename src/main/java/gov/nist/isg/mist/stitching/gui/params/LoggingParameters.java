@@ -29,6 +29,7 @@ package gov.nist.isg.mist.stitching.gui.params;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.PreferencesUtils;
+import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -113,7 +114,9 @@ public class LoggingParameters implements StitchingAppParamFunctions {
   @Override
   public boolean loadParams(Preferences pref) {
     this.logLevel = PreferencesUtils.loadPrefLogType(pref, LOG_LEVEL, this.logLevel.name());
-    this.debugLevel = PreferencesUtils.loadPrefDebugType(pref, DEBUG_LEVEL, this.debugLevel.name());    
+    Log.setLogLevel(this.logLevel);
+    this.debugLevel = PreferencesUtils.loadPrefDebugType(pref, DEBUG_LEVEL, this.debugLevel.name());
+    Debug.setDebugLevel(this.debugLevel);
 
     return true;    
   }
@@ -127,9 +130,11 @@ public class LoggingParameters implements StitchingAppParamFunctions {
 
 
   @Override
-  public void loadMacro(String macroOptions) {   
+  public void loadMacro(String macroOptions) {
     this.logLevel = MacroUtils.loadMacroLogType(macroOptions, LOG_LEVEL, this.logLevel.name());
-    this.debugLevel = MacroUtils.loadMacroDebugType(macroOptions, DEBUG_LEVEL, this.debugLevel.name());      
+    Log.setLogLevel(this.logLevel);
+    this.debugLevel = MacroUtils.loadMacroDebugType(macroOptions, DEBUG_LEVEL, this.debugLevel.name());
+    Debug.setDebugLevel(this.debugLevel);
   }
 
 
