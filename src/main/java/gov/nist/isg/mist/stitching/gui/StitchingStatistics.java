@@ -58,9 +58,6 @@ import java.util.List;
  */
 public class StitchingStatistics {
 
-  private static final String ERROR_REPORT_MESSAGE = "This could indicate calibration problems or problematic image data.";
-  private static final String ERROR_OVERLAP_MESSAGE = "Clipped value can be adjusted using the percent overlap uncertainty or you can specify the overlap";
-  private static final String DEVELOPER_MESSAGE = "The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or https://github.com/NIST-ISG/MIST/issues.";
   private static final double MISSING_ROW_COL_WARNING_THRESHOLD = 75.0; // the percentage missing rows or columns required to generate Error Report warning
 
   /**
@@ -901,28 +898,30 @@ public class StitchingStatistics {
 
     // Check no valid translations
     for (Direction dir : Direction.values()) {
+
       int numValid = getNumValidTilesAfterFilter(dir, timeSlice);
-      if (numValid == 0)
-      {
+      if (numValid == 0) {
         updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
-        errorMessage += "- No valid " + dir + " translations found" + newLine + ERROR_REPORT_MESSAGE + newLine;
+        errorMessage += "- No valid " + dir + " translations found" + newLine;
+        errorMessage += "Due to the content of the image data, MIST is not able to compute any "
+                        + dir + " translations with high confidence." + newLine;
       }
 
       double overlap = getOverlap(dir, timeSlice);
       double computedOverlap = getComputedOverlap(dir, timeSlice);
 
-      if (overlap != computedOverlap)
-      {
+      if (overlap != computedOverlap) {
         updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
-        errorMessage += "- Computed " + dir + " overlap = " + computedOverlap + ". Value was clipped to " + overlap + newLine + ERROR_OVERLAP_MESSAGE + newLine;
+        errorMessage += "- Computed " + dir + " overlap = " + computedOverlap + ". Value was clipped "
+                        + "to " + overlap + newLine + "Clipped value can be adjusted using the "
+                        + "percent overlap uncertainty or you can specify the overlap." + newLine;
       }
 
       double repeatability = getRepeatability(dir, timeSlice);
 
-      if (repeatability > OptimizationRepeatability.MaxRepeatability)
-      {
+      if (repeatability > OptimizationRepeatability.MaxRepeatability) {
         updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
-        errorMessage += "- Computed " + dir + " repeatability is high." + newLine + ERROR_REPORT_MESSAGE + newLine;
+        errorMessage += "- Computed " + dir + " repeatability is high." + newLine;
       }
 
       List<Integer> emptyRowColsLst = getEmptyRowCols(dir, timeSlice);
@@ -932,7 +931,7 @@ public class StitchingStatistics {
 
         if (percMissingRowCol > MISSING_ROW_COL_WARNING_THRESHOLD) {
           updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
-          errorMessage += "- Percentage missing " + dir + " rows/cols is high." + newLine + ERROR_REPORT_MESSAGE + newLine;
+          errorMessage += "- Percentage missing " + dir + " rows/cols is high." + newLine;
         }
       }
     }
@@ -940,9 +939,24 @@ public class StitchingStatistics {
     String output = "Error report: " + getErrorReportStatus(timeSlice) + newLine;
     output += errorMessage;
 
-    if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED)
-    {
-      output += DEVELOPER_MESSAGE + newLine;
+    if (this.errorReportStatus.get(timeSlice) == ErrorReportStatus.FAILED) {
+      output += "-We suggest that the user performs some combination of pre-processing " + newLine
+                + "steps to to increase the confidence in the computed translations. " + newLine
+                + "Pre-processing steps can include: (1) filtering the images, (2) segment " + newLine
+                + "regions of interest and setting the background to zero to perform " + newLine
+                + "feature-based translation computation. " + newLine
+                + "-Please stitch the pre-processed images as the registration channel. " + newLine
+                + "-Using \"Assemble From Metadata\" you can stitch the pre-processed images "
+                + "and assemble the original images. " + newLine;
+
+      output += "-For now MIST can only display a naively stitched image. " + newLine;
+    }
+
+    if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED) {
+      output += "-The developers are interested in problematic data sets. " + newLine
+                + "Issues with stitching can be submitted to: " + newLine
+                + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github.com/NIST-ISG/MIST/issues";
+      output += newLine;
     }
 
     return output;

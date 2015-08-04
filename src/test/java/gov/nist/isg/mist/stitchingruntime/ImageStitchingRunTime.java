@@ -62,7 +62,7 @@ public class ImageStitchingRunTime {
 //private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
 //  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
 
-  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data";
+  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -158,26 +158,6 @@ public class ImageStitchingRunTime {
 
 
 
-        List<CudaDeviceParam> run780 = new ArrayList<CudaDeviceParam>();
-        List<CudaDeviceParam> runOneC2070 = new ArrayList<CudaDeviceParam>();
-        List<CudaDeviceParam> runTwoC2070 = new ArrayList<CudaDeviceParam>();
-
-        for (CudaDeviceParam dev : cudaDevices)
-        {
-          if (dev.getName().contains("780")) {
-            System.out.println("Adding " + dev.getName() + " to 780 test");
-            run780.add(dev);
-          }
-          if (dev.getName().contains("Tesla") && runOneC2070.size() == 0) {
-            System.out.println("Adding " + dev.getName() + " to one 2070 test");
-            runOneC2070.add(dev);
-          }
-          if(dev.getName().contains("Tesla")) {
-            System.out.println("Adding " + dev.getName() + " to two 2070 test");
-            runTwoC2070.add(dev);
-          }
-        }
-
 
 
         params.getInputParams().setImageDir(r.getAbsolutePath());
@@ -193,6 +173,7 @@ public class ImageStitchingRunTime {
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
+        System.out.println("Using " + params.getAdvancedParams().getNumCPUThreads() + " threads");
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
         if(useMLE) {
@@ -221,29 +202,7 @@ public class ImageStitchingRunTime {
 
 
 
-          for (int cudaRun = 0; cudaRun < 3; cudaRun++) {
             double totalRunTime = 0;
-
-            if (t != StitchingType.CUDA)
-              cudaRun = 3;
-            else
-            {
-              switch(cudaRun) {
-                case 0:
-                  params.getAdvancedParams().setCudaDevices(run780);
-                  testCase = t.toString() + "-" + r.getName() + "-GTX780";
-                  break;
-                case 1:
-                  params.getAdvancedParams().setCudaDevices(runOneC2070);
-                  testCase = t.toString() + "-" + r.getName() + "-1C2070";
-
-                  break;
-                case 2:
-                  params.getAdvancedParams().setCudaDevices(runTwoC2070);
-                  testCase = t.toString() + "-" + r.getName() + "-2C2070";
-                  break;
-              }
-            }
             for (int run = 0; run < NUM_RUNS; run++) {
 
               System.out.println("Run " + run + " Stitching Type: " + t + " " + testCase);
@@ -271,7 +230,7 @@ public class ImageStitchingRunTime {
             writer.write(testCase + ", " + avgRunTime + "\n");
             writer.flush();
           }
-        }
+
 
       }
 
