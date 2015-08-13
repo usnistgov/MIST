@@ -63,6 +63,7 @@ public class ImageStitchingRunTime {
 //  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
 
   private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
+//  private static String validationRootFolder = "C:\\majurski\\image-data\\Stitching_Paper_Data";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -113,27 +114,39 @@ public class ImageStitchingRunTime {
     System.out.println("fftwLibPath: \"" + fftwLibraryPath + "\"");
 
 
+    runFolder(useMLE);
+
+
+    System.exit(1);
+  }
+
+  private static void runFolder(boolean useMLE) {
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
     if (!rootFolder.exists() && !rootFolder.isDirectory())
     {
       System.out.println("Error: Unable to find root folder: " + validationRootFolder);
       System.exit(1);
-    }    
+    }
 
     File[] roots = rootFolder.listFiles();
 
     CUDAPanel cudaPanel = new CUDAPanel();
 
-    JFrame frame = new JFrame("Select CUDA Devices");
-    JOptionPane.showMessageDialog(frame, cudaPanel);
+//    JFrame frame = new JFrame("Select CUDA Devices");
+//    JOptionPane.showMessageDialog(frame, cudaPanel);
 
 //    Log.setLogLevel(LogType.NONE);
     Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
-    File runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
+    File runtimeResults;
+    if(useMLE) {
+      runtimeResults = new File(validationRootFolder + File.separator + "mle-runtimes.txt");
+    }else{
+      runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
+    }
     try {
       FileWriter writer = new FileWriter(runtimeResults);
       writer.write("testCase, totalTime" + "\n");
@@ -141,6 +154,9 @@ public class ImageStitchingRunTime {
       for (File r : roots) {
 
         if (!r.isDirectory())
+          continue;
+
+        if(!r.getAbsolutePath().contains("Worms"))
           continue;
 
         params = new StitchingAppParams();
@@ -171,9 +187,8 @@ public class ImageStitchingRunTime {
             r.getAbsolutePath() + File.separator + "RunTimeResults");
         // set the metadata path to the output path
 
-      params.getOutputParams().setOutputFullImage(false);
-      params.getOutputParams().setDisplayStitching(false);
-        System.out.println("Using " + params.getAdvancedParams().getNumCPUThreads() + " threads");
+        params.getOutputParams().setOutputFullImage(false);
+        params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
         if(useMLE) {
@@ -202,44 +217,43 @@ public class ImageStitchingRunTime {
 
 
 
-            double totalRunTime = 0;
-            for (int run = 0; run < NUM_RUNS; run++) {
+          double totalRunTime = 0;
+          for (int run = 0; run < NUM_RUNS; run++) {
 
-              System.out.println("Run " + run + " Stitching Type: " + t + " " + testCase);
+            System.out.println("Run " + run + " Stitching Type: " + t + " " + testCase);
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
 //        File metaDataPath = new File(r, "seq");
 //        params.getOutputParams().setMetadataPath(metaDataPath.getAbsolutePath());
-              params.getAdvancedParams().setProgramType(t);
-              params.getAdvancedParams().setNumFFTPeaks(2);
+            params.getAdvancedParams().setProgramType(t);
+            params.getAdvancedParams().setNumFFTPeaks(2);
 
-              StitchingExecutor executor = new StitchingExecutor(params);
+            StitchingExecutor executor = new StitchingExecutor(params);
 
-              try {
-                executor.runStitching(false, false, false);
-              } catch (StitchingException e) {
-                Log.msg(LogType.MANDATORY, e.getMessage());
-              }
-
-              StitchingStatistics stats = executor.getStitchingStatistics();
-              totalRunTime += stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime);
-
+            try {
+              executor.runStitching(false, false, false);
+            } catch (StitchingException e) {
+              Log.msg(LogType.MANDATORY, e.getMessage());
             }
 
-            double avgRunTime = totalRunTime / ((double) NUM_RUNS);
-            writer.write(testCase + ", " + avgRunTime + "\n");
-            writer.flush();
+            StitchingStatistics stats = executor.getStitchingStatistics();
+            totalRunTime += stats.getDuration(StitchingStatistics.RunTimers.TotalStitchingTime);
+
           }
 
+          double avgRunTime = totalRunTime / ((double) NUM_RUNS);
+          writer.write(testCase + ", " + avgRunTime + "\n");
+          writer.flush();
+        }
 
       }
+
 
       writer.close();
 
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    System.exit(1);
   }
+
 }

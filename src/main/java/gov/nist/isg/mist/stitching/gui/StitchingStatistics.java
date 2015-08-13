@@ -902,7 +902,7 @@ public class StitchingStatistics {
       int numValid = getNumValidTilesAfterFilter(dir, timeSlice);
       if (numValid == 0) {
         updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
-        errorMessage += "- No valid " + dir + " translations found" + newLine;
+        errorMessage += "- No reliable " + dir + " translations found" + newLine;
         errorMessage += "Due to the content of the image data, MIST is not able to compute any "
                         + dir + " translations with high confidence." + newLine;
       }
@@ -940,20 +940,20 @@ public class StitchingStatistics {
     output += errorMessage;
 
     if (this.errorReportStatus.get(timeSlice) == ErrorReportStatus.FAILED) {
-      output += "-We suggest that the user performs some combination of pre-processing " + newLine
+      output += "- We suggest that the user performs some combination of pre-processing " + newLine
                 + "steps to to increase the confidence in the computed translations. " + newLine
                 + "Pre-processing steps can include: (1) filtering the images, (2) segment " + newLine
                 + "regions of interest and setting the background to zero to perform " + newLine
                 + "feature-based translation computation. " + newLine
-                + "-Please stitch the pre-processed images as the registration channel. " + newLine
-                + "-Using \"Assemble From Metadata\" you can stitch the pre-processed images "
+                + "- Please stitch the pre-processed images as the registration channel. " + newLine
+                + "- Using \"Assemble From Metadata\" you can stitch the pre-processed images "
                 + "and assemble the original images. " + newLine;
 
-      output += "-For now MIST can only display a naively stitched image. " + newLine;
+      output += "- For now MIST can only display a naively stitched image. " + newLine;
     }
 
     if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED) {
-      output += "-The developers are interested in problematic data sets. " + newLine
+      output += "- The developers are interested in problematic data sets. " + newLine
                 + "Issues with stitching can be submitted to: " + newLine
                 + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github.com/NIST-ISG/MIST/issues";
       output += newLine;
@@ -974,8 +974,11 @@ public class StitchingStatistics {
 
       FileWriter writer = new FileWriter(file);
       String logContents = IJ.getLog();
-      if(logContents != null)
+      if(logContents != null) {
         writer.write(logContents);
+      }else{
+        writer.write("IJ Log string was null. \n\nThis is likely due to the stitching being run in Headless mode.");
+      }
 
       writer.close();
 

@@ -446,25 +446,37 @@ public class StitchingExecutor implements Runnable {
             if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
               Log.msg(LogType.MANDATORY,
                       "Insufficient memory to perform stitching with " + params
-                          .getAdvancedParams()
-                          .getNumCPUThreads()
-                      + " threads, attempting with 1 thread for timeslice: "
+                          .getAdvancedParams().getNumCPUThreads()
+                      + " threads, attempting backoff for timeslice: "
                       + timeSlice);
               Log.msg(LogType.MANDATORY,
                       "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
 
-              params.getAdvancedParams().setNumCPUThreads(1);
-              if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
-                // only run sequential stitching if not assembling from metadata
-                if(!params.getInputParams().isAssembleFromMetadata()) {
-                  Log.msg(LogType.MANDATORY,
-                          "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
+              // perform thread count backoff to find what maximum number of threads can be supported
+              for (int n = params.getAdvancedParams().getNumCPUThreads(); n >= 1; n--) {
+                params.getAdvancedParams().setNumCPUThreads(n);
+                if (executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads()))
+                  break;
+              }
+              Log.msg(LogType.MANDATORY,
+                      "Attempting to perform stitching with " + params
+                          .getAdvancedParams().getNumCPUThreads() + " threads.");
 
-                  runSequential = true;
-                  stitchingExecutorInf = (StitchingExecutorInterface<T>) new SequentialJavaStitchingExecutor<float[][]>();
-                  grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
+              // check if the 1 thread method has sufficient memory, if not run sequential stitching
+              if (params.getAdvancedParams().getNumCPUThreads() == 1) {
+                if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
+                  // only run sequential stitching if not assembling from metadata
+                  if (!params.getInputParams().isAssembleFromMetadata()) {
+                    Log.msg(LogType.MANDATORY,
+                            "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
 
-                  this.stitchingStatistics.setIsRunSequential(true);
+                    runSequential = true;
+                    stitchingExecutorInf =
+                        (StitchingExecutorInterface<T>) new SequentialJavaStitchingExecutor<float[][]>();
+                    grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
+
+                    this.stitchingStatistics.setIsRunSequential(true);
+                  }
                 }
               }
             }

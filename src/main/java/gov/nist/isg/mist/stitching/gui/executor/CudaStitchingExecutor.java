@@ -262,7 +262,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
     // pad with 100MB
     requiredCPUMemoryBytes += 100L*1024L*1024L;
-    requiredGPUMemoryBytes += 100L*1024L*1024L;
+    // pad with 10MB
+    requiredGPUMemoryBytes += 10L*1024L*1024L;
 
     return (requiredCPUMemoryBytes < Runtime.getRuntime().maxMemory()) && (requiredGPUMemoryBytes < minGPUMemory);
   }
