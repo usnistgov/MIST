@@ -136,6 +136,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
       // Add question mark
       JButton questionButton = new JButton("?");
+      questionButton.setPreferredSize(new Dimension(20,20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();

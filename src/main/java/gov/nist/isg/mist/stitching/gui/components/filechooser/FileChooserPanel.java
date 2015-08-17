@@ -118,6 +118,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
       // Add question mark
       questionButton = new JButton("?");
+      questionButton.setPreferredSize(new Dimension(20,20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();

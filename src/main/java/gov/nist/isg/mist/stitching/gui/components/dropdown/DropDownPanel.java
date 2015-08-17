@@ -68,6 +68,7 @@ public class DropDownPanel extends JPanel implements FocusListener, ActionListen
 
       // Add question mark
       JButton questionButton = new JButton("?");
+      questionButton.setPreferredSize(new Dimension(20,20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();
