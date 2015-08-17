@@ -15,7 +15,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 public class OptimizationMleUtils {
 
 
-  private static final int MLE_GRID_SEARCH_SIZE_PER_SIDE = 3;
+  private static final int MLE_GRID_SEARCH_SIZE_PER_SIDE = 4;
   private static final double SQRT2PI = Math.sqrt(2*Math.PI);
 
   /**
@@ -93,17 +93,18 @@ public class OptimizationMleUtils {
     }
 
 
-    // limit the PIuni values 0:100 at resolution of 2%
-    int[] pVals = new int[50+1];
+    // limit the PIuni values 0:100 at resolution of 1%
+    int[] pVals = new int[100];
     for(int i = 0; i < pVals.length; i++)
-      pVals[i] = i*2;
-    // limit the mu values 0:100 at resolution of 2%
-    int[] mVals = new int[50+1];
+      pVals[i] = i;
+    // limit the mu values 0:100 at resolution of 1%
+    int[] mVals = new int[100];
     for(int i = 0; i < mVals.length; i++)
-      mVals[i] = i*2;
-    // limit sigma possible values to 0:25 at resolution of 2%
-    int[] sVals = {0,2,4,6,8,10,12,14,16,18,20,22,24,26};
-
+      mVals[i] = i;
+    // limit sigma possible values to 0:25 at resolution of 1%
+    int[] sVals = new int[25];
+    for(int i = 0; i < sVals.length; i++)
+      sVals[i] = i;
 
 
     // setup the grid of hill climb starting points
