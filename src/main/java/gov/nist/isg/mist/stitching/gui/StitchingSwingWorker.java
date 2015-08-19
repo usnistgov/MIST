@@ -74,6 +74,18 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
   @Override
   protected void done() {
+    switch (this.executionType) {
+      case LoadParams:
+        runLoadParams();
+        break;
+      case SaveParams:
+        runSaveParams();
+        break;
+      default:
+        // do nothing unless this is a load of save params
+        break;
+    }
+
     super.done();
     if (this.executorThread != null && this.executorThread.isAlive()) {
       this.executor.cancelExecution();
@@ -85,10 +97,10 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
     switch (this.executionType) {
       case LoadParams:
-        runLoadParams();
+        // do nothing, the load params will be performed in the done method
         break;
       case SaveParams:
-        runSaveParams();
+        // do nothing, the load params will be performed in the done method
         break;
       case PreviewNoOverlap:
         this.executorThread = new Thread(this.executor);
@@ -112,6 +124,8 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
     return null;
   }
+
+
 
   private void runSaveParams() {
     Log.msg(LogType.MANDATORY, "Checking Parameters for save");
@@ -157,14 +171,15 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
       File file = chooser.getSelectedFile();
 
       Log.msg(LogType.MANDATORY, "Loading Parameters");
-      if (this.params.loadParams(file))      
+      if (this.params.loadParams(file))
       {
         this.params.printParams();
-              
+
         this.stitchingGUI.loadParamsIntoGUI(StitchingSwingWorker.this.params);
       }
-      
+
 
     }
   }
+
 }

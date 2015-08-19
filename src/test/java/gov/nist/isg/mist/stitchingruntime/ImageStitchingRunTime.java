@@ -62,8 +62,9 @@ public class ImageStitchingRunTime {
 //private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
 //  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
 
-  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
+//  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
 //  private static String validationRootFolder = "C:\\majurski\\image-data\\Stitching_Paper_Data";
+  private static String validationRootFolder = "E:\\image-data\\ImageJ_Conference";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -113,7 +114,7 @@ public class ImageStitchingRunTime {
     System.out.println("fftwPlanPath: \"" + fftwPlanPath + "\"");
     System.out.println("fftwLibPath: \"" + fftwLibraryPath + "\"");
 
-
+    useMLE = true;
     runFolder(useMLE);
 
 
@@ -136,8 +137,8 @@ public class ImageStitchingRunTime {
 //    JFrame frame = new JFrame("Select CUDA Devices");
 //    JOptionPane.showMessageDialog(frame, cudaPanel);
 
-//    Log.setLogLevel(LogType.NONE);
-    Log.setLogLevel(LogType.MANDATORY);
+    Log.setLogLevel(LogType.NONE);
+//    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
@@ -156,8 +157,6 @@ public class ImageStitchingRunTime {
         if (!r.isDirectory())
           continue;
 
-        if(!r.getAbsolutePath().contains("Worms"))
-          continue;
 
         params = new StitchingAppParams();
 

@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.stitching.gui;
 
+import gov.nist.isg.mist.stitching.StitchingGUIFrame;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
@@ -189,7 +190,7 @@ public class StitchingGuiUtils {
       @Override
       public void run() {
         progressBar.firePropertyChange("progress", progressBar.getValue(),
-            progressBar.getValue() + 1);
+                                       progressBar.getValue() + 1);
       }
     });
   }
