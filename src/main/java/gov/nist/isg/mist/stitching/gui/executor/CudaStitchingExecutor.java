@@ -31,6 +31,7 @@ import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import jcuda.CudaException;
+import jcuda.Sizeof;
 import jcuda.driver.CUcontext;
 import jcuda.driver.JCudaDriver;
 import jcuda.jcufft.JCufft;
@@ -229,7 +230,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       requiredCPUMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
     }
 
-// TODO test that contexts has just the GPUs selected by the user in the GUI
+
 
     // Check GPU side memory
     long minGPUMemory = Long.MAX_VALUE;
@@ -237,23 +238,25 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
     }
 
+    // from CudaTileWorkerMemory.java
     long perGPUPinnedMemory = 0;
-    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L;
-    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L;
-    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUPinnedMemory += (long) Stitching.NUM_PEAKS * 4L;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
 
+    // from CudaTileWorkerMemory.java and TileGPUPciamWorker.java
     long perGPUmemory = 0;
-    perGPUmemory += (long)CudaImageTile.fftSize * 2L * 8L;
-    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L;
-    perGPUmemory += (long)CudaImageTile.fftSize * 2L * 8L;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
 
 
-    perGPUmemory += memoryPoolCount * ((long)CudaImageTile.fftSize * 2L * 8L);
+    perGPUmemory += memoryPoolCount * ((long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE);
 
 
     requiredCPUMemoryBytes += perGPUPinnedMemory;
