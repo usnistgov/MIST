@@ -474,6 +474,8 @@ public class StitchingExecutor implements Runnable {
                     stitchingExecutorInf =
                         (StitchingExecutorInterface<T>) new SequentialJavaStitchingExecutor<float[][]>();
                     grid = stitchingExecutorInf.initGrid(this.params, timeSlice);
+                    // update the executor reference because it has been changed to sequential
+                    this.executor = stitchingExecutorInf;
 
                     this.stitchingStatistics.setIsRunSequential(true);
                   }

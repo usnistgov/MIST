@@ -266,7 +266,7 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       try {
         thread.join();
       } catch (InterruptedException e) {
-        Log.msg(LogType.MANDATORY, "Interupted stitching.");
+        Log.msg(LogType.MANDATORY, "Interrupted stitching.");
       }
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Garbage Collecting");

@@ -202,7 +202,7 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       try {
         thread.join();
       } catch (InterruptedException e) {
-        Log.msg(LogType.MANDATORY, "Interupted stitching.");
+        Log.msg(LogType.MANDATORY, "Interrupted stitching.");
 
       }
 

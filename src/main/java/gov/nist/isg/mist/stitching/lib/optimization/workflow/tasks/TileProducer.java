@@ -86,7 +86,7 @@ public class TileProducer<T> implements Runnable {
         Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
         continue;
       } catch (InterruptedException e) {
-        Log.msg(Log.LogType.MANDATORY, "Tile producer interupted");
+        Log.msg(Log.LogType.MANDATORY, "Tile producer Interrupted");
         return;
       }
 
