@@ -52,7 +52,7 @@ public class ImageStitchingValidationDatasets {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-  private static String validationRootFolder = "C:\\majurski\\image-data\\Image_Stitching_Validation_Datasets";
+  private static String validationRootFolder = "E:\\image-data\\Image_Stitching_Validation_Datasets";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -105,7 +105,7 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(true);
       params.getOutputParams().setDisplayStitching(false);
-//      params.getAdvancedParams().setNumCPUThreads(8);
+      params.getAdvancedParams().setNumCPUThreads(8);
 
       for (StitchingType t : StitchingType.values())
       {
@@ -121,11 +121,13 @@ public class ImageStitchingValidationDatasets {
         System.out.println("Stitching Type: " + t);
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
-        File metaDataPath = new File(r, "cuda");
+        File metaDataPath = new File(r, "CUDA");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);
+        params.getOutputParams().setOutFilePrefix("img-4hc-");
+        params.getOutputParams().setOutputFullImage(false);
 
-        params.getAdvancedParams().setNumFFTPeaks(2);
+//        params.getAdvancedParams().setNumFFTPeaks(2);
 
 
         StitchingExecutor executor = new StitchingExecutor(params);

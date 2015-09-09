@@ -62,13 +62,13 @@ public class ImageStitchingRunTime {
 //private static String fftwPlanPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw\\fftPlans";
 //  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
 
-//  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
+  private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
 //  private static String validationRootFolder = "C:\\majurski\\image-data\\Stitching_Paper_Data";
-  private static String validationRootFolder = "E:\\image-data\\ImageJ_Conference";
+//  private static String validationRootFolder = "E:\\image-data\\ImageJ_Conference";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
-  private static int NUM_RUNS = 10;
+  private static int NUM_RUNS = 1;
 
   public static void main(String [] args)
   {
@@ -186,7 +186,7 @@ public class ImageStitchingRunTime {
             r.getAbsolutePath() + File.separator + "RunTimeResults");
         // set the metadata path to the output path
 
-        params.getOutputParams().setOutputFullImage(false);
+        params.getOutputParams().setOutputFullImage(true);
         params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
@@ -206,7 +206,7 @@ public class ImageStitchingRunTime {
         for (StitchingType t : StitchingType.values()) {
           String testCase = t.toString() + "-" + r.getName();
 
-          if (t == StitchingType.AUTO || t == StitchingType.JAVA)
+          if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
             continue;
 
           if (t == StitchingType.CUDA) {
