@@ -98,9 +98,8 @@ public class Stitching {
    * 
    */
   enum HillClimbDirection {
-//    North(0, -1), South(0, 1), East(1, 0), West(-1, 0), NorthEast(1, -1), NorthWest(-1, -1), SouthEast(
-//        1, 1), SouthWest(-1, 1), NoMove(0, 0);
-    North(0, -1), South(0, 1), East(1, 0), West(-1, 0), NoMove(0, 0);
+    North(0, -1), South(0, 1), East(1, 0), West(-1, 0), NorthEast(1, -1), NorthWest(-1, -1), SouthEast(
+        1, 1), SouthWest(-1, 1), NoMove(0, 0);
 
     private int xDir;
     private int yDir;
