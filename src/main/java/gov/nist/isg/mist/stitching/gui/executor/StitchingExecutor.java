@@ -370,11 +370,37 @@ public class StitchingExecutor implements Runnable {
       return;
     }
 
+    // Check for overwriting files, and confirm with user
     ExistingFilesChecker fileChecker = new ExistingFilesChecker(this.params);
     if (!fileChecker.checkExistingFiles(displayGui))
-    {
       return;
+
+
+    // open dialog telling the user if they are stitching with a subgrid
+    int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
+    int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
+    if(dH != 0 || dW != 0) {
+      Log.msg(LogType.MANDATORY, "MIST is stitching a Sub Grid.");
+      if(displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
+        String[] options = {"Ok",
+                            "Cancel"};
+        int n = JOptionPane.showOptionDialog(stitchingGUI,
+                                             "MIST is stitching a Sub Grid.",
+                                             "SubGrid",
+                                             JOptionPane.YES_NO_OPTION,
+                                             JOptionPane.WARNING_MESSAGE,
+                                             null,
+                                             options,
+                                             options[0]);
+        if(n == 1) {
+          this.cancelExecution();
+          return;
+        }
+      }
+
     }
+
+
 
 
     if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {

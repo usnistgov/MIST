@@ -82,7 +82,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
         runSaveParams();
         break;
       default:
-        // do nothing unless this is a load of save params
+        // do nothing
         break;
     }
 
@@ -100,7 +100,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
         // do nothing, the load params will be performed in the done method
         break;
       case SaveParams:
-        // do nothing, the load params will be performed in the done method
+        // do nothing, the save params will be performed in the done method
         break;
       case PreviewNoOverlap:
         this.executorThread = new Thread(this.executor);
