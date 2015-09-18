@@ -182,7 +182,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
-    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability);
+    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability + " pixels");
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
                                         this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
@@ -360,7 +360,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
-    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability);
+    Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability + " pixels");
     
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
         this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
@@ -524,7 +524,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     // limit the overlap to reasonable values
     overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
     this.stitchingStatistics.setOverlap(dir, overlap);
-    Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap);
+    Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap + "%");
 
 
     Log.msg(LogType.INFO, "Correcting translations: " + dir.name());
@@ -603,7 +603,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     this.stitchingStatistics.setRepeatability(dir, repeatability);
 
 
-    Log.msg(LogType.MANDATORY, "Repeatability for " + dir.name() + ": " + repeatability);
+    Log.msg(LogType.MANDATORY, "Repeatability for " + dir.name() + ": " + repeatability + " pixels");
 
     // Re-filter based on repeatability, the grid gets updated here
     switch (dir) {

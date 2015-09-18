@@ -88,6 +88,7 @@ public class ImageStitchingValidationDatasets {
     for (File r : roots)
     {      
 
+
       if (!r.isDirectory())
         continue;
 
@@ -109,7 +110,7 @@ public class ImageStitchingValidationDatasets {
 
       for (StitchingType t : StitchingType.values())
       {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.CUDA)
           continue;
 
         if (t == StitchingType.CUDA)
@@ -121,10 +122,10 @@ public class ImageStitchingValidationDatasets {
         System.out.println("Stitching Type: " + t);
 
 //        File metaDataPath = new File(r, t.name().toLowerCase());
-        File metaDataPath = new File(r, "CUDA");
+        File metaDataPath = new File(r, "FFTW");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
         params.getAdvancedParams().setProgramType(t);
-        params.getOutputParams().setOutFilePrefix("img-4hc-");
+        params.getOutputParams().setOutFilePrefix("img-");
         params.getOutputParams().setOutputFullImage(false);
 
 //        params.getAdvancedParams().setNumFFTPeaks(2);

@@ -263,8 +263,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     requiredGPUMemoryBytes += (perGPUmemory + perGPUPinnedMemory);
 
 
-    // pad with 100MB
-    requiredCPUMemoryBytes += 100L*1024L*1024L;
+    // pad with 10MB
+    requiredCPUMemoryBytes += 10L*1024L*1024L;
     // pad with 10MB
     requiredGPUMemoryBytes += 10L*1024L*1024L;
 

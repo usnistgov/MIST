@@ -44,7 +44,7 @@ public class OptimizationMleUtils {
       Log.msg(Log.LogType.INFO, "Translation used for MLE " + dir + ":");
       Log.msg(Log.LogType.INFO, translations.toString());
       mleModel = getMleModelFromMultipointHillClimb(translations, range);
-      Log.msg(Log.LogType.MANDATORY, "MLE " + dir + " model parameters: mu=" + mleModel.mu + " sigma=" + mleModel.sigma);
+      Log.msg(Log.LogType.HELPFUL, "MLE " + dir + " model parameters: mu=" + mleModel.mu + " sigma=" + mleModel.sigma);
     }catch(GlobalOptimizationException e) {
       Log.msg(Log.LogType.MANDATORY, e.getMessage());
     }

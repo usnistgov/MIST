@@ -587,7 +587,7 @@ public class OptimizationUtils {
                                                              TranslationFilterType filterType,
                                                              StitchingStatistics stitchingStatistics)
       throws FileNotFoundException {
-    Log.msg(LogType.INFO, "Filtering translations:");
+    Log.msg(LogType.INFO, "Filtering translations");
     DisplacementValue dispValue = null;
     switch (dir) {
       case North:

@@ -139,7 +139,8 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
    * Shows an error for this file chooser
    */
   public void showError() {
-    this.input.setBackground(Color.RED);
+//    this.input.setBackground(Color.RED);
+    this.input.setBackground(Color.PINK);
   }
 
   /**

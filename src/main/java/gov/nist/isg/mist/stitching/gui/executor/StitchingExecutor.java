@@ -533,7 +533,7 @@ public class StitchingExecutor implements Runnable {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
-                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + " time slice: "
+                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + "ms" + " time slice: "
                   + timeSlice + " of " + maxTimeSlice);
         }
         else
@@ -541,7 +541,7 @@ public class StitchingExecutor implements Runnable {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
-                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime));
+                  + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + "ms");
         }
 
         // Always create the output directory
@@ -674,7 +674,7 @@ public class StitchingExecutor implements Runnable {
     Log.msg(
         LogType.HELPFUL,
         "Completed Global Optimization in "
-            + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime));
+            + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime) + "ms");
 
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Composing tiles");
 
@@ -684,7 +684,7 @@ public class StitchingExecutor implements Runnable {
     this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 
     Log.msg(LogType.HELPFUL,
-        "Completed MST in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime));
+        "Completed MST in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime) + "ms");
 
     StitchingGuiUtils.updateProgressBarCompleted(progressBar);
 

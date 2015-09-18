@@ -63,7 +63,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
 
 
     private static final String aboutUsURL =
-            "https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html";
+            "https://isg.nist.gov";
 
     private static final String testDatasetURL =
             "https://github.com/NIST-ISG/MIST#sample-data-sets";

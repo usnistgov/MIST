@@ -123,7 +123,8 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
    * Shows an error for the text field
    */
   public void showError() {
-    this.input.setBackground(Color.RED);
+//    this.input.setBackground(Color.RED);
+    this.input.setBackground(Color.PINK);
   }
 
   /**

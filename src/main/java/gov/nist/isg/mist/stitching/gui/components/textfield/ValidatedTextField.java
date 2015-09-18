@@ -88,7 +88,8 @@ public class ValidatedTextField<T> extends JTextField {
    * Shows an error for the text field
    */
   public void showError() {
-    this.setBackground(Color.RED);
+//    this.setBackground(Color.RED);
+    this.setBackground(Color.PINK);
   }
 
   /**
@@ -154,7 +155,6 @@ public class ValidatedTextField<T> extends JTextField {
      * 
      * @param txtArea the text area associated with the filter
      * @param validator the validator to validate text
-     * @param validatedTextField the validated text field
      */
     public TextFieldFilter(ValidatedTextField<V> txtArea, TextFieldModel<V> validator) {
       this.txtArea = txtArea;
@@ -178,7 +178,8 @@ public class ValidatedTextField<T> extends JTextField {
         if (this.validator.validateText(sb.toString())) {
           this.txtArea.setBackground(Color.WHITE);
         } else {
-          this.txtArea.setBackground(Color.RED);
+//          this.txtArea.setBackground(Color.RED);
+          this.txtArea.setBackground(Color.PINK);
         }
 
       } else
@@ -199,7 +200,8 @@ public class ValidatedTextField<T> extends JTextField {
         if (this.validator.validateText(sb.toString())) {
           this.txtArea.setBackground(Color.WHITE);
         } else {
-          this.txtArea.setBackground(Color.RED);
+//          this.txtArea.setBackground(Color.RED);
+          this.txtArea.setBackground(Color.PINK);
         }
       } else
         super.replace(fb, offset, length, text, attrs);
@@ -218,7 +220,8 @@ public class ValidatedTextField<T> extends JTextField {
         if (this.validator.validateText(sb.toString())) {
           this.txtArea.setBackground(Color.WHITE);
         } else {
-          this.txtArea.setBackground(Color.RED);
+//          this.txtArea.setBackground(Color.RED);
+          this.txtArea.setBackground(Color.PINK);
 
         }
       } else

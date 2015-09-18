@@ -204,8 +204,8 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     requiredMemoryBytes += perWorkerMemory * (long)numWorkers;
 
-    // pad with 100MB
-    requiredMemoryBytes += 100L*1024L*1024L;
+    // pad with 10MB
+    requiredMemoryBytes += 10L*1024L*1024L;
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
 
