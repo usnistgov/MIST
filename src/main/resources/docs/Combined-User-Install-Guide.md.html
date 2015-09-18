@@ -348,89 +348,81 @@ pre.editor-colors[mini] .scroll-view,
   </head>
   <body class='markdown-preview'><h1 id="mist-user-guide">MIST User Guide</h1>
 <h2 id="contents">Contents</h2>
-<ul>
-<li><a href="#mist-user-guide">MIST User Guide</a><ul>
+<ol>
+<li><a href="#mist-user-guide">MIST User Guide</a><ol>
 <li><a href="#contents">Contents</a></li>
 <li><a href="#launching-mist">Launching MIST</a></li>
 <li><a href="#installation-validation-test">Installation Validation Test</a></li>
-<li><a href="#mist-graphical-user-interface">MIST Graphical User Interface</a><ul>
+<li><a href="#mist-graphical-user-interface">MIST Graphical User Interface</a></li>
 <li><a href="#input-parameters">Input Parameters</a></li>
 <li><a href="#output-parameters">Output Parameters</a></li>
 <li><a href="#subgrid-parameters">Subgrid Parameters</a></li>
-<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a></li>
+<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a><ol>
 <li><a href="#java-execution">Java Execution</a></li>
 <li><a href="#fftw-execution">FFTW Execution</a></li>
 <li><a href="#cuda-execution">CUDA Execution</a></li>
+</ol>
+</li>
 <li><a href="#help">Help</a></li>
-</ul>
-</li>
 <li><a href="#mist-status-frame">MIST Status Frame</a></li>
-</ul>
+</ol>
 </li>
-</ul>
-<ul>
-<li><a href="#mist-plugin-installation">MIST Plugin Installation</a><ul>
+</ol>
+<hr>
+<ol>
+<li><a href="#mist-plugin-installation">MIST Plugin Installation</a><ol>
 <li><a href="#update-site-installation">Update Site Installation</a></li>
 <li><a href="#manual-installation">Manual Installation</a></li>
-</ul>
+</ol>
 </li>
-<li><a href="#fftw-installation">FFTW Installation</a><ul>
+<li><a href="#fftw-installation">FFTW Installation</a><ol>
 <li><a href="#fftw-installation-on-unix-64-bit-mac-osxlinux">FFTW Installation on Unix (64-bit Mac OSX/Linux)</a></li>
 <li><a href="#fftw-installation-using-macports">FFTW Installation using MacPorts</a></li>
-</ul>
+</ol>
 </li>
-<li><a href="#cuda-installation">CUDA Installation</a><ul>
+<li><a href="#cuda-installation">CUDA Installation</a><ol>
 <li><a href="#cuda-toolkit-v65-installation-on-windowslinuxmacosx">CUDA Toolkit v6.5 installation on Windows/Linux/MacOSX</a></li>
-</ul>
+</ol>
 </li>
-</ul>
-<ul>
-<li><a href="#mist-faq">MIST FAQ</a><ul>
+</ol>
+<hr>
+<ol>
+<li><a href="#mist-faq">MIST FAQ</a><ol>
 <li><a href="#contents">Contents</a></li>
-<li><a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a><ul>
+<li><a href="#my-image-filename-pattern-does-not-work">My image filename pattern does not work</a></li>
 <li><a href="#sequential">Sequential</a></li>
 <li><a href="#row-column">Row Column</a></li>
 <li><a href="#timeslices">Timeslices</a></li>
-</ul>
-</li>
-<li><a href="#mist-encountered-an-out-of-memory-problem">MIST encountered an Out of Memory problem</a><ul>
+<li><a href="#mist-encountered-an-out-of-memory-problem">MIST encountered an Out of Memory problem</a></li>
 <li><a href="#general-memory-management">General Memory Management</a></li>
 <li><a href="#java-mode">Java Mode</a></li>
 <li><a href="#fftw-mode">FFTW Mode</a></li>
 <li><a href="#cuda-mode">CUDA Mode</a></li>
-</ul>
-</li>
 <li><a href="#what-image-types-can-mist-handle">What image types can MIST handle</a></li>
-<li><a href="#my-stitching-results-look-incorrect">My stitching results look incorrect</a><ul>
+<li><a href="#my-stitching-results-look-incorrect">My stitching results look incorrect</a></li>
 <li><a href="#incorrect-input-parameters">Incorrect Input Parameters</a></li>
 <li><a href="#unexpected-image-overlap-variability">Unexpected Image Overlap Variability</a></li>
 <li><a href="#bad-stage-repeatability-estimate">Bad Stage Repeatability Estimate</a></li>
 <li><a href="#noisy-input-images">Noisy Input Images</a></li>
-</ul>
-</li>
 <li><a href="#what-if-the-output-stitched-image-is-too-big-to-be-saved">What if the output stitched image is too big to be saved</a></li>
 <li><a href="#i-installed-the-cuda-toolkit-but-i-am-getting-a-cuda-exception">I installed the CUDA toolkit, but I am getting a CUDA Exception</a></li>
-<li><a href="#the-fftw-version-does-not-work">The FFTW version does not work</a><ul>
+<li><a href="#the-fftw-version-does-not-work">The FFTW version does not work</a></li>
 <li><a href="#windows">Windows</a></li>
 <li><a href="#osx">OSX</a></li>
 <li><a href="#linux">Linux</a></li>
-</ul>
-</li>
-<li><a href="#my-stitching-performance-is-not-good">My stitching performance is not good</a><ul>
+<li><a href="#my-stitching-performance-is-not-good">My stitching performance is not good</a></li>
 <li><a href="#image-locality">Image Locality</a></li>
 <li><a href="#memory-capacity">Memory Capacity</a></li>
 <li><a href="#cpu-saturation">CPU Saturation</a></li>
-</ul>
-</li>
 <li><a href="#i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</a></li>
 <li><a href="#how-to-stitch-from-metadata">How to stitch from metadata</a></li>
 <li><a href="#stitching-time-slices">Stitching Time-Slices</a></li>
 <li><a href="#stitching-multiple-channels">Stitching Multiple Channels</a></li>
 <li><a href="#stitching-using-a-macro-script">Stitching using a Macro Script</a></li>
 <li><a href="#submitting-issue-or-bug-report">Submitting issue or bug report</a></li>
-</ul>
+</ol>
 </li>
-</ul>
+</ol>
 <hr>
 <h3 id="launching-mist">Launching MIST</h3>
 <ol>
