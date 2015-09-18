@@ -30,12 +30,9 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
-import gov.nist.isg.mist.stitching.lib.exceptions.GlobalOptimizationException;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.MessageDialog;
@@ -376,28 +373,30 @@ public class StitchingExecutor implements Runnable {
       return;
 
 
-    // open dialog telling the user if they are stitching with a subgrid
-    int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
-    int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
-    if(dH != 0 || dW != 0) {
-      Log.msg(LogType.MANDATORY, "MIST is stitching a Sub Grid.");
-      if(displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
-        String[] options = {"Ok",
-                            "Cancel"};
-        int n = JOptionPane.showOptionDialog(stitchingGUI,
-                                             "MIST is stitching a Sub Grid.",
-                                             "SubGrid",
-                                             JOptionPane.YES_NO_OPTION,
-                                             JOptionPane.WARNING_MESSAGE,
-                                             null,
-                                             options,
-                                             options[0]);
-        if(n == 1) {
-          this.cancelExecution();
-          return;
+    if(!params.getInputParams().isSuppressSubGridWarning()) {
+      // open dialog telling the user if they are stitching with a subgrid
+      int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
+      int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
+      if (dH != 0 || dW != 0) {
+        Log.msg(LogType.MANDATORY, "MIST is stitching a Sub Grid.");
+        if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
+          String[] options = {"Ok",
+                              "Cancel"};
+          int n = JOptionPane.showOptionDialog(stitchingGUI,
+                                               "MIST is stitching a Sub Grid.",
+                                               "Warning: SubGrid",
+                                               JOptionPane.YES_NO_OPTION,
+                                               JOptionPane.WARNING_MESSAGE,
+                                               null,
+                                               options,
+                                               options[0]);
+          if (n == 1) {
+            this.cancelExecution();
+            return;
+          }
         }
-      }
 
+      }
     }
 
 

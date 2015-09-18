@@ -69,6 +69,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String TIME_SLICES = "timeSlices";
   private static final String IS_TIME_SLICES_ENABLED = "isTimeSlicesEnabled";
   private static final String GLOBAL_POSITIONS_FILE = "globalPositionsFile";
+  private static final String IS_SUPPRESS_SUBGRID_WARNING_ENABLED = "isSuppressSubGridWarningEnabled";
 
   
   
@@ -81,6 +82,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private GridOrigin origin;
   private GridDirection numberingPattern;
   private boolean assembleFromMetadata;
+  private boolean isSuppressSubGridWarning;
 
   private String globalPositionsFile;
 
@@ -104,6 +106,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = GridOrigin.UR;
     this.numberingPattern = GridDirection.VERTICALCOMBING;
     this.assembleFromMetadata = false;
+    this.isSuppressSubGridWarning = false;
     this.globalPositionsFile = "";
 
     // Processing Options
@@ -306,6 +309,8 @@ public class InputParameters implements StitchingAppParamFunctions {
               this.timeSlices = RangeParam.parseTimeSlices(contents[1]);
             else if (contents[0].equals(IS_TIME_SLICES_ENABLED))
               this.isTimeSlicesEnabled = StitchingParamUtils.loadBoolean(contents[1], this.isTimeSlicesEnabled);
+            else if (contents[0].equals(IS_SUPPRESS_SUBGRID_WARNING_ENABLED))
+              this.isSuppressSubGridWarning = StitchingParamUtils.loadBoolean(contents[1], this.isSuppressSubGridWarning);
           } catch (IllegalArgumentException e)
           {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
@@ -348,6 +353,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.extentHeight = pref.getInt(EXTENT_HEIGHT, this.extentHeight);
     this.timeSlices = PreferencesUtils.loadPrefTimeslices(pref, TIME_SLICES);
     this.isTimeSlicesEnabled = pref.getBoolean(IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);
+    this.isSuppressSubGridWarning = pref.getBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
 
 
     return true;
@@ -379,7 +385,8 @@ public class InputParameters implements StitchingAppParamFunctions {
         timeSliceStr += this.timeSlices.get(i) + ",";
     }
     Log.msg(logLevel, TIME_SLICES + ": " + timeSliceStr);
-    Log.msg(logLevel, IS_TIME_SLICES_ENABLED + ": " + this.isTimeSlicesEnabled);    
+    Log.msg(logLevel, IS_TIME_SLICES_ENABLED + ": " + this.isTimeSlicesEnabled);
+    Log.msg(logLevel, IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": " + this.isSuppressSubGridWarning);
   }
 
 
@@ -391,17 +398,25 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.imageDir = MacroUtils.loadMacroString(macroOptions, IMAGE_DIR, this.imageDir);
     this.filenamePattern = MacroUtils.loadMacroString(macroOptions, FILENAME_PATTERN, this.filenamePattern);
     this.filenamePatternType =
-        MacroUtils.loadMacroLoaderType(macroOptions, FILENAME_PATTERN_TYPE, this.filenamePatternType.name());
+        MacroUtils.loadMacroLoaderType(macroOptions, FILENAME_PATTERN_TYPE,
+                                       this.filenamePatternType.name());
     this.origin = MacroUtils.loadMacroGridOrigin(macroOptions, GRID_ORIGIN, this.origin.name());
-    this.numberingPattern = MacroUtils.loadMacroGridNumbering(macroOptions, "numberingPattern", this.numberingPattern.name());
-    this.assembleFromMetadata = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_FROM_META, this.assembleFromMetadata);
-    this.globalPositionsFile = MacroUtils.loadMacroString(macroOptions, GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
+    this.numberingPattern = MacroUtils.loadMacroGridNumbering(macroOptions, "numberingPattern",
+                                                              this.numberingPattern.name());
+    this.assembleFromMetadata = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_FROM_META,
+                                                            this.assembleFromMetadata);
+    this.globalPositionsFile = MacroUtils.loadMacroString(macroOptions, GLOBAL_POSITIONS_FILE,
+                                                          this.globalPositionsFile);
     this.startRow = MacroUtils.loadMacroInteger(macroOptions, START_ROW, this.startRow);
     this.startCol = MacroUtils.loadMacroInteger(macroOptions, START_COL, this.startCol);
     this.extentWidth = MacroUtils.loadMacroInteger(macroOptions, EXTENT_WIDTH, this.extentWidth);
     this.extentHeight = MacroUtils.loadMacroInteger(macroOptions, EXTENT_HEIGHT, this.extentHeight);   
     this.timeSlices = MacroUtils.loadMacroTimeslices(macroOptions, "timeSlices");
-    this.isTimeSlicesEnabled = MacroUtils.loadMacroBoolean(macroOptions, IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);    
+    this.isTimeSlicesEnabled = MacroUtils.loadMacroBoolean(macroOptions, IS_TIME_SLICES_ENABLED,
+                                                           this.isTimeSlicesEnabled);
+    this.isSuppressSubGridWarning = MacroUtils.loadMacroBoolean(macroOptions,
+                                                                IS_SUPPRESS_SUBGRID_WARNING_ENABLED,
+                                                                this.isSuppressSubGridWarning);
   }
 
 
@@ -423,6 +438,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordInteger(EXTENT_HEIGHT + ": ", this.extentHeight);
     MacroUtils.recordTimeslices(this.timeSlices);
     MacroUtils.recordBoolean(IS_TIME_SLICES_ENABLED + ": ", this.isTimeSlicesEnabled);
+    MacroUtils.recordBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": ", this.isSuppressSubGridWarning);
   }
 
 
@@ -444,6 +460,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     pref.putInt(EXTENT_HEIGHT, this.extentHeight);   
     PreferencesUtils.recordPrefTimeslices(pref, this.timeSlices);
     pref.putBoolean(IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);
+    pref.putBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
 
   }
 
@@ -477,7 +494,7 @@ public class InputParameters implements StitchingAppParamFunctions {
       fw.write(TIME_SLICES + ": " + timeSliceStr);
 
       fw.write(IS_TIME_SLICES_ENABLED + ": " + this.isTimeSlicesEnabled + newLine);
-
+      fw.write(IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": " + this.isSuppressSubGridWarning + newLine);
 
       return true;
 
@@ -488,6 +505,11 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
+  public boolean isSuppressSubGridWarning() { return isSuppressSubGridWarning; }
+
+  public void setSuppressSubGridWarning(boolean val) {
+    this.isSuppressSubGridWarning = val;
+  }
 
   /**
    * @return the gridWidth
