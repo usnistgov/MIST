@@ -1,0 +1,23 @@
+Execution timing (ms) and general information:
+
+Total time for experiment: 963
+Total Stitching Time: 870
+Relative Displacement Time: 437
+Global Optimization Time: 426
+
+North repeatability: 3
+North overlap: 6
+North valid tiles after filter: 11 out of 20
+North min filter threshold: 162.870000
+North max filter threshold: 181.170000
+North standard deviation threshold: 10.276206
+North missing row/col: []
+
+West repeatability: 4
+West overlap: 6
+West valid tiles after filter: 14 out of 20
+West min filter threshold: 218.050000
+West max filter threshold: 242.550000
+West standard deviation threshold: 9.412231
+West missing row/col: []
+

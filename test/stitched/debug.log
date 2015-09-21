@@ -1,0 +1,191 @@
+<2015-09-21T11:23:18>
+<11:23:18> **** Stitching: MIST\test-3 ****
+<11:23:18> PCIAM Computation
+<11:23:18> Source Directory: C:\majurski\NISTGithub\MIST\test\
+<11:23:18> Computing PCIAM
+--->Compute Translations<---
+N: ImageName_t03_p02.tif -> ImageName_t03_p01.tif (10.04ms)
+  peak 1: x: 88.000000 y: 80.000000, ncc: 0.325599
+  peak 2: x: 88.000000 y: 81.000000, ncc: 0.327469  <--
+N: ImageName_t03_p03.tif -> ImageName_t03_p02.tif (8.37ms)
+  peak 1: x: -3.000000 y: 170.000000, ncc: 1.000000  <--
+  peak 2: x: -180.000000 y: 134.000000, ncc: 0.044412
+N: ImageName_t03_p04.tif -> ImageName_t03_p03.tif (8.33ms)
+  peak 1: x: -4.000000 y: 170.000000, ncc: 1.000000  <--
+  peak 2: x: 172.000000 y: 169.000000, ncc: 0.031208
+N: ImageName_t03_p05.tif -> ImageName_t03_p04.tif (8.36ms)
+  peak 1: x: -7.000000 y: 174.000000, ncc: 1.000000  <--
+  peak 2: x: 186.000000 y: 146.000000, ncc: 0.029275
+W: ImageName_t03_p06.tif -> ImageName_t03_p01.tif (9.11ms)
+  peak 1: x: 202.000000 y: -165.000000, ncc: 0.057619  <--
+  peak 2: x: 43.000000 y: -166.000000, ncc: 0.052852
+N: ImageName_t03_p07.tif -> ImageName_t03_p06.tif (8.30ms)
+  peak 1: x: -5.000000 y: 174.000000, ncc: 1.000000  <--
+  peak 2: x: -5.000000 y: 173.000000, ncc: 0.846648
+W: ImageName_t03_p07.tif -> ImageName_t03_p02.tif (8.31ms)
+  peak 1: x: 232.000000 y: 5.000000, ncc: 1.000000  <--
+  peak 2: x: 109.000000 y: 107.000000, ncc: 0.034954
+N: ImageName_t03_p08.tif -> ImageName_t03_p07.tif (7.82ms)
+  peak 1: x: -6.000000 y: 171.000000, ncc: 1.000000  <--
+  peak 2: x: -60.000000 y: 56.000000, ncc: 0.055570
+W: ImageName_t03_p08.tif -> ImageName_t03_p03.tif (8.63ms)
+  peak 1: x: 229.000000 y: 6.000000, ncc: 1.000000  <--
+  peak 2: x: 227.000000 y: 130.000000, ncc: 0.030159
+N: ImageName_t03_p09.tif -> ImageName_t03_p08.tif (7.92ms)
+  peak 1: x: -5.000000 y: 168.000000, ncc: 1.000000  <--
+  peak 2: x: -114.000000 y: 97.000000, ncc: 0.158051
+W: ImageName_t03_p09.tif -> ImageName_t03_p04.tif (8.69ms)
+  peak 1: x: 228.000000 y: 4.000000, ncc: 1.000000  <--
+  peak 2: x: 145.000000 y: 179.000000, ncc: 0.048748
+N: ImageName_t03_p10.tif -> ImageName_t03_p09.tif (7.78ms)
+  peak 1: x: -137.000000 y: 40.000000, ncc: 0.016304  <--
+  peak 2: x: -107.000000 y: 143.000000, ncc: 0.013610
+W: ImageName_t03_p10.tif -> ImageName_t03_p05.tif (8.31ms)
+  peak 1: x: 228.000000 y: 3.000000, ncc: 1.000000  <--
+  peak 2: x: 227.000000 y: 3.000000, ncc: 0.944781
+W: ImageName_t03_p11.tif -> ImageName_t03_p06.tif (8.51ms)
+  peak 1: x: 229.000000 y: 3.000000, ncc: 1.000000  <--
+  peak 2: x: 148.000000 y: 0.000000, ncc: 0.180231
+N: ImageName_t03_p12.tif -> ImageName_t03_p11.tif (7.76ms)
+  peak 1: x: -3.000000 y: 175.000000, ncc: 1.000000  <--
+  peak 2: x: 77.000000 y: 101.000000, ncc: 0.013741
+W: ImageName_t03_p12.tif -> ImageName_t03_p07.tif (8.89ms)
+  peak 1: x: 231.000000 y: 4.000000, ncc: 1.000000  <--
+  peak 2: x: 93.000000 y: -174.000000, ncc: 0.266750
+N: ImageName_t03_p13.tif -> ImageName_t03_p12.tif (7.91ms)
+  peak 1: x: -4.000000 y: 172.000000, ncc: 1.000000  <--
+  peak 2: x: 24.000000 y: 131.000000, ncc: 0.126285
+W: ImageName_t03_p13.tif -> ImageName_t03_p08.tif (8.98ms)
+  peak 1: x: 233.000000 y: 5.000000, ncc: 1.000000  <--
+  peak 2: x: 147.000000 y: -106.000000, ncc: 0.074840
+N: ImageName_t03_p14.tif -> ImageName_t03_p13.tif (7.90ms)
+  peak 1: x: -7.000000 y: 170.000000, ncc: 1.000000  <--
+  peak 2: x: -20.000000 y: 147.000000, ncc: 0.509399
+W: ImageName_t03_p14.tif -> ImageName_t03_p09.tif (8.41ms)
+  peak 1: x: 231.000000 y: 7.000000, ncc: 1.000000  <--
+  peak 2: x: 12.000000 y: 33.000000, ncc: 0.133718
+N: ImageName_t03_p15.tif -> ImageName_t03_p14.tif (8.62ms)
+  peak 1: x: -6.000000 y: 169.000000, ncc: 1.000000  <--
+  peak 2: x: 219.000000 y: 73.000000, ncc: 0.028571
+W: ImageName_t03_p15.tif -> ImageName_t03_p10.tif (9.02ms)
+  peak 1: x: 161.000000 y: -30.000000, ncc: 0.009100
+  peak 2: x: 162.000000 y: -153.000000, ncc: 0.041504  <--
+W: ImageName_t03_p16.tif -> ImageName_t03_p11.tif (9.62ms)
+  peak 1: x: 231.000000 y: 4.000000, ncc: 1.000000  <--
+  peak 2: x: 100.000000 y: -135.000000, ncc: 0.012191
+N: ImageName_t03_p17.tif -> ImageName_t03_p16.tif (8.61ms)
+  peak 1: x: 119.000000 y: 77.000000, ncc: 0.518518  <--
+  peak 2: x: 119.000000 y: 78.000000, ncc: 0.507352
+W: ImageName_t03_p17.tif -> ImageName_t03_p12.tif (8.33ms)
+  peak 1: x: 227.000000 y: 5.000000, ncc: 1.000000  <--
+  peak 2: x: 221.000000 y: -66.000000, ncc: 0.044204
+N: ImageName_t03_p18.tif -> ImageName_t03_p17.tif (8.46ms)
+  peak 1: x: -7.000000 y: 172.000000, ncc: 1.000000  <--
+  peak 2: x: 0.000000 y: 108.000000, ncc: 0.389603
+W: ImageName_t03_p18.tif -> ImageName_t03_p13.tif (8.84ms)
+  peak 1: x: 224.000000 y: 5.000000, ncc: 1.000000  <--
+  peak 2: x: 222.000000 y: 4.000000, ncc: 0.858617
+N: ImageName_t03_p19.tif -> ImageName_t03_p18.tif (9.06ms)
+  peak 1: x: -6.000000 y: 169.000000, ncc: 1.000000  <--
+  peak 2: x: 80.000000 y: 14.000000, ncc: 0.066899
+W: ImageName_t03_p19.tif -> ImageName_t03_p14.tif (8.40ms)
+  peak 1: x: 225.000000 y: 4.000000, ncc: 1.000000  <--
+  peak 2: x: 69.000000 y: 44.000000, ncc: 0.042874
+N: ImageName_t03_p20.tif -> ImageName_t03_p19.tif (7.92ms)
+  peak 1: x: -5.000000 y: 171.000000, ncc: 1.000000  <--
+  peak 2: x: 124.000000 y: 83.000000, ncc: 0.019563
+W: ImageName_t03_p20.tif -> ImageName_t03_p15.tif (8.72ms)
+  peak 1: x: 226.000000 y: 6.000000, ncc: 1.000000  <--
+  peak 2: x: 128.000000 y: -75.000000, ncc: 0.019333
+W: ImageName_t03_p21.tif -> ImageName_t03_p16.tif (8.54ms)
+  peak 1: x: 4.000000 y: 40.000000, ncc: 0.425445  <--
+  peak 2: x: 17.000000 y: 40.000000, ncc: 0.378995
+N: ImageName_t03_p22.tif -> ImageName_t03_p21.tif (8.60ms)
+  peak 1: x: 48.000000 y: 37.000000, ncc: 0.188509
+  peak 2: x: 48.000000 y: 36.000000, ncc: 0.199302  <--
+W: ImageName_t03_p22.tif -> ImageName_t03_p17.tif (8.18ms)
+  peak 1: x: 190.000000 y: 0.000000, ncc: 0.032428
+  peak 2: x: 188.000000 y: 0.000000, ncc: 0.033184  <--
+N: ImageName_t03_p23.tif -> ImageName_t03_p22.tif (8.69ms)
+  peak 1: x: -3.000000 y: 176.000000, ncc: 1.000000  <--
+  peak 2: x: 0.000000 y: 100.000000, ncc: 0.198815
+W: ImageName_t03_p23.tif -> ImageName_t03_p18.tif (8.34ms)
+  peak 1: x: 240.000000 y: 7.000000, ncc: 1.000000  <--
+  peak 2: x: 144.000000 y: 0.000000, ncc: 0.128128
+N: ImageName_t03_p24.tif -> ImageName_t03_p23.tif (7.81ms)
+  peak 1: x: -5.000000 y: 165.000000, ncc: 1.000000  <--
+  peak 2: x: -48.000000 y: 20.000000, ncc: 0.148013
+W: ImageName_t03_p24.tif -> ImageName_t03_p19.tif (8.29ms)
+  peak 1: x: 103.000000 y: 152.000000, ncc: 0.020313
+  peak 2: x: 232.000000 y: 174.000000, ncc: 0.055455  <--
+N: ImageName_t03_p25.tif -> ImageName_t03_p24.tif (7.96ms)
+  peak 1: x: -119.000000 y: 80.000000, ncc: 0.127854
+  peak 2: x: -139.000000 y: 84.000000, ncc: 0.176485  <--
+W: ImageName_t03_p25.tif -> ImageName_t03_p20.tif (8.84ms)
+  peak 1: x: 230.000000 y: 26.000000, ncc: 0.035333
+  peak 2: x: 110.000000 y: 12.000000, ncc: 0.039272  <--
+<11:23:18> Correcting Translations using stage heuristic model
+<11:23:18> Correcting North Translations
+<11:23:18> Overlap estimate: 6.000000
+<11:23:18> Translation range filer: min=162.870000, max=181.170000
+<11:23:18> Std threshold: 10.276206
+<11:23:18> Computed repeatability: 3.000000
+<11:23:18> Correcting West Translations
+<11:23:18> Overlap estimate: 6.000000
+<11:23:18> Translation range filer: min=218.050000, max=242.550000
+<11:23:18> Std threshold: 9.412231
+<11:23:18> Computed repeatability: 4.000000
+<11:23:18> Valid Vertical translation found: 11/25
+<11:23:18> Valid Horizontal translation found: 14/25
+<11:23:18> Vertical translation Repeatability: 3
+<11:23:18> Horizontal translation Repeatability: 4
+<11:23:18> Overall translation Repeatability: 9
+<11:23:18>   1/5
+N: ImageName_t03_p02.tif -> ImageName_t03_p01.tif hill climb range: [166,184,-13,5]
+N: ImageName_t03_p03.tif -> ImageName_t03_p02.tif hill climb range: [161,179,-12,6]
+N: ImageName_t03_p04.tif -> ImageName_t03_p03.tif hill climb range: [161,179,-13,5]
+N: ImageName_t03_p05.tif -> ImageName_t03_p04.tif hill climb range: [161,179,-14,4]
+<11:23:18>   2/5
+W: ImageName_t03_p06.tif -> ImageName_t03_p01.tif hill climb range: [-4,14,220,238]
+W: ImageName_t03_p07.tif -> ImageName_t03_p02.tif hill climb range: [-4,14,223,241]
+N: ImageName_t03_p07.tif -> ImageName_t03_p06.tif hill climb range: [165,183,-14,4]
+W: ImageName_t03_p08.tif -> ImageName_t03_p03.tif hill climb range: [-3,15,220,238]
+N: ImageName_t03_p08.tif -> ImageName_t03_p07.tif hill climb range: [162,180,-15,3]
+W: ImageName_t03_p09.tif -> ImageName_t03_p04.tif hill climb range: [-5,13,219,237]
+N: ImageName_t03_p09.tif -> ImageName_t03_p08.tif hill climb range: [159,177,-14,4]
+W: ImageName_t03_p10.tif -> ImageName_t03_p05.tif hill climb range: [-6,12,219,237]
+N: ImageName_t03_p10.tif -> ImageName_t03_p09.tif hill climb range: [161,179,-14,4]
+<11:23:18>   3/5
+W: ImageName_t03_p11.tif -> ImageName_t03_p06.tif hill climb range: [-6,12,220,238]
+W: ImageName_t03_p12.tif -> ImageName_t03_p07.tif hill climb range: [-5,13,222,240]
+N: ImageName_t03_p12.tif -> ImageName_t03_p11.tif hill climb range: [166,184,-12,6]
+W: ImageName_t03_p13.tif -> ImageName_t03_p08.tif hill climb range: [-4,14,224,242]
+N: ImageName_t03_p13.tif -> ImageName_t03_p12.tif hill climb range: [163,181,-13,5]
+W: ImageName_t03_p14.tif -> ImageName_t03_p09.tif hill climb range: [-2,16,222,240]
+N: ImageName_t03_p14.tif -> ImageName_t03_p13.tif hill climb range: [161,179,-16,2]
+W: ImageName_t03_p15.tif -> ImageName_t03_p10.tif hill climb range: [-4,14,222,240]
+N: ImageName_t03_p15.tif -> ImageName_t03_p14.tif hill climb range: [161,179,-14,4]
+<11:23:18>   4/5
+W: ImageName_t03_p16.tif -> ImageName_t03_p11.tif hill climb range: [-5,13,222,240]
+W: ImageName_t03_p17.tif -> ImageName_t03_p12.tif hill climb range: [-4,14,218,236]
+N: ImageName_t03_p17.tif -> ImageName_t03_p16.tif hill climb range: [166,184,-13,5]
+W: ImageName_t03_p18.tif -> ImageName_t03_p13.tif hill climb range: [-4,14,215,233]
+N: ImageName_t03_p18.tif -> ImageName_t03_p17.tif hill climb range: [163,181,-16,2]
+W: ImageName_t03_p19.tif -> ImageName_t03_p14.tif hill climb range: [-5,13,216,234]
+N: ImageName_t03_p19.tif -> ImageName_t03_p18.tif hill climb range: [160,178,-15,3]
+W: ImageName_t03_p20.tif -> ImageName_t03_p15.tif hill climb range: [-3,15,217,235]
+N: ImageName_t03_p20.tif -> ImageName_t03_p19.tif hill climb range: [161,179,-14,4]
+<11:23:19>   5/5
+W: ImageName_t03_p21.tif -> ImageName_t03_p16.tif hill climb range: [-2,16,231,249]
+W: ImageName_t03_p22.tif -> ImageName_t03_p17.tif hill climb range: [-2,16,231,249]
+N: ImageName_t03_p22.tif -> ImageName_t03_p21.tif hill climb range: [166,184,-13,5]
+W: ImageName_t03_p23.tif -> ImageName_t03_p18.tif hill climb range: [-2,16,231,249]
+N: ImageName_t03_p23.tif -> ImageName_t03_p22.tif hill climb range: [163,181,-14,4]
+W: ImageName_t03_p24.tif -> ImageName_t03_p19.tif hill climb range: [-2,16,231,249]
+N: ImageName_t03_p24.tif -> ImageName_t03_p23.tif hill climb range: [156,174,-14,4]
+W: ImageName_t03_p25.tif -> ImageName_t03_p20.tif hill climb range: [-2,16,231,249]
+N: ImageName_t03_p25.tif -> ImageName_t03_p24.tif hill climb range: [161,179,-14,4]
+<11:23:19> Creating global image tile locations using Minimum Spanning Tree
+<11:23:19> Assembling output stitched image
+<11:23:19> Saving output image: img-stitched-3.tif
+<11:23:19> Saving metadata: img-metadata-3.mat

@@ -1,12 +1,17 @@
-% Disclaimer:  IMPORTANT:  This software was developed at the National Institute of Standards 
-% and Technology by employees of the Federal Government in the course of their official duties.
-% Pursuant to title 17 Section 105 of the United States Code this software is not subject to 
-% copyright protection and is in the public domain. This is an experimental system. NIST 
-% assumes no responsibility whatsoever for its use by other parties, and makes no guarantees, 
-% expressed or implied, about its quality, reliability, or any other characteristic. We would
-% appreciate acknowledgment if the software is used. This software can be redistributed and/or
-% modified freely provided that any derivative works bear some notice that they are derived 
-% from it, and any modified versions bear some notice that they have been modified.
+% Disclaimer: IMPORTANT: This software was developed at the National
+% Institute of Standards and Technology by employees of the Federal
+% Government in the course of their official duties. Pursuant to
+% title 17 Section 105 of the United States Code this software is not
+% subject to copyright protection and is in the public domain. This
+% is an experimental system. NIST assumes no responsibility
+% whatsoever for its use by other parties, and makes no guarantees,
+% expressed or implied, about its quality, reliability, or any other
+% characteristic. We would appreciate acknowledgement if the software
+% is used. This software can be redistributed and/or modified freely
+% provided that any derivative works bear some notice that they are
+% derived from it, and any modified versions bear some notice that
+% they have been modified.
+
 
 
 % so vairable stands for "stitching options"
@@ -104,6 +109,7 @@ if compute_translations
   print_to_command('Computing PCIAM', log_file_path);
   [Y1, X1, Y2, X2, CC1, CC2] = compute_pciam(input_directory, img_name_grid, log_file_path);
   write_translations_to_csv(img_name_grid, X1,Y1,CC1,X2,Y2,CC2, [output_directory sprintf('relative-positions-no-optimization-%d.txt',time_slice)]);
+  save([output_directory sprintf('relative-positions-no-optimization-%d.mat',time_slice)], 'img_name_grid','X1','Y1','CC1','X2','Y2','CC2');
   
   print_to_command('Correcting Translations using stage heuristic model', log_file_path);
   [Y1, X1, Y2, X2, CC1, CC2] = translation_optimization(input_directory, img_name_grid, Y1, X1, Y2, X2, CC1, CC2, repeatability, percent_overlap_error, estimated_overlap_x, estimated_overlap_y, log_file_path);
