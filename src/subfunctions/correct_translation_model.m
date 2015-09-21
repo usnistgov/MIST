@@ -89,39 +89,110 @@ if nnz(valid_translations_index) == 0
   return;
 end
 
-% Valid translations must have a std above the computed threshold
-std_1 = NaN(size(img_name_grid));
-std_2 = NaN(size(img_name_grid));
-for j = 1:size(img_name_grid,2)
-  for i = 1:size(img_name_grid,1)
-    if valid_translations_index(i,j)
-      if direction == StitchingConstants.NORTH
-        img_file_path = [source_directory img_name_grid{i,j}];
-        img_sub_region = {[1;round((overlap+percent_overlap_error)*nb_rows/100)],[1;nb_cols]};
-        std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-        
-        img_file_path = [source_directory img_name_grid{i-1,j}];
-        img_sub_region = {[nb_rows-round((overlap+percent_overlap_error)*nb_rows/100)+1; nb_rows],[1;nb_cols]};
-        std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-      else
-        img_file_path = [source_directory img_name_grid{i,j}];
-        img_sub_region = {[1;nb_rows],[1;round((overlap+percent_overlap_error)*nb_cols/100)]};
-        std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-        
-        img_file_path = [source_directory img_name_grid{i,j-1}];
-        img_sub_region = {[1;nb_rows],[nb_cols-round((overlap+percent_overlap_error)*nb_cols/100)+1;nb_cols]};
-        std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
+
+if StitchingConstants.USE_OUTLIER_FILTER_IN_PLACE_OF_STD
+  w = 1.5; % default outlier threshold is w = 1.5
+  
+  % filter translations using outlier
+  if direction == StitchingConstants.NORTH
+    s = StitchingStatistics.getInstance;
+    s.north_std_filter_threshold = NaN; 
+    
+    % filter Y components of the translations
+    T = Y(valid_translations_index);
+    % only filter if there are more than 3 translations
+    if numel(T) > 3
+      q1 = median(T(T<median(T(:))));
+      q3 = median(T(T>median(T(:))));
+      iqd = abs(q3-q1);
+
+      valid_translations_index(Y < (q1 - w*iqd)) = 0;
+      valid_translations_index((q3 + w*iqd) < Y) = 0;
+    end
+    
+    % filter X components of the translations
+    T = X(valid_translations_index);
+    % only filter if there are more than 3 translations
+    if numel(T) > 3
+      q1 = median(T(T<median(T(:))));
+      q3 = median(T(T>median(T(:))));
+      iqd = abs(q3-q1);
+      
+      valid_translations_index(X < (q1 - w*iqd)) = 0;
+      valid_translations_index((q3 + w*iqd) < X) = 0;
+    end
+  else
+    s = StitchingStatistics.getInstance;
+    s.west_std_filter_threshold = NaN;
+    
+    % filter X components of the translations
+    T = X(valid_translations_index);
+    % only filter if there are more than 3 translations
+    if numel(T) > 3
+      q1 = median(T(T<median(T(:))));
+      q3 = median(T(T>median(T(:))));
+      iqd = abs(q3-q1);
+      
+      valid_translations_index(X < (q1 - w*iqd)) = 0;
+      valid_translations_index((q3 + w*iqd) < X) = 0;
+    end
+    
+    % filter Y components of the translations
+    T = Y(valid_translations_index);
+    % only filter if there are more than 3 translations
+    if numel(T) > 3
+      q1 = median(T(T<median(T(:))));
+      q3 = median(T(T>median(T(:))));
+      iqd = abs(q3-q1);
+      
+      valid_translations_index(Y < (q1 - w*iqd)) = 0;
+      valid_translations_index((q3 + w*iqd) < Y) = 0;
+    end
+  end
+  
+else
+  % Valid translations must have a std above the computed threshold
+  std_1 = NaN(size(img_name_grid));
+  std_2 = NaN(size(img_name_grid));
+  for j = 1:size(img_name_grid,2)
+    for i = 1:size(img_name_grid,1)
+      if valid_translations_index(i,j)
+        if direction == StitchingConstants.NORTH
+          img_file_path = [source_directory img_name_grid{i,j}];
+          img_sub_region = {[1;round((overlap+percent_overlap_error)*nb_rows/100)],[1;nb_cols]};
+          std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
+
+          img_file_path = [source_directory img_name_grid{i-1,j}];
+          img_sub_region = {[nb_rows-round((overlap+percent_overlap_error)*nb_rows/100)+1; nb_rows],[1;nb_cols]};
+          std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
+        else
+          img_file_path = [source_directory img_name_grid{i,j}];
+          img_sub_region = {[1;nb_rows],[1;round((overlap+percent_overlap_error)*nb_cols/100)]};
+          std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
+
+          img_file_path = [source_directory img_name_grid{i,j-1}];
+          img_sub_region = {[1;nb_rows],[nb_cols-round((overlap+percent_overlap_error)*nb_cols/100)+1;nb_cols]};
+          std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
+        end
       end
     end
   end
+
+  % std threshold is the median of all computed std values
+  std_threshold = median([std_1(valid_translations_index); std_2(valid_translations_index)]);
+  print_to_command(sprintf('Std threshold: %f', std_threshold), log_file_path);
+
+  % filter the valid translations to remove the ones that have a std of less than the threshold
+  valid_translations_index( std_1<std_threshold | std_2<std_threshold ) = 0;
+  
+  if direction == StitchingConstants.NORTH
+    s = StitchingStatistics.getInstance;
+    s.north_std_filter_threshold = std_threshold;
+  else
+    s = StitchingStatistics.getInstance;
+    s.west_std_filter_threshold = std_threshold;
+  end
 end
-
-% std threshold is the median of all computed std values
-std_threshold = median([std_1(valid_translations_index); std_2(valid_translations_index)]);
-print_to_command(sprintf('Std threshold: %f', std_threshold), log_file_path);
-
-% filter the valid translations to remove the ones that have a std of less than the threshold
-valid_translations_index( std_1<std_threshold | std_2<std_threshold ) = 0;
 
 % test for existance of valid translations
 if nnz(valid_translations_index) == 0
@@ -154,7 +225,6 @@ if direction == StitchingConstants.NORTH
   repeatability = max(rx,ry);
   
   s = StitchingStatistics.getInstance;
-  s.north_std_filter_threshold = std_threshold;
   s.north_repeatability = repeatability;
 else
   ry = ceil((max(Y(valid_translations_index)) - min(Y(valid_translations_index)))/2);
@@ -164,7 +234,6 @@ else
   repeatability = max(rx,ry);
   
   s = StitchingStatistics.getInstance;
-  s.west_std_filter_threshold = std_threshold;
   s.west_repeatability = repeatability;
 end
 print_to_command(sprintf('Computed repeatability: %f', repeatability), log_file_path);

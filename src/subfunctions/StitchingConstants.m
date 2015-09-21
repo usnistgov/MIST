@@ -33,6 +33,12 @@ classdef StitchingConstants
     MST_SOUTH = 12;
     MST_WEST = 22;
     MST_EAST = 21;
+    
+    % Overlap Computation Constants
+    USE_MLE_TO_COMPUTE_OVERLAP = true;
+    MLE_GRID_SEARCH_SIZE_PER_SIDE = 4;
+    % Translation Filtering Constants
+    USE_OUTLIER_FILTER_IN_PLACE_OF_STD = true;
   end
   
   % direction constants
