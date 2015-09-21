@@ -34,6 +34,7 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
@@ -137,7 +138,7 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
             // If the old correlation was a number, then it was a good translation.
             // Increment the new translation by the value of the old correlation to increase beyond 1
             // This will enable these tiles to have higher priority in minimum spanning tree search
-            tile.getNorthTranslation().incrementCorrelation(Math.floor(oldCorr));
+            tile.getNorthTranslation().incrementCorrelation(OptimizationUtils.CorrelationWeight);
           }
 
           if (tile.getTileCorrelation() < bestNorth.getCorrelation()) {
@@ -184,7 +185,7 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
             // If the old correlation was a number, then it was a good translation.
             // Increment the new translation by the value of the old correlation to increase beyond 1
             // This will enable these tiles to have higher priority in minimum spanning tree search
-            tile.getWestTranslation().incrementCorrelation(Math.floor(oldCorr));
+            tile.getWestTranslation().incrementCorrelation(OptimizationUtils.CorrelationWeight);
           }
 
           if (tile.getTileCorrelation() < bestWest.getCorrelation()) {

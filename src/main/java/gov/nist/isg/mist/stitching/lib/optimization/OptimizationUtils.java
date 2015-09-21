@@ -54,7 +54,7 @@ public class OptimizationUtils {
 
   private static final double CorrelationThreshold = 0.5;
   private static final int NumTopCorrelations = 5;
-  private static final double CorrelationWeight = 3.0;
+  public static final double CorrelationWeight = 3.0;
 
   /**
    * The type of overlap computation
