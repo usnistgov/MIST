@@ -67,7 +67,7 @@ public class CheckSubGridModel extends IntModel {
   public boolean validateText(String val) {
     if (super.validateText(val)) {
       if (this.subgridPanel.isValidSubGrid()) {
-        this.subgridPanel.checkUseFullGrid();
+//        this.subgridPanel.checkUseFullGrid();
         return true;
       }
     }

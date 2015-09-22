@@ -181,6 +181,13 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
   public void updateSubGrid() {
 
     if (this.useFullGrid.isSelected()) {
+      // disable the subgrid width height start row and start column
+      this.startRow.setEnabled(false);
+      this.startCol.setEnabled(false);
+      this.extentHeight.setEnabled(false);
+      this.extentWidth.setEnabled(false);
+
+
       this.changingValues = true;
 
       int plateWidth = this.inputPanel.getPlateWidth();
@@ -194,6 +201,12 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
       this.changingValues = false;
     } else {
+      // enable the subgrid width height start row and start column
+      this.startRow.setEnabled(true);
+      this.startCol.setEnabled(true);
+      this.extentHeight.setEnabled(true);
+      this.extentWidth.setEnabled(true);
+
       if (isValidSubGrid()) {
         this.hideSubGridError();
       } else {
@@ -268,19 +281,19 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     return true;
   }
 
-  /**
-   * Checks to see if the user parameters are using the full grid options or not. If they are not,
-   * then it will uncheck use full grid
-   */
-  public void checkUseFullGrid() {
-    if (this.startRow.getValue() != 0 || this.startCol.getValue() != 0
-        || this.extentWidth.getValue() != this.inputPanel.getPlateWidth()
-        || this.extentHeight.getValue() != this.inputPanel.getPlateHeight()) {
-      setUseFullGrid(false);
-    } else {
-      setUseFullGrid(true);
-    }
-  }
+//  /**
+//   * Checks to see if the user parameters are using the full grid options or not. If they are not,
+//   * then it will uncheck use full grid
+//   */
+//  public void checkUseFullGrid() {
+//    if (this.startRow.getValue() != 0 || this.startCol.getValue() != 0
+//        || this.extentWidth.getValue() != this.inputPanel.getPlateWidth()
+//        || this.extentHeight.getValue() != this.inputPanel.getPlateHeight()) {
+//      setUseFullGrid(false);
+//    } else {
+//      setUseFullGrid(true);
+//    }
+//  }
 
   /**
    * Displays errors for the sub-grid options
@@ -366,6 +379,8 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
         || this.extentHeight.getValue() != this.inputPanel.getPlateHeight()) {
       setUseFullGrid(false);
     }
+
+    updateSubGrid();
 
     this.suppressSubGridWarning.setSelected(params.getInputParams().isSuppressSubGridWarning());
     this.changingValues = false;

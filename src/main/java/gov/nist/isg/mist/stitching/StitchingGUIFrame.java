@@ -335,8 +335,8 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     enableLoadingParams();
     this.outputPanel.loadParamsIntoGUI(params);
     this.advancedPanel.loadParamsIntoGUI(params);
-    this.subgridPanel.loadParamsIntoGUI(params);
     this.inputPanel.loadParamsIntoGUI(params);
+    this.subgridPanel.loadParamsIntoGUI(params);
     this.helpPanel.loadParamsIntoGUI(params);
     disableLoadingParams();
   }
