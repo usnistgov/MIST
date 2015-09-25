@@ -545,7 +545,8 @@ public class OptimizationUtils {
     }
 
     double size = getOverlapRange(grid, dispValue);
-    return Math.round(100.0 * (1.0 - mu/size));
+    double overlap = 100.0 * (1.0 - mu/size);
+    return ((double)Math.round(100*overlap))/100;
   }
 
   /**
