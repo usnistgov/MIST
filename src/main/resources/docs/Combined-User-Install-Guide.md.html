@@ -357,10 +357,12 @@ pre.editor-colors[mini] .scroll-view,
 <li><a href="#input-parameters">Input Parameters</a></li>
 <li><a href="#output-parameters">Output Parameters</a></li>
 <li><a href="#subgrid-parameters">Subgrid Parameters</a></li>
-<li><a href="#advanced-parameters-optional">Advanced Parameters (optional)</a></li>
+<li><a href="#advanced-parameters">Advanced Parameters</a><ol>
 <li><a href="#java-execution">Java Execution</a></li>
 <li><a href="#fftw-execution">FFTW Execution</a></li>
 <li><a href="#cuda-execution">CUDA Execution</a></li>
+</ol>
+</li>
 <li><a href="#help">Help</a></li>
 </ol>
 </li>
@@ -541,13 +543,13 @@ Blending Types:</p>
 <p><strong>Suppress SubGrid Warning Dialog Box</strong> - suppress the warning dialog box that gets displayed when stitching a subgrid. The warning dialog is useful if you infrequently stitch subgrids to prevent inadvertently stitching a subgrid.</p>
 </blockquote>
 <hr>
-<h4 id="advanced-parameters-optional-">Advanced Parameters (optional)</h4>
+<h4 id="advanced-parameters">Advanced Parameters</h4>
 <p><img src="C:\majurski\NISTGithub\MIST.wiki\images\AdvancedWindow.png" alt=""></p>
 <blockquote>
-<p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm.</p>
-<p><strong>Horizontal overlap</strong> - Sets the horizontal overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic.</p>
-<p><strong>Vertical overlap</strong> - Sets the vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic.</p>
-<p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables.</p>
+<p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm. This value is specified in pixels.</p>
+<p><strong>Horizontal overlap</strong> - Sets the horizontal overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
+<p><strong>Vertical overlap</strong> - Sets the vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
+<p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables. This value is specified in percent. The value must be between 0 and 100. This value should generally not exceed 10. (Default: 5)</p>
 <p><strong>Number of FFT Peaks</strong> - Specifies the number of peaks to check when computing the phase correlation image alignment method. We have determined that modifying this value can yield more accurate pre-optimization displacements. This value should not exceed 10. (Default: 2)</p>
 <p><strong>Log Level</strong> - Sets the log level for the user interface and the stitching execution.
 Possible Options:</p>
