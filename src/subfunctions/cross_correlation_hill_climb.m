@@ -31,16 +31,28 @@ done = false;
 % init the matrix to hold computed ncc values to avoid recomputing
 ncc_values = NaN(3,3);
 
+dx_vals = [-1;0;1;0];
+dy_vals = [0;-1;0;1];
+
 while ~done
-  % compute the 8 connected peaks to the current location
   
-  for delta_x = -1:1
-    for delta_y = -1:1
-      if isnan(ncc_values(2+delta_y,2+delta_x)) % compute the NCC value if not already computed
-        ncc_values(2+delta_y,2+delta_x) = find_ncc(I1, I2, bounds, x+delta_x, y+delta_y);
-      end
+  % comptue the 4 connected peaks to the current locations
+  for k = 1:numel(dx_vals)
+    delta_x = dx_vals(k);
+    delta_y = dy_vals(k);
+    if isnan(ncc_values(2+delta_y,2+delta_x)) % compute the NCC value if not already computed
+      ncc_values(2+delta_y,2+delta_x) = find_ncc(I1, I2, bounds, x+delta_x, y+delta_y);
     end
   end
+  
+%   compute the 8 connected peaks to the current location
+%   for delta_x = -1:1
+%     for delta_y = -1:1
+%       if isnan(ncc_values(2+delta_y,2+delta_x)) % compute the NCC value if not already computed
+%         ncc_values(2+delta_y,2+delta_x) = find_ncc(I1, I2, bounds, x+delta_x, y+delta_y);
+%       end
+%     end
+%   end
   
   
   [local_max_peak,idx] = max(ncc_values(:));
@@ -60,6 +72,11 @@ while ~done
   
   % update the elements in the ncc_values to reflect the new translation
   ncc_values = translate_mat_elements(ncc_values,delta_y,delta_x);
+  % remove the 8 connected values
+  ncc_values(1,1) = NaN;
+  ncc_values(1,end) = NaN;
+  ncc_values(end,1) = NaN;
+  ncc_values(end,end) = NaN;
   
   if delta_y == 0 && delta_x == 0
     done = true;
