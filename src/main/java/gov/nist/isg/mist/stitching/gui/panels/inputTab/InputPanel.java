@@ -769,6 +769,20 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
           this.filenamePattern.showError();
           this.globalPositionFile.showError();
           return false;
+        }else{
+            // check tha thte number of timeslice iterators matches between the filename and the global positions
+            int nDigitsFn = TileGridLoaderUtils.getNumberMatchElements(this.getFilePattern(), TileGridLoaderUtils.timePattern, true);
+            int nDigitsGFn = TileGridLoaderUtils.getNumberMatchElements(this.getGlobalPositionFile().getValue(), TileGridLoaderUtils.timePattern, true);
+
+            if (nDigitsFn != nDigitsGFn) {
+                // global positions file has a different number of timeslice iterators than the filename
+                Log.msg(LogType.MANDATORY, "Timeslice iterator count \"{tt}\" mismatch between global "
+                        + "positions file and filename pattern. \nThe number of timeslice iterators must match between the"
+                        + "filename pattern and the global positions file.");
+                this.filenamePattern.showError();
+                this.globalPositionFile.showError();
+                return false;
+            }
         }
       }else{
         // ensure that the global positions file does not have timeslices

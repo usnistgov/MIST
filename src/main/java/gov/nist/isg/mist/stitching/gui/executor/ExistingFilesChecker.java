@@ -28,6 +28,7 @@ package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
 import ij.macro.Interpreter;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -168,24 +169,29 @@ public class ExistingFilesChecker implements Comparator<String> {
         int minTimeSlice = timeSliceParam.getMin();
         int maxTimeSlice = timeSliceParam.getMax();
 
+        int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
+
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           if (checkOutputImage) {              
-            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice);
+            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice, nDigits);
 
             if (imgFile.exists())
               fileList.add(imgFile.getAbsolutePath());
           }
 
           if (checkOutputMeta) {
-            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice);
+
+
+
+            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice, nDigits);
             if (absFile.exists())
               fileList.add(absFile.getAbsolutePath());
 
-            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice);
+            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice, nDigits);
             if (relPosFile.exists())
               fileList.add(relPosFile.getAbsolutePath());
 
-            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice);
+            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice, nDigits);
             if (relPosNoOptFile.exists())
               fileList.add(relPosNoOptFile.getAbsolutePath());
 

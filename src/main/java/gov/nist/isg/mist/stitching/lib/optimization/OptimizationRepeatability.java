@@ -149,7 +149,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     if(this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
-    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
+    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice(),
+            this.params.getInputParams().getNumberTimeSliceDigits());
     if(this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
@@ -327,7 +328,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     if(this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
-    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice());
+    File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice(),
+            this.params.getInputParams().getNumberTimeSliceDigits());
     if(this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 

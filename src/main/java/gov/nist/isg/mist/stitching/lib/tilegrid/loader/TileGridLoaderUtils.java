@@ -48,6 +48,44 @@ public class TileGridLoaderUtils {
    * The time file pattern
    */
   public static final String timePattern = "(.*)(\\{[t]+\\})(.*)";
+
+  /**
+   * Gets the number of elements in the match string
+   *
+   * @param filePattern the file pattern
+   * @param regex the regular expression
+   * @param silent whether to show error or not
+   * @return the position pattern
+   */
+  public static int getNumberMatchElements(String filePattern, String regex, boolean silent) {
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(filePattern);
+
+    // Check if regex is correct. We expect 3 groups: (*)({ppp})(*)
+    if (!matcher.find() || matcher.groupCount() != 3) {
+      if (!silent) {
+        Log.msg(LogType.MANDATORY, "Incorrect filePattern: " + filePattern);
+        Log.msg(LogType.MANDATORY, "Regex: " + regex);
+        Log.msg(LogType.MANDATORY, "Regex Groups count: " + matcher.groupCount());
+        while (matcher.find()) {
+          Log.msg(LogType.MANDATORY, matcher.group());
+        }
+        throw new IllegalArgumentException("Incorect filePattern: " + filePattern);
+      }
+      return 0;
+
+    }
+
+    // The matcher should fine at group: 0 - the entire string,
+    // group 1 = prefix
+    // group 2 = {i}
+    // group 3 = suffix
+    String prefix = matcher.group(1);
+    int iCount = matcher.group(2).length() - 2;
+    String suffix = matcher.group(3);
+
+    return iCount;
+  }
   
   /**
    * Gets the pattern associated with the regex

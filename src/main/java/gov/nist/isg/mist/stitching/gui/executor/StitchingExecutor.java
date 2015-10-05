@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.MessageDialog;
@@ -299,14 +300,7 @@ public class StitchingExecutor implements Runnable {
 
   private void assembleFromMeta() throws StitchingException {
 
-    this.params.getOutputParams().setOutputMeta(false);       
-
-    File metadataFile = new File(this.params.getInputParams().getGlobalPositionsFile());
-    if(!metadataFile.exists()) {
-      Log.msg(LogType.MANDATORY,
-              "Error: global positions file does not exist: " + this.params.getInputParams().getGlobalPositionsFile());
-      return;
-    }
+    this.params.getOutputParams().setOutputMeta(false);
 
     runStitching(true, true, false);
   }
@@ -756,17 +750,19 @@ public class StitchingExecutor implements Runnable {
 
     StitchingGuiUtils.updateProgressBar(progress, true, "Outputting metadata");
 
+    int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
+
     // abs positions    
-    Stitching.outputAbsolutePositions(grid, this.params.getOutputParams().getAbsPosFile(timeSlice));
+    Stitching.outputAbsolutePositions(grid, this.params.getOutputParams().getAbsPosFile(timeSlice, nDigits));
 
     // relative positions
     Stitching.outputRelativeDisplacements(grid,
-                                          this.params.getOutputParams().getRelPosFile(timeSlice));
+                                          this.params.getOutputParams().getRelPosFile(timeSlice, nDigits));
 
     // relative positions no optimization
     if(this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams()
-          .getRelPosNoOptFile(timeSlice));
+          .getRelPosNoOptFile(timeSlice, nDigits));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
@@ -775,7 +771,9 @@ public class StitchingExecutor implements Runnable {
     ImagePlus img = null;
     StitchingGuiUtils.updateProgressBar(progress, true, "Writing Full Image");
 
-    File imageFile = this.params.getOutputParams().getOutputImageFile(timeSlice);
+    int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
+
+    File imageFile = this.params.getOutputParams().getOutputImageFile(timeSlice, nDigits);
 
     ImageTile<T> initImg = grid.getSubGridTile(0, 0);
     initImg.readTile();

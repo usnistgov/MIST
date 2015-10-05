@@ -88,21 +88,25 @@ public class OutputParameters implements StitchingAppParamFunctions {
   /**
    * Gets the output image name
    * @param timeSlice the timeslice for the output image
+   * @param nDigits the number of digits to pad to
    * @return the output image name
    */
-  public String getOutputImageName(int timeSlice)
+  public String getOutputImageName(int timeSlice, int nDigits)
   {
-    return this.outFilePrefix + fullImgFilename + "-" + timeSlice + ".tif";
+    String fmt = "%0" + nDigits + "d";
+    return this.outFilePrefix + fullImgFilename + "-" + String.format(fmt,timeSlice) + ".tif";
   }
 
   /**
    * Gets the hill climbing starting position filename
    * @param timeslice the timeslice
+   * @param nDigits the number of digits to pad to
    * @return the hill climbing starting position name
    */
-  public String getHillClimbStartingPositionsName(int timeslice)
+  public String getHillClimbStartingPositionsName(int timeslice, int nDigits)
   {
-    return this.outFilePrefix + hillClimbPosFilename + "-" + timeslice + metadataSuffix;
+    String fmt = "%0" + nDigits + "d";
+    return this.outFilePrefix + hillClimbPosFilename + "-" + String.format(fmt,timeslice) + metadataSuffix;
   }
   
   /**
@@ -121,31 +125,37 @@ public class OutputParameters implements StitchingAppParamFunctions {
   /**
    * Gets the absolute positions file name at a given timeslice
    * @param timeSlice the timeslice
+   * @param nDigits the number of digits to pad to
    * @return the absolute positions filename
    */
-  public String getAbsPosFileName(int timeSlice)
+  public String getAbsPosFileName(int timeSlice, int nDigits)
   {
-    return this.outFilePrefix + absPosFilename + "-" + timeSlice + metadataSuffix;
+    String fmt = "%0" + nDigits + "d";
+    return this.outFilePrefix + absPosFilename + "-" + String.format(fmt,timeSlice) + metadataSuffix;
   }
   
   /**
    * Gets the relative positions file name at a given timeslice
    * @param timeSlice the timeslice
+   * @param nDigits the number of digits to pad to
    * @return the relative positions filename
    */
-  public String getRelPosFileName(int timeSlice)
+  public String getRelPosFileName(int timeSlice, int nDigits)
   {
-    return this.outFilePrefix + relPosFilename + "-" + timeSlice + metadataSuffix;
+    String fmt = "%0" + nDigits + "d";
+    return this.outFilePrefix + relPosFilename + "-" + String.format(fmt,timeSlice) + metadataSuffix;
   }
 
   /**
    * Gets the relative positions before optimization file name at a given timeslice
    * @param timeSlice the timeslice
+   * @param nDigits the number of digits to pad to
    * @return the relative positions before optimization filename
    */
-  public String getRelPosNoOptFileName(int timeSlice)
+  public String getRelPosNoOptFileName(int timeSlice, int nDigits)
   {
-    return this.outFilePrefix + relPosNoOptFilename + "-" + timeSlice + metadataSuffix;
+    String fmt = "%0" + nDigits + "d";
+    return this.outFilePrefix + relPosNoOptFilename + "-" + String.format(fmt,timeSlice) + metadataSuffix;
   }
 
   /**
@@ -165,21 +175,23 @@ public class OutputParameters implements StitchingAppParamFunctions {
   /**
    * Gets the hill climb position file
    * @param timeSlice the timeslice
+   * @param nDigits the number of digits to pad to
    * @return the hill climb position file
    */
-  public File getHillClimbPositionFile(int timeSlice)
+  public File getHillClimbPositionFile(int timeSlice, int nDigits)
   {
-    return new File(this.outputPath, getHillClimbStartingPositionsName(timeSlice));
+    return new File(this.outputPath, getHillClimbStartingPositionsName(timeSlice, nDigits));
   }
   
   /**
    * Gets the output image file at a given time slice
    * @param timeSlice  the time slice
+   * @param nDigits the number of digits to pad to
    * @return the output image file
    */
-  public File getOutputImageFile(int timeSlice)
+  public File getOutputImageFile(int timeSlice, int nDigits)
   {
-    return new File(this.outputPath, this.getOutputImageName(timeSlice));
+    return new File(this.outputPath, this.getOutputImageName(timeSlice, nDigits));
   }
 
   /**
@@ -187,29 +199,31 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the time slice
    * @return the absolute position file
    */
-  public File getAbsPosFile(int timeSlice)
+  public File getAbsPosFile(int timeSlice, int nDigits)
   {
-    return new File(this.outputPath, getAbsPosFileName(timeSlice));
+    return new File(this.outputPath, getAbsPosFileName(timeSlice, nDigits));
   }
 
   /**
    * Gets the relative position file at a given time slice
    * @param timeSlice the time slice
+   * @param nDigits the number of digits to pad to
    * @return the relative position file
    */
-  public File getRelPosFile(int timeSlice)
+  public File getRelPosFile(int timeSlice, int nDigits)
   {
-    return new File(this.outputPath, getRelPosFileName(timeSlice));
+    return new File(this.outputPath, getRelPosFileName(timeSlice, nDigits));
   }
 
   /**
    * Gets the relative position without optimization file at a given time slice
    * @param timeSlice the time slice
+   * @param nDigits the number of digits to pad to
    * @return the relative position without optimization file
    */
-  public File getRelPosNoOptFile(int timeSlice)
+  public File getRelPosNoOptFile(int timeSlice, int nDigits)
   {
-    return new File(this.outputPath, getRelPosNoOptFileName(timeSlice));
+    return new File(this.outputPath, getRelPosNoOptFileName(timeSlice, nDigits));
   }
 
 
