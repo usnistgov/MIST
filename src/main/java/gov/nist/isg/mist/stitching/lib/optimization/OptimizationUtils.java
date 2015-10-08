@@ -683,6 +683,14 @@ public class OptimizationUtils {
         lessThan.add(d);
       if(d > median)
         greaterThan.add(d);
+      if(d == median) {
+        // if equal to the median put the value in each list half the time
+        if(Math.random() < 0.5) {
+          lessThan.add(d);
+        }else{
+          greaterThan.add(d);
+        }
+      }
     }
     if(lessThan.size() == 0 || greaterThan.size() == 0)
       return tiles;
