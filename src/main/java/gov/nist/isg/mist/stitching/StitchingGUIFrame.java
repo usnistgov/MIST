@@ -308,17 +308,17 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
         type = ExecutionType.LoadParams;
       else if (e.getSource().equals(this.saveParamsButton))
         type = ExecutionType.SaveParams;
+      else if (e.getSource().equals(this.previewNoOverlapButton))
+        type = ExecutionType.PreviewNoOverlap;
 
-      StitchingSwingWorker executor = new StitchingSwingWorker(this, type);
-      executor.execute();
+      if(type != null) {
+        StitchingSwingWorker executor = new StitchingSwingWorker(this, type);
+        executor.execute();
+      }
     }else{
       Log.msg(LogType.MANDATORY, "Stitching is already executing.");
     }
 
-
-    if(e.getSource() == this.previewNoOverlapButton && !MIST.isStitching()) {
-      this.displayNoOverlap();
-    }
   }
 
   /**
