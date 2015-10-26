@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
  * @author Tim Blattner
  * @version 1.0
  */
-public abstract class TileWorkerMemory {
+public abstract class TileWorkerMemory<T> {
 
   private int width;
   private int height;
@@ -139,19 +139,19 @@ public abstract class TileWorkerMemory {
    * 
    * @return the pcm memory
    */
-  public abstract Pointer<Double> getPCMPMemory();
+  public abstract Pointer<T> getPCMPMemory();
 
   /**
    * Gets the input phase correlation matrix memory
    * 
    * @return the pcm input memory
    */
-  public abstract Pointer<Double> getPCMInMemory();
+  public abstract Pointer<T> getPCMInMemory();
 
   /**
    * @return the FFT In pointer
    */
-  public abstract Pointer<Double> getFFTInP();
+  public abstract Pointer<T> getFFTInP();
 
   /**
    * @return the array of indices memory

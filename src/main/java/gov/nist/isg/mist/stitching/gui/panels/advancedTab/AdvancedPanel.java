@@ -99,6 +99,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
   private ParallelOptPane parallelOptions;
   private JComboBox loggingLevel;
   private JComboBox debugLevel;
+  private JCheckBox useDoublePrecision = new JCheckBox("Use Double Precision?");
 
 
   /**
@@ -130,9 +131,9 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.overlapUncertainty =
         new TextFieldInputPanel<Double>("Overlap uncertainty", "", new DblModel(0.0, 100.0, true),
             overlapUncertaintyHelp);
-
     
     this.parallelOptions = new ParallelOptPane();
+
 
     setFocusable(false);
 
@@ -207,6 +208,8 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     c.anchor = GridBagConstraints.LINE_START;
     otherAdvancedPanel.add(this.numFFTPeaks, c);
     c.gridy = 1;
+    otherAdvancedPanel.add(this.useDoublePrecision, c);
+    c.gridy = 2;
     otherAdvancedPanel.add(logPanel, c);
 
 
@@ -242,6 +245,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.verticalOverlap.setValue(params.getAdvancedParams().getVerticalOverlap());
     this.overlapUncertainty.setValue(params.getAdvancedParams().getOverlapUncertainty());
     this.parallelOptions.loadParamsIntoGUI(params);
+    this.useDoublePrecision.setSelected(params.getAdvancedParams().isUseDoublePrecision());
 
     Log.LogType logType = params.getLogParams().getLogLevel();
 
@@ -312,6 +316,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     params.getAdvancedParams().setVerticalOverlap(this.verticalOverlap.getValue());
     params.getAdvancedParams().setNumFFTPeaks(this.numFFTPeaks.getValue());
     params.getAdvancedParams().setOverlapUncertainty(this.overlapUncertainty.getValue());
+    params.getAdvancedParams().setUseDoublePrecision(this.useDoublePrecision.isSelected());
 
     Log.LogType logLevel = this.getLogLevel();
     Debug.DebugType debugLevel = this.getDebugLevel();

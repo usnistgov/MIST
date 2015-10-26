@@ -42,6 +42,8 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
+import gov.nist.isg.mist.stitching.lib32.memorypool.PointerAllocator32;
 import org.bridj.Pointer;
 
 import javax.swing.*;
@@ -121,6 +123,12 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       this.memoryPool =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<Pointer<Double>>(memoryPoolSize, false,
               new PointerAllocator(), size);
+    } else if (initTile instanceof FftwImageTile32) {
+      int[] size = {FftwImageTile32.fftSize};
+
+      this.memoryPool =
+              (DynamicMemoryPool<T>) new DynamicMemoryPool<Pointer<Float>>(memoryPoolSize, false,
+                      new PointerAllocator32(), size);
     } else if (initTile instanceof JavaImageTile) {
 
       int[] size =

@@ -320,14 +320,10 @@ public class StitchingExecutor implements Runnable {
 
     StitchingExecutorInterface<T> stitchingExecutorInf = null;
 
-    if (assembleFromMeta)
-    {
+    if (assembleFromMeta) {
       stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
-    }
-    else
-    {
-      switch(this.params.getAdvancedParams().getProgramType())
-      {
+    }else{
+      switch(this.params.getAdvancedParams().getProgramType()) {
         case AUTO:
           // initialize and check fftw first
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
@@ -343,7 +339,30 @@ public class StitchingExecutor implements Runnable {
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);       
           break;
         case FFTW:
-          stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);                
+          // update the fftw library to change between the float and double versions
+          if(params.getAdvancedParams().isUseDoublePrecision()) {
+            String libFN = params.getAdvancedParams().getFftwLibraryFileName();
+            if(libFN.startsWith("libfftw3f")) {
+              params.getAdvancedParams().setFftwLibraryFileName("libfftw3" + libFN.substring(9));
+            }
+            libFN = params.getAdvancedParams().getFftwLibraryName();
+            if(libFN.startsWith("libfftw3f")) {
+              params.getAdvancedParams().setFftwLibraryName("libfftw3" + libFN.substring(9));
+            }
+
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
+          }else{
+            String libFN = params.getAdvancedParams().getFftwLibraryFileName();
+            if(!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+              params.getAdvancedParams().setFftwLibraryFileName("libfftw3f" + libFN.substring(8));
+            }
+            libFN = params.getAdvancedParams().getFftwLibraryName();
+            if(!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+              params.getAdvancedParams().setFftwLibraryName("libfftw3f" + libFN.substring(8));
+            }
+
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Float>>(this);
+          }
           break;
         case JAVA:
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();                     
@@ -357,9 +376,8 @@ public class StitchingExecutor implements Runnable {
     this.executor = stitchingExecutorInf;
 
     if (stitchingExecutorInf == null || !stitchingExecutorInf.checkForLibs(this.params, displayGui))
-    {
       return;
-    }
+
 
     // Check for overwriting files, and confirm with user
     ExistingFilesChecker fileChecker = new ExistingFilesChecker(this.params);
@@ -409,6 +427,7 @@ public class StitchingExecutor implements Runnable {
 
       this.stitchingExecutionFrame.display();
     }
+
 
     Log.msg(LogType.MANDATORY, "STITCHING BEGINS!");
     this.stitchingStatistics.setExecutionType(this.params.getAdvancedParams().getProgramType());

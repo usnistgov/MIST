@@ -31,6 +31,7 @@ package gov.nist.isg.mist.stitching.lib.common;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import ij.process.ImageProcessor;
 
 import java.awt.image.WritableRaster;
@@ -91,6 +92,31 @@ public class Array2DView {
   public double get(int row, int col) {
     return this.data.getPixelValue(col+this.startCol, row+this.startRow);
   }
+
+
+  /**
+   * Gets pixel value inside of array2dView at index row and column
+   *
+   * @param row the row of the pixel
+   * @param col the column of the pixel
+   * @return the value at row and column
+   */
+  public float getf(int row, int col) {
+    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
+  }
+
+
+  /**
+   * Gets pixel value inside of array2dView at index row and column
+   *
+   * @param row the row of the pixel
+   * @param col the column of the pixel
+   * @return the value at row and column
+   */
+  public double getd(int row, int col) {
+    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
+  }
+
 
   /**
    * Gets the index at the specified row and column

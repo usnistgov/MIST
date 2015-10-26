@@ -46,6 +46,8 @@ import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 
 import javax.swing.*;
 import java.io.FileNotFoundException;
@@ -92,6 +94,8 @@ public class TileWorker<T> implements Runnable {
     bkDone = false;
     if (initTile instanceof FftwImageTile)
       this.memory = new FftwTileWorkerMemory(initTile);
+    else if (initTile instanceof FftwImageTile32)
+        this.memory = new FftwTileWorkerMemory32(initTile);
     else if (initTile instanceof CudaImageTile)
       this.memory = new CudaTileWorkerMemory(initTile);
     else if (initTile instanceof JavaImageTile)

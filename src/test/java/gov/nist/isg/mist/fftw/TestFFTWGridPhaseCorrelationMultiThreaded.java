@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.fftw;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
 import gov.nist.isg.mist.timing.TimeUtil;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
@@ -60,40 +61,31 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
    */
   public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     // UtilFnsStitching.disableUtilFnsNativeLibrary();
-    UtilFnsStitching.enableUtilFnsNativeLibrary();
-    int startRow = 0;
-    int startCol = 0;
-    int extentWidth = 10;
-    int extentHeight = 10;
+      Log.setLogLevel(LogType.INFO);
+      int startRow = 0;
+      int startCol = 0;
+      int extentWidth = 23;
+      int extentHeight = 30;
 
-    Log.setLogLevel(LogType.HELPFUL);
-    // Debug.setDebugLevel(DebugType.INFO);
-    Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded FFTW");
+      Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded FFTW");
 
-    File tileDir = new File("F:\\StitchingData\\70perc_input_images");
-    // File tileDir = new File("F:\\StitchingData\\joe_bad_data");
-    FftwImageTile.initLibrary(System.getProperty("user.dir") + File.separator + "libs"
-        + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns",
-        "libfftw3");
-    // {
+      File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
+      FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3");
 
-    Log.msg(LogType.INFO, "Generating tile grid");
-    TileGrid<ImageTile<Pointer<Double>>> grid = null;
-    try {
-      TileGridLoader loader =
-          new SequentialTileGridLoader(14, 18, 1, "F_{pppp}.tif", GridOrigin.UR,
-              GridDirection.VERTICALCOMBING);
+      Log.msg(LogType.INFO, "Generating tile grid");
+      TileGrid<ImageTile<Pointer<Double>>> grid = null;
+      try {
+          TileGridLoader loader =
+                  new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+                          GridDirection.VERTICALCOMBING);
 
 
-      grid =
-          new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,
-              loader, tileDir, FftwImageTile.class);
-      // new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,
-      // 16, 22, GridOrigin.UL, GridDirection.HorizontalCombing, 1, tileDir,
-      // "KB_H9Oct4GFP_20130518_p000{iii}t00000102z001c01.tif", FftwImageTile.class);
-    } catch (InvalidClassException e) {
-      Log.msg(LogType.MANDATORY, e.getMessage());
-    }
+          grid =
+                  new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,
+                          loader, tileDir, FftwImageTile.class);
+      } catch (InvalidClassException e) {
+          Log.msg(LogType.MANDATORY, e.getMessage());
+      }
 
     if (grid == null)
       return;
@@ -103,13 +95,15 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
 
     Log.msg(LogType.INFO, "Loading FFTW plan");
 
-    FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), 0x21, true, "test.dat");
+    FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library.FFTW_MEASURE, true, "test.dat");
 
     FftwImageTile.savePlan("test.dat");
 
     // 4, 34 -> 5,34
+      int numProducers = 1;
+      int numWorkers = 22;
     CPUStitchingThreadExecutor<Pointer<Double>> executor =
-        new CPUStitchingThreadExecutor<Pointer<Double>>(1, 8, tile, grid);
+        new CPUStitchingThreadExecutor<Pointer<Double>>(numProducers, numWorkers, tile, grid);
 
     tile.releasePixels();
 
@@ -119,27 +113,15 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
 
     Log.msg(LogType.INFO, "Computing global optimization");
 
-    // GlobalOptimization.execute(grid, 0.9, OptimizationType.GLOBAL,
-    // OP_TYPE.MEDIAN);
-    //
-    // Log.msg(LogType.INFO,"Computing absolute positions");
-    // GraphUtils.generateGraphComposition(0.9, grid);
+      Stitching.outputRelativeDisplacements(grid, new File(
+              "C:\\majurski\\image-data\\1h_Wet_10Perc\\fftw",
+              "relDisp.txt"));
 
-    // Stitching.printAbsolutePositions(grid);
-    // Stitching.printRelativeDisplacements(grid);
-
-    // SingleImageGUI.runGUI(grid, "F:\\output_pyramids",
-    // tileDir.getAbsolutePath());
-
-    // }
-    Stitching.outputRelativeDisplacements(grid, new File(
-        "F:\\StitchingData\\70perc_input_images\\OutData",
-        "FFTWNoUtilFNSrelativePositionsWorkflowWithOptimization.txt"));
 
     Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
 
 
-    Stitching.printRelativeDisplacements(grid);
+//    Stitching.printRelativeDisplacements(grid);
 
   }
 

@@ -26,11 +26,11 @@
 //
 // ================================================================
 
-package gov.nist.isg.mist.stitching.lib.imagetile;
+package gov.nist.isg.mist.stitching.lib32.imagetile;
 
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.common.Array2DView;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
@@ -38,19 +38,18 @@ import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.FftwTileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.JavaTileWorkerMemory;
+import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.memorypool.CudaAllocator;
+import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwStitching32;
 import jcuda.Sizeof;
 import jcuda.driver.*;
-import gov.nist.isg.mist.stitching.lib.memorypool.CudaAllocator;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -59,15 +58,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.*;
-
 /**
  * Utility functions for stitching image tiles.
  * 
  * @author Tim Blattner
  * @version 1.0
  */
-public class Stitching {
+public class Stitching32 {
 
   /**
    * Whether to use hillclimbing or not
@@ -163,20 +160,19 @@ public class Stitching {
         memory);
   }
 
+
   /**
-   * Computes the phase correlation between two images using FFTW
-   * 
+   * Computes the phase correlation between two images using FFTW32
+   *
    * @param t1 the neighboring tile
    * @param t2 the current tile
    * @param memory the tile worker memory
    * @return the correlation triple between these two tiles
    */
-  public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile t1,
-      FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
-    return FftwStitching.phaseCorrelationImageAlignment(t1, t2, memory);
+  public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile32 t1,
+                                                                     FftwImageTile32 t2, TileWorkerMemory memory) throws FileNotFoundException {
+    return FftwStitching32.phaseCorrelationImageAlignment(t1, t2, memory);
   }
-
-
 
   /**
    * Computes the phase correlation between images using CUDA
@@ -210,7 +206,7 @@ public class Stitching {
       t.readTile();
 
       if (memory == null) {
-        memory = new FftwTileWorkerMemory(t);
+        memory = new FftwTileWorkerMemory32(t);
       }
       int row = t.getRow();
       int col = t.getCol();
@@ -219,9 +215,9 @@ public class Stitching {
 
       if (col > grid.getStartCol()) {
         ImageTile<?> west = grid.getTile(row, col - 1);
-        t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) west,
-                                                                          (FftwImageTile) t,
-                                                                          memory));
+        t.setWestTranslation(Stitching32.phaseCorrelationImageAlignmentFftw((FftwImageTile32) west,
+                (FftwImageTile32) t,
+                memory));
 
         Log.msgNoTime(
             LogType.HELPFUL,
@@ -242,9 +238,9 @@ public class Stitching {
       if (row > grid.getStartRow()) {
         ImageTile<?> north = grid.getTile(row - 1, col);
 
-        t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) north,
-                                                                           (FftwImageTile) t,
-                                                                           memory));
+        t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentFftw((FftwImageTile32) north,
+                (FftwImageTile32) t,
+                memory));
 
         Log.msgNoTime(
             LogType.HELPFUL,
@@ -315,8 +311,8 @@ public class Stitching {
 
       if (col > grid.getStartCol()) {
         ImageTile<CUdeviceptr> west = grid.getTile(row, col - 1);
-        t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentCuda((CudaImageTile) west,
-            (CudaImageTile) t, memory, stream));
+        t.setWestTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile) west,
+                (CudaImageTile) t, memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName()
             + "\"): " + t.getWestTranslation());
@@ -333,9 +329,9 @@ public class Stitching {
       if (row > grid.getStartRow()) {
         ImageTile<CUdeviceptr> north = grid.getTile(row - 1, col);
 
-        t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentCuda((CudaImageTile) north,
-                                                                           (CudaImageTile) t,
-                                                                           memory, stream));
+        t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile) north,
+                (CudaImageTile) t,
+                memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName()
                                  + "\"): " + t.getNorthTranslation());
@@ -654,10 +650,10 @@ public class Stitching {
       Array2DView a1 = new Array2DView(t1, nr, h - nr, nc, w - nc);
       Array2DView a2 = new Array2DView(t2, 0, h - nr, 0, w - nc);
 
-      double peak = crossCorrelation(a1, a2);
+      float peak = crossCorrelation(a1, a2);
 
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
+      if (Float.isNaN(peak) || Float.isInfinite(peak)) {
+        peak = -1.0f;
       }
 
       corrList.add(new CorrelationTriple(peak, nc, nr));
@@ -670,10 +666,10 @@ public class Stitching {
       Array2DView a1 = new Array2DView(t1, nr, h - nr, 0, w - nc);
       Array2DView a2 = new Array2DView(t2, 0, h - nr, nc, w - nc);
 
-      double peak = crossCorrelation(a1, a2);
+      float peak = crossCorrelation(a1, a2);
 
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
+      if (Float.isNaN(peak) || Float.isInfinite(peak)) {
+        peak = -1.0f;
       }
 
       corrList.add(new CorrelationTriple(peak, -nc, nr));
@@ -681,7 +677,7 @@ public class Stitching {
     }
 
     if (corrList.size() == 0)
-      return new CorrelationTriple(Double.NEGATIVE_INFINITY, 0, 0);
+      return new CorrelationTriple(Float.NEGATIVE_INFINITY, 0, 0);
 
     return Collections.max(corrList);
   }
@@ -716,14 +712,14 @@ public class Stitching {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
-    double maxPeak = Double.NEGATIVE_INFINITY;
+    float maxPeak = Float.NEGATIVE_INFINITY;
     int x = minBoundX;
     int y = minBoundY;
 
     for (int i = minBoundY; i <= maxBoundY; i++) {
       for (int j = minBoundX; j <= maxBoundX; j++) {
         Array2DView a1, a2;
-        double peak;
+        float peak;
 
         if (j >= 0) {
           a1 = new Array2DView(i1, i, height - i, j, width - j);
@@ -733,7 +729,7 @@ public class Stitching {
           a2 = new Array2DView(i2, 0, height - i, -j, width + j);
         }
 
-        peak = Stitching.crossCorrelation(a1, a2);
+        peak = Stitching32.crossCorrelation(a1, a2);
         if (peak > maxPeak) {
           x = j;
           y = i;
@@ -742,10 +738,10 @@ public class Stitching {
       }
     }
 
-    if (Double.isInfinite(maxPeak)) {
+    if (Float.isInfinite(maxPeak)) {
       x = minBoundX;
       y = minBoundY;
-      maxPeak = -1.0;
+      maxPeak = -1.0f;
     }
 
     return new CorrelationTriple(maxPeak, x, y);
@@ -771,7 +767,7 @@ public class Stitching {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
-    double maxPeak = Double.NEGATIVE_INFINITY;
+    float maxPeak = Float.NEGATIVE_INFINITY;
     int x = minBoundX;
     int y = minBoundY;
 
@@ -781,7 +777,7 @@ public class Stitching {
       for (int i = minBoundY; i <= maxBoundY; i++) {
         for (int j = minBoundX; j <= maxBoundX; j++) {
           Array2DView a1, a2;
-          double peak;
+          float peak;
 
           if (j >= 0) {
             a1 = new Array2DView(i1, i, height - i, j, width - j);
@@ -791,7 +787,7 @@ public class Stitching {
             a2 = new Array2DView(i2, 0, height - i, -j, width + j);
           }
 
-          peak = Stitching.crossCorrelation(a1, a2);
+          peak = Stitching32.crossCorrelation(a1, a2);
           writer.write(peak + ",");
           if (peak > maxPeak) {
             x = j;
@@ -808,10 +804,10 @@ public class Stitching {
       e.printStackTrace();
     }
 
-    if (Double.isInfinite(maxPeak)) {
+    if (Float.isInfinite(maxPeak)) {
       x = minBoundX;
       y = minBoundY;
-      maxPeak = -1.0;
+      maxPeak = -1.0f;
     }
 
     return new CorrelationTriple(maxPeak, x, y);
@@ -837,7 +833,7 @@ public class Stitching {
 
     int curX = startX;
     int curY = startY;
-    double curPeak = Double.NaN;
+    float curPeak = Float.NaN;
 
 
     minBoundY = Math.max(minBoundY, 0);
@@ -858,7 +854,7 @@ public class Stitching {
     int yLength = maxBoundY - minBoundY + 1 + 2;
     int xLength = maxBoundX - minBoundX + 1 + 2;
 
-    double[][] peaks = new double[yLength][xLength];
+    float[][] peaks = new float[yLength][xLength];
 
     boolean foundPeak = false;
 
@@ -871,7 +867,7 @@ public class Stitching {
       int curXIndex = curX - minBoundX;
 
         // check current
-        if (Double.isNaN(curPeak)) {
+        if (Float.isNaN(curPeak)) {
           curPeak = getCCFUD(i1, i2, curX, curY, height, width);
           peaks[curYIndex][curXIndex] = curPeak;
         }
@@ -884,7 +880,7 @@ public class Stitching {
         if (dir == HillClimbDirection.NoMove)
           continue;
 
-        double peak = Double.NEGATIVE_INFINITY;
+        float peak = Float.NEGATIVE_INFINITY;
 
         // Check if moving dir is in bounds
         if (curY + dir.getYDir() >= minBoundY && curY + dir.getYDir() <= maxBoundY
@@ -917,10 +913,10 @@ public class Stitching {
       }
     }
 
-    if (Double.isInfinite(curPeak)) {
+    if (Float.isInfinite(curPeak)) {
       curX = minBoundX;
       curY = minBoundY;
-      curPeak = -1.0;
+      curPeak = -1.0f;
     }
 
     return new CorrelationTriple(curPeak, curX, curY);
@@ -947,8 +943,8 @@ public class Stitching {
 
     int maxX = startX;
     int maxY = startY;
-    double curPeak = Double.NaN;
-    double maxPeak = Double.NEGATIVE_INFINITY;
+    float curPeak = Float.NaN;
+    float maxPeak = Float.NEGATIVE_INFINITY;
 
     minBoundY = Math.max(minBoundY, 0);
     minBoundY = Math.min(minBoundY, height);
@@ -976,10 +972,10 @@ public class Stitching {
       }
     }
 
-    if (Double.isNaN(maxPeak) || Double.isInfinite(curPeak)) {
+    if (Float.isNaN(maxPeak) || Float.isInfinite(curPeak)) {
       maxX = startX;
       maxY = startY;
-      maxPeak = -1.0;
+      maxPeak = -1.0f;
     }
 
     return new CorrelationTriple(maxPeak, maxX, maxY);
@@ -997,7 +993,7 @@ public class Stitching {
    * @param width the width of the image
    * @return the correlation
    */
-  public static double getCCFUD(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
+  public static float getCCFUD(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
       int width) {
     Array2DView a1, a2;
 
@@ -1013,7 +1009,7 @@ public class Stitching {
       a2 = new Array2DView(i2, 0, height - y, -x, width + x);
     }
 
-    return Stitching.crossCorrelation(a1, a2);
+    return Stitching32.crossCorrelation(a1, a2);
   }
 
 
@@ -1041,10 +1037,10 @@ public class Stitching {
       Array2DView a1 = new Array2DView(t1, nr, h - nr, nc, w - nc);
       Array2DView a2 = new Array2DView(t2, 0, h - nr, 0, w - nc);
 
-      double peak = crossCorrelation(a1, a2);
+      float peak = crossCorrelation(a1, a2);
 
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
+      if (Float.isNaN(peak) || Float.isInfinite(peak)) {
+        peak = -1.0f;
       }
 
 
@@ -1059,10 +1055,10 @@ public class Stitching {
       Array2DView a1 = new Array2DView(t1, 0, h - nr, nc, w - nc);
       Array2DView a2 = new Array2DView(t2, nr, h - nr, 0, w - nc);
 
-      double peak = crossCorrelation(a1, a2);
+      float peak = crossCorrelation(a1, a2);
 
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
+      if (Float.isNaN(peak) || Float.isInfinite(peak)) {
+        peak = -1.0f;
       }
 
       corrList.add(new CorrelationTriple(peak, nc, -nr));
@@ -1070,7 +1066,7 @@ public class Stitching {
     }
 
     if (corrList.size() == 0)
-      return new CorrelationTriple(Double.NEGATIVE_INFINITY, 0, 0);
+      return new CorrelationTriple(Float.NEGATIVE_INFINITY, 0, 0);
 
     return Collections.max(corrList);
   }
@@ -1095,7 +1091,7 @@ public class Stitching {
 
     int curX = startX;
     int curY = startY;
-    double curPeak = Double.NaN;
+    float curPeak = Float.NaN;
 
     minBoundY = Math.max(minBoundY, -height);
     minBoundY = Math.min(minBoundY, height);
@@ -1113,7 +1109,7 @@ public class Stitching {
     int yLength = maxBoundY - minBoundY + 1 + 2;
     int xLength = maxBoundX - minBoundX + 1 + 2;
 
-    double[][] peaks = new double[yLength][xLength];
+    float[][] peaks = new float[yLength][xLength];
 
     boolean foundPeak = false;
 
@@ -1126,7 +1122,7 @@ public class Stitching {
       int curXIndex = curX - minBoundX;
 
       // check current
-      if (Double.isNaN(curPeak)) {
+      if (Float.isNaN(curPeak)) {
         curPeak = getCCFLR(i1, i2, curX, curY, height, width);
         peaks[curYIndex][curXIndex] = curPeak;
       }
@@ -1139,7 +1135,7 @@ public class Stitching {
         if (dir == HillClimbDirection.NoMove)
           continue;
 
-        double peak = Double.NEGATIVE_INFINITY;
+        float peak = Float.NEGATIVE_INFINITY;
 
         // Check if moving dir is in bounds
         if (curY + dir.getYDir() >= minBoundY && curY + dir.getYDir() <= maxBoundY
@@ -1171,10 +1167,10 @@ public class Stitching {
 
     }
 
-    if (Double.isInfinite(curPeak)) {
+    if (Float.isInfinite(curPeak)) {
       curX = minBoundX;
       curY = minBoundY;
-      curPeak = -1.0;
+      curPeak = -1.0f;
     }
 
     return new CorrelationTriple(curPeak, curX, curY);
@@ -1201,8 +1197,8 @@ public class Stitching {
 
     int maxX = startX;
     int maxY = startY;
-    double curPeak = Double.NaN;
-    double maxPeak = Double.NEGATIVE_INFINITY;
+    float curPeak = Float.NaN;
+    float maxPeak = Float.NEGATIVE_INFINITY;
 
     minBoundY = Math.max(minBoundY, -height);
     minBoundY = Math.min(minBoundY, height);
@@ -1229,10 +1225,10 @@ public class Stitching {
       }
     }
 
-    if (Double.isNaN(maxPeak) || Double.isInfinite(curPeak)) {
+    if (Float.isNaN(maxPeak) || Float.isInfinite(curPeak)) {
       maxX = startX;
       maxY = startY;
-      maxPeak = -1.0;
+      maxPeak = -1.0f;
     }
 
     return new CorrelationTriple(maxPeak, maxX, maxY);
@@ -1272,14 +1268,14 @@ public class Stitching {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
-    double maxPeak = Double.NEGATIVE_INFINITY;
+    float maxPeak = Float.NEGATIVE_INFINITY;
     int x = minBoundX;
     int y = minBoundY;
 
     for (int j = minBoundX; j <= maxBoundX; j++) {
       for (int i = minBoundY; i <= maxBoundY; i++) {
         Array2DView a1, a2;
-        double peak;
+        float peak;
 
         if (i >= 0) {
           a1 = new Array2DView(i1, i, height - i, j, width - j);
@@ -1290,7 +1286,7 @@ public class Stitching {
           a2 = new Array2DView(i2, -i, height + i, 0, width - j);
         }
 
-        peak = Stitching.crossCorrelation(a1, a2);
+        peak = Stitching32.crossCorrelation(a1, a2);
         if (peak > maxPeak) {
           x = j;
           y = i;
@@ -1299,81 +1295,15 @@ public class Stitching {
       }
     }
 
-    if (Double.isInfinite(maxPeak)) {
+    if (Float.isInfinite(maxPeak)) {
       x = minBoundX;
       y = minBoundY;
-      maxPeak = -1.0;
+      maxPeak = -1.0f;
     }
 
     return new CorrelationTriple(maxPeak, x, y);
   }
 
-  /**
-   * Computes the left/right CCF values inside a bounding box, returning the best CCF value (one
-   * with the highest correlation)
-   * 
-   * @param minBoundX the minimum x value of the bounding box
-   * @param maxBoundX the maximum x value of the bounding box
-   * @param minBoundY the minimum y value of the bounding box
-   * @param maxBoundY the maximum y value of the bounding box
-   * @param i1 the first image for CCF computation (north/west neighbor)
-   * @param i2 the second image for CCF computation (current)
-   * @param fileName the file name to save the CCF
-   * @return the highest correlation triple within the bounding box
-   */
-  public static CorrelationTriple computeCCF_LRAndSave(int minBoundX, int maxBoundX, int minBoundY,
-      int maxBoundY, ImageTile<?> i1, ImageTile<?> i2, String fileName) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    double maxPeak = Double.NEGATIVE_INFINITY;
-    int x = minBoundX;
-    int y = minBoundY;
-
-    try {
-      FileWriter writer = new FileWriter(fileName);
-
-      for (int j = minBoundX; j <= maxBoundX; j++) {
-        for (int i = minBoundY; i <= maxBoundY; i++) {
-          Array2DView a1, a2;
-          double peak;
-
-          if (i >= 0) {
-            a1 = new Array2DView(i1, i, height - i, j, width - j);
-            a2 = new Array2DView(i2, 0, height - i, 0, width - j);
-
-          } else {
-            a1 = new Array2DView(i1, 0, height + i, j, width - j);
-            a2 = new Array2DView(i2, -i, height + i, 0, width - j);
-          }
-
-          peak = Stitching.crossCorrelation(a1, a2);
-
-          writer.write(peak + ",");
-
-          if (peak > maxPeak) {
-            x = j;
-            y = i;
-            maxPeak = peak;
-          }
-        }
-
-        writer.write("\n");
-      }
-
-      writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    if (Double.isInfinite(maxPeak)) {
-      x = minBoundX;
-      y = minBoundY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, x, y);
-  }
 
   /**
    * Compute the cross correlation function (left-right)
@@ -1386,7 +1316,7 @@ public class Stitching {
    * @param width the width of the image
    * @return the correlation
    */
-  public static double getCCFLR(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
+  public static float getCCFLR(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
       int width) {
     Array2DView a1, a2;
 
@@ -1402,7 +1332,7 @@ public class Stitching {
       a2 = new Array2DView(i2, -y, height + y, 0, width - x);
     }
 
-    return Stitching.crossCorrelation(a1, a2);
+    return Stitching32.crossCorrelation(a1, a2);
   }
 
   /**
@@ -1412,14 +1342,14 @@ public class Stitching {
    * @param a2 double array 2
    * @return the cross correlation
    */
-  public static double crossCorrelation(Array2DView a1, Array2DView a2) {
-    double sum_prod = 0.0;
-    double sum1 = 0.0;
-    double sum2 = 0.0;
-    double norm1 = 0.0;
-    double norm2 = 0.0;
-    double a1_ij;
-    double a2_ij;
+  public static float crossCorrelation(Array2DView a1, Array2DView a2) {
+    float sum_prod = 0;
+    float sum1 = 0;
+    float sum2 = 0;
+    float norm1 = 0;
+    float norm2 = 0;
+    float a1_ij;
+    float a2_ij;
 
     int n_rows = a1.getViewHeight();
     int n_cols = a2.getViewWidth();
@@ -1428,8 +1358,8 @@ public class Stitching {
 
     for (int i = 0; i < n_rows; i++)
       for (int j = 0; j < n_cols; j++) {
-        a1_ij = a1.getd(i, j);
-        a2_ij = a2.getd(i, j);
+        a1_ij = a1.getf(i, j);
+        a2_ij = a2.getf(i, j);
         sum_prod += a1_ij * a2_ij;
         sum1 += a1_ij;
         sum2 += a2_ij;
@@ -1440,10 +1370,10 @@ public class Stitching {
     double numer = sum_prod - sum1 * sum2 / sz;
     double denom = Math.sqrt((norm1 - sum1 * sum1 / sz) * (norm2 - sum2 * sum2 / sz));
 
-    double val = numer / denom;
+    float val = (float) (numer / denom);
 
-    if (Double.isNaN(val) || Double.isInfinite(val)) {
-      val = -1.0;
+    if (Float.isNaN(val) || Float.isInfinite(val)) {
+      val = -1.0f;
     }
 
     return val;

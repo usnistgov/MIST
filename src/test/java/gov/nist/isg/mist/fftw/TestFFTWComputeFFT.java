@@ -28,6 +28,7 @@
 
 package gov.nist.isg.mist.fftw;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
 import gov.nist.isg.mist.timing.TimeUtil;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -42,36 +43,25 @@ import java.io.FileNotFoundException;
  * @author Tim Blattner
  * @version 1.0
  */
-public class TestFFTWComputFFT {
+public class TestFFTWComputeFFT {
 
   /**
    * Computes the FFT for an image using FFTW
    */
   public static void runTestFFTImage() throws FileNotFoundException {
     Log.setLogLevel(LogType.INFO);
-    // JFrame frame = new JFrame();
+
     Log.msg(LogType.MANDATORY, "Running Test Compute FFT Image using FFTW");
-    //
-    // JFileChooser chooser = new
-    // JFileChooser("C:\\Users\\tjb3\\Desktop\\input_images");
-    // chooser.setDialogTitle("Select File to test computing FFT.");
 
-    // int result = chooser.showOpenDialog(frame);
 
-    File file = new File("F:\\input_images\\F_0001.tif");
+    File file = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00001.tif");
+    FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3");
 
-    // if (result == JFileChooser.APPROVE_OPTION)
-    // {
-    // File file = chooser.getSelectedFile();
-    FftwImageTile.initLibrary(
-        "C:\\Users\\tjb3\\Documents\\Visual Studio 2012\\Projects\\UtilFnsDll\\UtilFnsDll\\fftw",
-        "C:\\Users\\tjb3\\Documents\\Visual Studio 2012\\Projects\\UtilFnsDll\\Debug", "libfftw3");
-    // {
     FftwImageTile tile = new FftwImageTile(file);
 
     Log.msg(LogType.INFO, "Loading FFTW plan");
 
-    FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), 0x21, true, "test.dat");
+    FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library.FFTW_MEASURE, true, "test.dat");
     FftwImageTile.savePlan("test.dat");
     Log.msg(LogType.INFO, "Computing FFT");
     TimeUtil.tick();
@@ -81,8 +71,6 @@ public class TestFFTWComputFFT {
     tile.releaseFftMemory();
 
     FftwImageTile.destroyPlans();
-
-    // }
 
     Log.msg(LogType.MANDATORY, "Test Completed.");
   }
@@ -94,7 +82,7 @@ public class TestFFTWComputFFT {
    */
   public static void main(String[] args) {
     try {
-        TestFFTWComputFFT.runTestFFTImage();
+        TestFFTWComputeFFT.runTestFFTImage();
     } catch (FileNotFoundException e)
     {
         Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
