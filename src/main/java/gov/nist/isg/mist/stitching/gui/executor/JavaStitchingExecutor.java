@@ -37,20 +37,20 @@ import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
+
 import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 
 /**
  * JavaStitchingExecutor executes the stitching using CUDA
- * @author Tim Blattner
  *
- * @param <T>
+ * @author Tim Blattner
  */
 public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
-  private boolean init;  
-  private CPUStitchingThreadExecutor<T>executor;
+  private boolean init;
+  private CPUStitchingThreadExecutor<T> executor;
 
   public JavaStitchingExecutor() {
     this.init = false;
@@ -65,18 +65,16 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   }
 
 
-
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
 
-    if (displayGui)
-    {
+    if (displayGui) {
       int res =
           JOptionPane.showConfirmDialog(null,
               "Warning: Using the Java stitching library uses single precision. \n"
                   + "If your results are not accurate enough please install FFTW or CUDA",
-                  "Java Usage Warning", JOptionPane.WARNING_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
-                  null);
+              "Java Usage Warning", JOptionPane.WARNING_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
+              null);
       if (res == JOptionPane.CANCEL_OPTION) {
         Log.msg(LogType.MANDATORY, "Java Execution cancelled.");
         return false;
@@ -102,7 +100,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
 
     this.executor.execute();
-    if(this.executor.isExceptionThrown())
+    if (this.executor.isExceptionThrown())
       throw this.executor.getWorkerThrowable();
 
   }
@@ -114,17 +112,14 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     TileGrid<ImageTile<T>> grid = null;
 
-    if (params.getInputParams().isTimeSlicesEnabled())
-    {    
+    if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
         grid =
             new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }
-    else
-    {
+    } else {
       try {
         grid = new TileGrid<ImageTile<T>>(params, JavaImageTile.class);
       } catch (InvalidClassException e) {
@@ -142,7 +137,7 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   }
 
   @Override
-  public void cleanup() {    
+  public void cleanup() {
   }
 
 
@@ -156,35 +151,35 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     tile.readTile();
 
     // Account for image pixel data
-    if(ImageTile.freePixelData()) {
+    if (ImageTile.freePixelData()) {
       // If freeing image pixel data
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
-    }else{
+      requiredMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    } else {
       // If not freeing image pixel data
       // must hold whole image grid in memory
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+      requiredMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * (long) grid.getSubGridSize() * 2L; // 16 bit pixel data
     }
 
     // Account for image pixel data up conversion
-    long byteDepth = tile.getBitDepth()/8;
-    if(byteDepth != 2) {
+    long byteDepth = tile.getBitDepth() / 8;
+    if (byteDepth != 2) {
       // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
-      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+      requiredMemoryBytes += (long) numWorkers * (long) tile.getHeight() * (long) tile.getWidth() * byteDepth;
     }
 
     // Account for Java FFT data
     int[] n =
         {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
-         JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+            JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
     long size = 1;
-    for(int val : n)
+    for (int val : n)
       size *= val;
     requiredMemoryBytes += memoryPoolCount * size * 4L; // float[n1][n2]
 
     requiredMemoryBytes += size * 4L; // new float[fftHeight][fftWidth];
 
     // pad with 10MB
-    requiredMemoryBytes += 10L*1024L*1024L;
+    requiredMemoryBytes += 10L * 1024L * 1024L;
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }

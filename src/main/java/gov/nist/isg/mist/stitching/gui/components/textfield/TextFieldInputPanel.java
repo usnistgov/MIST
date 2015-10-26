@@ -31,6 +31,7 @@ package gov.nist.isg.mist.stitching.gui.components.textfield;
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TextFieldModel;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,11 +40,10 @@ import java.awt.event.FocusListener;
 
 /**
  * Cretes a text field input panel
- * 
+ *
+ * @param <T> the type of text field
  * @author Tim Blattner
  * @version 1.0
- * 
- * @param <T> the type of text field
  */
 public class TextFieldInputPanel<T> extends JPanel implements ActionListener, FocusListener {
 
@@ -60,9 +60,9 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Creates a text field input panel
-   * 
-   * @param label the label for the text field
-   * @param text the text inside the text field
+   *
+   * @param label     the label for the text field
+   * @param text      the text inside the text field
    * @param validator the validator associated with the text field
    */
   public TextFieldInputPanel(String label, String text, TextFieldModel<T> validator) {
@@ -72,11 +72,11 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Creates a text field input panel
-   * 
-   * @param label the label for the text field
-   * @param text the text inside the text field
+   *
+   * @param label     the label for the text field
+   * @param text      the text inside the text field
    * @param validator the validator associated with the text field
-   * @param helpText the help text that describes this text field
+   * @param helpText  the help text that describes this text field
    */
   public TextFieldInputPanel(String label, String text, TextFieldModel<T> validator, String helpText) {
     this(label, text, defaultSize, validator, helpText);
@@ -84,10 +84,10 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Creates a text field input panel
-   * 
-   * @param label the label for the text field
-   * @param text the text inside the text field
-   * @param sz the size of the text field
+   *
+   * @param label     the label for the text field
+   * @param text      the text inside the text field
+   * @param sz        the size of the text field
    * @param validator the validator associated with the text field
    */
   public TextFieldInputPanel(String label, String text, int sz, TextFieldModel<T> validator) {
@@ -98,15 +98,15 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Creates a text field input panel with help text
-   * 
-   * @param label the label for the text field
-   * @param text the text inside the text field
-   * @param sz the size of the text field
+   *
+   * @param label     the label for the text field
+   * @param text      the text inside the text field
+   * @param sz        the size of the text field
    * @param validator the validator associated with the text field
-   * @param helpText the help text that describes this text field
+   * @param helpText  the help text that describes this text field
    */
   public TextFieldInputPanel(String label, String text, int sz, TextFieldModel<T> validator,
-      String helpText) {
+                             String helpText) {
     super(new FlowLayout(FlowLayout.LEFT));
 
     this.validator = validator;
@@ -114,7 +114,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
     this.input = new ValidatedTextField<T>(sz, text, validator);
 
     this.input.addFocusListener(this);
-    
+
     add(this.label);
     add(this.input);
 
@@ -136,7 +136,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
       // Add question mark
       JButton questionButton = new JButton("?");
-      questionButton.setPreferredSize(new Dimension(15,20));
+      questionButton.setPreferredSize(new Dimension(15, 20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();
@@ -156,17 +156,17 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Sets the help text for the help text area
-   * 
+   *
    * @param text the text to set the help text to
    */
   public void setHelpText(String text) {
-    if(text != null)
+    if (text != null)
       this.helpTextArea.setText(text);
   }
 
   /**
    * Sets the validator associated with this text field
-   * 
+   *
    * @param validator the new validator
    */
   public void setValidator(TextFieldModel<T> validator) {
@@ -177,7 +177,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Sets the value for the text field (String)
-   * 
+   *
    * @param value the String value
    */
   public void setValue(String value) {
@@ -185,10 +185,9 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
   }
 
 
-
   /**
    * Sets the value for the text field (integer)
-   * 
+   *
    * @param value the integer value
    */
   public void setValue(int value) {
@@ -197,7 +196,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Sets the value for the text field (double)
-   * 
+   *
    * @param value the double value
    */
   public void setValue(double value) {
@@ -207,7 +206,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Checks if an error exists in the input
-   * 
+   *
    * @return true if an error exists
    */
   public boolean hasError() {
@@ -230,7 +229,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   /**
    * Gets the value for the text field parsed by the validator
-   * 
+   *
    * @return the value parsed by the validator
    */
   public T getValue() {
@@ -274,7 +273,7 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
 
   @Override
   public void focusGained(FocusEvent e) {
-    this.input.selectAll();    
+    this.input.selectAll();
   }
 
 

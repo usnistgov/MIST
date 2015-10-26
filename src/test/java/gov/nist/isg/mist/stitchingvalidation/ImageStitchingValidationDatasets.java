@@ -39,6 +39,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class ImageStitchingValidationDatasets {
 
   static {
     LibraryUtils.initalize();
-  }  
+  }
 
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
@@ -57,36 +58,32 @@ public class ImageStitchingValidationDatasets {
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
 
-  public static void main(String [] args)
-  {
-    if (args.length > 0)
-    {
+  public static void main(String[] args) {
+    if (args.length > 0) {
       validationRootFolder = args[0];
     }
 
 
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
-    if (!rootFolder.exists() && !rootFolder.isDirectory())
-    {
+    if (!rootFolder.exists() && !rootFolder.isDirectory()) {
       System.out.println("Error: Unable to find root folder: " + validationRootFolder);
       System.exit(1);
-    }    
+    }
 
     File[] roots = rootFolder.listFiles();
 
     CUDAPanel cudaPanel = new CUDAPanel();
 
-    JFrame frame = new JFrame("Select CUDA Devices");    
-    JOptionPane.showMessageDialog(frame, cudaPanel);    
+    JFrame frame = new JFrame("Select CUDA Devices");
+    JOptionPane.showMessageDialog(frame, cudaPanel);
 
     Log.setLogLevel(LogType.NONE);
 //    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
-    for (File r : roots)
-    {      
+    for (File r : roots) {
 
 
       if (!r.isDirectory())
@@ -98,7 +95,7 @@ public class ImageStitchingValidationDatasets {
       File paramFile = new File(r, STITCHING_PARAMS_FILE);
 
       params.loadParams(paramFile);
-      
+
       params.getInputParams().setImageDir(r.getAbsolutePath());
       params.getAdvancedParams().setNumCPUThreads(Runtime.getRuntime().availableProcessors());
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
@@ -108,13 +105,11 @@ public class ImageStitchingValidationDatasets {
       params.getOutputParams().setDisplayStitching(false);
       params.getAdvancedParams().setNumCPUThreads(8);
 
-      for (StitchingType t : StitchingType.values())
-      {
+      for (StitchingType t : StitchingType.values()) {
         if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.CUDA)
           continue;
 
-        if (t == StitchingType.CUDA)
-        {
+        if (t == StitchingType.CUDA) {
           if (!cudaPanel.isCudaAvailable())
             continue;
         }
@@ -135,11 +130,10 @@ public class ImageStitchingValidationDatasets {
 
         try {
           executor.runStitching(false, false, false);
-        } catch (StitchingException e)
-        {
+        } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }
-      }     
+      }
     }
 
 

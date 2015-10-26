@@ -46,7 +46,7 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Utility class for doing various operations on a grid, such as per row or per column operations.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -191,8 +191,8 @@ public class OptimizationUtils {
 
 
   /**
-   * Gets the top correlations from a grid of tiles performing a full standard deviation
-   * filtering on the translations
+   * Gets the top correlations from a grid of tiles performing a full standard deviation filtering
+   * on the translations
    *
    * @param grid            the grid of image tiles
    * @param dir             the direction (North or West)
@@ -389,7 +389,7 @@ public class OptimizationUtils {
 
     // Compute the top stdDev based on their x,y translation
     for (ImageTile<T> tile : topTiles) {
-        tile.readTile();
+      tile.readTile();
 
       ImageTile<T> neighbor = null;
       switch (dir) {
@@ -522,10 +522,10 @@ public class OptimizationUtils {
    * @return the overlap
    */
   public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-                                            DisplacementValue dispValue, OverlapType overlapType)
+                                      DisplacementValue dispValue, OverlapType overlapType)
       throws FileNotFoundException {
     Log.msg(LogType.VERBOSE,
-            "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
+        "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
     double mu = Double.NaN;
     List<CorrelationTriple> topCorrelations;
@@ -545,8 +545,8 @@ public class OptimizationUtils {
     }
 
     double size = getOverlapRange(grid, dispValue);
-    double overlap = 100.0 * (1.0 - mu/size);
-    return ((double)Math.round(100*overlap))/100;
+    double overlap = 100.0 * (1.0 - mu / size);
+    return ((double) Math.round(100 * overlap)) / 100;
   }
 
   /**
@@ -577,8 +577,8 @@ public class OptimizationUtils {
    * @param dir                 the direction that is to be filtered
    * @param percOverlapError    the percent overlap of error
    * @param overlap             the overlap between images
-   * @param numStdDevThreads the number of standard deviation worker threads
-   * @param filterType the type of filter used on the translations
+   * @param numStdDevThreads    the number of standard deviation worker threads
+   * @param filterType          the type of filter used on the translations
    * @param stitchingStatistics the stitching statistics
    * @return the list of valid image tiles
    */
@@ -603,28 +603,28 @@ public class OptimizationUtils {
 
     HashSet<ImageTile<T>> validTiles =
         filterTilesFromOverlapAndCorrelation(dir, dispValue, overlap, percOverlapError, grid,
-                                             stitchingStatistics);
+            stitchingStatistics);
 
-    switch(filterType) {
+    switch (filterType) {
       case Outlier:
         // filter the translations to remove outliers
         // this replaces the std filtering of the overlap region between images
-        switch(dir) {
+        switch (dir) {
           case North:
-            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
-            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
+            validTiles = filterTranslationsRemoveOutliers(validTiles, dir, DisplacementValue.Y);
+            validTiles = filterTranslationsRemoveOutliers(validTiles, dir, DisplacementValue.X);
             break;
           case West:
-            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.X);
-            validTiles = filterTranslationsRemoveOutliers(validTiles,dir, DisplacementValue.Y);
+            validTiles = filterTranslationsRemoveOutliers(validTiles, dir, DisplacementValue.X);
+            validTiles = filterTranslationsRemoveOutliers(validTiles, dir, DisplacementValue.Y);
             break;
         }
         break;
       case StandardDeviation:
         validTiles = filterTilesFromStdDev(validTiles, grid, dir,
-                                           overlap, percOverlapError,
-                                           numStdDevThreads,
-                                           stitchingStatistics);
+            overlap, percOverlapError,
+            numStdDevThreads,
+            stitchingStatistics);
         break;
     }
 
@@ -635,7 +635,7 @@ public class OptimizationUtils {
 
 
   private static <T> HashSet<ImageTile<T>> filterTranslationsRemoveOutliers(HashSet<ImageTile<T>> tiles,
-                                                             Direction dir, DisplacementValue dispVal) {
+                                                                            Direction dir, DisplacementValue dispVal) {
 
     HashSet<ImageTile<T>> validTiles = new HashSet<ImageTile<T>>();
 
@@ -657,10 +657,10 @@ public class OptimizationUtils {
 
       switch (dispVal) {
         case X:
-          T.add((double)triple.getX());
+          T.add((double) triple.getX());
           break;
         case Y:
-          T.add((double)triple.getY());
+          T.add((double) triple.getY());
           break;
       }
     }
@@ -671,28 +671,28 @@ public class OptimizationUtils {
     // q3 is third quartile
     // filter based on (>q3 + w(q3-q1)) and (<q1 - w(q3-q1))
 
-    if(T.size() == 0)
+    if (T.size() == 0)
       return tiles;
 
     double w = 1.5; // default outlier w (1.5)
     double median = getMedian(T);
     List<Double> lessThan = new ArrayList<Double>();
     List<Double> greaterThan = new ArrayList<Double>();
-    for(Double d: T) {
-      if(d < median)
+    for (Double d : T) {
+      if (d < median)
         lessThan.add(d);
-      if(d > median)
+      if (d > median)
         greaterThan.add(d);
-      if(d == median) {
+      if (d == median) {
         // if equal to the median put the value in each list half the time
-        if(Math.random() < 0.5) {
+        if (Math.random() < 0.5) {
           lessThan.add(d);
-        }else{
+        } else {
           greaterThan.add(d);
         }
       }
     }
-    if(lessThan.size() == 0 || greaterThan.size() == 0)
+    if (lessThan.size() == 0 || greaterThan.size() == 0)
       return tiles;
 
     double q1 = getMedian(lessThan);
@@ -743,10 +743,9 @@ public class OptimizationUtils {
     }
   }
 
-  
+
   private static <T> HashSet<ImageTile<T>> filterTilesFromOverlapAndCorrelation(Direction dir, DisplacementValue dispValue, double overlap, double
-      percOverlapError, TileGrid<ImageTile<T>>grid, StitchingStatistics stitchingStatistics) throws FileNotFoundException
-  {    
+      percOverlapError, TileGrid<ImageTile<T>> grid, StitchingStatistics stitchingStatistics) throws FileNotFoundException {
     double minCorrelation = CorrelationThreshold;
 
     HashSet<ImageTile<T>> validTiles = new HashSet<ImageTile<T>>();
@@ -782,7 +781,7 @@ public class OptimizationUtils {
     stitchingStatistics.setMaxFilterThreshold(dir, t_max);
 
     Log.msg(LogType.VERBOSE, "min,max threshold: " + t_min + "," + t_max);
-    
+
     // Filter based on t_min, t_max, and minCorrelation
     for (int r = 0; r < grid.getExtentHeight(); r++) {
       for (int c = 0; c < grid.getExtentWidth(); c++) {
@@ -805,7 +804,7 @@ public class OptimizationUtils {
 
         if (triple.getCorrelation() < minCorrelation) {
           continue;
-        }      
+        }
 
         switch (dispValue) {
           case Y:
@@ -826,15 +825,14 @@ public class OptimizationUtils {
         validTiles.add(tile);
       }
     }
-    
+
     return validTiles;
-    
+
   }
-  
-  private static <T> HashSet<ImageTile<T>> filterTilesFromStdDev(HashSet<ImageTile<T>> validTiles, 
-      TileGrid<ImageTile<T>>grid, Direction dir, double overlap, double percOverlapError, int numThreads, StitchingStatistics stitchingStatistics)
-  {
-    
+
+  private static <T> HashSet<ImageTile<T>> filterTilesFromStdDev(HashSet<ImageTile<T>> validTiles,
+                                                                 TileGrid<ImageTile<T>> grid, Direction dir, double overlap, double percOverlapError, int numThreads, StitchingStatistics stitchingStatistics) {
+
     Log.msg(LogType.VERBOSE, "Filtering by standard deviation with " + validTiles.size()
         + " valid tiles");
 
@@ -932,8 +930,8 @@ public class OptimizationUtils {
           break;
 
       }
-      
-            
+
+
     }
 
     double stdDevThreshold = StatisticUtils.median(stdDevValues);
@@ -971,8 +969,8 @@ public class OptimizationUtils {
    * Computes the min and max of the list of image tiles for a given direction and displacement
    * value
    *
-   * @param tiles the list of tiles
-   * @param dir the direction
+   * @param tiles   the list of tiles
+   * @param dir     the direction
    * @param dispVal the displacement value to analyze
    * @return the min and max (MinMaxElement)
    */
@@ -998,35 +996,34 @@ public class OptimizationUtils {
 
       switch (dispVal) {
         case X:
-          T.add((double)triple.getX());
+          T.add((double) triple.getX());
           break;
         case Y:
-          T.add((double)triple.getY());
+          T.add((double) triple.getY());
           break;
       }
     }
 
     int min = Integer.MAX_VALUE;
     int max = Integer.MIN_VALUE;
-    for(double d : T) {
+    for (double d : T) {
       int val = (int) d;
-      if(val < min) min = val;
-      if(val > max) max = val;
+      if (val < min) min = val;
+      if (val > max) max = val;
     }
 
     return new MinMaxElement(min, max);
   }
 
 
-
   /**
    * Computes a list of min max elements, one for reach row in the grid of tiles for a given
    * direction and displacement value per row.
    *
-   * @param grid the grid of tiles
+   * @param grid       the grid of tiles
    * @param validTiles the set of valid tiles
-   * @param dir the direction
-   * @param dispVal the displacement value
+   * @param dir        the direction
+   * @param dispVal    the displacement value
    * @return a list of MinMaxElements, one per row.
    */
   public static <T> List<MinMaxElement> getMinMaxValidPerRow(TileGrid<ImageTile<T>> grid,
@@ -1062,20 +1059,20 @@ public class OptimizationUtils {
 
         switch (dispVal) {
           case Y:
-            T.add((double)triple.getY());
+            T.add((double) triple.getY());
             break;
           case X:
-            T.add((double)triple.getX());
+            T.add((double) triple.getX());
             break;
         }
       }
 
       int min = Integer.MAX_VALUE;
       int max = Integer.MIN_VALUE;
-      for(double d : T) {
+      for (double d : T) {
         int val = (int) d;
-        if(val < min) min = val;
-        if(val > max) max = val;
+        if (val < min) min = val;
+        if (val > max) max = val;
       }
 
       if (min != Integer.MAX_VALUE || max != Integer.MIN_VALUE)
@@ -1086,19 +1083,18 @@ public class OptimizationUtils {
   }
 
 
-
   /**
    * Computes a list of min max elements, one for reach column in the grid of tiles for a given
    * direction and displacement value.
-   * 
-   * @param grid the grid of image tiles
+   *
+   * @param grid       the grid of image tiles
    * @param validTiles the set of valid tiles
-   * @param dir the direction
-   * @param dispVal the displacement value to be operated on
+   * @param dir        the direction
+   * @param dispVal    the displacement value to be operated on
    * @return the list of mins and maxes (MinMaxElement), one for each column of the grid
    */
   public static <T> List<MinMaxElement> getMinMaxValidPerCol(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
+                                                             HashSet<ImageTile<T>> validTiles, Direction dir, DisplacementValue dispVal) {
 
     List<MinMaxElement> minMaxPerCol = new ArrayList<MinMaxElement>(grid.getExtentWidth());
 
@@ -1129,20 +1125,20 @@ public class OptimizationUtils {
 
         switch (dispVal) {
           case Y:
-            T.add((double)triple.getY());
+            T.add((double) triple.getY());
             break;
           case X:
-            T.add((double)triple.getX());
+            T.add((double) triple.getX());
             break;
         }
       }
 
       int min = Integer.MAX_VALUE;
       int max = Integer.MIN_VALUE;
-      for(double d : T) {
+      for (double d : T) {
         int val = (int) d;
-        if(val < min) min = val;
-        if(val > max) max = val;
+        if (val < min) min = val;
+        if (val > max) max = val;
       }
 
       if (min != Integer.MIN_VALUE || max != Integer.MAX_VALUE)
@@ -1158,14 +1154,14 @@ public class OptimizationUtils {
    * Y. All translations that are not in range or have a correlation less than 0.5 have their
    * correlations set to NaN. All translations that are valid have their correlations incremented by
    * 4.0
-   * 
-   * @param grid the grid of image tiles
-   * @param validTiles a set of valid tiles
+   *
+   * @param grid          the grid of image tiles
+   * @param validTiles    a set of valid tiles
    * @param repeatability the computed repeatability
-   * @param dir the direction we are working with
+   * @param dir           the direction we are working with
    */
   public static <T> void removeInvalidTranslationsPerRow(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, int repeatability, Direction dir) {
+                                                         HashSet<ImageTile<T>> validTiles, int repeatability, Direction dir) {
     // compute median X and Y values
     List<Double> medianXVals = new ArrayList<Double>();
     List<Double> medianYVals = new ArrayList<Double>();
@@ -1253,7 +1249,7 @@ public class OptimizationUtils {
         }
       }
     }
-    
+
   }
 
   /**
@@ -1261,14 +1257,14 @@ public class OptimizationUtils {
    * and Y. All translations that are not in range or have a correlation less than 0.5 have their
    * correlations set to NaN. All translations that are valid have their correlations incremented by
    * 4.0
-   * 
-   * @param grid the grid of image tiles
-   * @param validTiles a set of valid tiles
+   *
+   * @param grid          the grid of image tiles
+   * @param validTiles    a set of valid tiles
    * @param repeatability the computed repeatability
-   * @param dir the direction we are working with
+   * @param dir           the direction we are working with
    */
   public static <T> void removeInvalidTranslationsPerCol(TileGrid<ImageTile<T>> grid,
-      HashSet<ImageTile<T>> validTiles, int repeatability, Direction dir) {
+                                                         HashSet<ImageTile<T>> validTiles, int repeatability, Direction dir) {
     // compute median X and Y values
     List<Double> medianXVals = new ArrayList<Double>();
     List<Double> medianYVals = new ArrayList<Double>();
@@ -1362,7 +1358,7 @@ public class OptimizationUtils {
   /**
    * Compute the repeatability for a min and max : ceil( (max - min) / 2.0). Typically this can be
    * called in conjunction with getMinMaxValidTiles
-   * 
+   *
    * @param minMax the min max element
    * @return the repeatability for the min max element : ceil ( (max - min) / 2.0)
    */
@@ -1373,7 +1369,7 @@ public class OptimizationUtils {
   /**
    * Computes the repeatability for a list of mins and maxes. Typically this can be called in
    * conjunction with getMinMaxPerRow or getMinMaxPerCol
-   * 
+   *
    * @param minMaxes the list of min max elements.
    * @return the repeatability
    */
@@ -1397,14 +1393,14 @@ public class OptimizationUtils {
    * Fixes invalid translations in each row (translations that have NaN in their correlation).
    * op(validTranslationsPerRow) is used as the corrected translations. If an entire row is empty,
    * then it is added to the list of empty rows, which is returned.
-   * 
+   *
    * @param grid the grid of image tiles
-   * @param dir the direction
-   * @param op the operation type (median, mode, max, ... etc.)
+   * @param dir  the direction
+   * @param op   the operation type (median, mode, max, ... etc.)
    * @return the list of rows that have no good translations
    */
   public static <T> List<Integer> fixInvalidTranslationsPerRow(TileGrid<ImageTile<T>> grid,
-      Direction dir, OP_TYPE op) {
+                                                               Direction dir, OP_TYPE op) {
     List<Integer> emptyRows = new ArrayList<Integer>();
     List<CorrelationTriple> validCorrTriplesInRow = new ArrayList<CorrelationTriple>();
     List<CorrelationTriple> invalidCorrTriplesInRow = new ArrayList<CorrelationTriple>();
@@ -1463,14 +1459,14 @@ public class OptimizationUtils {
    * Fixes invalid translations in each column (translations that have NaN in their correlation).
    * op(validTranslationsPerCol) is used as the corrected translations. If an entire column is
    * empty, then it is added to the list of empty columns, which is returned.
-   * 
+   *
    * @param grid the grid of image tiles
-   * @param dir the direction
-   * @param op the operation type (median, mode, max, ... etc.)
+   * @param dir  the direction
+   * @param op   the operation type (median, mode, max, ... etc.)
    * @return the list of columns that have no good translations
    */
   public static <T> List<Integer> fixInvalidTranslationsPerCol(TileGrid<ImageTile<T>> grid,
-      Direction dir, OP_TYPE op) {
+                                                               Direction dir, OP_TYPE op) {
     List<Integer> emptyCols = new ArrayList<Integer>();
     List<CorrelationTriple> validCorrTriplesInCol = new ArrayList<CorrelationTriple>();
     List<CorrelationTriple> invalidCorrTriplesInCol = new ArrayList<CorrelationTriple>();
@@ -1530,13 +1526,13 @@ public class OptimizationUtils {
   public static <T> void replaceTranslationFromOverlap(TileGrid<ImageTile<T>> grid, Direction dir, DisplacementValue dispValue, double overlap) throws FileNotFoundException {
 
     int estTranslation;
-    switch(dir) {
+    switch (dir) {
       case West:
-        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue)*(1 - overlap/100));
+        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue) * (1 - overlap / 100));
         for (int col = 0; col < grid.getExtentWidth(); col++) {
           for (int row = 0; row < grid.getExtentHeight(); row++) {
             CorrelationTriple triple = grid.getSubGridTile(row, col).getWestTranslation();
-            if(triple != null) {
+            if (triple != null) {
               triple.setX(estTranslation);
               triple.setY(0);
             }
@@ -1546,12 +1542,12 @@ public class OptimizationUtils {
 
         break;
       case North:
-        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue)*(1 - overlap/100));
+        estTranslation = (int) Math.round(OptimizationUtils.getOverlapRange(grid, dispValue) * (1 - overlap / 100));
 
         for (int col = 0; col < grid.getExtentWidth(); col++) {
           for (int row = 0; row < grid.getExtentHeight(); row++) {
             CorrelationTriple triple = grid.getSubGridTile(row, col).getNorthTranslation();
-            if(triple != null) {
+            if (triple != null) {
               triple.setX(0);
               triple.setY(estTranslation);
             }
@@ -1562,56 +1558,49 @@ public class OptimizationUtils {
     }
 
   }
-  
-  public static <T> void replaceTranslationsRow(TileGrid<ImageTile<T>> grid, CorrelationTriple median, List<Integer> missingRows)
-  {
-    for (int row : missingRows)
-    {
-      for (int col = 0; col < grid.getExtentWidth(); col++)
-      {
+
+  public static <T> void replaceTranslationsRow(TileGrid<ImageTile<T>> grid, CorrelationTriple median, List<Integer> missingRows) {
+    for (int row : missingRows) {
+      for (int col = 0; col < grid.getExtentWidth(); col++) {
         ImageTile<T> tile = grid.getSubGridTile(row, col);
-        
+
         CorrelationTriple triple = tile.getNorthTranslation();
         triple.setX(median.getX());
-        triple.setY(median.getY());                 
+        triple.setY(median.getY());
       }
     }
   }
-  
-  public static <T> void replaceTranslationsCol(TileGrid<ImageTile<T>> grid, CorrelationTriple median, List<Integer> missingCols)
-  {
-    for (int col : missingCols)
-    {
-      for (int row = 0; row < grid.getExtentHeight(); row++)
-      {
+
+  public static <T> void replaceTranslationsCol(TileGrid<ImageTile<T>> grid, CorrelationTriple median, List<Integer> missingCols) {
+    for (int col : missingCols) {
+      for (int row = 0; row < grid.getExtentHeight(); row++) {
         ImageTile<T> tile = grid.getSubGridTile(row, col);
-        
+
         CorrelationTriple triple = tile.getWestTranslation();
         triple.setX(median.getX());
-        triple.setY(median.getY());                 
+        triple.setY(median.getY());
       }
     }
   }
-  
+
   /**
    * Updates missing rows using the highest standard deviation tile as a reference for the search.
-   * The window of the search is based on the minimum and maximum translations for all
-   * valid tiles. Using the min/max we create a backlash measurement to search around. 
-   * Using the backlash we use hill climbing to find the best correlation.
-   * Using this correlation we update the entire row's x/y displacement.
-   * This is done for every row of tiles that have no good translations.
-   * 
-   * @param grid the grid of tiles
-   * @param overlap the computed overlap
+   * The window of the search is based on the minimum and maximum translations for all valid tiles.
+   * Using the min/max we create a backlash measurement to search around. Using the backlash we use
+   * hill climbing to find the best correlation. Using this correlation we update the entire row's
+   * x/y displacement. This is done for every row of tiles that have no good translations.
+   *
+   * @param grid             the grid of tiles
+   * @param overlap          the computed overlap
    * @param percOverlapError the overlap error
-   * @param repeatability the repeatability
-   * @param min the minimum X,Y translation of all image tiles
-   * @param max the maximum X,Y translation of all image tiles
-   * @param missingRows a list of missing rows
+   * @param repeatability    the repeatability
+   * @param min              the minimum X,Y translation of all image tiles
+   * @param max              the maximum X,Y translation of all image tiles
+   * @param missingRows      a list of missing rows
    */
   public static <T> void updateEmptyRows(TileGrid<ImageTile<T>> grid, double overlap,
-      double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
-      List<Integer> missingRows) throws FileNotFoundException  {
+                                         double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
+                                         List<Integer> missingRows) throws FileNotFoundException {
 
     for (int row : missingRows) {
       // For each tile in the row, find the tile that has the highest
@@ -1637,9 +1626,8 @@ public class OptimizationUtils {
           highestStdDevTile = tile;
 
       }
-      
-      if (highestStdDevTile == null)
-      {
+
+      if (highestStdDevTile == null) {
         Log.msg(LogType.MANDATORY, "Error finding highest standard deviation tile. "
             + "Using column 0 tile.");
         highestStdDevTile = grid.getSubGridTile(row, 0);
@@ -1691,24 +1679,24 @@ public class OptimizationUtils {
   }
 
   /**
-   * Updates missing columns using the highest standard deviation tile as a reference for the search.
-   * The window of the search is based on the minimum and maximum translations for all
-   * valid tiles. Using the min/max we create a backlash measurement to search around. 
-   * Using the backlash we use hill climbing to find the best correlation.
-   * Using this correlation we update the entire column's x/y displacement.
-   * This is done for every column of tiles that have no good translations.
-   * 
-   * @param grid the grid of tiles
-   * @param overlap the computed overlap
+   * Updates missing columns using the highest standard deviation tile as a reference for the
+   * search. The window of the search is based on the minimum and maximum translations for all valid
+   * tiles. Using the min/max we create a backlash measurement to search around. Using the backlash
+   * we use hill climbing to find the best correlation. Using this correlation we update the entire
+   * column's x/y displacement. This is done for every column of tiles that have no good
+   * translations.
+   *
+   * @param grid             the grid of tiles
+   * @param overlap          the computed overlap
    * @param percOverlapError the overlap error
-   * @param repeatability the repeatability
-   * @param min the minimum X,Y translation of all valid image tiles
-   * @param max the maximum X,Y translation of all valid image tiles
-   * @param missingCols a list of missing columns
+   * @param repeatability    the repeatability
+   * @param min              the minimum X,Y translation of all valid image tiles
+   * @param max              the maximum X,Y translation of all valid image tiles
+   * @param missingCols      a list of missing columns
    */
   public static <T> void updateEmptyColumns(TileGrid<ImageTile<T>> grid, double overlap,
-      double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
-      List<Integer> missingCols) throws FileNotFoundException {
+                                            double percOverlapError, int repeatability, CorrelationTriple min, CorrelationTriple max,
+                                            List<Integer> missingCols) throws FileNotFoundException {
     for (int col : missingCols) {
       // For each tile in the col, find the tile that has the highest
       // standard deviation
@@ -1733,9 +1721,8 @@ public class OptimizationUtils {
           highestStdDevTile = tile;
 
       }
-      
-      if (highestStdDevTile == null)
-      {
+
+      if (highestStdDevTile == null) {
         Log.msg(LogType.MANDATORY, "Error finding highest standard deviation tile. "
             + "Using row 0 tile.");
         highestStdDevTile = grid.getSubGridTile(0, col);
@@ -1789,11 +1776,11 @@ public class OptimizationUtils {
 
   /**
    * Computes an operation on a list of correlation triples (one for both X and Y)
-   * 
+   *
    * @param vals the list of correlation triples
-   * @param op the operation type
+   * @param op   the operation type
    * @return the correlation values s.t. corrTriple.x = op(vals.x), corrTriple.y = op(vals.y), and
-   *         corrTriple.corr is irrelevant
+   * corrTriple.corr is irrelevant
    */
   public static CorrelationTriple computeOp(List<CorrelationTriple> vals, OP_TYPE op) {
     List<Double> xVals = new ArrayList<Double>();
@@ -1841,9 +1828,9 @@ public class OptimizationUtils {
 
   /**
    * Computes an operation on a list of correlation triples for the given displacement value.
-   * 
-   * @param vals the list of correlation triples
-   * @param op the operation type
+   *
+   * @param vals    the list of correlation triples
+   * @param op      the operation type
    * @param dispVal the displacement value that is operated on
    * @return op(vals.dispVal)
    */
@@ -1891,12 +1878,12 @@ public class OptimizationUtils {
 
   /**
    * Computes an operation on a list of ImageTiles (one for both X and Y) for a given direction.
-   * 
+   *
    * @param tiles the list of image tiles
-   * @param dir the direction
-   * @param op the operation type
+   * @param dir   the direction
+   * @param op    the operation type
    * @return the correlation values s.t. corrTriple.x = op(vals.x), corrTriple.y = op(vals.y), and
-   *         corrTriple.corr is irrelevant
+   * corrTriple.corr is irrelevant
    */
   public static <T> CorrelationTriple computeOp(List<ImageTile<T>> tiles, Direction dir, OP_TYPE op) {
     List<CorrelationTriple> corrList = new ArrayList<CorrelationTriple>();
@@ -1921,15 +1908,15 @@ public class OptimizationUtils {
 
   /**
    * Computes an operation on a set of ImageTiles (one for both X and Y) for a given direction.
-   * 
+   *
    * @param tiles the set of image tiles
-   * @param dir the direction
-   * @param op the operation type
+   * @param dir   the direction
+   * @param op    the operation type
    * @return the correlation values s.t. corrTriple.x = op(vals.x), corrTriple.y = op(vals.y), and
-   *         corrTriple.corr is irrelevant
+   * corrTriple.corr is irrelevant
    */
   public static <T> CorrelationTriple computeOp(HashSet<ImageTile<T>> tiles, Direction dir,
-      OP_TYPE op) {
+                                                OP_TYPE op) {
     List<CorrelationTriple> corrList = new ArrayList<CorrelationTriple>();
 
     for (ImageTile<T> t : tiles) {

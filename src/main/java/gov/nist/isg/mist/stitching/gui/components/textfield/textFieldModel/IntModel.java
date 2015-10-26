@@ -30,10 +30,9 @@ package gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel;
 
 /**
  * Validator that checks integer values
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class IntModel implements TextFieldModel<Integer> {
 
@@ -57,7 +56,7 @@ public class IntModel implements TextFieldModel<Integer> {
 
   /**
    * Creates an integer validator that checks in bounds by min (inclusive) and max (inclusive)
-   * 
+   *
    * @param min the minimum value that is valid (inclusive)
    * @param max the maximum value that is valid (inclusive)
    */
@@ -73,11 +72,11 @@ public class IntModel implements TextFieldModel<Integer> {
 
   /**
    * Creates an integer validator that checks in bounds by min (inclusive) and max (inclusive)
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min        the minimum value that is valid (inclusive)
+   * @param max        the maximum value that is valid (inclusive)
    * @param allowEmpty enables this validator to accept empty text. Empty text represents a value of
-   *        0
+   *                   0
    */
   public IntModel(int min, int max, boolean allowEmpty) {
     this.allowEmpty = allowEmpty;
@@ -88,7 +87,6 @@ public class IntModel implements TextFieldModel<Integer> {
             + "Must be greater than or equal to " + min + " and less than or equal to " + max
             + "<br>empty values enforces use of default parameters.</html>";
   }
-
 
 
   @Override
@@ -141,7 +139,7 @@ public class IntModel implements TextFieldModel<Integer> {
   }
 
   @Override
-  public void updateTextFields() {    
+  public void updateTextFields() {
   }
 
 }

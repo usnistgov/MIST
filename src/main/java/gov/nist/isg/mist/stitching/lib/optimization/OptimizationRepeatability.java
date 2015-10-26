@@ -51,6 +51,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Trav
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -63,15 +64,13 @@ import java.util.concurrent.Semaphore;
 
 /**
  * Entry point for the global optimization: 'Optimization Repeatability'.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHandler {
 
-  public enum MissingSwitch
-  {
+  public enum MissingSwitch {
     Median,
     Search
   }
@@ -81,7 +80,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    */
   public static int MaxRepeatability = 10;
 
-  private static final MissingSwitch missingSwitch =  MissingSwitch.Median;
+  private static final MissingSwitch missingSwitch = MissingSwitch.Median;
   private static final double OverlapError = 5.0;
 
   private TileGrid<ImageTile<T>> grid;
@@ -106,17 +105,15 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
 
   /**
-   * 
    * Initializes the optimization technique using repeatability
-   * 
-   * @param grid the grid of image tiles
-   * @param progressBar a progress bar (or null if no progress bar is needed)
-   * @param params the stitching app parameters
+   *
+   * @param grid                the grid of image tiles
+   * @param progressBar         a progress bar (or null if no progress bar is needed)
+   * @param params              the stitching app parameters
    * @param stitchingStatistics the statistics file
    */
-  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params, StitchingStatistics stitchingStatistics)
-  {
-    this.grid = grid;    
+  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params, StitchingStatistics stitchingStatistics) {
+    this.grid = grid;
     this.progressBar = progressBar;
     this.params = params;
     this.userDefinedRepeatability = params.getAdvancedParams().getRepeatability();
@@ -139,19 +136,18 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    * Computes a global optimization based on computed repeatability for an image grid. This method
    * first, computes the repeatability based on 'good' tile translations. Then using the
    * repeatability provides a search range for computing an exhaustive cross correlation.
-   * @throws GlobalOptimizationException
    */
   public void computeGlobalOptimizationRepeatablitySequential() throws GlobalOptimizationException, FileNotFoundException {
     StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Computing Repeatability",
-                                        "Optimization...", 0, 0, 0, false);
+        "Optimization...", 0, 0, 0, false);
 
     File directory = new File(this.params.getOutputParams().getOutputPath());
-    if(this.params.getOutputParams().isOutputMeta())
+    if (this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
     File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice(),
-            this.params.getInputParams().getNumberTimeSliceDigits());
-    if(this.params.getOutputParams().isOutputMeta())
+        this.params.getInputParams().getNumberTimeSliceDigits());
+    if (this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
     double percOverlapError = OverlapError;
@@ -186,7 +182,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability + " pixels");
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
-                                        this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
+        this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
 
     TileGridTraverser<ImageTile<T>> traverser =
         TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, this.grid);
@@ -214,14 +210,14 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         try {
           if (Stitching.USE_HILLCLIMBING) {
 
-            if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+            if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
               bestWest =
                   Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                                                     westTrans.getY(), west, t);
-            }else{
+                      westTrans.getY(), west, t);
+            } else {
               bestWest =
                   Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                                                       westTrans.getY(), west, t);
+                      westTrans.getY(), west, t);
             }
 
           } else {
@@ -266,14 +262,14 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         try {
           if (Stitching.USE_HILLCLIMBING) {
 
-            if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+            if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
               bestNorth =
                   Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                                                     northTrans.getY(), north, t);
-            }else{
+                      northTrans.getY(), north, t);
+            } else {
               bestNorth =
                   Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                                                       northTrans.getY(), north, t);
+                      northTrans.getY(), north, t);
             }
 
           } else {
@@ -301,14 +297,11 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         }
 
 
-
       }
 
 
       t.releasePixels();
     }
-
-
 
 
   }
@@ -317,7 +310,6 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    * Computes a global optimization based on computed repeatability for an image grid. This method
    * first, computes the repeatability based on 'good' tile translations. Then using the
    * repeatability provides a search range for computing an exhaustive cross correlation.
-   * @throws GlobalOptimizationException 
    */
   public void computeGlobalOptimizationRepeatablity() throws GlobalOptimizationException, FileNotFoundException {
 
@@ -325,12 +317,12 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         "Optimization...", 0, 0, 0, false);
 
     File directory = new File(this.params.getOutputParams().getOutputPath());
-    if(this.params.getOutputParams().isOutputMeta())
+    if (this.params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
     File preOptPosFile = this.params.getOutputParams().getRelPosNoOptFile(this.stitchingStatistics.getCurrentTimeslice(),
-            this.params.getInputParams().getNumberTimeSliceDigits());
-    if(this.params.getOutputParams().isOutputMeta())
+        this.params.getInputParams().getNumberTimeSliceDigits());
+    if (this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(this.grid, preOptPosFile);
 
     double percOverlapError = OverlapError;
@@ -348,7 +340,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 //    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
 //    if(this.params.getOutputParams().isOutputMeta())
 //      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
-    
+
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
     if (this.isUserDefinedRepeatability) {
@@ -363,7 +355,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     computedRepeatability = 2 * computedRepeatability + 1;
 
     Log.msg(LogType.MANDATORY, "Calculated Repeatability: " + computedRepeatability + " pixels");
-    
+
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Optimization...", 0,
         this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
 
@@ -387,18 +379,16 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, this.grid);
 
 
-
     Semaphore sem = null;
 
-    if (ImageTile.freePixelData())
-    {
+    if (ImageTile.freePixelData()) {
       int numPermits = Math.min(grid.getExtentWidth(), grid.getExtentHeight()) + 2 + numThreads;
       sem = new Semaphore(numPermits, true);
 
     }
 
-    BlockingQueue<OptimizationData<T>> tileQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
-    BlockingQueue<OptimizationData<T>> bkQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize()*2);
+    BlockingQueue<OptimizationData<T>> tileQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize() * 2);
+    BlockingQueue<OptimizationData<T>> bkQueue = new ArrayBlockingQueue<OptimizationData<T>>(this.grid.getSubGridSize() * 2);
 
     this.producer = new TileProducer<T>(traverser, bkQueue, sem);
     this.bk = new BookKeeper<T>(bkQueue, tileQueue, sem, grid);
@@ -446,7 +436,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     this.isCancelled = true;
     if (this.optimizationWorkers != null) {
       for (OptimizationRepeatabilityWorker<T> worker : this.optimizationWorkers)
-          worker.cancelExecution();
+        worker.cancelExecution();
     }
 
     if (this.bk != null)
@@ -463,20 +453,20 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
     double overlap = Double.NaN;
-    switch(dir) {
+    switch (dir) {
       case West:
-        if(Double.isNaN(this.userDefinedHorizontalOverlap)) {
+        if (Double.isNaN(this.userDefinedHorizontalOverlap)) {
           overlap =
               OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
-        }else{
+        } else {
           overlap = this.userDefinedHorizontalOverlap;
         }
         break;
       case North:
-        if(Double.isNaN(this.userDefinedVerticalOverlap)) {
+        if (Double.isNaN(this.userDefinedVerticalOverlap)) {
           overlap =
               OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
-        }else{
+        } else {
           overlap = this.userDefinedVerticalOverlap;
         }
         break;
@@ -488,11 +478,10 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   /**
    * Correlations translations of a grid based on a filtering step that enables estimating the
    * repeatability and backlash of a microscope.
-   * 
+   *
    * @param percOverlapError the percent overlap error
-   * @param dir the direction
+   * @param dir              the direction
    * @return the computed repeatability
-   * @throws GlobalOptimizationException 
    */
   public int correctTranslationsModel(double percOverlapError, Direction dir) throws GlobalOptimizationException, FileNotFoundException {
     DisplacementValue dispValue = null;
@@ -518,9 +507,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     this.stitchingStatistics.setComputedOverlap(dir, overlap);
 
     // check that an overlap value has been computed
-    if(Double.isNaN(overlap)) {
+    if (Double.isNaN(overlap)) {
       Log.msg(LogType.MANDATORY, "Warning: Unable to compute overlap for " + dir
-                                 + " direction. Please set your overlap in the advanced options");
+          + " direction. Please set your overlap in the advanced options");
       throw new GlobalOptimizationException("Unable to compute overlap for " + dir + " direction.");
     }
     // limit the overlap to reasonable values
@@ -535,27 +524,27 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     int nbStdWorkerThreads = this.params.getAdvancedParams().getNumCPUThreads();
     HashSet<ImageTile<T>> validTranslations;
     validTranslations = OptimizationUtils.filterTranslations(this.grid, dir, percOverlapError,
-                                                             overlap, nbStdWorkerThreads,
-                                                             filterType,
-                                                             this.stitchingStatistics);
+        overlap, nbStdWorkerThreads,
+        filterType,
+        this.stitchingStatistics);
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
           + " direction. Estimated translations generated from the overlap.");
 
-      if(this.isUserDefinedRepeatability) {
+      if (this.isUserDefinedRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                   + " direction. Repeatability has been set to " +
-                                   this.userDefinedRepeatability + " (advanced options value).");
-      }else{
+            + " direction. Repeatability has been set to " +
+            this.userDefinedRepeatability + " (advanced options value).");
+      } else {
         Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                   + " direction. Repeatability has been set to zero.");
+            + " direction. Repeatability has been set to zero.");
       }
 
       // replace with translation estimated from overlap
       OptimizationUtils.replaceTranslationFromOverlap(this.grid, dir, dispValue, overlap);
       int r = 0;
-      if(this.isUserDefinedRepeatability)
+      if (this.isUserDefinedRepeatability)
         r = this.userDefinedRepeatability;
 
       this.stitchingStatistics.setRepeatability(dir, r);
@@ -595,10 +584,10 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     if (this.isUserDefinedRepeatability) {
       Log.msg(LogType.MANDATORY, "Computed repeatability: " + repeatability + " Overridden by user specified repeatability: " + this.userDefinedRepeatability);
       repeatability = this.userDefinedRepeatability;
-    }else{
+    } else {
       if (repeatability > MaxRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: the computed repeatability (" + repeatability
-                                   + ") is unusually large. Consider manually specifying the repeatability in the Advanced Parameters.");
+            + ") is unusually large. Consider manually specifying the repeatability in the Advanced Parameters.");
       }
     }
 
@@ -623,25 +612,25 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     }
 
     this.stitchingStatistics
-    .setNumValidTilesAfterFilter(dir, validTranslations.size());
+        .setNumValidTilesAfterFilter(dir, validTranslations.size());
 
     if (validTranslations.size() == 0) {
       Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                 + " direction. Estimated translations generated from the overlap.");
+          + " direction. Estimated translations generated from the overlap.");
 
-      if(this.isUserDefinedRepeatability) {
+      if (this.isUserDefinedRepeatability) {
         Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                   + " direction. Repeatability has been set to zero.");
-      }else{
+            + " direction. Repeatability has been set to zero.");
+      } else {
         Log.msg(LogType.MANDATORY, "Warning: no good translations found for " + dir
-                                   + " direction. Repeatability has been set to " +
-                                   this.userDefinedRepeatability + " (advanced options value).");
+            + " direction. Repeatability has been set to " +
+            this.userDefinedRepeatability + " (advanced options value).");
       }
 
       // replace with translation estimated from overlap
       OptimizationUtils.replaceTranslationFromOverlap(this.grid, dir, dispValue, overlap);
       int r = 0;
-      if(this.isUserDefinedRepeatability)
+      if (this.isUserDefinedRepeatability)
         r = this.userDefinedRepeatability;
 
       Log.msg(LogType.MANDATORY, "Please check the statistics file for more details.");
@@ -669,14 +658,12 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     this.stitchingStatistics.setEmptyRowsCols(dir, missingRowOrCol);
 
     if (missingRowOrCol != null && missingRowOrCol.size() > 0) {
-      
-      switch(missingSwitch)
-      {
+
+      switch (missingSwitch) {
         case Median:
           CorrelationTriple median = OptimizationUtils.computeOp(validTranslations, dir, OP_TYPE.MEDIAN);
-          
-          switch(dir)           
-          {
+
+          switch (dir) {
             case North:
               OptimizationUtils.replaceTranslationsRow(this.grid, median, missingRowOrCol);
               break;
@@ -685,10 +672,10 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
               break;
             default:
               break;
-            
+
           }
-          
-          
+
+
           break;
         case Search:
           CorrelationTriple min = OptimizationUtils.computeOp(validTranslations, dir, OP_TYPE.MIN);
@@ -719,9 +706,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
           break;
         default:
           break;
-        
+
       }
-      
+
 
     }
 
@@ -739,6 +726,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   public boolean isExceptionThrown() {
     return this.exceptionThrown;
   }
+
   public Throwable getWorkerThrowable() {
     return this.workerThrowable;
   }

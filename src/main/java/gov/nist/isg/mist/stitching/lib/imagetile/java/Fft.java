@@ -1,11 +1,10 @@
 /****************************************************************************
  * Copyright (c) 2009, Colorado School of Mines and others. All rights reserved. This program and
  * accompanying materials are made available under the terms of the Common Public License - v1.0,
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/cpl-v10.html
+ *
  * Original source code repository found: https://github.com/dhale/jtk
- * 
+ *
  * Any license provisions that differ from above are offered by the license below.
  ****************************************************************************/
 
@@ -46,16 +45,16 @@ import edu.mines.jtk.util.Check;
 
 /**
  * FFT function adapted from mines.edu
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
+ *
  */
 public class Fft {
   /**
    * Constructs an FFT with specified numbers of space samples. Sampling intervals are 1.0 and first
    * sample coordinates are 0.0.
-   * 
+   *
    * @param nx1 number of samples in the 1st dimension.
    * @param nx2 number of samples in the 2nd dimension.
    */
@@ -65,7 +64,7 @@ public class Fft {
 
   /**
    * Constructs an FFT with specified space sampling.
-   * 
+   *
    * @param sx1 space sampling for the 1st dimension.
    * @param sx2 space sampling for the 2nd dimension.
    */
@@ -76,7 +75,7 @@ public class Fft {
 
   /**
    * Constructs an FFT with specified space sampling.
-   * 
+   *
    * @param sx1 space sampling for the 1st dimension.
    * @param sx2 space sampling for the 2nd dimension.
    * @param sx3 space sampling for the 3rd dimension.
@@ -95,7 +94,7 @@ public class Fft {
 
   /**
    * Gets the frequency sampling for the 1st dimension.
-   * 
+   *
    * @return the frequency sampling.
    */
   public Sampling getFrequencySampling1() {
@@ -104,7 +103,7 @@ public class Fft {
 
   /**
    * Gets the frequency sampling for the 2nd dimension.
-   * 
+   *
    * @return the frequency sampling.
    */
   public Sampling getFrequencySampling2() {
@@ -113,7 +112,7 @@ public class Fft {
 
   /**
    * Gets the frequency sampling for the 3rd dimension.
-   * 
+   *
    * @return the frequency sampling.
    */
   public Sampling getFrequencySampling3() {
@@ -123,7 +122,7 @@ public class Fft {
   /**
    * Sets the type of input (output) values for forward (inverse) transforms. The default type is
    * real.
-   * 
+   *
    * @param complex true, for complex values; false, for real values.
    */
   public void setComplex(boolean complex) {
@@ -139,7 +138,7 @@ public class Fft {
    * preserves the values in the specified array, but wastes memory in the case when those values
    * are no longer needed. If overwrite is true, then the inverse transform will be performed in
    * place, so that no copy is necessary. The default is false.
-   * 
+   *
    * @param overwrite true, to overwrite; false, to copy.
    */
   public void setOverwrite(boolean overwrite) {
@@ -148,7 +147,7 @@ public class Fft {
 
   /**
    * Applies a forward space-to-frequency transform of a 2D array.
-   * 
+   *
    * @param f the array to be transformed, a sampled function of space.
    * @return the transformed array, a sampled function of frequency.
    */
@@ -161,7 +160,7 @@ public class Fft {
 
   /**
    * Applies a forward space-to-frequency transform of a 2D array. f is already padded.
-   * 
+   *
    * @param f the array to be transformed, a sampled function of space.
    */
   public void applyForwardPadded(float[][] f) {
@@ -179,7 +178,7 @@ public class Fft {
 
   /**
    * Applies an inverse frequency-to-space transform of a 2D array.
-   * 
+   *
    * @param g the array to be transformed, a sampled function of frequency.
    * @return the transformed array, a sampled function of space.
    */

@@ -28,7 +28,7 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.utilfns;
 
-public class IndexValuePair implements Comparable<IndexValuePair>{
+public class IndexValuePair implements Comparable<IndexValuePair> {
 
   private int index;
   private double value;
@@ -74,10 +74,9 @@ public class IndexValuePair implements Comparable<IndexValuePair>{
 
   @Override
   public int compareTo(IndexValuePair arg0) {
-    int val = Double.compare(arg0.getValue(),this.getValue());
+    int val = Double.compare(arg0.getValue(), this.getValue());
 
-    if (val == 0)
-    {
+    if (val == 0) {
       return new Integer(this.getIndex()).compareTo(arg0.getIndex());
     }
     return val;

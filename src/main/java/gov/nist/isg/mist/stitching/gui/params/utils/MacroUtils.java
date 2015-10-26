@@ -46,17 +46,17 @@ import java.util.List;
 
 /**
  * Macro utility functions
- * @author Tim Blattner
  *
- * @param <T>
+ * @author Tim Blattner
  */
 public class MacroUtils {
 
   /**
    * Loads a macro integer
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded integer
    */
   public static int loadMacroInteger(String options, String key, int def) {
@@ -70,9 +70,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro double
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded double
    */
   public static double loadMacroDouble(String options, String key, double def) {
@@ -86,9 +87,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro String
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded String
    */
   public static String loadMacroString(String options, String key, String def) {
@@ -97,9 +99,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro origin enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded origin enum
    */
   public static GridOrigin loadMacroGridOrigin(String options, String key, String def) {
@@ -118,9 +121,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro numbering enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded numbering enum
    */
   public static GridDirection loadMacroGridNumbering(String options, String key, String def) {
@@ -139,9 +143,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro loader type enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded loader type enum
    */
   public static LoaderType loadMacroLoaderType(String options, String key, String def) {
@@ -157,9 +162,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro boolean
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded boolean
    */
   public static boolean loadMacroBoolean(String options, String key, boolean def) {
@@ -174,9 +180,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro timeslices
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded timeslices
    */
   public static List<RangeParam> loadMacroTimeslices(String options, String key) {
@@ -187,9 +194,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro program type enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded program type enum
    */
   public static StitchingType loadMacroProgramType(String options, String key, String def) {
@@ -206,9 +214,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro plan type
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded plan type enum
    */
   public static FftwPlanType loadMacroFFTWPlanType(String options, String key, String def) {
@@ -225,9 +234,10 @@ public class MacroUtils {
 
   /**
    * Loads a macro blending mode enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded blending mode enum
    */
   public static BlendingMode loadMacroBlendingModeType(String options, String key, String def) {
@@ -244,52 +254,55 @@ public class MacroUtils {
 
   /**
    * Loads a macro log type enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded log type enum
    */
   public static LogType loadMacroLogType(String options, String key, String def) {
     String res = Macro.getValue(options, key.toLowerCase(), def);
-    
+
     LogType type = LogType.valueOf(res.toUpperCase());
-    
+
     if (type == null) {
       Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid LogType");
     }
-    
+
     return type;
   }
-  
+
   /**
    * Loads a macro debug type enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded debug type enum
    */
   public static DebugType loadMacroDebugType(String options, String key, String def) {
     String res = Macro.getValue(options, key.toLowerCase(), def);
-    
+
     DebugType type = DebugType.valueOf(res.toUpperCase());
-    
+
     if (type == null) {
       Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid DebugType");
     }
-    
+
     return type;
   }
-  
-  
+
+
   /**
    * Loads a macro optimization type enum
+   *
    * @param options the macro options
-   * @param key the key value
-   * @param def the default value
+   * @param key     the key value
+   * @param def     the default value
    * @return the loaded optimization type enum
    */
   public static GlobalOptimizationType loadMacroGlobalOptimizationType(String options, String key,
-      String def) {
+                                                                       String def) {
     String res = Macro.getValue(options, key.toLowerCase(), def);
 
     GlobalOptimizationType type = GlobalOptimizationType.valueOf(res.toUpperCase());
@@ -304,8 +317,9 @@ public class MacroUtils {
 
   /**
    * Loads a macro Cuda devices
+   *
    * @param options the macro options
-   * @param dev the cuda device number 
+   * @param dev     the cuda device number
    * @return the loaded Cuda devices
    */
   public static CudaDeviceParam loadMacroCUDADevice(String options, int dev) {
@@ -343,6 +357,7 @@ public class MacroUtils {
 
   /**
    * Records an integer into a macro
+   *
    * @param key the key for the macro
    * @param val the value for the macro
    */
@@ -352,6 +367,7 @@ public class MacroUtils {
 
   /**
    * Records an double into a macro
+   *
    * @param key the key for the macro
    * @param val the value for the macro
    */
@@ -361,6 +377,7 @@ public class MacroUtils {
 
   /**
    * Records an string into a macro
+   *
    * @param key the key for the macro
    * @param val the value for the macro
    */
@@ -375,6 +392,7 @@ public class MacroUtils {
 
   /**
    * Records an boolean into a macro
+   *
    * @param key the key for the macro
    * @param val the value for the macro
    */
@@ -384,7 +402,8 @@ public class MacroUtils {
 
   /**
    * Records an timeslices into a macro
-   * @param timeSlices the time clies 
+   *
+   * @param timeSlices the time clies
    */
   public static void recordTimeslices(List<RangeParam> timeSlices) {
     String timeSliceStr = "";
@@ -399,6 +418,7 @@ public class MacroUtils {
 
   /**
    * Records an Cuda devices into a macro
+   *
    * @param cudaDevices the cuda devices
    */
   public static void recordCUDADevices(List<CudaDeviceParam> cudaDevices) {
@@ -415,5 +435,5 @@ public class MacroUtils {
     }
   }
 
-  
+
 }

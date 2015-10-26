@@ -51,21 +51,20 @@ import java.nio.ByteBuffer;
 /**
  * Represents an image tile that uses native library bindings with CUDA. Must initialize the
  * libraries before using native bindings and initialize CUDA library.
- * 
+ *
  * <pre>
  * <code>
  * JCUDAImageTile.initLibrary(fftwPath, "");
  * </pre>
- * 
+ *
  * </code>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
-  private static final String CUDA_MODULE_NAME = "lib/jcuda-"+ LibraryUtils.JCUDA_VERSION +"/stitching-util-cuda-bin.ptx";
+  private static final String CUDA_MODULE_NAME = "lib/jcuda-" + LibraryUtils.JCUDA_VERSION + "/stitching-util-cuda-bin.ptx";
   private static final String FUNC_ELT_PROD = "elt_prod_conj_v2";
   private static final String FUNC_MAX = "reduce_max_main";
   private static final String FUNC_MAX_FIN = "reduce_max_final";
@@ -114,40 +113,40 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
    */
   public CudaImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol) {
+                       int startCol) {
     this(file, row, col, gridWidth, gridHeight, startRow, startCol, true);
   }
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
-   * @param read whether or not to read the tile here
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
+   * @param read       whether or not to read the tile here
    */
   public CudaImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol, boolean read) {
+                       int startCol, boolean read) {
     super(file, row, col, gridWidth, gridHeight, startRow, startCol, read);
   }
 
   /**
    * Creates an image tile from a file
-   * 
+   *
    * @param file the image tile file
    */
   public CudaImageTile(File file) {
@@ -156,7 +155,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Initializes image tile and optionally does not read
-   * 
+   *
    * @param file the file assosiated with this tile
    * @param read whether or not to read the tile here
    */
@@ -177,7 +176,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
    */
   @Override
   public void computeFft() throws FileNotFoundException {
-    
+
     if (hasFft())
       return;
 
@@ -187,9 +186,8 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
 
     for (int r = 0; r < super.getHeight(); r++)
-      for (int c = 0; c < super.getWidth(); c++)
-      {
-        tempJ[r*super.getWidth()+c] = super.getPixels().getPixelValue(c, r);
+      for (int c = 0; c < super.getWidth(); c++) {
+        tempJ[r * super.getWidth() + c] = super.getPixels().getPixelValue(c, r);
       }
 
     this.fft = new CUdeviceptr();
@@ -218,16 +216,15 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
    */
   @Override
   public void computeFft(DynamicMemoryPool<CUdeviceptr> pool, TileWorkerMemory memory,
-      CUstream stream) throws FileNotFoundException {
+                         CUstream stream) throws FileNotFoundException {
 
     readTile();
 
     ByteBuffer dBuffer = memory.getImageBuffer();
 
     for (int r = 0; r < super.getHeight(); r++)
-      for (int c = 0; c < super.getWidth(); c++)
-      {
-        dBuffer.putDouble((r*super.getWidth()+c)*Sizeof.DOUBLE, super.getPixels().getPixelValue(c, r));
+      for (int c = 0; c < super.getWidth(); c++) {
+        dBuffer.putDouble((r * super.getWidth() + c) * Sizeof.DOUBLE, super.getPixels().getPixelValue(c, r));
       }
 
     CUdeviceptr fftIn = memory.getFftIn();
@@ -248,7 +245,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Initializes GPU functions
-   * 
+   *
    * @param nGPUs the number of GPUs being used
    */
   public static void initFunc(int nGPUs) {
@@ -265,11 +262,11 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Initializes JCUDA plans and functions
-   * 
-   * @param width the width for the tile
-   * @param height the height for the tile
+   *
+   * @param width   the width for the tile
+   * @param height  the height for the tile
    * @param context the GPU context that is to be initialized
-   * @param id the thread ID associated with the GPU context
+   * @param id      the thread ID associated with the GPU context
    * @return true if the plan was initialized successfully, otherwise false
    * @throws IOException fails to read PTX CUDA file
    */
@@ -326,7 +323,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
     } catch (UnsatisfiedLinkError ex) {
       Log.msg(LogType.MANDATORY, "Unable to load CUFFT library. Currently it is "
           + "mandatory to install the CUDA toolkit (v" + LibraryUtils.JCUDA_VERSION + "). " +
-              "If you recently installed the toolkit, please restart your computer.");
+          "If you recently installed the toolkit, please restart your computer.");
       Log.msg(LogType.MANDATORY, "http://nvidia.com/getcuda");
       return false;
     }
@@ -336,7 +333,7 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Destroys forward and backward plan's memory
-   * 
+   *
    * @param dev the GPU device
    */
   public static void destroyPlans(int dev) {
@@ -346,9 +343,9 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Binds the forward plan to a particular CUDA stream
-   * 
+   *
    * @param stream the CUDA stream
-   * @param dev the GPU device
+   * @param dev    the GPU device
    */
   public static void bindFwdPlanToStream(CUstream stream, int dev) {
     cudaStream_t stream_t = new cudaStream_t(stream);
@@ -357,9 +354,9 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
   /**
    * Binds the backward (inverse) plan to a particular CUDA stream
-   * 
+   *
    * @param stream the CUDA stream
-   * @param dev the GPU device
+   * @param dev    the GPU device
    */
   public static void bindBwdPlanToStream(CUstream stream, int dev) {
     cudaStream_t stream_t = new cudaStream_t(stream);

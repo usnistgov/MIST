@@ -32,7 +32,7 @@ import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 
 /**
  * An interface that represents parameter functions
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -40,14 +40,14 @@ public interface GUIParamFunctions {
 
   /**
    * Loads parameters into the GUI
-   * 
+   *
    * @param params the params to load
    */
   public void loadParamsIntoGUI(StitchingAppParams params);
 
   /**
    * Checks and parses the arguments in the GUI, setting the StitchingAppParams
-   * 
+   *
    * @param params the parameters that the GUI should set
    * @return true if the parameters were set
    */
@@ -55,7 +55,7 @@ public interface GUIParamFunctions {
 
   /**
    * Checks the GUI arguments
-   * 
+   *
    * @return true if the arguments passed
    */
   public boolean checkGUIArgs();
@@ -72,15 +72,15 @@ public interface GUIParamFunctions {
 
   /**
    * Checks if we are loading parameters
-   * 
+   *
    * @return true if we are laoding parameters
    */
   public boolean isLoadingParams();
 
   /**
    * Loads parameters from GUI into parameter object that is used to save the parameters to a file
-   * 
-   * @param params the params that are to be loaded from the GUI and saved
+   *
+   * @param params    the params that are to be loaded from the GUI and saved
    * @param isClosing true if the application is being closed, otherwise false
    */
   public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing);

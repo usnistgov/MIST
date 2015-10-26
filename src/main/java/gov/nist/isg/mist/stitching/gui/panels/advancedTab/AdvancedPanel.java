@@ -47,10 +47,9 @@ import java.awt.event.ActionListener;
 
 /**
  * Creates the advanced options panel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionListener {
 
@@ -75,26 +74,26 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
       + "will aid in correcting translations that have low correlation in the "
       + "vertical direction. By default we compute the vertical overlap based on "
       + "the translations.";
-  
+
   private static final String overlapUncertaintyHelp = "During translation optimization, uses the "
       + "user-specified overlap uncertainty for computing the repeatability of the "
       + "stage. Leave this field blank to use the default. Modifying this field "
       + "will aid in correcting translations where the overlap uncertainty should be increased."
       + "\n\nTIP: Value should not exceed 20.0, default is 5.0";
-  
+
   private static final String numFftPeaksHelp = "Specifies the number of peaks to check when"
       + " computing the phase correlation image alignment method. Modifying this value can yield "
       + "more accurate pre-optimization displacements. \n\nTIP: Value should not exceed 10.0, default is 2.0";
 
 
   private static final long serialVersionUID = 1L;
-  
+
   private TextFieldInputPanel<Integer> numFFTPeaks;
   private TextFieldInputPanel<Integer> maxRepeatability;
   private TextFieldInputPanel<Double> horizontalOverlap;
   private TextFieldInputPanel<Double> verticalOverlap;
   private TextFieldInputPanel<Double> overlapUncertainty;
-  
+
 
   private ParallelOptPane parallelOptions;
   private JComboBox loggingLevel;
@@ -114,9 +113,9 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.debugLevel.setSelectedItem(Debug.getDebugLevel());
 
     this.numFFTPeaks =
-        new TextFieldInputPanel<Integer>("Number of FFT Peaks", "", 
+        new TextFieldInputPanel<Integer>("Number of FFT Peaks", "",
             new IntModel(1, 100, true), numFftPeaksHelp);
-    
+
     this.maxRepeatability =
         new TextFieldInputPanel<Integer>("Stage Repeatability", "", new IntModel(1,
             Integer.MAX_VALUE, true), repeatabilityHelp);
@@ -127,11 +126,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.verticalOverlap =
         new TextFieldInputPanel<Double>("Vertical overlap", "", new DblModel(0.0, 100.0, true),
             verticalOverlapHelp);
-    
+
     this.overlapUncertainty =
         new TextFieldInputPanel<Double>("Overlap uncertainty", "", new DblModel(0.0, 100.0, true),
             overlapUncertaintyHelp);
-    
+
     this.parallelOptions = new ParallelOptPane();
 
 
@@ -142,8 +141,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
 
   }
 
-  private void initListeners()
-  {
+  private void initListeners() {
     this.loggingLevel.addActionListener(this);
     this.debugLevel.addActionListener(this);
   }
@@ -157,7 +155,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     GridBagConstraints c = new GridBagConstraints();
 
     JButton qButton = new JButton("Help?");
-    
+
     qButton.addActionListener(new HelpDocumentationViewer("advanced-parameters-optional-"));
 
 
@@ -165,7 +163,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     JPanel stageModelPanel = new JPanel(new GridBagLayout());
     stageModelPanel.setBorder(
         new TitledBorder(new LineBorder(Color.BLACK), "Stage Model Parameters"));
-    c.insets = new Insets(0,0,0,0);
+    c.insets = new Insets(0, 0, 0, 0);
     c.gridy = 0;
     c.gridx = 0;
     c.gridwidth = 1;
@@ -194,8 +192,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     logPanel.add(new JLabel("Debug Level"), c);
     c.gridy = 1;
     logPanel.add(this.debugLevel, c);
-    c.insets = new Insets(0,0,0,0);
-
+    c.insets = new Insets(0, 0, 0, 0);
 
 
     // setup the other advanced params
@@ -213,8 +210,6 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     otherAdvancedPanel.add(logPanel, c);
 
 
-
-    
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;
     vertPanel.add(qButton, c);
@@ -225,9 +220,9 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.HORIZONTAL;
     vertPanel.add(stageModelPanel, c);
-    c.insets = new Insets(10,0,0,0);
+    c.insets = new Insets(10, 0, 0, 0);
     c.gridy = 2;
-    vertPanel.add(otherAdvancedPanel,c);
+    vertPanel.add(otherAdvancedPanel, c);
     c.gridy = 3;
     vertPanel.add(this.parallelOptions.getStitchingTypePanel(), c);
     c.gridy = 4;
@@ -261,7 +256,6 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.debugLevel.setSelectedItem(debugType);
 
   }
-
 
 
   @Override
@@ -329,18 +323,20 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
 
   /**
    * Gets the log level
+   *
    * @return the log level
    */
   public Log.LogType getLogLevel() {
-    return (Log.LogType)this.loggingLevel.getSelectedItem();
+    return (Log.LogType) this.loggingLevel.getSelectedItem();
   }
 
   /**
    * Gets the debug level
+   *
    * @return the debug level
    */
   public Debug.DebugType getDebugLevel() {
-    return (Debug.DebugType)this.debugLevel.getSelectedItem();
+    return (Debug.DebugType) this.debugLevel.getSelectedItem();
   }
 
 
@@ -351,13 +347,12 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
       JComboBox action = (JComboBox) src;
 
       if (action.equals(this.loggingLevel)) {
-        Log.setLogLevel((Log.LogType)action.getSelectedItem());
+        Log.setLogLevel((Log.LogType) action.getSelectedItem());
       } else if (action.equals(this.debugLevel)) {
-        Debug.setDebugLevel((Debug.DebugType)action.getSelectedItem());
+        Debug.setDebugLevel((Debug.DebugType) action.getSelectedItem());
       }
     }
   }
-
 
 
 }

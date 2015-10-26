@@ -31,49 +31,48 @@ import java.io.FileNotFoundException;
 
 public class TestFFTWComputeFFT32 {
 
-    /**
-     * Computes the FFT for an image using FFTW
-     */
-    public static void runTestFFTImage() throws FileNotFoundException {
-        Log.setLogLevel(LogType.INFO);
-        Log.msg(LogType.MANDATORY, "Running Test Compute FFT Image using FFTW");
+  /**
+   * Computes the FFT for an image using FFTW
+   */
+  public static void runTestFFTImage() throws FileNotFoundException {
+    Log.setLogLevel(LogType.INFO);
+    Log.msg(LogType.MANDATORY, "Running Test Compute FFT Image using FFTW");
 
-        File file = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00001.tif");
+    File file = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00001.tif");
 
-        FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f");
+    FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f");
 
 
-        FftwImageTile32 tile = new FftwImageTile32(file);
+    FftwImageTile32 tile = new FftwImageTile32(file);
 
-        Log.msg(LogType.INFO, "Loading FFTW plan");
+    Log.msg(LogType.INFO, "Loading FFTW plan");
 
-        FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library32.FFTW_MEASURE, true, "test.dat");
-        FftwImageTile32.savePlan("test.dat");
-        Log.msg(LogType.INFO, "Computing FFT");
-        TimeUtil.tick();
-        tile.computeFft();
-        Log.msg(LogType.HELPFUL, "Finished Computing FFT in " + TimeUtil.tock() + " ms");
+    FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library32.FFTW_MEASURE, true, "test.dat");
+    FftwImageTile32.savePlan("test.dat");
+    Log.msg(LogType.INFO, "Computing FFT");
+    TimeUtil.tick();
+    tile.computeFft();
+    Log.msg(LogType.HELPFUL, "Finished Computing FFT in " + TimeUtil.tock() + " ms");
 
-        tile.releaseFftMemory();
+    tile.releaseFftMemory();
 
-        FftwImageTile32.destroyPlans();
+    FftwImageTile32.destroyPlans();
 
-        // }
+    // }
 
-        Log.msg(LogType.MANDATORY, "Test Completed.");
+    Log.msg(LogType.MANDATORY, "Test Completed.");
+  }
+
+  /**
+   * Executes the test case
+   *
+   * @param args not used
+   */
+  public static void main(String[] args) {
+    try {
+      TestFFTWComputeFFT32.runTestFFTImage();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
-
-    /**
-     * Executes the test case
-     *
-     * @param args not used
-     */
-    public static void main(String[] args) {
-        try {
-            TestFFTWComputeFFT32.runTestFFTImage();
-        } catch (FileNotFoundException e)
-        {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-        }
-    }
+  }
 }

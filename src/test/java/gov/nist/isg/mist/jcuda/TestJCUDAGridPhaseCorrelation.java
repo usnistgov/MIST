@@ -60,7 +60,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -87,7 +87,6 @@ public class TestJCUDAGridPhaseCorrelation {
     int extentHeight = 18;
 
 
-
     Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation JCUDA");
 
     File tileDir = new File("F:\\StitchingData\\worms1\\");
@@ -95,7 +94,7 @@ public class TestJCUDAGridPhaseCorrelation {
 
     Log.msg(LogType.INFO, "Loading CUFFT plan");
 
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[] {0}, tile);
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, tile);
 
     Log.msg(LogType.INFO, "Generating tile grid");
     TileGrid<ImageTile<CUdeviceptr>> grid = null;
@@ -152,15 +151,14 @@ public class TestJCUDAGridPhaseCorrelation {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
     try {
-        TestJCUDAGridPhaseCorrelation.runTestGridPhaseCorrelation();
-    }catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestJCUDAGridPhaseCorrelation.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

@@ -41,17 +41,16 @@ import java.io.FileNotFoundException;
 /**
  * Represents an image tile that uses only java (no native bindings). Must initialize an FFT plan
  * before using.
- * 
+ *
  * <pre>
  * <code>
  * JavaImageTile.initJavaPlan(initialTile);
  * </pre>
- * 
+ *
  * </code>
- * 
+ *
  * @author Tim Blattner
  * @version 2013.08.7
- * 
  */
 public class JavaImageTile extends ImageTile<float[][]> {
 
@@ -62,17 +61,17 @@ public class JavaImageTile extends ImageTile<float[][]> {
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
    */
   public JavaImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol) {
+                       int startCol) {
 
     this(file, row, col, gridWidth, gridHeight, startRow, startCol, true);
   }
@@ -80,24 +79,24 @@ public class JavaImageTile extends ImageTile<float[][]> {
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
-   * @param read whether or not to read the tile here
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
+   * @param read       whether or not to read the tile here
    */
   public JavaImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol, boolean read) {
+                       int startCol, boolean read) {
     super(file, row, col, gridWidth, gridHeight, startRow, startCol, read);
   }
 
   /**
    * Creates an image tile from a file
-   * 
+   *
    * @param file the image tile file
    */
   public JavaImageTile(File file) {
@@ -107,7 +106,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
 
   /**
    * Initializes image tile and optionally does not read
-   * 
+   *
    * @param file the file assosiated with this tile
    * @param read whether or not to read the tile here
    */
@@ -126,7 +125,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft()throws FileNotFoundException{
+  public void computeFft() throws FileNotFoundException {
 
     if (fftPlan == null)
       initJavaPlan(this);
@@ -145,8 +144,8 @@ public class JavaImageTile extends ImageTile<float[][]> {
 
   /**
    * Computes this image's FFT
-   * 
-   * @param pool pool of memory that we might allocate memory from if it is not loaded
+   *
+   * @param pool   pool of memory that we might allocate memory from if it is not loaded
    * @param memory extra memory for input if needed
    */
   @Override
@@ -194,7 +193,7 @@ public class JavaImageTile extends ImageTile<float[][]> {
 
   /**
    * Initializes FFT java plan. This plan might apply padding based on paddedHeight/2
-   * 
+   *
    * @param tile the initial tile to get the width and height
    */
   public static void initJavaPlan(ImageTile<?> tile) throws FileNotFoundException {

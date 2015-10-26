@@ -37,7 +37,7 @@ import java.io.File;
 
 /**
  * Test case for loading/saving/creating FFTW wisdom files.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -84,7 +84,7 @@ public class TestFFTWWisdom {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {

@@ -40,6 +40,7 @@ import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 
 import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +51,9 @@ import java.util.concurrent.PriorityBlockingQueue;
  * Class that represents a CCF (cross correlation function) worker, which are CPU threads that
  * compute the cross correlation of two neighbors based on the index computed from phase
  * correlation.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileCpuCcfWorker<T> implements Runnable {
 
@@ -67,15 +67,14 @@ public class TileCpuCcfWorker<T> implements Runnable {
 
 
   /**
-   * 
    * Creates a CCF worker that executes cross correlations on the CPU
-   * 
-   * @param ccfQueue the work queue for the CCF workers
+   *
+   * @param ccfQueue     the work queue for the CCF workers
    * @param numNeighbors the total number of neighbors in the computation
-   * @param progressBar the progress bar
+   * @param progressBar  the progress bar
    */
   public TileCpuCcfWorker(PriorityBlockingQueue<StitchingTask<T>> ccfQueue,
-      int numNeighbors,  JProgressBar progressBar) {
+                          int numNeighbors, JProgressBar progressBar) {
     TileCpuCcfWorker.count = 0;
     this.ccfQueue = ccfQueue;
     this.numNeighbors = numNeighbors;
@@ -119,7 +118,7 @@ public class TileCpuCcfWorker<T> implements Runnable {
             else if (north)
               multi_ccfs.add(Stitching.peakCrossCorrelationUD(neighbor, tile, x, y));
           }
-          
+
           CorrelationTriple corr = Collections.max(multi_ccfs);
           if (north) {
             tile.setNorthTranslation(corr);
@@ -153,7 +152,7 @@ public class TileCpuCcfWorker<T> implements Runnable {
       }
 
       Debug.msg(DebugType.HELPFUL, "CCF Done");
-      
+
       // Signal other workers that may be waiting to finish
       this.ccfQueue.put(new StitchingTask<T>(null, null, TaskType.SENTINEL));
 

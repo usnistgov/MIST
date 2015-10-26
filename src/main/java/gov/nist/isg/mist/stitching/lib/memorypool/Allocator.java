@@ -31,25 +31,23 @@ import jcuda.CudaException;
 
 /**
  * Interface to create different types of memory allocators.
- * 
+ *
+ * @param <T> the underlying memory type.
  * @author Tim Blattner
  * @version 1.0
- * @param <T> the underlying memory type.
  */
 public interface Allocator<T> {
   /**
    * Allocates memory
-   * 
+   *
    * @param n an array of dimensions
    * @return the memory reference
-   * @throws OutOfMemoryError
-   * @throws CudaException
    */
   public T allocate(int... n) throws OutOfMemoryError, CudaException;
 
   /**
    * Deallocates memory
-   * 
+   *
    * @param memory the memory reference
    * @return the reference after deallocation (normally null)
    */

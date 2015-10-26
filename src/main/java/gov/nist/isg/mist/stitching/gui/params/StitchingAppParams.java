@@ -42,7 +42,7 @@ import java.util.prefs.Preferences;
 /**
  * StitchingAppParams is an object that holds parameters for the stitching application. This object
  * contains methods for loading/saving and checking arguments
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -65,6 +65,7 @@ public class StitchingAppParams {
 
   /**
    * Saves the parameters to a file
+   *
    * @param file the file
    * @return true if the save was successful, otherwise false
    */
@@ -89,6 +90,7 @@ public class StitchingAppParams {
 
   /**
    * Saves the parameters to a filewriter
+   *
    * @param fw the file writer
    * @return true if the save was successful, otherwise false
    */
@@ -100,11 +102,12 @@ public class StitchingAppParams {
     ret &= this.advancedParams.saveParams(fw);
     ret &= this.logParams.saveParams(fw);
 
-    return ret;    
+    return ret;
   }
 
   /**
    * Loads parameters from preferences
+   *
    * @param pref the preferencews
    * @return true, if the load was successful, otherwise false
    */
@@ -127,6 +130,7 @@ public class StitchingAppParams {
 
   /**
    * Loads parameters from a file
+   *
    * @param file the file to load parameters from
    * @return true if the load was successful, otherwise false
    */
@@ -141,7 +145,7 @@ public class StitchingAppParams {
 
     ret &= this.inputParams.loadParams(file);
     ret &= this.outputParams.loadParams(file);
-    ret &= this.advancedParams.loadParams(file);   
+    ret &= this.advancedParams.loadParams(file);
     ret &= this.logParams.loadParams(file);
     return ret;
   }
@@ -159,12 +163,13 @@ public class StitchingAppParams {
 
   /**
    * Checks if the parameters are valid
+   *
    * @return true if the parameters are valid, otherwise false
    */
   public boolean checkParams() {
-    return this.inputParams.checkParams() && this.outputParams.checkParams() 
+    return this.inputParams.checkParams() && this.outputParams.checkParams()
         && this.advancedParams.checkParams() && this.logParams.checkParams();
-  } 
+  }
 
   /**
    * @return the inputParams
@@ -186,8 +191,8 @@ public class StitchingAppParams {
   public AdvancedParameters getAdvancedParams() {
     return this.advancedParams;
   }
-  
-  /** 
+
+  /**
    * @return the logParams
    */
   public LoggingParameters getLogParams() {
@@ -231,10 +236,9 @@ public class StitchingAppParams {
   }
 
 
-
   /**
    * Records the parameters into the preferences.
-   * 
+   *
    * @param pref the preferences to store the parameters.
    */
   public void saveParams(Preferences pref) {

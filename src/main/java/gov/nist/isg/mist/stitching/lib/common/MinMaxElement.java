@@ -30,10 +30,9 @@ package gov.nist.isg.mist.stitching.lib.common;
 
 /**
  * Class for storing the min and max into a single object.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class MinMaxElement {
 
@@ -42,7 +41,7 @@ public class MinMaxElement {
 
   /**
    * Creates a min-max element
-   * 
+   *
    * @param min the min value
    * @param max the max value
    */

@@ -34,8 +34,7 @@ public class StitchingException extends Exception {
    */
   private static final long serialVersionUID = 1L;
 
-  public StitchingException()
-  {
+  public StitchingException() {
     super();
   }
 
@@ -43,6 +42,8 @@ public class StitchingException extends Exception {
     super(message);
   }
 
-  public StitchingException(String message, Throwable cause) { super(message, cause); }
+  public StitchingException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
 }

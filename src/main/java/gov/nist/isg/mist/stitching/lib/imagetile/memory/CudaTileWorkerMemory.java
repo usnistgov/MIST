@@ -34,6 +34,7 @@ import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
 import jcuda.driver.JCudaDriver;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+
 import org.bridj.Pointer;
 
 import java.nio.ByteBuffer;
@@ -42,7 +43,7 @@ import java.nio.ByteOrder;
 /**
  * Class that represents all the memory required for image stitching using CUDA. Memory is reused
  * for independent translation computation for image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -101,7 +102,6 @@ public class CudaTileWorkerMemory extends TileWorkerMemory {
     this.filterBuffer.rewind();
 
   }
-
 
 
   @Override

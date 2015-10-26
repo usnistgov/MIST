@@ -31,6 +31,7 @@ package gov.nist.isg.mist.utilfns;
 import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsLibrary;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+
 import org.bridj.BridJ;
 import org.bridj.Pointer;
 
@@ -38,7 +39,7 @@ import java.io.File;
 
 /**
  * Test case for loading the util functions native library and running an example.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -69,12 +70,12 @@ public class TestUtilFnsNative {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     TestUtilFnsNative.runTestUtilFnsNative();
-  
+
   }
-  
+
 }

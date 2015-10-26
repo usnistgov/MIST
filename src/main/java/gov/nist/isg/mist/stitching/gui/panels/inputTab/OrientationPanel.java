@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +41,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Adds the orientation icons into a JPanel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -57,7 +58,7 @@ public class OrientationPanel extends JPanel implements ActionListener {
 
   /**
    * Initializes the panel and hooks into the orientation parameters
-   * 
+   *
    * @param inputPanel the input panel
    */
   public OrientationPanel(InputPanel inputPanel) {
@@ -79,12 +80,12 @@ public class OrientationPanel extends JPanel implements ActionListener {
     String origin = this.originComponent.getSelectedItem().toString();
     String numbering = this.gridNumberingComponent.getSelectedItem().toString();
 
-    TileGridLoader.LoaderType filenameLoaderType = (TileGridLoader.LoaderType)this.gridType.getSelectedItem();
+    TileGridLoader.LoaderType filenameLoaderType = (TileGridLoader.LoaderType) this.gridType.getSelectedItem();
 
-    if(filenameLoaderType.equals(TileGridLoader.LoaderType.ROWCOL)) {
+    if (filenameLoaderType.equals(TileGridLoader.LoaderType.ROWCOL)) {
       origin = origin.replace(" ", "");
       this.fileName = "RowCol_" + origin + ".png";
-    }else{
+    } else {
       // this is a sequential file loader
       origin = origin.replace(" ", "");
       numbering = numbering.replace(" ", "");

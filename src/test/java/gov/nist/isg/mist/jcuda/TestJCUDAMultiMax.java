@@ -57,7 +57,7 @@ import java.util.List;
 
 /**
  * Test case for computing the custom CUDA multimax kernels
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -88,11 +88,11 @@ public class TestJCUDAMultiMax {
     CudaImageTile cudaTile1 = new CudaImageTile(file1);
 
     FftwImageTile.initLibrary(System.getProperty("user.dir") + File.separator + "libs"
-        + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns",
+            + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns",
         "libfftw3");
     FftwImageTile.initPlans(tile1.getWidth(), tile1.getHeight(), 0x21, true, "test.dat");
 
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[] {0}, cudaTile1);
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, cudaTile1);
 
     CudaTileWorkerMemory cudaMem = new CudaTileWorkerMemory(cudaTile1);
     FftwTileWorkerMemory mem = new FftwTileWorkerMemory(tile1);
@@ -210,15 +210,14 @@ public class TestJCUDAMultiMax {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     try {
-        TestJCUDAMultiMax.runTestJCUDACUFFT();
-    } catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestJCUDAMultiMax.runTestJCUDACUFFT();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

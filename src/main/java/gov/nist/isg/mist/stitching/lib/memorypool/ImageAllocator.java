@@ -29,10 +29,9 @@ package gov.nist.isg.mist.stitching.lib.memorypool;
 
 /**
  * Represents an allocator for allocating Java memory in the form float[][]
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class ImageAllocator implements Allocator<short[]> {
 

@@ -39,10 +39,8 @@ import java.util.TreeSet;
 /**
  * This class provides various utility functions for working with ImageTiles. For example:
  * traverseMaximumSpanningTree updates the absolute positions of a grid based on the correlation
- * coefficients.
- * <p>
- * Also provided are utility functions for initializing a numbering grid.
- * 
+ * coefficients. <p> Also provided are utility functions for initializing a numbering grid.
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -51,7 +49,7 @@ public class TileGridUtils {
   /**
    * Traverses the maximum spanning tree of the grid based on correlation coefficient. Each each
    * step it computes the absolute position relative to the edge taken.
-   * 
+   *
    * @param grid the grid of image tiles to traverse
    */
   public static <T> void traverseMaximumSpanningTree(TileGrid<ImageTile<T>> grid) {
@@ -60,7 +58,7 @@ public class TileGridUtils {
     // Find tile that has highest correlation
     for (int row = 0; row < grid.getExtentHeight(); row++) {
       for (int col = 0; col < grid.getExtentWidth(); col++) {
-        ImageTile<T> tile = grid.getSubGridTile(row, col);        
+        ImageTile<T> tile = grid.getSubGridTile(row, col);
         tile.setAbsXPos(0);
         tile.setAbsYPos(0);
         if (startTile == null)
@@ -86,12 +84,12 @@ public class TileGridUtils {
 
   /**
    * Traverses to the next tile in the minimum spanning tree
-   * 
+   *
    * @param visitedTiles the set of visited tiles
-   * @param grid the grid of image tiles
+   * @param grid         the grid of image tiles
    */
   public static <T> void traverseNextMSPTile(TreeSet<ImageTile<T>> visitedTiles,
-      TileGrid<ImageTile<T>> grid) {
+                                             TileGrid<ImageTile<T>> grid) {
     ImageTile<T> origin = null;
     ImageTile<T> next = null;
     double bestCorr = Double.NEGATIVE_INFINITY;
@@ -117,7 +115,7 @@ public class TileGridUtils {
 
     if (origin == null)
       return;
-    
+
     if (next == null)
       return;
 
@@ -130,7 +128,7 @@ public class TileGridUtils {
 
   /**
    * Translates all vertices in the grid by the minX and minY values of the entire grid.
-   * 
+   *
    * @param grid the grid of image tiles
    */
   public static <T> void translateTranslations(TileGrid<ImageTile<T>> grid) {
@@ -158,9 +156,8 @@ public class TileGridUtils {
 
   /**
    * Gets the max correlation inside of the entire tile grid
-   * 
+   *
    * @param grid the grid of image tiles
-   * 
    * @return the highest correlation
    */
   public static <T> double getMaxCorrelation(TileGrid<ImageTile<T>> grid) {
@@ -189,10 +186,9 @@ public class TileGridUtils {
 
   /**
    * Gets the width of the entire grid
-   * 
-   * @param grid the grid of image tiles
+   *
+   * @param grid     the grid of image tiles
    * @param imgWidth the width of an image
-   * 
    * @return the width of the full grid
    */
   public static <T> int getFullImageWidth(TileGrid<ImageTile<T>> grid, int imgWidth) {
@@ -212,10 +208,9 @@ public class TileGridUtils {
 
   /**
    * Gets the height of the entire grid
-   * 
-   * @param grid the grid of image tiles
+   *
+   * @param grid      the grid of image tiles
    * @param imgHeight the height of an image
-   * 
    * @return the height of the full grid
    */
   public static <T> int getFullImageHeight(TileGrid<ImageTile<T>> grid, int imgHeight) {
@@ -234,7 +229,7 @@ public class TileGridUtils {
 
   /**
    * Releases the entire grid of tiles.
-   * 
+   *
    * @param grid the grid of image tiles
    */
   public static <T> void releaseTiles(TileGrid<ImageTile<T>> grid) {

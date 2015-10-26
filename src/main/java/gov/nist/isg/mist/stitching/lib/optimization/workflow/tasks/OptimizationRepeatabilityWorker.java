@@ -44,10 +44,9 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Class that represents a thread that computes a cross correlation search.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
@@ -66,12 +65,12 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
   /**
    * Creates an optimization repeatability worker for executing a cross correlation search.
-   * 
-   * @param queue the queue of tiles to be processed
-   * @param bkQueue the bookkeeper queue
-   * @param grid the grid of tiles
+   *
+   * @param queue        the queue of tiles to be processed
+   * @param bkQueue      the bookkeeper queue
+   * @param grid         the grid of tiles
    * @param repeatabilty the repeatability of the microscope
-   * @param progressBar the progress bar
+   * @param progressBar  the progress bar
    */
   public OptimizationRepeatabilityWorker(BlockingQueue<OptimizationData<T>> queue, BlockingQueue<OptimizationData<T>> bkQueue,
                                          TileGrid<ImageTile<T>> grid, int repeatabilty, JProgressBar progressBar) {
@@ -115,14 +114,14 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
           try {
             if (Stitching.USE_HILLCLIMBING) {
 
-              if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
                 bestNorth =
                     Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                                                       northTrans.getY(), neighbor, tile);
-              }else{
+                        northTrans.getY(), neighbor, tile);
+              } else {
                 bestNorth =
                     Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                                                         northTrans.getY(), neighbor, tile);
+                        northTrans.getY(), neighbor, tile);
               }
 
 
@@ -163,14 +162,14 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
 
           try {
             if (Stitching.USE_HILLCLIMBING) {
-              if(Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
                 bestWest =
                     Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                                                       westTrans.getY(), neighbor, tile);
-              }else {
+                        westTrans.getY(), neighbor, tile);
+              } else {
                 bestWest =
                     Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                                                         westTrans.getY(), neighbor, tile);
+                        westTrans.getY(), neighbor, tile);
               }
             } else {
               bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, neighbor, tile);

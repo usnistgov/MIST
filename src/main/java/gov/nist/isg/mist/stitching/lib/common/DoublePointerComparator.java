@@ -35,23 +35,22 @@ import java.util.Comparator;
 /**
  * A comparator used for sorting a one-dimensional array of double pointers in ascending order. Used
  * to obtain the index of the larger elements.
- * 
+ *
  * <pre>
  * <code>
  * Pointer<Double> ptr;
  * Integer [] indices = new Integer[size];
  * for (i = 0; i < size; i++)
  * 	indices[i] = i;
- * 
+ *
  * DoublePointerComparator cmp = new DoublePointerComparator(ptr);
- * 
+ *
  * Arrays.sort(indices, cmp);
  * </code>
  * </pre>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class DoublePointerComparator implements Comparator<Integer> {
 
@@ -59,7 +58,7 @@ public class DoublePointerComparator implements Comparator<Integer> {
 
   /**
    * Creates a double pointer comparator that is bound to a pointer
-   * 
+   *
    * @param pointer the pointer that the object is bound to
    */
   public DoublePointerComparator(Pointer<Double> pointer) {
@@ -69,7 +68,7 @@ public class DoublePointerComparator implements Comparator<Integer> {
   /**
    * Compares two values at indices i1 and i2 inside of the pointer that was initialized with the
    * DoublePointerComparator constructor
-   * 
+   *
    * @param o1 the first index inside of the pointer to compare
    * @param o2 the second index inside of the pointer to compare
    */

@@ -44,118 +44,117 @@ import java.util.concurrent.Semaphore;
  *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class BookKeeper<T> implements Runnable {
 
-    private BlockingQueue<OptimizationData<T>> bkQueue;
-    private BlockingQueue<OptimizationData<T>> workQueue;
-    private Semaphore sem;
+  private BlockingQueue<OptimizationData<T>> bkQueue;
+  private BlockingQueue<OptimizationData<T>> workQueue;
+  private Semaphore sem;
 
-    private int tile_count;
+  private int tile_count;
 
-    private TileGrid<ImageTile<T>> grid;
+  private TileGrid<ImageTile<T>> grid;
 
-    private volatile boolean isCancelled;
+  private volatile boolean isCancelled;
 
-    /**
-     * @param bkQueue
-     * @param workQueue
-     * @param sem
-     * @param grid
-     */
-    public BookKeeper(BlockingQueue<OptimizationData<T>> bkQueue,
-                      BlockingQueue<OptimizationData<T>> workQueue, Semaphore sem,
-                      TileGrid<ImageTile<T>> grid) {
-        this.bkQueue = bkQueue;
-        this.workQueue = workQueue;
-        this.sem = sem;
-        this.tile_count = 0;
-        this.grid = grid;
-        this.isCancelled = false;
-    }
+  /**
+   * @param bkQueue
+   * @param workQueue
+   * @param sem
+   * @param grid
+   */
+  public BookKeeper(BlockingQueue<OptimizationData<T>> bkQueue,
+                    BlockingQueue<OptimizationData<T>> workQueue, Semaphore sem,
+                    TileGrid<ImageTile<T>> grid) {
+    this.bkQueue = bkQueue;
+    this.workQueue = workQueue;
+    this.sem = sem;
+    this.tile_count = 0;
+    this.grid = grid;
+    this.isCancelled = false;
+  }
 
-    @Override
-    public void run() {
-        int maxTileCount = this.grid.getExtentWidth() * this.grid.getExtentHeight();
+  @Override
+  public void run() {
+    int maxTileCount = this.grid.getExtentWidth() * this.grid.getExtentHeight();
 
-        try {
-            while (!this.isCancelled
-                    && (this.tile_count != maxTileCount)) {
-                OptimizationData<T> task = this.bkQueue.take();
+    try {
+      while (!this.isCancelled
+          && (this.tile_count != maxTileCount)) {
+        OptimizationData<T> task = this.bkQueue.take();
 
-                Debug.msg(Debug.DebugType.VERBOSE, "BK Task received: " + task.getType());
+        Debug.msg(Debug.DebugType.VERBOSE, "BK Task received: " + task.getType());
 
-                if (task.getType() == OptimizationData.TaskType.BK_CHECK_NEIGHBORS) {
-                    this.tile_count++;
-                    ImageTile<T> tile = task.getTile();
+        if (task.getType() == OptimizationData.TaskType.BK_CHECK_NEIGHBORS) {
+          this.tile_count++;
+          ImageTile<T> tile = task.getTile();
 
-                    int row = tile.getRow();
-                    int col = tile.getCol();
-                    // west
-                    if (col > this.grid.getStartCol()) {
-                        ImageTile<T> west = this.grid.getTile(row, col - 1);
-                        if (west.isTileRead()) {
-                            Debug.msg(Debug.DebugType.VERBOSE,
-                                    "sending west: " + tile.getFileName() + " with " + west.getFileName());
+          int row = tile.getRow();
+          int col = tile.getCol();
+          // west
+          if (col > this.grid.getStartCol()) {
+            ImageTile<T> west = this.grid.getTile(row, col - 1);
+            if (west.isTileRead()) {
+              Debug.msg(Debug.DebugType.VERBOSE,
+                  "sending west: " + tile.getFileName() + " with " + west.getFileName());
 
-                            this.workQueue.put(new OptimizationData<T>(tile, west, OptimizationData.TaskType.OPTIMIZE_WEST));
-                        }
-                    }
-
-                    // north
-                    if (row > this.grid.getStartRow()) {
-                        ImageTile<T> north = this.grid.getTile(row - 1, col);
-                        Debug.msg(Debug.DebugType.VERBOSE, "north state: " + north.getFftState());
-                        if (north.isTileRead()) {
-                            Debug.msg(Debug.DebugType.VERBOSE, "sending north: " + tile.getFileName() + " with "
-                                    + north.getFileName());
-
-                            this.workQueue.put(new OptimizationData<T>(tile, north, OptimizationData.TaskType.OPTIMIZE_NORTH));
-                        }
-                    }
-
-                } else if (task.getType() == OptimizationData.TaskType.BK_CHECK_MEMORY) {
-
-                    ImageTile<T> tile = task.getTile();
-                    ImageTile<T> neighbor = task.getNeighbor();
-
-                    tile.decrementPixelDataReleaseCount();
-                    neighbor.decrementPixelDataReleaseCount();
-
-                    if (tile.getPixelDataReleaseCount() == 0) {
-                        if (sem == null)
-                            tile.releasePixels();
-                        else
-                            tile.releasePixels(sem);
-                    }
-
-                    if (neighbor.getPixelDataReleaseCount() == 0) {
-                        if (sem == null)
-                            neighbor.releasePixels();
-                        else
-                            neighbor.releasePixels(sem);
-                    }
-                }
-
-                Debug.msg(Debug.DebugType.INFO, "tiles: " + this.tile_count);
-
+              this.workQueue.put(new OptimizationData<T>(tile, west, OptimizationData.TaskType.OPTIMIZE_WEST));
             }
+          }
 
-            Debug.msg(Debug.DebugType.INFO, "BK DONE");
-            this.workQueue.put(new OptimizationData<T>(null, null, OptimizationData.TaskType.BK_DONE));
+          // north
+          if (row > this.grid.getStartRow()) {
+            ImageTile<T> north = this.grid.getTile(row - 1, col);
+            Debug.msg(Debug.DebugType.VERBOSE, "north state: " + north.getFftState());
+            if (north.isTileRead()) {
+              Debug.msg(Debug.DebugType.VERBOSE, "sending north: " + tile.getFileName() + " with "
+                  + north.getFileName());
 
-        } catch (InterruptedException e) {
-            Log.msg(Log.LogType.MANDATORY, "Interrupted bookkeeping thread");
+              this.workQueue.put(new OptimizationData<T>(tile, north, OptimizationData.TaskType.OPTIMIZE_NORTH));
+            }
+          }
+
+        } else if (task.getType() == OptimizationData.TaskType.BK_CHECK_MEMORY) {
+
+          ImageTile<T> tile = task.getTile();
+          ImageTile<T> neighbor = task.getNeighbor();
+
+          tile.decrementPixelDataReleaseCount();
+          neighbor.decrementPixelDataReleaseCount();
+
+          if (tile.getPixelDataReleaseCount() == 0) {
+            if (sem == null)
+              tile.releasePixels();
+            else
+              tile.releasePixels(sem);
+          }
+
+          if (neighbor.getPixelDataReleaseCount() == 0) {
+            if (sem == null)
+              neighbor.releasePixels();
+            else
+              neighbor.releasePixels(sem);
+          }
         }
-    }
 
-    /**
-     * Sets that this thread is cancelled
-     */
-    public void cancel() {
-        this.isCancelled = true;
-        this.bkQueue.add(new OptimizationData<T>(null, null, OptimizationData.TaskType.CANCELLED));
+        Debug.msg(Debug.DebugType.INFO, "tiles: " + this.tile_count);
+
+      }
+
+      Debug.msg(Debug.DebugType.INFO, "BK DONE");
+      this.workQueue.put(new OptimizationData<T>(null, null, OptimizationData.TaskType.BK_DONE));
+
+    } catch (InterruptedException e) {
+      Log.msg(Log.LogType.MANDATORY, "Interrupted bookkeeping thread");
     }
+  }
+
+  /**
+   * Sets that this thread is cancelled
+   */
+  public void cancel() {
+    this.isCancelled = true;
+    this.bkQueue.add(new OptimizationData<T>(null, null, OptimizationData.TaskType.CANCELLED));
+  }
 
 }

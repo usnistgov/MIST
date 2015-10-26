@@ -30,10 +30,9 @@ package gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel;
 
 /**
  * Validator that checks double values
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class DblModel implements TextFieldModel<Double> {
 
@@ -52,7 +51,7 @@ public class DblModel implements TextFieldModel<Double> {
 
   /**
    * Creates a double validator that checks in bounds by min (inclusive) and max (inclusive)
-   * 
+   *
    * @param min the minimum value that is valid (inclusive)
    * @param max the maximum value that is valid (inclusive)
    */
@@ -62,9 +61,9 @@ public class DblModel implements TextFieldModel<Double> {
 
   /**
    * Creates an integer validator that checks in bounds by min (inclusive) and max (inclusive)
-   * 
+   *
    * @param allowEmpty enables this validator to accept empty text. Empty text represents a value of
-   *        NaN
+   *                   NaN
    */
   public DblModel(boolean allowEmpty) {
     this.min = Double.NEGATIVE_INFINITY;
@@ -77,11 +76,11 @@ public class DblModel implements TextFieldModel<Double> {
 
   /**
    * Creates an integer validator that checks in bounds by min (inclusive) and max (inclusive)
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min        the minimum value that is valid (inclusive)
+   * @param max        the maximum value that is valid (inclusive)
    * @param allowEmpty enables this validator to accept empty text. Empty text represents a value of
-   *        NaN
+   *                   NaN
    */
   public DblModel(double min, double max, boolean allowEmpty) {
     this.allowEmpty = allowEmpty;
@@ -149,7 +148,7 @@ public class DblModel implements TextFieldModel<Double> {
   }
 
   @Override
-  public void updateTextFields() {   
+  public void updateTextFields() {
   }
 
 }

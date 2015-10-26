@@ -41,10 +41,9 @@ import java.util.concurrent.Semaphore;
 
 /**
  * A thread dedicated to reading and allocating memory for image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileProducer<T> implements Runnable {
 
@@ -56,10 +55,10 @@ public class TileProducer<T> implements Runnable {
 
   /**
    * Initializes a producer thread
-   * 
+   *
    * @param traverser the traverser
    * @param workQueue the work queu
-   * @param pool the pool of memory
+   * @param pool      the pool of memory
    */
   public TileProducer(TileGridTraverser<ImageTile<T>> traverser,
                       BlockingQueue<OptimizationData<T>> workQueue, Semaphore sem) {

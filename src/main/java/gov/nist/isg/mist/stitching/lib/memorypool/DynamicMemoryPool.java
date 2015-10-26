@@ -40,10 +40,9 @@ import java.util.concurrent.BlockingQueue;
  * A memory pool that can optionally grow dynamically if all memory in the pool is taken. If the
  * pool does not grow dynamically, then the thread trying to obtain memory will wait until more
  * memory is added into the pool.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class DynamicMemoryPool<T> {
 
@@ -55,13 +54,11 @@ public class DynamicMemoryPool<T> {
   /**
    * Allocates a dynamic memory pool given a size, a type of tile and whether the pool is
    * dynamically growing or not
-   * 
+   *
    * @param queueSize the size of the queue
-   * @param dynamic whether the pool is dynamic or not
+   * @param dynamic   whether the pool is dynamic or not
    * @param allocator the allocator
-   * @param sz the size of the pool
-   * @throws OutOfMemoryError
-   * @throws CudaException
+   * @param sz        the size of the pool
    */
   public DynamicMemoryPool(int queueSize, boolean dynamic, Allocator<T> allocator, int... sz)
       throws OutOfMemoryError, CudaException {
@@ -94,7 +91,7 @@ public class DynamicMemoryPool<T> {
 
   /**
    * Gets pointer memory from the pool
-   * 
+   *
    * @return the memory
    */
   public T getMemory() {
@@ -113,7 +110,7 @@ public class DynamicMemoryPool<T> {
 
   /**
    * Adds java memory to the pool
-   * 
+   *
    * @param o the java memory
    */
   public void addMemory(T o) {

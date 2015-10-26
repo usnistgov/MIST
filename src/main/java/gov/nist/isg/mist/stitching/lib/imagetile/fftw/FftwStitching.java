@@ -36,6 +36,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
+
 import org.bridj.Pointer;
 
 import java.io.*;
@@ -45,24 +46,23 @@ import java.util.List;
 
 /**
  * Utility functions for doing image stitching using FFTWImageTiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class FftwStitching {
 
   /**
    * Computes the phase correlatoin image alignment between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
+   *
+   * @param t1     image 1
+   * @param t2     image 2
    * @param memory the tile worker memory
    * @return the best relative displacement along the x and y axis and the correlation between two
-   *         images
+   * images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(FftwImageTile t1,
-      FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                 FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     Pointer<Double> pcm = peakCorrelationMatrix(t1, t2, memory);
 
 //    int idx;
@@ -86,7 +86,7 @@ public class FftwStitching {
 //    if (triple.getCorrelation() > Stitching.CORR_THRESHOLD) {
 //      return triple;
 //    }
-    
+
     List<CorrelationTriple> peaks;
 
     peaks =
@@ -96,7 +96,7 @@ public class FftwStitching {
     List<CorrelationTriple> multi_ccfs = new ArrayList<CorrelationTriple>();
     for (int i = 0; i < peaks.size(); i++) {
       CorrelationTriple peak = peaks.get(i);
-      
+
       if (t1.isSameRowAs(t2))
         multi_ccfs.add(Stitching.peakCrossCorrelationLR(t1, t2, peak.getX(), peak.getY()));
       else if (t1.isSameColAs(t2))
@@ -110,15 +110,14 @@ public class FftwStitching {
 
   /**
    * Computes the peak correlatoin matrix between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
+   *
+   * @param t1     image 1
+   * @param t2     image 2
    * @param memory the tile worker memory
-   * 
    * @return the peak correlation matrix
    */
   public static Pointer<Double> peakCorrelationMatrix(FftwImageTile t1, FftwImageTile t2,
-      TileWorkerMemory memory) throws FileNotFoundException{
+                                                      TileWorkerMemory memory) throws FileNotFoundException {
     if (!t1.hasFft())
       t1.computeFft();
 
@@ -137,11 +136,11 @@ public class FftwStitching {
 
   /**
    * Outputs a pointer to a file
-   * 
+   *
    * @param filePath the path where the file is to be written
-   * @param ptr the pointer you are writing
-   * @param width the width of the pointer
-   * @param height the height of the pointer
+   * @param ptr      the pointer you are writing
+   * @param width    the width of the pointer
+   * @param height   the height of the pointer
    */
   public static void outputToFile(String filePath, Pointer<Double> ptr, int width, int height) {
     File file = new File(filePath);

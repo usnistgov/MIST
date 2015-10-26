@@ -30,10 +30,9 @@ package gov.nist.isg.mist.stitching.lib.common;
 
 /**
  * A correlation triple with double-precision correlation and x and y locations.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
@@ -43,10 +42,10 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Creates a correlation triple that has a correlation x and y position.
-   * 
+   *
    * @param corr the correlation
-   * @param x the x position
-   * @param y the y position
+   * @param x    the x position
+   * @param y    the y position
    */
   public CorrelationTriple(double corr, int x, int y) {
     this.correlation = corr;
@@ -75,7 +74,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Adds value to correlation
-   * 
+   *
    * @param val the value you want to add to the correlation
    */
   public void incrementCorrelation(double val) {
@@ -91,7 +90,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Gets X with string formatting
-   * 
+   *
    * @return the x value with only 6 decimal places
    */
   public String getMatlabFormatStrX() {
@@ -100,7 +99,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Gets Y with string formatting
-   * 
+   *
    * @return the y value with only 6 decimal places
    */
   public String getMatlabFormatStrY() {
@@ -109,7 +108,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Gets correlation with string formatting
-   * 
+   *
    * @return the corrleation with only 6 decimal places
    */
   public String getMatlatFormatStrCorr() {
@@ -147,7 +146,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Converts the correlation triple into a CSV style format
-   * 
+   *
    * @return the correlation triple string
    */
   public String toCSVString() {
@@ -156,7 +155,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Converts the correlation triple into ( x, y) format
-   * 
+   *
    * @return the string format of the correlation triple
    */
   public String toXYString() {
@@ -173,7 +172,7 @@ public class CorrelationTriple implements Comparable<CorrelationTriple> {
 
   /**
    * Gets a default string representation of a correlation triple
-   * 
+   *
    * @return a correlation triple that represents a null correlation triple
    */
   public static String toStringStatic() {

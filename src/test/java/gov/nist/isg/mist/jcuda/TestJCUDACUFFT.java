@@ -43,7 +43,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the FFT using CUDA cuFFT
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -64,7 +64,7 @@ public class TestJCUDACUFFT {
 
     CudaImageTile tile = new CudaImageTile(file);
 
-    CudaUtils.initJCUDA(1, new int[] {0}, tile);
+    CudaUtils.initJCUDA(1, new int[]{0}, tile);
 
     TimeUtil.tick();
     tile.setDev(0);
@@ -79,15 +79,14 @@ public class TestJCUDACUFFT {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
-      try {
-          TestJCUDACUFFT.runTestJCUDACUFFT();
-      } catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
-      }
+    try {
+      TestJCUDACUFFT.runTestJCUDACUFFT();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
+    }
   }
 }

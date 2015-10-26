@@ -49,10 +49,9 @@ import java.util.Enumeration;
 
 /**
  * Creates the parallel options panel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
@@ -67,7 +66,6 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
   /**
    * Initializes the parallel options panel
-   * 
    */
   public ParallelOptPane() {
 
@@ -99,7 +97,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
   /**
    * Gets the type of execution
-   * 
+   *
    * @return the button group associated with the stitching execution type
    */
   public ButtonGroupPanel getStitchingTypePanel() {
@@ -108,7 +106,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
   /**
    * Gets the panel for the program selector
-   * 
+   *
    * @return the program panel
    */
   public JPanel getProgramPanel() {
@@ -178,7 +176,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
   /**
    * Gets the program type that is selected by the user
-   * 
+   *
    * @return the program type that is selected
    */
   public StitchingType getProgramType() {
@@ -241,7 +239,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
           checkPanel &= this.fftwPanel.checkGUIArgs();
         if (this.javaPanel != null)
           checkPanel &= this.javaPanel.checkGUIArgs();
-                
+
         break;
       case JAVA:
         if (this.javaPanel != null)
@@ -258,7 +256,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
       default:
         break;
     }
-  
+
     return checkPanel;
   }
 

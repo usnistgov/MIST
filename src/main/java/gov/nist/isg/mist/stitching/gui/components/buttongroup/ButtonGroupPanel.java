@@ -30,16 +30,16 @@ package gov.nist.isg.mist.stitching.gui.components.buttongroup;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+
 import java.awt.*;
 import java.util.Enumeration;
 
 /**
  * ButtonGroupPanel is used as a wrapper to contain a button group of radio buttons into a single
  * panel. Utility functions for getting the selected value are available.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class ButtonGroupPanel extends JPanel {
 
@@ -51,9 +51,9 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Constructs a button group panel
-   * 
+   *
    * @param labels the labels for the radio buttons
-   * @param title the title of the panel
+   * @param title  the title of the panel
    */
   public ButtonGroupPanel(Object[] labels, String title) {
     int cols = 3;
@@ -81,7 +81,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Gets the radio buttons
-   * 
+   *
    * @return the radio buttons
    */
   public JRadioButton[] getRadioButtons() {
@@ -90,7 +90,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Gets the button group
-   * 
+   *
    * @return the button group
    */
   public ButtonGroup getButtonGroup() {
@@ -99,7 +99,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Sets the selected value for the button group
-   * 
+   *
    * @param value the value that you wish the button group to select
    */
   public void setValue(String value) {
@@ -126,7 +126,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Disables all buttons except one
-   * 
+   *
    * @param buttonToEnable the button that is to be enabled
    */
   public void disableAllButtonsExcept(String buttonToEnable) {
@@ -143,7 +143,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Disables a button
-   * 
+   *
    * @param button the button to disable
    */
   public void disableButton(String button) {
@@ -156,7 +156,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Enables a button
-   * 
+   *
    * @param button the button to enable
    */
   public void enableButton(String button) {
@@ -169,7 +169,7 @@ public class ButtonGroupPanel extends JPanel {
 
   /**
    * Gets the selected button
-   * 
+   *
    * @return the selected button
    */
   public String getValue() {

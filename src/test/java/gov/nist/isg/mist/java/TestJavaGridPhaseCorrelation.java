@@ -49,7 +49,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles using Java.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -87,7 +87,7 @@ public class TestJavaGridPhaseCorrelation {
 
     if (grid == null)
       return;
-    
+
     ImageTile<?> tile = grid.getSubGridTile(0, 0);
     JavaImageTile.initJavaPlan(tile);
 
@@ -106,15 +106,14 @@ public class TestJavaGridPhaseCorrelation {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
-      try {
-          TestJavaGridPhaseCorrelation.runTestGridPhaseCorrelation();
-      }catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-      }
+    try {
+      TestJavaGridPhaseCorrelation.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

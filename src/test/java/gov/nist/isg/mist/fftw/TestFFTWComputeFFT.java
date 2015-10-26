@@ -39,7 +39,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the FFT of an image using FFTW
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -77,15 +77,14 @@ public class TestFFTWComputeFFT {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     try {
-        TestFFTWComputeFFT.runTestFFTImage();
-    } catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestFFTWComputeFFT.runTestFFTImage();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

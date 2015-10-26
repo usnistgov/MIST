@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,10 +49,9 @@ import java.io.FileNotFoundException;
 
 /**
  * Creates a windows to display the status of the stitching application
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class StitchingStatusFrame extends JFrame implements ActionListener, PropertyChangeListener, WindowListener {
 
@@ -71,7 +71,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
   /**
    * Constructs the stitching status frame
-   * 
+   *
    * @param executor the stitching executor to reference
    * @param headless whether we are in headless mode or not
    */
@@ -81,7 +81,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
   /**
    * Initializes the stitching status frame with a stitching executor
-   * 
+   *
    * @param executor the stitching executor
    */
   public StitchingStatusFrame(StitchingExecutor executor) {
@@ -90,8 +90,8 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
   /**
    * Constructs the stitching status frame
-   * 
-   * @param title the title of the frame
+   *
+   * @param title    the title of the frame
    * @param executor the stitching executor to reference
    */
   public StitchingStatusFrame(String title, StitchingExecutor executor) {
@@ -106,7 +106,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
     init();
   }
-  
+
   private void init() {
     initContent();
     initListeners();
@@ -128,7 +128,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
     this.progressBar.addPropertyChangeListener(this);
 
     JPanel logPanel = new JPanel(new GridBagLayout());
-    
+
     this.loggingLevel = new JComboBox(LogType.values());
     this.debugLevel = new JComboBox(DebugType.values());
     this.loggingLevel.setSelectedItem(Log.getLogLevel());
@@ -147,7 +147,6 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
     c.gridy = 1;
     c.insets = new Insets(0, 10, 0, 0);
     logPanel.add(this.debugLevel, c);
-    
 
 
     c.insets = new Insets(0, 0, 0, 0);
@@ -176,7 +175,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
   /**
    * Gets the progress bar associated with this frame
-   * 
+   *
    * @return the progress bar
    */
   public JProgressBar getProgressBar() {
@@ -185,7 +184,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
 
   /**
    * Gets the progress bar label associated with this fram
-   * 
+   *
    * @return the progress bar label
    */
   public JLabel getProgressLabel() {
@@ -233,9 +232,9 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
       JComboBox action = (JComboBox) src;
 
       if (action.equals(this.loggingLevel)) {
-        Log.setLogLevel((LogType)action.getSelectedItem());
+        Log.setLogLevel((LogType) action.getSelectedItem());
       } else if (action.equals(this.debugLevel)) {
-        Debug.setDebugLevel((DebugType)action.getSelectedItem());
+        Debug.setDebugLevel((DebugType) action.getSelectedItem());
       }
     } else if (src.equals(this.cancelButton)) {
       performExit();
@@ -247,36 +246,36 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
   public void propertyChange(PropertyChangeEvent arg0) {
     int progress = StitchingStatusFrame.this.progressBar.getValue();
     progress++;
-    this.progressBar.setValue(progress);    
+    this.progressBar.setValue(progress);
   }
 
   @Override
-  public void windowActivated(WindowEvent arg0) {  
+  public void windowActivated(WindowEvent arg0) {
   }
 
   @Override
-  public void windowClosed(WindowEvent arg0) {    
+  public void windowClosed(WindowEvent arg0) {
   }
 
   @Override
   public void windowClosing(WindowEvent arg0) {
-    performExit();    
+    performExit();
   }
 
   @Override
-  public void windowDeactivated(WindowEvent arg0) {   
+  public void windowDeactivated(WindowEvent arg0) {
   }
 
   @Override
-  public void windowDeiconified(WindowEvent arg0) {    
+  public void windowDeiconified(WindowEvent arg0) {
   }
 
   @Override
-  public void windowIconified(WindowEvent arg0) {    
+  public void windowIconified(WindowEvent arg0) {
   }
 
   @Override
-  public void windowOpened(WindowEvent arg0) {    
+  public void windowOpened(WindowEvent arg0) {
   }
 
 }

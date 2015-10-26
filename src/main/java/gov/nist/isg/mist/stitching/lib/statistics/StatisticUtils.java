@@ -33,7 +33,7 @@ import java.util.List;
 
 /**
  * Statistic utility functions for aiding in doing global optimizations.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -83,9 +83,9 @@ public class StatisticUtils {
 
   /**
    * Gets the index at the percentile location (percentile 0.5 = median).
-   * 
+   *
    * @param percentile the percentile from 0 - 1.0
-   * @param list the list of elements
+   * @param list       the list of elements
    * @return the index into the list for a given percentile
    */
   public static <T> int percentileIdx(double percentile, List<T> list) {
@@ -101,7 +101,7 @@ public class StatisticUtils {
 
   /**
    * Computes the median of a list
-   * 
+   *
    * @param m the list to find the median from
    * @return the median
    */
@@ -117,7 +117,7 @@ public class StatisticUtils {
 
   /**
    * Compute the mode for a list of numbers
-   * 
+   *
    * @param m the list of numbers
    * @return the mode
    */
@@ -142,7 +142,7 @@ public class StatisticUtils {
 
   /**
    * Computes the mean of a list
-   * 
+   *
    * @param m the list to find the mean from
    * @return the mean
    */
@@ -158,7 +158,7 @@ public class StatisticUtils {
 
   /**
    * Computes the minimum of a list of numbers
-   * 
+   *
    * @param m the list to find the min
    * @return the minimum of the list
    */
@@ -176,7 +176,7 @@ public class StatisticUtils {
 
   /**
    * computes the maximum of a list of numbers
-   * 
+   *
    * @param m the list to find the max
    * @return the maximum of the list
    */

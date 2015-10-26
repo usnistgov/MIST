@@ -51,6 +51,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Trav
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 
 import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -58,10 +59,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 /**
  * Image stitching multi-threaded entry point that sets up multithreaded execution. Initializes task
  * queues, threads, and the memory pool. Execute to initiate execution.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHandler {
 
@@ -95,22 +95,20 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
 
   /**
    * Initializes stitching thread executor
-   * 
-   * @param numGPUs number of GPUs
-   * @param numWorkers number of CPU CCF workers
-   * @param initTile initial tile
-   * @param grid grid of tiles
-   * @param contexts GPU contexts
-   * @param devIDs the GPU device ids
+   *
+   * @param numGPUs     number of GPUs
+   * @param numWorkers  number of CPU CCF workers
+   * @param initTile    initial tile
+   * @param grid        grid of tiles
+   * @param contexts    GPU contexts
+   * @param devIDs      the GPU device ids
    * @param progressBar optional progress bar (null if none)
-   * @param executor the stitching executor
-   * @throws OutOfMemoryError
-   * @throws CudaException
+   * @param executor    the stitching executor
    */
   @SuppressWarnings("unchecked")
   public GPUStitchingThreadExecutor(int numGPUs, int numWorkers, ImageTile<T> initTile,
-      TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs, JProgressBar progressBar,
-      StitchingExecutor executor) throws OutOfMemoryError, CudaException {
+                                    TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs, JProgressBar progressBar,
+                                    StitchingExecutor executor) throws OutOfMemoryError, CudaException {
 
     JCudaDriver.setExceptionsEnabled(true);
 
@@ -197,10 +195,10 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
 
       TileGPUPciamWorker<T> pciamWorker;
       pciamWorker =
-          new TileGPUPciamWorker<T>(this.pciamQueues[i], this.bkQueue, this.ccfQueue, 
+          new TileGPUPciamWorker<T>(this.pciamQueues[i], this.bkQueue, this.ccfQueue,
               this.memories[i], initTile.getWidth(), initTile.getHeight(), devIDs[i], i, this.contexts[i], contexts, devIDs);
 
-     
+
       this.fftWorkers.add(fftWorker);
       this.pciamWorkers.add(pciamWorker);
 
@@ -241,16 +239,16 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
 
   /**
    * Initializes a stitching thread executor
-   * 
-   * @param numGPUs the number of GPUS
+   *
+   * @param numGPUs    the number of GPUS
    * @param numWorkers the number of CPU workers
-   * @param initTile the initial tile
-   * @param grid the grid of tiles
-   * @param contexts the GPU contexts
-   * @param devIDs the GPU device IDs used
+   * @param initTile   the initial tile
+   * @param grid       the grid of tiles
+   * @param contexts   the GPU contexts
+   * @param devIDs     the GPU device IDs used
    */
   public GPUStitchingThreadExecutor(int numGPUs, int numWorkers, ImageTile<T> initTile,
-      TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs) {
+                                    TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs) {
     this(numGPUs, numWorkers, initTile, grid, contexts, devIDs, null, null);
   }
 
@@ -311,6 +309,7 @@ public class GPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
   public boolean isExceptionThrown() {
     return this.exceptionThrown;
   }
+
   public Throwable getWorkerThrowable() {
     return this.workerThrowable;
   }

@@ -34,6 +34,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -41,89 +42,83 @@ import java.net.URL;
 
 /**
  * Utility class for managing a progress bar
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class StitchingGuiUtils {
 
   private static String figureLoc = "/figs/";
   private static String documentationLoc = "/docs/";
-  
-  
+
+
   /**
-   * Loads a compressed resource (handles files inside jar such as html or pdf)
-   * The result is a temporary file that will be deleted once the jvm exits
-   * @param file the file to load from resource
+   * Loads a compressed resource (handles files inside jar such as html or pdf) The result is a
+   * temporary file that will be deleted once the jvm exits
+   *
+   * @param file      the file to load from resource
    * @param extension the extension of the temporary file
    * @return a temporary file that is deleted on jvm exit (or null if error)
    */
-  public static File loadCompressedResource(String file, String extension)
-  {
+  public static File loadCompressedResource(String file, String extension) {
     InputStream is = null;
     OutputStream os = null;
     File out = null;
 
-    try
-    {                
-        is = StitchingGuiUtils.class.getResourceAsStream(documentationLoc + file);
-              
-        out = File.createTempFile(file, extension);
-        out.deleteOnExit();
-        os = new FileOutputStream(out);
-        
-        final byte [] buf = new byte[1024];
-        int len = 0;
-        while ((len = is.read(buf)) > 0) {
-          os.write(buf, 0, len);
-        }
-        
-        os.flush();
-      
-    } catch (Exception e)
-    {
+    try {
+      is = StitchingGuiUtils.class.getResourceAsStream(documentationLoc + file);
+
+      out = File.createTempFile(file, extension);
+      out.deleteOnExit();
+      os = new FileOutputStream(out);
+
+      final byte[] buf = new byte[1024];
+      int len = 0;
+      while ((len = is.read(buf)) > 0) {
+        os.write(buf, 0, len);
+      }
+
+      os.flush();
+
+    } catch (Exception e) {
       Log.msg(LogType.MANDATORY, "Error openning help file: " + e.getMessage());
     } finally {
-      try
-      {
+      try {
         if (os != null)
           os.close();
-        
+
         if (is != null)
           is.close();
-        
-      
-      } catch (IOException e)
-      {
+
+
+      } catch (IOException e) {
         Log.msg(LogType.MANDATORY, "Error closing help file");
       }
     }
-    
+
     return out;
-  
+
   }
-  
-  public static URL getFigureResource(String file)
-  {
+
+  public static URL getFigureResource(String file) {
     return StitchingGuiUtils.class.getResource(figureLoc + file);
   }
-  
+
   /**
    * Updates the progress bar
-   * 
-   * @param progressBar the progress bar
+   *
+   * @param progressBar   the progress bar
    * @param indeterminate whether the progress bar is indeterminite or not
-   * @param progressStr the progress bar string
+   * @param progressStr   the progress bar string
    */
   public static void updateProgressBar(JProgressBar progressBar, boolean indeterminate,
-      String progressStr) {
+                                       String progressStr) {
     updateProgressBar(progressBar, indeterminate, progressStr, null, 0, 0, 0, false);
   }
 
   /**
    * Updates the progress bar to a state that is completed
-   * 
+   *
    * @param progressBar the progress bar
    */
   public static void updateProgressBarCompleted(final JProgressBar progressBar) {
@@ -132,19 +127,19 @@ public class StitchingGuiUtils {
 
   /**
    * Updates the progress bar
-   * 
-   * @param progressBar the progress bar
+   *
+   * @param progressBar   the progress bar
    * @param indeterminate whetheer the progress bar is indeterminite or not
-   * @param progressStr the progress bar string
-   * @param title the title of the progress bar
-   * @param min the minimum value for the progress
-   * @param max the maximum value for the progress
-   * @param val the current value of the progress
-   * @param emptyBorder whether to show an empty border or not
+   * @param progressStr   the progress bar string
+   * @param title         the title of the progress bar
+   * @param min           the minimum value for the progress
+   * @param max           the maximum value for the progress
+   * @param val           the current value of the progress
+   * @param emptyBorder   whether to show an empty border or not
    */
   public static void updateProgressBar(final JProgressBar progressBar, final boolean indeterminate,
-      final String progressStr, final String title, final int min, final int max, final int val,
-      final boolean emptyBorder) {
+                                       final String progressStr, final String title, final int min, final int max, final int val,
+                                       final boolean emptyBorder) {
     if (progressBar == null)
       return;
 
@@ -178,7 +173,7 @@ public class StitchingGuiUtils {
 
   /**
    * Increments the progress bar by one
-   * 
+   *
    * @param progressBar the progress bar
    */
   public static void incrementProgressBar(final JProgressBar progressBar) {
@@ -190,7 +185,7 @@ public class StitchingGuiUtils {
       @Override
       public void run() {
         progressBar.firePropertyChange("progress", progressBar.getValue(),
-                                       progressBar.getValue() + 1);
+            progressBar.getValue() + 1);
       }
     });
   }
@@ -202,7 +197,6 @@ public class StitchingGuiUtils {
     progressLabel.setText("<html>Progress:" + "<br>Time slice: " + curTimeSlice + " of "
         + maxTimeSlice + "<br>Group: " + curGroup + " of " + maxGroup + "</html>");
   }
-
 
 
 }

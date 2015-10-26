@@ -47,10 +47,9 @@ import java.util.List;
 
 /**
  * Utility functions for doing image stitching using JCUDAImageTiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CudaStitching {
 
@@ -59,16 +58,16 @@ public class CudaStitching {
 
   /**
    * Computes the phase correlatoin image alignment between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
+   *
+   * @param t1     image 1
+   * @param t2     image 2
    * @param memory the tile worker memory
    * @param stream the CUDA stream
    * @return the best relative displacement along the x and y axis and the correlation between two
-   *         images
+   * images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(CudaImageTile t1,
-      CudaImageTile t2, TileWorkerMemory memory, CUstream stream) {
+                                                                 CudaImageTile t2, TileWorkerMemory memory, CUstream stream) {
     CUdeviceptr pcm = memory.getPcm();
 
     peakCorrelationMatrix(t1, t2, pcm, memory, stream, t1.getDev());
@@ -117,16 +116,16 @@ public class CudaStitching {
 
   /**
    * Computes the peak correlatoin matrix between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2 * @return the peak correlation matrix
-   * @param pcm the phase correlation matrix
+   *
+   * @param t1     image 1
+   * @param t2     image 2 * @return the peak correlation matrix
+   * @param pcm    the phase correlation matrix
    * @param memory the tile worker memory
    * @param stream the CUDA stream
-   * @param dev the GPU device
+   * @param dev    the GPU device
    */
   public static void peakCorrelationMatrix(CudaImageTile t1, CudaImageTile t2, CUdeviceptr pcm,
-      TileWorkerMemory memory, CUstream stream, int dev) {
+                                           TileWorkerMemory memory, CUstream stream, int dev) {
     int numThreads = NUM_THREADS;
 
     int numBlocks = (int) Math.ceil((double) CudaImageTile.fftSize / (double) numThreads);
@@ -135,7 +134,7 @@ public class CudaStitching {
 
     Pointer kernelParams =
         Pointer.to(Pointer.to(ptr), Pointer.to(t1.getFft()), Pointer.to(t2.getFft()),
-            Pointer.to(new int[] {CudaImageTile.fftSize}));
+            Pointer.to(new int[]{CudaImageTile.fftSize}));
 
     JCudaDriver.cuLaunchKernel(CudaImageTile.elt_prod_function[dev], numBlocks, 1, 1, numThreads,
         1, 1, 0, stream, kernelParams, null);
@@ -146,16 +145,16 @@ public class CudaStitching {
 
   /**
    * Computes the peak correlation matrix between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
-   * @param pcm the phase correlation matrix
+   *
+   * @param t1     image 1
+   * @param t2     image 2
+   * @param pcm    the phase correlation matrix
    * @param memory the tile worker memory
    * @param stream the CUDA stream
-   * @param dev the GPU device
+   * @param dev    the GPU device
    */
   public static void peakCorrelationMatrix(CUdeviceptr t1, CudaImageTile t2, CUdeviceptr pcm,
-      TileWorkerMemory memory, CUstream stream, int dev) {
+                                           TileWorkerMemory memory, CUstream stream, int dev) {
     int numThreads = NUM_THREADS;
 
     int numBlocks = (int) Math.ceil((double) CudaImageTile.fftSize / (double) numThreads);
@@ -164,7 +163,7 @@ public class CudaStitching {
 
     Pointer kernelParams =
         Pointer.to(Pointer.to(ptr), Pointer.to(t1), Pointer.to(t2.getFft()),
-            Pointer.to(new int[] {CudaImageTile.fftSize}));
+            Pointer.to(new int[]{CudaImageTile.fftSize}));
 
     JCudaDriver.cuLaunchKernel(CudaImageTile.elt_prod_function[dev], numBlocks, 1, 1, numThreads,
         1, 1, 0, stream, kernelParams, null);
@@ -174,19 +173,20 @@ public class CudaStitching {
   }
 
   /**
-   * Finds the n max peaks in the phase correlation matrix that are a distance of 10 from eachother.
-   * 
-   * @param pcm the phase correlation matrix
+   * Finds the n max peaks in the phase correlation matrix that are a distance of 10 from
+   * eachother.
+   *
+   * @param pcm    the phase correlation matrix
    * @param nPeaks the number of peaks to be found
-   * @param width the width of the image
+   * @param width  the width of the image
    * @param height the height of the image
    * @param memory the tile worker memory
    * @param stream the CUDA stream
-   * @param dev the GPU device number
+   * @param dev    the GPU device number
    * @return a list of the correlation triples
    */
   public static List<CorrelationTriple> multiPeakCorrelationMatrix(CUdeviceptr pcm, int nPeaks,
-      int width, int height, TileWorkerMemory memory, CUstream stream, int dev) {
+                                                                   int width, int height, TileWorkerMemory memory, CUstream stream, int dev) {
 
     List<CorrelationTriple> peaks = new ArrayList<CorrelationTriple>();
 
@@ -205,19 +205,20 @@ public class CudaStitching {
   }
 
   /**
-   * Finds the n max peaks in the phase correlation matrix that are a distance of 10 from eachother.
-   * 
-   * @param pcm the phase correlation matrix
+   * Finds the n max peaks in the phase correlation matrix that are a distance of 10 from
+   * eachother.
+   *
+   * @param pcm    the phase correlation matrix
    * @param nPeaks the number of peaks to be found
-   * @param width the width of the image
+   * @param width  the width of the image
    * @param height the height of the image
    * @param memory the tile worker memory
    * @param stream the CUDA stream
-   * @param dev the GPU device number
+   * @param dev    the GPU device number
    * @return array of indices
    */
   public static int[] multiPeakCorrelationMatrixIndices(CUdeviceptr pcm, int nPeaks, int width,
-      int height, TileWorkerMemory memory, CUstream stream, int dev) {
+                                                        int height, TileWorkerMemory memory, CUstream stream, int dev) {
 
     int[] vals = new int[nPeaks];
 
@@ -233,21 +234,21 @@ public class CudaStitching {
 
   /**
    * Finds multiple max indices
-   * 
+   *
    * getMultiMaxIdx was adapted from the CUDA SDK examples for parallel reduction:
    * http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
-   * 
-   * @param c GPU device input memory
+   *
+   * @param c      GPU device input memory
    * @param nPeaks the number of peaks to find
-   * @param width the width of the image
+   * @param width  the width of the image
    * @param height the height of hte image
    * @param memory the GPU memory
    * @param stream the CUDA stream used
-   * @param dev the thread ID used
+   * @param dev    the thread ID used
    * @return the index where the max exists
    */
   public static ByteBuffer getMultiMaxIdx(CUdeviceptr c, int nPeaks, int width, int height,
-      TileWorkerMemory memory, CUstream stream, int dev) {
+                                          TileWorkerMemory memory, CUstream stream, int dev) {
     int size = width * height;
     CUdeviceptr out = memory.getMultiMaxOut();
     CUdeviceptr idxOut = memory.getMultiIdxOut();
@@ -260,9 +261,9 @@ public class CudaStitching {
       int reduceBlocks = (size + (numThreads * 2 - 1)) / (numThreads * 2);
       Pointer kernelParams =
           Pointer.to(Pointer.to(c), Pointer.to(out), Pointer.to(idxOut),
-              Pointer.to(new int[] {width}), Pointer.to(new int[] {height}),
-              Pointer.to(new int[] {numThreads}), Pointer.to(idxFilter),
-              Pointer.to(new int[] {nFilter}));
+              Pointer.to(new int[]{width}), Pointer.to(new int[]{height}),
+              Pointer.to(new int[]{numThreads}), Pointer.to(idxFilter),
+              Pointer.to(new int[]{nFilter}));
 
       JCudaDriver.cuLaunchKernel(CudaImageTile.reduce_max_filter_main[dev], reduceBlocks, 1, 1,
           numThreads, 1, 1, 0, stream, kernelParams, null);
@@ -297,8 +298,8 @@ public class CudaStitching {
    * http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
    */
   private static final void multiMax_filter_cases(CUdeviceptr in, CUdeviceptr out,
-      CUdeviceptr index, int size, int width, CUdeviceptr idxFilter, int nFilter, int threads,
-      int blocks, CUstream stream, int dev) {
+                                                  CUdeviceptr index, int size, int width, CUdeviceptr idxFilter, int nFilter, int threads,
+                                                  int blocks, CUstream stream, int dev) {
     Pointer kernelParams = null;
 
     // switch for power of 2 threads for reduction
@@ -307,76 +308,76 @@ public class CudaStitching {
         kernelParams =
             Pointer
                 .to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                    Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                    Pointer.to(new int[] {512}), Pointer.to(idxFilter),
-                    Pointer.to(new int[] {nFilter}));
+                    Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                    Pointer.to(new int[]{512}), Pointer.to(idxFilter),
+                    Pointer.to(new int[]{nFilter}));
 
         break;
       case 256:
         kernelParams =
             Pointer
                 .to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                    Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                    Pointer.to(new int[] {256}), Pointer.to(idxFilter),
-                    Pointer.to(new int[] {nFilter}));
+                    Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                    Pointer.to(new int[]{256}), Pointer.to(idxFilter),
+                    Pointer.to(new int[]{nFilter}));
 
         break;
       case 128:
         kernelParams =
             Pointer
                 .to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                    Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                    Pointer.to(new int[] {128}), Pointer.to(idxFilter),
-                    Pointer.to(new int[] {nFilter}));
+                    Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                    Pointer.to(new int[]{128}), Pointer.to(idxFilter),
+                    Pointer.to(new int[]{nFilter}));
 
         break;
       case 64:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {64}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{64}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 32:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {32}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{32}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 16:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {16}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{16}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 8:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {8}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{8}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 4:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {4}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{4}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 2:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {2}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{2}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
       case 1:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {width}),
-                Pointer.to(new int[] {1}), Pointer.to(idxFilter), Pointer.to(new int[] {nFilter}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{width}),
+                Pointer.to(new int[]{1}), Pointer.to(idxFilter), Pointer.to(new int[]{nFilter}));
 
         break;
     }
@@ -390,19 +391,19 @@ public class CudaStitching {
 
   /**
    * Finds the max index inside of the pointer
-   * 
+   *
    * getMaxIdx was adapted from the CUDA SDK examples for parallel reduction:
    * http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
-   * 
-   * @param c the pointer
-   * @param size the size of the pointer array
+   *
+   * @param c      the pointer
+   * @param size   the size of the pointer array
    * @param memory the tile worker memory
    * @param stream the CUDA stream
-   * @param dev the GPU device number
+   * @param dev    the GPU device number
    * @return the index where the max exists inside the pointer
    */
   public static int getMaxIdx(CUdeviceptr c, int size, TileWorkerMemory memory, CUstream stream,
-      int dev) {
+                              int dev) {
 
     CUdeviceptr out = memory.getMaxOut();
     CUdeviceptr idxOut = memory.getIdxOut();
@@ -410,7 +411,7 @@ public class CudaStitching {
     int reduceBlocks = (size + (numThreads * 2 - 1)) / (numThreads * 2);
     Pointer kernelParams =
         Pointer.to(Pointer.to(c), Pointer.to(out), Pointer.to(idxOut),
-            Pointer.to(new int[] {size}), Pointer.to(new int[] {numThreads}));
+            Pointer.to(new int[]{size}), Pointer.to(new int[]{numThreads}));
 
     JCudaDriver.cuLaunchKernel(CudaImageTile.reduce_max_main[dev], reduceBlocks, 1, 1, numThreads,
         1, 1, 0, stream, kernelParams, null);
@@ -441,7 +442,7 @@ public class CudaStitching {
    * http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
    */
   private static final void reduce_max_final_cases(CUdeviceptr in, CUdeviceptr out,
-      CUdeviceptr index, int size, int threads, int blocks, CUstream stream, int dev) {
+                                                   CUdeviceptr index, int size, int threads, int blocks, CUstream stream, int dev) {
     Pointer kernelParams = null;
 
     // switch for cases that are powers of 2
@@ -449,52 +450,52 @@ public class CudaStitching {
       case 512:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {512}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{512}));
         break;
       case 256:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {256}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{256}));
         break;
       case 128:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {128}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{128}));
         break;
       case 64:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {64}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{64}));
         break;
       case 32:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {32}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{32}));
         break;
       case 16:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {16}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{16}));
         break;
       case 8:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {8}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{8}));
         break;
       case 4:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {4}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{4}));
         break;
       case 2:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {2}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{2}));
         break;
       case 1:
         kernelParams =
             Pointer.to(Pointer.to(in), Pointer.to(out), Pointer.to(index),
-                Pointer.to(new int[] {size}), Pointer.to(new int[] {1}));
+                Pointer.to(new int[]{size}), Pointer.to(new int[]{1}));
         break;
     }
 
@@ -510,14 +511,14 @@ public class CudaStitching {
    * http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
    */
   private static int nextPow2(int x) {
-    x = x-1;
+    x = x - 1;
     x |= x >> 1;
     x |= x >> 2;
     x |= x >> 4;
     x |= x >> 8;
     x |= x >> 16;
 
-    return x+1;
+    return x + 1;
   }
 
   /*

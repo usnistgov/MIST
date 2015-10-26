@@ -33,7 +33,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * Sequential tile grid loader
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -52,23 +52,22 @@ public class SequentialTileGridLoader extends TileGridLoader {
           + "<br>{pppp} = position; {tttt} = timeslice(optional)</html>";
 
 
-
   private GridOrigin origin;
   private GridDirection direction;
   private String nameMatcher;
 
   /**
    * Creates a sequential tile grid loader
-   * 
-   * @param gridWidth the width of the grid
-   * @param gridHeight the height of the grid
-   * @param startTile the start tile index
+   *
+   * @param gridWidth   the width of the grid
+   * @param gridHeight  the height of the grid
+   * @param startTile   the start tile index
    * @param filePattern the file pattern
-   * @param origin the grid origin
-   * @param direction the grid traversal direction
+   * @param origin      the grid origin
+   * @param direction   the grid traversal direction
    */
   public SequentialTileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern,
-      GridOrigin origin, GridDirection direction) {
+                                  GridOrigin origin, GridDirection direction) {
     super(gridWidth, gridHeight, startTile, filePattern);
     this.origin = origin;
     this.direction = direction;
@@ -225,7 +224,7 @@ public class SequentialTileGridLoader extends TileGridLoader {
 
   /**
    * Tests the sequential tile grid loader
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
@@ -246,15 +245,14 @@ public class SequentialTileGridLoader extends TileGridLoader {
 
   /**
    * Gets the position pattern
-   * 
+   *
    * @param filePattern the file pattern
-   * @param silent whether to show error or not
+   * @param silent      whether to show error or not
    * @return the position pattern
    */
   public static String getPositionPattern(String filePattern, boolean silent) {
-    return TileGridLoaderUtils.getPattern(filePattern, positionPattern, silent);    
-    }
-
+    return TileGridLoaderUtils.getPattern(filePattern, positionPattern, silent);
+  }
 
 
 }

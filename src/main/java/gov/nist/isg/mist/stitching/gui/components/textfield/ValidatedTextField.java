@@ -32,15 +32,15 @@ import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TextF
 
 import javax.swing.*;
 import javax.swing.text.*;
+
 import java.awt.*;
 
 /**
  * Creates a text field that is validated by a validator.
- * 
+ *
+ * @param <T> the type for the text field
  * @author Tim Blattner
  * @version 1.0
- * 
- * @param <T> the type for the text field
  */
 public class ValidatedTextField<T> extends JTextField {
 
@@ -52,9 +52,9 @@ public class ValidatedTextField<T> extends JTextField {
 
   /**
    * Creates a text field validated by a validator
-   * 
-   * @param size the size of the text field
-   * @param text the default text for the text field
+   *
+   * @param size      the size of the text field
+   * @param text      the default text for the text field
    * @param validator the validator for the text field
    */
   public ValidatedTextField(int size, String text, TextFieldModel<T> validator) {
@@ -71,7 +71,7 @@ public class ValidatedTextField<T> extends JTextField {
 
   /**
    * Sets the validator associated with this text field filter
-   * 
+   *
    * @param validator the validator
    */
   public void setValidator(TextFieldModel<T> validator) {
@@ -101,7 +101,7 @@ public class ValidatedTextField<T> extends JTextField {
 
   /**
    * Checks if there is an error in the text field
-   * 
+   *
    * @return true if an error exists
    */
   public boolean hasError() {
@@ -109,7 +109,7 @@ public class ValidatedTextField<T> extends JTextField {
       hideError();
       return false;
     }
-    
+
     showError();
     return true;
   }
@@ -130,20 +130,19 @@ public class ValidatedTextField<T> extends JTextField {
 
   /**
    * Gets if ignore errors or not
+   *
    * @return true if ignore errors otherwise false
    */
-  public boolean isIgnoreErrors()
-  {
-      return this.ignoreErrors;
+  public boolean isIgnoreErrors() {
+    return this.ignoreErrors;
   }
-  
+
   /**
    * Creates a text field filter that handles input into the text field.
-   * 
+   *
+   * @param <V> the type of the text field
    * @author Tim Blattner
    * @version 1.0
-   * 
-   * @param <V> the type of the text field
    */
   class TextFieldFilter<V> extends DocumentFilter {
 
@@ -152,8 +151,8 @@ public class ValidatedTextField<T> extends JTextField {
 
     /**
      * Creates a text field filter
-     * 
-     * @param txtArea the text area associated with the filter
+     *
+     * @param txtArea   the text area associated with the filter
      * @param validator the validator to validate text
      */
     public TextFieldFilter(ValidatedTextField<V> txtArea, TextFieldModel<V> validator) {

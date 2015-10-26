@@ -33,10 +33,9 @@ import java.io.IOException;
 
 /**
  * Validator that checks for valid file name
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class FilenameModel implements TextFieldModel<String> {
 
@@ -44,7 +43,7 @@ public class FilenameModel implements TextFieldModel<String> {
 
   /**
    * Constructs the file name validator
-   * 
+   *
    * @param errorText the errtext associated with this validator
    */
   public FilenameModel(String errorText) {
@@ -81,7 +80,7 @@ public class FilenameModel implements TextFieldModel<String> {
   }
 
   @Override
-  public void updateTextFields() {    
+  public void updateTextFields() {
   }
 
 }

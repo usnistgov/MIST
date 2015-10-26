@@ -32,10 +32,9 @@ import gov.nist.isg.mist.stitching.gui.panels.outputTab.OutputPanel;
 
 /**
  * Validator that checks values based on two regex and resets image size
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class DualRegexResetImageSizeModel extends DualRegexModel {
 
@@ -45,15 +44,15 @@ public class DualRegexResetImageSizeModel extends DualRegexModel {
 
   /**
    * Creates a regex validator based on a given regex
-   * 
-   * @param regex1 the first regex to check
-   * @param regex2 the second regex to check
-   * @param errorText the error text associated with this validator
-   * @param outputPanel the output panel to reference to reset image size
+   *
+   * @param regex1         the first regex to check
+   * @param regex2         the second regex to check
+   * @param errorText      the error text associated with this validator
+   * @param outputPanel    the output panel to reference to reset image size
    * @param invalidStrings the invalid strings for this validator
    */
   public DualRegexResetImageSizeModel(String regex1, String regex2, String errorText,
-      OutputPanel outputPanel, String ... invalidStrings) {
+                                      OutputPanel outputPanel, String... invalidStrings) {
     super(regex1, regex2, errorText, invalidStrings);
 
     this.outputPanel = outputPanel;

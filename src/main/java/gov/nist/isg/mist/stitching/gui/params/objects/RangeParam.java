@@ -33,10 +33,9 @@ import java.util.List;
 
 /**
  * Range param that specifies a min max range.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class RangeParam {
 
@@ -88,7 +87,7 @@ public class RangeParam {
 
   /**
    * Converts a string representation of a range (1-15) into a range param
-   * 
+   *
    * @param param the string representation of the range
    * @return the range param
    */
@@ -126,7 +125,7 @@ public class RangeParam {
 
   /**
    * Parses a timeSlice string to its appropriate range parameters
-   * 
+   *
    * @param val the time slice string
    * @return a list of range parameters, or an empty list if an error occurred
    */
@@ -143,5 +142,5 @@ public class RangeParam {
 
     return rangeParams;
   }
-  
+
 }

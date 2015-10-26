@@ -43,52 +43,52 @@ import java.io.File;
  */
 public class TestFFTWWisdom32 {
 
-    /**
-     * Tests generating FFTW wisdoms natively
-     */
-    public static void runTestFFTWTestWisdom32() {
-        Log.setLogLevel(LogType.INFO);
-        Log.msg(LogType.MANDATORY, "Running Test Create FFTW 32 Wisdom");
+  /**
+   * Tests generating FFTW wisdoms natively
+   */
+  public static void runTestFFTWTestWisdom32() {
+    Log.setLogLevel(LogType.INFO);
+    Log.msg(LogType.MANDATORY, "Running Test Create FFTW 32 Wisdom");
 
-        File file = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00001.tif");
-        if (FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f")) {
+    File file = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00001.tif");
+    if (FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f")) {
 
-            FftwImageTile32 tile = new FftwImageTile32(file);
+      FftwImageTile32 tile = new FftwImageTile32(file);
 
-            Log.msg(LogType.INFO, "Loading FFTW plan");
-            TimeUtil.tick();
-            FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), 0x41, false, null);
+      Log.msg(LogType.INFO, "Loading FFTW plan");
+      TimeUtil.tick();
+      FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), 0x41, false, null);
 
-            Log.msg(LogType.INFO, "Finished creating FFTW plans in: " + TimeUtil.tock() + " ms");
+      Log.msg(LogType.INFO, "Finished creating FFTW plans in: " + TimeUtil.tock() + " ms");
 
-            Log.msg(LogType.INFO, "Testing saving FFTW plan");
-            TimeUtil.tick();
-            if (FftwImageTile32.savePlan("test.dat") == 0)
-                Log.msg(LogType.INFO, "Failed to save plan");
-            else
-                Log.msg(LogType.INFO, "Saving plan test Complete in " + TimeUtil.tock() + " ms");
+      Log.msg(LogType.INFO, "Testing saving FFTW plan");
+      TimeUtil.tick();
+      if (FftwImageTile32.savePlan("test.dat") == 0)
+        Log.msg(LogType.INFO, "Failed to save plan");
+      else
+        Log.msg(LogType.INFO, "Saving plan test Complete in " + TimeUtil.tock() + " ms");
 
-            Log.msg(LogType.INFO, "Testing destroying plans");
-            FftwImageTile32.destroyPlans();
-            Log.msg(LogType.INFO, "Plan destruction test completed");
+      Log.msg(LogType.INFO, "Testing destroying plans");
+      FftwImageTile32.destroyPlans();
+      Log.msg(LogType.INFO, "Plan destruction test completed");
 
-            Log.msg(LogType.INFO, "Testing loading FFTW plan");
-            FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), 0x41, true, "test.dat");
+      Log.msg(LogType.INFO, "Testing loading FFTW plan");
+      FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), 0x41, true, "test.dat");
 
-            FftwImageTile32.destroyPlans();
-
-        }
-
-        Log.msg(LogType.MANDATORY, "Test Completed.");
+      FftwImageTile32.destroyPlans();
 
     }
 
-    /**
-     * Executes the test case
-     *
-     * @param args not used
-     */
-    public static void main(String[] args) {
-        TestFFTWWisdom32.runTestFFTWTestWisdom32();
-    }
+    Log.msg(LogType.MANDATORY, "Test Completed.");
+
+  }
+
+  /**
+   * Executes the test case
+   *
+   * @param args not used
+   */
+  public static void main(String[] args) {
+    TestFFTWWisdom32.runTestFFTWTestWisdom32();
+  }
 }

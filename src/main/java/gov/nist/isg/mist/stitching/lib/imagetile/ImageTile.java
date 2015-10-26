@@ -44,10 +44,9 @@ import java.util.concurrent.Semaphore;
 
 /**
  * Main image tile class that represents an image tile.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
@@ -116,23 +115,23 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row
-   * @param startCol the start column
+   * @param startRow   the start row
+   * @param startCol   the start column
    */
   public ImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol) {
+                   int startCol) {
     this(file, row, col, gridWidth, gridHeight, startRow, startCol, true);
   }
 
   /**
    * Creates an image tile from a file
-   * 
+   *
    * @param file the image tile file
    */
   public ImageTile(File file) {
@@ -141,7 +140,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Initializes image tile and optionally does not read
-   * 
+   *
    * @param file the file assosiated with this tile
    * @param read whether or not to read the tile here
    */
@@ -151,30 +150,28 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Creates an image tile in a grid
-   * 
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   *
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row
-   * @param startCol the start column
-   * @param read whether or not to read the tile here
-   * 
+   * @param startRow   the start row
+   * @param startCol   the start column
+   * @param read       whether or not to read the tile here
    */
   public ImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-      int startCol, boolean read) {
+                   int startCol, boolean read) {
     this.pixelsLoaded = false;
     this.fpath = file.getAbsolutePath();
     this.fname = file.getName();
 
     if (read) {
-        try {
-            this.readTile();
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+      try {
+        this.readTile();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
     } else {
       this.pixels = null;
       this.width = 0;
@@ -197,7 +194,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
     this.fftReleaseCount = getReleaseCount(gridWidth, gridHeight, startRow, startCol);
     this.pixelDataReleaseCount = getReleaseCount(gridWidth, gridHeight, startRow, startCol);
-        
+
     this.fftState = State.NONE;
     this.pciamWestState = State.NONE;
     this.pciamNorthState = State.NONE;
@@ -217,7 +214,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Constructs an image tile using only absolute position data
-   * 
+   *
    * @param file the image tile file
    * @param absX the absolute x position in the final image
    * @param absY the absolute y position in the final image
@@ -235,37 +232,30 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
 
   /**
-   * Computes the release count that is based on how many neighbors this tile has
-   * assuming that there are tiles on the 
-   * 4 cardinal directions (north, south, east, west).
-   * 
-   * If a tile is on the edge of the grid, then its release count is 3,
-   * if the tile is on a corner then the release count is 2,
-   * if the tile is in the center then the release count is 4.
-   * 
-   * @param gridWidth
-   * @param gridHeight
-   * @param startRow
-   * @param startCol
+   * Computes the release count that is based on how many neighbors this tile has assuming that
+   * there are tiles on the 4 cardinal directions (north, south, east, west).
+   *
+   * If a tile is on the edge of the grid, then its release count is 3, if the tile is on a corner
+   * then the release count is 2, if the tile is in the center then the release count is 4.
+   *
    * @return the release count based on how many neighbors the tile has
    */
-  public int getReleaseCount(int gridWidth, int gridHeight, int startRow, int startCol)
-  {
-    return  2 + (this.colIdx - startCol < gridWidth - 1 && this.colIdx > startCol ? 1 : 0)
-        + (this.rowIdx - startRow < gridHeight - 1 && this.rowIdx > startRow ? 1 : 0);    
+  public int getReleaseCount(int gridWidth, int gridHeight, int startRow, int startCol) {
+    return 2 + (this.colIdx - startCol < gridWidth - 1 && this.colIdx > startCol ? 1 : 0)
+        + (this.rowIdx - startRow < gridHeight - 1 && this.rowIdx > startRow ? 1 : 0);
   }
-  
+
   /**
    * Resets the pixel release count
-   * 
-   * @param gridWidth the grid width
+   *
+   * @param gridWidth  the grid width
    * @param gridHeight the grid height
-   * @param startRow the startRow
-   * @param startCol the startCol
+   * @param startRow   the startRow
+   * @param startCol   the startCol
    */
   public void resetPixelReleaseCount(int gridWidth, int gridHeight, int startRow, int startCol) {
     this.pixelDataReleaseCount = getReleaseCount(gridWidth, gridHeight, startRow, startCol);
-       
+
   }
 
   /**
@@ -320,7 +310,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Subtracts the absolute position
-   * 
+   *
    * @param x the x position
    * @param y the y position
    */
@@ -396,7 +386,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the release count for image tile
-   * 
+   *
    * @return the release count
    */
   public int getFftReleaseCount() {
@@ -419,7 +409,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets the pixel data release count
-   * 
+   *
    * @param val the pixel data release count
    */
   public void setPixelDataReleaseCount(int val) {
@@ -442,7 +432,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the thread id associated with this image tile
-   * 
+   *
    * @return threadID the thread id associated with the thread
    */
   public int getThreadID() {
@@ -451,7 +441,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets the thread id associated with this image tile
-   * 
+   *
    * @param threadID the thread id associated with the thread
    */
   public void setThreadID(int threadID) {
@@ -460,7 +450,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets west translation
-   * 
+   *
    * @return the west translation
    */
   public CorrelationTriple getWestTranslation() {
@@ -469,7 +459,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets north translation
-   * 
+   *
    * @return the north translation
    */
   public CorrelationTriple getNorthTranslation() {
@@ -478,7 +468,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets west translation for image tile
-   * 
+   *
    * @param corrTriple the correlation
    */
   public void setWestTranslation(CorrelationTriple corrTriple) {
@@ -487,7 +477,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets north translation for image tile
-   * 
+   *
    * @param corrTriple the correlation
    */
   public void setNorthTranslation(CorrelationTriple corrTriple) {
@@ -524,7 +514,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the lowest standard deviation north between the origin tile and its neighbor
-   * 
+   *
    * @return the lowest standard deviation for the north overlap
    */
   public double getLowestStdDevNorth() {
@@ -535,7 +525,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the lowest standard deviation west between the origin tile and its neighbor
-   * 
+   *
    * @return the lowest standard deviation for the west overlap
    */
   public double getLowestStdDevWest() {
@@ -546,7 +536,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Computes the standard deviation for the northern overlap. The overlap is based on the north
    * translation for this tile
-   * 
+   *
    * @param neighbor this tile's northern neighbor
    */
   public void computeStdDevNorth(ImageTile<T> neighbor) throws FileNotFoundException {
@@ -592,7 +582,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Computes the standard deviation for the western overlap. The overlap is based on the west
    * translation for this tile
-   * 
+   *
    * @param neighbor this tile's western neighbor
    */
   public void computeStdDevWest(ImageTile<T> neighbor) throws FileNotFoundException {
@@ -638,12 +628,12 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Computes the standard deviation for the northern overlap. The overlap is based on the overlap
    * +- percentOverlapError
-   * 
-   * @param neighbor this tile's northern neighbor
-   * @param overlap the percent overlap
+   *
+   * @param neighbor         this tile's northern neighbor
+   * @param overlap          the percent overlap
    * @param percOverlapError the percent overlap error
    */
-  public void computeStdDevNorth(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
+  public void computeStdDevNorth(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException {
     if (Double.isNaN(getStdDevNorthOverlapOrigin())) {
       this.readTile();
 
@@ -679,12 +669,12 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Computes the standard deviation for the western overlap. The overlap is based on the overlap +-
    * percentOverlapError
-   * 
-   * @param neighbor this tile's western neighbor
-   * @param overlap the percent overlap
+   *
+   * @param neighbor         this tile's western neighbor
+   * @param overlap          the percent overlap
    * @param percOverlapError the percent overlap error
    */
-  public void computeStdDevWest(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException  {
+  public void computeStdDevWest(ImageTile<T> neighbor, double overlap, double percOverlapError) throws FileNotFoundException {
     if (Double.isNaN(getStdDevWestOverlapOrigin())) {
 
       this.readTile();
@@ -718,7 +708,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if the north standard deviation is below a threshold
-   * 
+   *
    * @param threshold the standard deviation threshold
    * @return true if either of the origin or neighbor's standard deviation is below the threshold
    */
@@ -730,7 +720,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if the west standard deviation is below a threshold
-   * 
+   *
    * @param threshold the standard deviation threshold
    * @return true if either of the origin or neighbor's standard deviation is below the threshold
    */
@@ -798,7 +788,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if a tile has been read from disk or not
-   * 
+   *
    * @return true if the tile has been read, otherwise false
    */
   public boolean isTileRead() {
@@ -811,7 +801,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @throws java.io.FileNotFoundException if the file does not exist
    */
   public void readTile() throws FileNotFoundException {
-    if(this.isTileRead()) return;
+    if (this.isTileRead()) return;
     Log.msg(LogType.INFO, "Loading image: " + this.fpath);
 
     ImagePlus image = new ImagePlus(this.fpath);
@@ -824,7 +814,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
       Log.msg(LogType.MANDATORY,
           "Please ensure your grid parameters are correctly setup (origin, direction, width, height)");
 
-        throw new FileNotFoundException(this.fpath);
+      throw new FileNotFoundException(this.fpath);
     }
 
     this.bitDepth = image.getBitDepth();
@@ -836,7 +826,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   /**
    * Gets the raw image processor for this tile. Used to get the pixel values from the original
    * image.
-   * 
+   *
    * @return the image processor for the tile
    */
   public ImageProcessor getImageProcessor() {
@@ -845,7 +835,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets an ImagePlus object of this tile
-   * 
+   *
    * @return the image plus object for this tile
    */
   public ImagePlus getImagePlus() {
@@ -854,7 +844,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the bit depth for the image: e.g. 16-bit; 32-bit...
-   * 
+   *
    * @return the bit depth
    */
   public int getBitDepth() {
@@ -880,15 +870,13 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   }
 
 
-  public void releasePixels(Semaphore sem)
-  {
+  public void releasePixels(Semaphore sem) {
     this.pixels = null;
     this.pixelsLoaded = false;
     sem.release();
   }
 
-  public void releasePixelsNow(Semaphore sem)
-  {
+  public void releasePixelsNow(Semaphore sem) {
     this.pixels = null;
     this.pixelsLoaded = false;
     sem.release();
@@ -897,7 +885,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the filename for this image tile.
-   * 
+   *
    * @return the filename string
    */
   public String getFileName() {
@@ -910,13 +898,13 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   @Override
   public String toString() {
     return "Image: " + this.fname + " path: " + this.fpath + " width: " + this.width + " height: " + this.height
-        + " contains pixels: " + (this.pixels == null ? "-1 (not loaded)" : this.pixels.getWidth()*this.pixels.getHeight()) + " abs x: "
+        + " contains pixels: " + (this.pixels == null ? "-1 (not loaded)" : this.pixels.getWidth() * this.pixels.getHeight()) + " abs x: "
         + this.absXPos + " abs y: " + this.absYPos;
   }
 
   /**
    * Gets the row index
-   * 
+   *
    * @return the row index
    */
   public int getRow() {
@@ -925,7 +913,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets column index
-   * 
+   *
    * @return the column index
    */
   public int getCol() {
@@ -948,7 +936,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Determines if this image tile and another image tile are neighbors along a row
-   * 
+   *
    * @param o the neighboring image tile
    * @return true if the two tiles are row neighbors
    */
@@ -957,9 +945,8 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
   }
 
   /**
-   * 
    * Determines if this image tile and another image tile are neighbors along a column
-   * 
+   *
    * @param o the neighboring image tile
    * @return true if the two tiles are column neighbors
    */
@@ -969,7 +956,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if this tile is north of another tile
-   * 
+   *
    * @param other the other tile
    * @return true if this tile is north of another tile, otherwise false
    */
@@ -979,7 +966,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if this tile is west of another tile
-   * 
+   *
    * @param other the other tile
    * @return true if this tile is west of another tile, otherwise false
    */
@@ -989,7 +976,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if this tile is south of another tile
-   * 
+   *
    * @param other the other tile
    * @return true if this tile is south of another tile, otherwise false
    */
@@ -999,7 +986,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Checks if this tile is east of another tile
-   * 
+   *
    * @param other the other tile
    * @return true if this tile is east of another tile, otherwise false
    */
@@ -1010,7 +997,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the correlation associated with the neighbor image tile
-   * 
+   *
    * @param neighbor the neighbor image tile to reference
    * @return the correlation associated with the neighbor
    */
@@ -1029,7 +1016,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Updates the absolute position of this tile relative to another tile
-   * 
+   *
    * @param other the other tile that we are updating based on
    */
   public void updateAbsolutePosition(ImageTile<T> other) {
@@ -1079,7 +1066,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Get whether the system should free pixel data or not
-   * 
+   *
    * @return true if the system should free pixel data, otherwise false
    */
   public static boolean freePixelData() {
@@ -1102,7 +1089,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Releases memory into a pool
-   * 
+   *
    * @param pool the pool to put memory into
    */
   public void releaseFftMemory(DynamicMemoryPool<T> pool) {
@@ -1112,7 +1099,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Allocated Memory
-   * 
+   *
    * @param pool the memory pool
    */
   public void allocateFftMemory(DynamicMemoryPool<T> pool) {
@@ -1124,7 +1111,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets the device number for the GPU
-   * 
+   *
    * @return the device number associated with the GPU
    */
   public int getDev() {
@@ -1133,7 +1120,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets the GPU device number
-   * 
+   *
    * @param dev the device number associated with the GPU
    */
   public void setDev(int dev) {
@@ -1142,7 +1129,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Determines if an fft exists or not
-   * 
+   *
    * @return if the fft is null, then false, otherwise true
    */
   public boolean hasFft() {
@@ -1151,7 +1138,7 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Gets this image tile's fft
-   * 
+   *
    * @return the fft
    * @throws NullPointerException if the FFT has not been computed
    */
@@ -1172,8 +1159,6 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Sets if the memory is loaded or not
-   * 
-   * @param val
    */
   public void setMemoryLoaded(boolean val) {
     this.memoryLoaded = val;
@@ -1191,18 +1176,18 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
 
   /**
    * Computes image's FFT without memory allocation asynchronously on GPU
-   * 
-   * @param pool dynamic memory pool
+   *
+   * @param pool   dynamic memory pool
    * @param memory pre-allocated memory
    * @param stream CUDA CUstream
    */
   public abstract void computeFft(DynamicMemoryPool<T> pool, TileWorkerMemory memory,
-      CUstream stream) throws FileNotFoundException;
+                                  CUstream stream) throws FileNotFoundException;
 
   /**
    * Computes the FFT for this tile using a pool, if the memory has not been allocated for the FFT
-   * 
-   * @param pool the pool of memory
+   *
+   * @param pool   the pool of memory
    * @param memory the tile worker memory
    */
   public abstract void computeFft(DynamicMemoryPool<T> pool, TileWorkerMemory memory) throws FileNotFoundException;

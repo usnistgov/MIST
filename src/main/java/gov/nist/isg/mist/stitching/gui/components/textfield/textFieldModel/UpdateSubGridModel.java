@@ -32,10 +32,9 @@ import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
 
 /**
  * Validator that checks integers and if valid updates a referenced sub-grid
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class UpdateSubGridModel extends IntModel {
 
@@ -43,7 +42,7 @@ public class UpdateSubGridModel extends IntModel {
 
   /**
    * Creates a validator that updates the sub-grid when the check passes
-   * 
+   *
    * @param advPanel the panel where the sub-grid exists
    */
   public UpdateSubGridModel(SubgridPanel advPanel) {
@@ -52,9 +51,9 @@ public class UpdateSubGridModel extends IntModel {
 
   /**
    * Creates a validator that updates the sub-grid when the check passes
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min      the minimum value that is valid (inclusive)
+   * @param max      the maximum value that is valid (inclusive)
    * @param advPanel the panel where the subgrid exists
    */
   public UpdateSubGridModel(int min, int max, SubgridPanel advPanel) {

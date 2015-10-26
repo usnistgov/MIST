@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 /**
  * Utility methods for the tile grid loader and others for parsing file patterns
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -53,8 +53,8 @@ public class TileGridLoaderUtils {
    * Gets the number of elements in the match string
    *
    * @param filePattern the file pattern
-   * @param regex the regular expression
-   * @param silent whether to show error or not
+   * @param regex       the regular expression
+   * @param silent      whether to show error or not
    * @return the position pattern
    */
   public static int getNumberMatchElements(String filePattern, String regex, boolean silent) {
@@ -86,13 +86,13 @@ public class TileGridLoaderUtils {
 
     return iCount;
   }
-  
+
   /**
    * Gets the pattern associated with the regex
-   * 
+   *
    * @param filePattern the file pattern
-   * @param regex the regular expression
-   * @param silent whether to show error or not
+   * @param regex       the regular expression
+   * @param silent      whether to show error or not
    * @return the position pattern
    */
   public static String getPattern(String filePattern, String regex, boolean silent) {
@@ -125,27 +125,26 @@ public class TileGridLoaderUtils {
     return prefix + "%0" + iCount + "d" + suffix;
   }
 
-  
+
   /**
    * Checks if the time file pattern exists
-   * 
+   *
    * @param filePattern the file pattern to check
    * @return true if the file pattern contains a time parameter, otherwise false
    */
   public static boolean hasTimeFilePattern(String filePattern) {
     return hasFilePattern(filePattern, timePattern);
-    
+
   }
-  
+
   /**
    * Checks if the file pattern exists
-   * 
+   *
    * @param filePattern the file pattern to check
-   * @param regex the regular expression to check
+   * @param regex       the regular expression to check
    * @return true if the file pattern contains a time parameter, otherwise false
    */
-  public static boolean hasFilePattern(String filePattern, String regex)
-  {
+  public static boolean hasFilePattern(String filePattern, String regex) {
     Pattern patternTime = Pattern.compile(regex);
     Matcher matcherTime = patternTime.matcher(filePattern);
 
@@ -156,10 +155,10 @@ public class TileGridLoaderUtils {
 
   /**
    * Parses a time slice pattern
-   * 
+   *
    * @param filePattern the file pattern
-   * @param timeSlice the time slice
-   * @param silent whether to output errors or not
+   * @param timeSlice   the time slice
+   * @param silent      whether to output errors or not
    * @return a String that replaces the time slice pattern with the time slice
    */
   public static String parseTimeSlicePattern(String filePattern, int timeSlice, boolean silent) {
@@ -168,17 +167,16 @@ public class TileGridLoaderUtils {
   }
 
   /**
-   * Parses a position pattern. For row-column it assumes the row and col are the
-   * same.
-   * 
+   * Parses a position pattern. For row-column it assumes the row and col are the same.
+   *
    * @param filePattern the file pattern
-   * @param loaderType the type of file pattern loader
-   * @param position the initial tile position
-   * @param silent whether to output errors or not
+   * @param loaderType  the type of file pattern loader
+   * @param position    the initial tile position
+   * @param silent      whether to output errors or not
    * @return a String that replaces the time slice pattern with the time slice
    */
   public static String parsePositionPattern(String filePattern, LoaderType loaderType,
-      int position, boolean silent) {
+                                            int position, boolean silent) {
 
     String posMatcher = null;
     switch (loaderType) {
@@ -201,15 +199,15 @@ public class TileGridLoaderUtils {
 
   /**
    * Checks if time slice exists given a file pattern
-   * 
-   * @param imageDir the image directory
+   *
+   * @param imageDir    the image directory
    * @param filePattern the file pattern containing only the time pattern
-   * @param timeSlice the time slice to check
-   * @param silent whether to output errors or not
+   * @param timeSlice   the time slice to check
+   * @param silent      whether to output errors or not
    * @return true if the file exists, otherwise false
    */
   public static boolean checkTimeSliceTile(String imageDir, String filePattern, int timeSlice,
-      boolean silent) {
+                                           boolean silent) {
     String timeFileName = parseTimeSlicePattern(filePattern, timeSlice, silent);
 
     File file = new File(imageDir, timeFileName);
@@ -221,17 +219,17 @@ public class TileGridLoaderUtils {
 
   /**
    * Checks to see if the starting tile exists or not
-   * 
-   * @param imageDir the directory where the tile exists
-   * @param filePattern the file pattern to use
-   * @param startTile the starting tile number
+   *
+   * @param imageDir       the directory where the tile exists
+   * @param filePattern    the file pattern to use
+   * @param startTile      the starting tile number
    * @param startTimeSlice the starting tile timeslice
-   * @param loaderType the type of tile loader
-   * @param silent whether to output errors or not
+   * @param loaderType     the type of tile loader
+   * @param silent         whether to output errors or not
    * @return true if the tile exists, otherwise false
    */
   public static boolean checkStartTile(String imageDir, String filePattern, int startTile,
-      int startTimeSlice, LoaderType loaderType, boolean silent) {
+                                       int startTimeSlice, LoaderType loaderType, boolean silent) {
 
     String timeFileName = parseTimeSlicePattern(filePattern, startTimeSlice, silent);
 
@@ -240,16 +238,16 @@ public class TileGridLoaderUtils {
 
   /**
    * Checks to see if the starting tile exists or not
-   * 
-   * @param imageDir the directory where the tile exists
+   *
+   * @param imageDir    the directory where the tile exists
    * @param filePattern the file pattern to use
-   * @param startTile the starting tile number
-   * @param loaderType the type of tile grid loader
-   * @param silent whether to output errors or not
+   * @param startTile   the starting tile number
+   * @param loaderType  the type of tile grid loader
+   * @param silent      whether to output errors or not
    * @return true if the tile exists, otherwise false
    */
   public static boolean checkStartTile(String imageDir, String filePattern, int startTile,
-      LoaderType loaderType, boolean silent) {
+                                       LoaderType loaderType, boolean silent) {
 
     String fileName = parsePositionPattern(filePattern, loaderType, startTile, silent);
 
@@ -260,7 +258,7 @@ public class TileGridLoaderUtils {
 
     if (file.exists())
       return true;
-    
+
     if (!silent) {
       Log.msg(LogType.MANDATORY, "Could not find file: " + file.getAbsolutePath());
       Log.msg(LogType.MANDATORY, "Please check your image directory, "
@@ -279,7 +277,7 @@ public class TileGridLoaderUtils {
       posMatcher = RowColTileGridLoader.getColMatcher(colFilePattern, silent);
     }
 
-    if(posMatcher == null)
+    if (posMatcher == null)
       return false;
 
     String fileName = String.format(posMatcher, col);
@@ -291,8 +289,8 @@ public class TileGridLoaderUtils {
     if (!silent) {
       Log.msg(LogType.MANDATORY, "Could not find file: " + file.getAbsolutePath());
       Log.msg(LogType.MANDATORY, "Please check your image directory, "
-                                 + "file pattern, and start tile to ensure they match the "
-                                 + "files in your image directory.");
+          + "file pattern, and start tile to ensure they match the "
+          + "files in your image directory.");
     }
     return false;
   }

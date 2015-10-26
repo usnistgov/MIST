@@ -43,6 +43,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Trav
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -52,21 +53,18 @@ import java.util.List;
 
 /**
  * Class for exporting large images using a blending mode
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
- * @param <T>
  */
 public class LargeImageExporter<T> {
 
 
-    /**
+  /**
    * Enum representing the different types of blending modes
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
-   * 
    */
   public enum BlendingMode {
     /**
@@ -96,7 +94,7 @@ public class LargeImageExporter<T> {
 
     /**
      * Returns if alpha is required or not
-     * 
+     *
      * @return true if alpha is required, otherwise false
      */
     public boolean isRequiresAlpha() {
@@ -105,16 +103,15 @@ public class LargeImageExporter<T> {
 
     /**
      * Gets the tooltip text
-     * 
+     *
      * @return the tooltip text
      */
     public String getToolTipText() {
       return this.toolTipText;
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
       return this.name;
     }
 
@@ -131,17 +128,17 @@ public class LargeImageExporter<T> {
 
   /**
    * Creates a large image exporter with a specific blending function
-   * 
-   * @param grid the grid of images
-   * @param startX the start x position
-   * @param startY the start y position
-   * @param width the width of the final image
-   * @param height the height of the final image
-   * @param blender the blending function
+   *
+   * @param grid        the grid of images
+   * @param startX      the start x position
+   * @param startY      the start y position
+   * @param width       the width of the final image
+   * @param height      the height of the final image
+   * @param blender     the blending function
    * @param progressBar the progress bar
    */
   public LargeImageExporter(TileGrid<ImageTile<T>> grid, int startX, int startY, int width,
-      int height, Blender blender, JProgressBar progressBar) {
+                            int height, Blender blender, JProgressBar progressBar) {
     this.grid = grid;
     this.startX = startX;
     this.startY = startY;
@@ -155,7 +152,7 @@ public class LargeImageExporter<T> {
   /**
    * Exports image to file, if the file is null, then it will return the image plus object without
    * saving it to file
-   * 
+   *
    * @param file the file to export or null if save is not needed
    * @return the image plus object that was created after the export
    */
@@ -186,7 +183,7 @@ public class LargeImageExporter<T> {
     for (ImageTile<T> tile : sortedTileList) {
 
       if (this.isCancelled)
-          return null;
+        return null;
 
       if (tile.getWidth() == 0 || tile.getHeight() == 0)
         tile.readTile();
@@ -231,7 +228,7 @@ public class LargeImageExporter<T> {
       Array2DView arrayView = new Array2DView(tile, tileY, tileHeight, tileX, tileWidth);
       this.blender.blend(tileStartX, tileStartY, arrayView, tile);
 
-       tile.releasePixelsNow();
+      tile.releasePixelsNow();
 
       StitchingGuiUtils.incrementProgressBar(this.progressBar);
     }
@@ -255,11 +252,11 @@ public class LargeImageExporter<T> {
   /**
    * Exports image to file, if the file is null, then it will return the image plus object without
    * saving it to file
-   * 
+   *
    * @param file the file to export or null if save is not needed
    * @return the image plus object that was created after the export
    */
-  public ImagePlus exportImageNoOverlap(File file) throws FileNotFoundException  {
+  public ImagePlus exportImageNoOverlap(File file) throws FileNotFoundException {
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null,
         "Blending tiles...", 0, this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0,
@@ -269,7 +266,7 @@ public class LargeImageExporter<T> {
       for (int col = 0; col < this.grid.getExtentWidth(); col++) {
 
         if (this.isCancelled)
-            return null;
+          return null;
 
         ImageTile<T> tile = this.grid.getSubGridTile(row, col);
         tile.readTile();
@@ -307,7 +304,7 @@ public class LargeImageExporter<T> {
   /**
    * Writes the file to disk, if file is null, then it will only return the ImagePlus object
    * associated with the large image
-   * 
+   *
    * @param file the file to save or null if no save is needed
    * @return the image plus object
    */
@@ -322,7 +319,7 @@ public class LargeImageExporter<T> {
 
       Log.msg(LogType.MANDATORY, "Saving tiles to file: " + file.getAbsolutePath());
       ImagePlus img = new ImagePlus(file.getName(), ip);
-      
+
       IJ.saveAs(img, "tiff", file.getAbsolutePath());
 
       return img;
@@ -332,25 +329,25 @@ public class LargeImageExporter<T> {
   }
 
   public void cancel() {
-      this.isCancelled = true;
+    this.isCancelled = true;
   }
 
   /**
    * Exports an image to disk, or if file is null then returns the ImagePlus object associated with
    * the export
-   * 
-   * @param grid the grid of images
-   * @param startX the start X position
-   * @param startY the start Y position
-   * @param width the width of the large image
-   * @param height the height of the large image
-   * @param blender the blending function
-   * @param file the file or null if no save is needed
+   *
+   * @param grid        the grid of images
+   * @param startX      the start X position
+   * @param startY      the start Y position
+   * @param width       the width of the large image
+   * @param height      the height of the large image
+   * @param blender     the blending function
+   * @param file        the file or null if no save is needed
    * @param progressBar the progress bar
    * @return the ImagePlus object associated with the export
    */
   public static <T> ImagePlus exportImage(TileGrid<ImageTile<T>> grid, int startX, int startY,
-      int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException  {
+                                          int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
         new LargeImageExporter<T>(grid, startX, startY, width, height, blender, progressBar);
     return exporter.exportImage(file);
@@ -359,17 +356,17 @@ public class LargeImageExporter<T> {
   /**
    * Exports an image to disk, or if file is null then returns the ImagePlus object associated with
    * the export
-   * 
-   * @param grid the grid of images
-   * @param startX the start X position
-   * @param startY the start Y position
-   * @param width the width of the large image
-   * @param height the height of the large image
+   *
+   * @param grid    the grid of images
+   * @param startX  the start X position
+   * @param startY  the start Y position
+   * @param width   the width of the large image
+   * @param height  the height of the large image
    * @param blender the blending function
-   * @param file the file or null if no save is needed
+   * @param file    the file or null if no save is needed
    */
   public static <T> void exportImage(TileGrid<ImageTile<T>> grid, int startX, int startY,
-      int width, int height, Blender blender, File file) throws FileNotFoundException  {
+                                     int width, int height, Blender blender, File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
         new LargeImageExporter<T>(grid, startX, startY, width, height, blender, null);
     exporter.exportImage(file);
@@ -380,19 +377,19 @@ public class LargeImageExporter<T> {
   /**
    * Exports an image to disk, or if file is null then returns the ImagePlus object associated with
    * the export
-   * 
-   * @param grid the grid of images
-   * @param startX the start X position
-   * @param startY the start Y position
-   * @param width the width of the large image
-   * @param height the height of the large image
-   * @param blender the blending function
-   * @param file the file or null if no save is needed
+   *
+   * @param grid        the grid of images
+   * @param startX      the start X position
+   * @param startY      the start Y position
+   * @param width       the width of the large image
+   * @param height      the height of the large image
+   * @param blender     the blending function
+   * @param file        the file or null if no save is needed
    * @param progressBar the progress bar
    * @return the ImagePlus object associated with the export
    */
   public static <T> ImagePlus exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int startX,
-      int startY, int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException  {
+                                                   int startY, int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
         new LargeImageExporter<T>(grid, startX, startY, width, height, blender, progressBar);
     return exporter.exportImageNoOverlap(file);
@@ -401,17 +398,17 @@ public class LargeImageExporter<T> {
   /**
    * Exports an image to disk, or if file is null then returns the ImagePlus object associated with
    * the export
-   * 
-   * @param grid the grid of images
-   * @param startX the start X position
-   * @param startY the start Y position
-   * @param width the width of the large image
-   * @param height the height of the large image
+   *
+   * @param grid    the grid of images
+   * @param startX  the start X position
+   * @param startY  the start Y position
+   * @param width   the width of the large image
+   * @param height  the height of the large image
    * @param blender the blending function
-   * @param file the file or null if no save is needed
+   * @param file    the file or null if no save is needed
    */
   public static <T> void exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int startX, int startY,
-      int width, int height, Blender blender, File file) throws FileNotFoundException  {
+                                              int width, int height, Blender blender, File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
         new LargeImageExporter<T>(grid, startX, startY, width, height, blender, null);
     exporter.exportImageNoOverlap(file);

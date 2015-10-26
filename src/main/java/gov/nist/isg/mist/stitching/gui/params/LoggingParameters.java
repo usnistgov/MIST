@@ -39,33 +39,31 @@ import java.util.prefs.Preferences;
 
 /**
  * OutputParameters are the output parameters for Stitching
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class LoggingParameters implements StitchingAppParamFunctions {
-  
+
   private static final String LOG_LEVEL = "logLevel";
   private static final String DEBUG_LEVEL = "debugLevel";
-  
+
   private LogType logLevel;
   private DebugType debugLevel;
-  
-  public LoggingParameters()
-  {
+
+  public LoggingParameters() {
     this.logLevel = LogType.MANDATORY;
     this.debugLevel = DebugType.NONE;
   }
 
   @Override
-  public boolean checkParams() {          
+  public boolean checkParams() {
     return true;
   }
 
 
   @Override
-  public boolean loadParams(File file) throws IllegalArgumentException{
-    try
-    {
+  public boolean loadParams(File file) throws IllegalArgumentException {
+    try {
       Log.msg(LogType.MANDATORY, "Loading output parameters");
       boolean noErrors = true;
 
@@ -82,15 +80,13 @@ public class LoggingParameters implements StitchingAppParamFunctions {
           contents[0] = contents[0].trim();
           contents[1] = contents[1].trim();
 
-          try
-          {
+          try {
             if (contents[0].equals(LOG_LEVEL))
               this.logLevel = LogType.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(DEBUG_LEVEL))
               this.debugLevel = DebugType.valueOf(contents[1].toUpperCase());
-            
-          } catch (IllegalArgumentException e)
-          {
+
+          } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
             Log.msg(LogType.MANDATORY, "Error parsing output option: " + e.getMessage());
             noErrors = false;
@@ -107,7 +103,7 @@ public class LoggingParameters implements StitchingAppParamFunctions {
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;        
+    return false;
   }
 
 
@@ -118,14 +114,14 @@ public class LoggingParameters implements StitchingAppParamFunctions {
     this.debugLevel = PreferencesUtils.loadPrefDebugType(pref, DEBUG_LEVEL, this.debugLevel.name());
     Debug.setDebugLevel(this.debugLevel);
 
-    return true;    
+    return true;
   }
 
 
   @Override
-  public void printParams(LogType logLevel) {   
+  public void printParams(LogType logLevel) {
     Log.msg(logLevel, LOG_LEVEL + ": " + this.logLevel);
-    Log.msg(logLevel, DEBUG_LEVEL + ": " + this.debugLevel);       
+    Log.msg(logLevel, DEBUG_LEVEL + ": " + this.debugLevel);
   }
 
 
@@ -139,16 +135,16 @@ public class LoggingParameters implements StitchingAppParamFunctions {
 
 
   @Override
-  public void recordMacro() { 
+  public void recordMacro() {
     MacroUtils.recordString(LOG_LEVEL + ": ", this.logLevel.name());
-    MacroUtils.recordString(DEBUG_LEVEL + ": ", this.debugLevel.name());       
+    MacroUtils.recordString(DEBUG_LEVEL + ": ", this.debugLevel.name());
   }
 
 
   @Override
   public void saveParams(Preferences pref) {
     pref.put(LOG_LEVEL, this.logLevel.name());
-    pref.put(DEBUG_LEVEL, this.debugLevel.name());       
+    pref.put(DEBUG_LEVEL, this.debugLevel.name());
   }
 
 
@@ -157,17 +153,15 @@ public class LoggingParameters implements StitchingAppParamFunctions {
     String newLine = "\n";
     try {
       fw.write(LOG_LEVEL + ": " + this.logLevel.name() + newLine);
-      fw.write(DEBUG_LEVEL + ": " + this.debugLevel.name()+ newLine);
-      
+      fw.write(DEBUG_LEVEL + ": " + this.debugLevel.name() + newLine);
+
       return true;
 
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;    
+    return false;
   }
-
-
 
 
   /**
@@ -178,16 +172,12 @@ public class LoggingParameters implements StitchingAppParamFunctions {
   }
 
 
-
-
   /**
    * @param logLevel the logLevel to set
    */
   public void setLogLevel(LogType logLevel) {
     this.logLevel = logLevel;
   }
-
-
 
 
   /**
@@ -198,16 +188,12 @@ public class LoggingParameters implements StitchingAppParamFunctions {
   }
 
 
-
-
   /**
    * @param debugLevel the debugLevel to set
    */
   public void setDebugLevel(DebugType debugLevel) {
     this.debugLevel = debugLevel;
   }
-
-  
 
 
 }

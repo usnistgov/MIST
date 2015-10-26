@@ -37,15 +37,14 @@ import javax.swing.*;
 
 /**
  * Cretes a panel to select Java options
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class JavaPanel extends JPanel implements GUIParamFunctions {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -70,7 +69,7 @@ public class JavaPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Get the number of CPU threads
-   * 
+   *
    * @return the number of CPU threads
    */
   public int getNumCPUThreads() {

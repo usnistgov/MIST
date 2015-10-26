@@ -28,16 +28,16 @@
 package gov.nist.isg.mist.stitching.lib.memorypool;
 
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
+
 import org.bridj.Pointer;
 
 /**
  * Allocator type that allocates Pointer memory for use with FFTW
- * 
+ *
  * The memory that is allocated is double complex, so size = size*sizeof(double)*2
- * 
- * element i*2 = real
- * element i*2+1 = imaginary
- * 
+ *
+ * element i*2 = real element i*2+1 = imaginary
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -51,7 +51,7 @@ public class PointerAllocator implements Allocator<Pointer<Double>> {
     }
 
     // Allocate complex numbers
-    return FFTW3Library.fftw_alloc_real(size*2);
+    return FFTW3Library.fftw_alloc_real(size * 2);
   }
 
   @Override

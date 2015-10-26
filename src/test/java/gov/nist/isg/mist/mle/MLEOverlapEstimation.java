@@ -36,13 +36,11 @@ public class MLEOverlapEstimation {
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw\\";
 
 
-
-  public static void main(String [] args) {
+  public static void main(String[] args) {
 
 
     File rootFolder = new File(validationRootFolder);
-    if (!rootFolder.exists() && !rootFolder.isDirectory())
-    {
+    if (!rootFolder.exists() && !rootFolder.isDirectory()) {
       System.out.println("Error: Unable to find root folder: " + validationRootFolder);
       System.exit(1);
     }
@@ -55,7 +53,6 @@ public class MLEOverlapEstimation {
     StitchingAppParams params;
 
 
-
     for (File r : roots) {
       if (!r.isDirectory())
         continue;
@@ -64,7 +61,6 @@ public class MLEOverlapEstimation {
 //      if(r.getAbsolutePath().contains("24h_Dry")) continue;
 //      if(r.getAbsolutePath().contains("KB_")) continue;
 //      if(r.getAbsolutePath().contains("Keana_Scott_gauss3")) continue;
-
 
 
       System.out.println("Running: " + r.getAbsolutePath());
@@ -79,7 +75,7 @@ public class MLEOverlapEstimation {
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
 
-      if(cudaPanel.isCudaAvailable())
+      if (cudaPanel.isCudaAvailable())
         params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
 
       params.getOutputParams().setOutputFullImage(false);
@@ -87,8 +83,8 @@ public class MLEOverlapEstimation {
       params.getAdvancedParams().setNumCPUThreads(8);
 
       StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
-      if(r.getAbsolutePath().contains("Keana_Scott_"))
-         t = StitchingExecutor.StitchingType.FFTW;
+      if (r.getAbsolutePath().contains("Keana_Scott_"))
+        t = StitchingExecutor.StitchingType.FFTW;
 
 
       StitchingExecutor executor;
@@ -104,8 +100,7 @@ public class MLEOverlapEstimation {
       executor = new StitchingExecutor(params);
       try {
         executor.runStitching(false, false, false);
-      } catch (StitchingException e)
-      {
+      } catch (StitchingException e) {
         Log.msg(Log.LogType.MANDATORY, e.getMessage());
       }
 

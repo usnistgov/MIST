@@ -45,6 +45,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,18 +53,16 @@ import java.text.DecimalFormat;
 
 /**
  * Creates the output panel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentListener, ActionListener {
 
   private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
 
   private static final String filenamePrefixHelpText = "The prefix prepended to each file saved in "
-       + "the output directory. \n\nMIST will query for confirmation before overwriting any files.";
-
+      + "the output directory. \n\nMIST will query for confirmation before overwriting any files.";
 
 
   private static final long serialVersionUID = 1L;
@@ -102,7 +101,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   /**
    * Sets the reference to the input panel
-   * 
+   *
    * @param inputPanel the input panel to reference
    */
   public void setInputPanel(InputPanel inputPanel) {
@@ -113,7 +112,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   /**
    * Sets the reference to the subgrid panel
-   * 
+   *
    * @param subGridPanel the subgrid panel to reference
    */
   public void setSubGridPanel(SubgridPanel subGridPanel) {
@@ -175,8 +174,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.blendingType.setToolTipText(blendingTooltipText);
 
 
-
-
     // setup the Output Folder panel
     JPanel outputFolderPanel = new JPanel(new GridBagLayout());
     outputFolderPanel.setBorder(
@@ -216,9 +213,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     stitchedImagePanel.add(estimatedFileSizePanel, c);
 
 
-
-
-
     JButton qButton = new JButton("Help?");
     qButton.addActionListener(new HelpDocumentationViewer("output-parameters"));
     c.anchor = GridBagConstraints.NORTHEAST;
@@ -226,14 +220,14 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     vertPanel.add(qButton, c);
 
 
-    c.insets = new Insets(20,0,0,0);
+    c.insets = new Insets(20, 0, 0, 0);
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.HORIZONTAL;
     c.gridy = 1;
-    vertPanel.add(outputFolderPanel,c);
-    c.insets = new Insets(30,0,0,0);
+    vertPanel.add(outputFolderPanel, c);
+    c.insets = new Insets(30, 0, 0, 0);
     c.gridy = 2;
-    vertPanel.add(stitchedImagePanel,c);
+    vertPanel.add(stitchedImagePanel, c);
 
 
     mainPanel.add(vertPanel);
@@ -245,7 +239,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
   }
 
 
-  public String getPrefix(){
+  public String getPrefix() {
     return this.filePrefixName.getValue();
   }
 
@@ -272,7 +266,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   /**
    * Updates the file size to show nice formatting (GB, MB, ... , etc.)
-   * 
+   *
    * @param size the file size to format
    */
   public void updateFileSize(int size) {
@@ -307,7 +301,6 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.estimatedFileSizeLabel.setText(fileSizeLabel + df.format(fileSize) + " " + unit);
   }
 
-  
 
   @Override
   public void actionPerformed(ActionEvent e) {
@@ -322,13 +315,12 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     } else if (e.getSource() == this.updateBtn) {
       updateImageDimensions();
     } else if (e.getSource() == this.blendingType) {
-      BlendingMode blendType = (BlendingMode) this.blendingType.getSelectedItem();          
+      BlendingMode blendType = (BlendingMode) this.blendingType.getSelectedItem();
       setAlphaEnabled(blendType.isRequiresAlpha());
     }
   }
 
-  private void processDocumentEvent(DocumentEvent e)
-  {
+  private void processDocumentEvent(DocumentEvent e) {
     if (!this.loadingParams) {
       if (!this.makingChanges) {
         // Image directory changed
@@ -348,7 +340,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
       }
     }
   }
-  
+
   @Override
   public void changedUpdate(DocumentEvent e) {
     processDocumentEvent(e);
@@ -423,7 +415,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     params.getOutputParams().setOutputFullImage(this.outputFullImage.isSelected());
     params.getOutputParams().setOutputMeta(true);
     params.getOutputParams().setOutFilePrefix(this.filePrefixName.getValue());
-    params.getOutputParams().setBlendingMode((BlendingMode)this.blendingType.getSelectedItem());
-      params.getOutputParams().setBlendingAlpha(this.blendingAlpha.getValue());
+    params.getOutputParams().setBlendingMode((BlendingMode) this.blendingType.getSelectedItem());
+    params.getOutputParams().setBlendingAlpha(this.blendingAlpha.getValue());
   }
 }

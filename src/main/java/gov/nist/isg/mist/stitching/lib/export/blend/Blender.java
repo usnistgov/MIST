@@ -34,10 +34,9 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
 /**
  * Blending interface
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public interface Blender {
 
@@ -46,24 +45,24 @@ public interface Blender {
    */
   /**
    * Initializes the blending funciton
-   * 
-   * @param width the width of the stitched image
-   * @param height the height of the stitched image
+   *
+   * @param width   the width of the stitched image
+   * @param height  the height of the stitched image
    * @param initImg the initial image to help initialization for export
-   * @throws OutOfMemoryError out of memory error
+   * @throws OutOfMemoryError           out of memory error
    * @throws NegativeArraySizeException negative array size error, thrown when image dimensions
-   *         exceed maximum size
+   *                                    exceed maximum size
    */
   public void init(int width, int height, ImagePlus initImg) throws OutOfMemoryError,
       NegativeArraySizeException;
 
   /**
    * Blends a pixel array into the final image
-   * 
-   * @param x the current x position in the final image
-   * @param y the current y position in the final image
+   *
+   * @param x      the current x position in the final image
+   * @param y      the current y position in the final image
    * @param pixels the 2D view of pixels that are being added
-   * @param tile the image tile to blend
+   * @param tile   the image tile to blend
    */
   public void blend(int x, int y, Array2DView pixels, ImageTile<?> tile);
 
@@ -74,7 +73,7 @@ public interface Blender {
 
   /**
    * Gets the result of the blending
-   * 
+   *
    * @return the resulting image
    */
   public ImageProcessor getResult();

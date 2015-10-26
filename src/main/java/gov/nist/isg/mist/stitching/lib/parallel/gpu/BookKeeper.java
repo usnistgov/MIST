@@ -43,10 +43,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * A thread dedicated to managing the state, dependencies, and freeing memory of image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class BookKeeper<T> implements Runnable {
 
@@ -69,8 +68,8 @@ public class BookKeeper<T> implements Runnable {
    * @param grid
    */
   public BookKeeper(PriorityBlockingQueue<StitchingTask<T>> bkQueue,
-      PriorityBlockingQueue<StitchingTask<T>>[] workQueue, DynamicMemoryPool<T>[] memoryPool,
-      TileGrid<ImageTile<T>> grid) {
+                    PriorityBlockingQueue<StitchingTask<T>>[] workQueue, DynamicMemoryPool<T>[] memoryPool,
+                    TileGrid<ImageTile<T>> grid) {
     this.bkQueue = bkQueue;
     this.workQueues = workQueue;
     this.memoryPools = memoryPool;

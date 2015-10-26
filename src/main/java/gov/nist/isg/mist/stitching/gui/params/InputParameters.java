@@ -48,11 +48,11 @@ import java.util.prefs.Preferences;
 
 /**
  * InputParameters are the input parameters for Stitching
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class InputParameters implements StitchingAppParamFunctions {
-  
+
   private static final String GRID_WIDTH = "gridWidth";
   private static final String GRID_HEIGHT = "gridHeight";
   private static final String START_TILE = "startTile";
@@ -71,8 +71,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String GLOBAL_POSITIONS_FILE = "globalPositionsFile";
   private static final String IS_SUPPRESS_SUBGRID_WARNING_ENABLED = "isSuppressSubGridWarningEnabled";
 
-  
-  
+
   private int gridWidth;
   private int gridHeight;
   private int startTile;
@@ -95,8 +94,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private boolean isTimeSlicesEnabled;
 
 
-  public InputParameters()
-  {
+  public InputParameters() {
     this.gridWidth = 1;
     this.gridHeight = 1;
     this.startTile = 0;
@@ -117,16 +115,15 @@ public class InputParameters implements StitchingAppParamFunctions {
 
     // timing options
     this.timeSlices = new ArrayList<RangeParam>();
-    this.isTimeSlicesEnabled = false;        
+    this.isTimeSlicesEnabled = false;
   }
-
 
 
   /**
    * Parses a time slice pattern
-   * 
+   *
    * @param timeSlice the time slice
-   * @param silent whether to parse the time slice pattern silently or not
+   * @param silent    whether to parse the time slice pattern silently or not
    * @return a String that replaces the time slice pattern with the time slice
    */
   public String parseTimeSlicePattern(int timeSlice, boolean silent) {
@@ -135,7 +132,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   /**
    * Generates the tile grid loader. Uses the timeslice to parse the file pattern
-   * 
+   *
    * @param timeSlice the timeslice
    * @return the tile grid loader or null if invalid file pattern loader type
    */
@@ -155,7 +152,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   /**
    * Gets the tile grid loader.
-   * 
+   *
    * @return the tile grid loader or null if invalid file pattern loader type
    */
   public TileGridLoader getTileGridLoader() {
@@ -179,14 +176,13 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
   /**
-   * Gets the list of time slice range parameters, this will return
-   * a single time slice if no time slices exist
-   * 
+   * Gets the list of time slice range parameters, this will return a single time slice if no time
+   * slices exist
+   *
    * @return the list of time slice range parameters
    */
   public List<RangeParam> getTimeSlices() {
-    if (this.timeSlices.size() == 0)
-    {
+    if (this.timeSlices.size() == 0) {
       this.timeSlices.add(new RangeParam(1, 1));
     }
 
@@ -196,10 +192,8 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   @Override
   public boolean checkParams() {
-    if (this.filenamePattern != null && this.imageDir != null && checkSubGrid())
-    {
-      if (this.isTimeSlicesEnabled)
-      {
+    if (this.filenamePattern != null && this.imageDir != null && checkSubGrid()) {
+      if (this.isTimeSlicesEnabled) {
         if (this.timeSlices.size() == 0)
           return false;
 
@@ -209,13 +203,11 @@ public class InputParameters implements StitchingAppParamFunctions {
             this.filenamePatternType, false))
           return true;
 
-      }
-      else if (TileGridLoaderUtils.checkStartTile(this.imageDir, this.filenamePattern, this.startTile,
+      } else if (TileGridLoaderUtils.checkStartTile(this.imageDir, this.filenamePattern, this.startTile,
           this.filenamePatternType, false))
         return true;
-      else 
+      else
         return false;
-
 
 
     }
@@ -224,7 +216,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   /**
    * Converts the timeslice list into a string
-   * 
+   *
    * @return the string form of the timeslice
    */
   public String getTimeSlicesStr() {
@@ -263,8 +255,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   @Override
   public boolean loadParams(File file) {
-    try
-    {
+    try {
       boolean noErrors = true;
 
       Log.msg(LogType.MANDATORY, "Loading input parameters");
@@ -281,8 +272,7 @@ public class InputParameters implements StitchingAppParamFunctions {
           contents[0] = contents[0].trim();
           contents[1] = contents[1].trim();
 
-          try
-          {
+          try {
             if (contents[0].equals(GRID_WIDTH))
               this.gridWidth = StitchingParamUtils.loadInteger(contents[1], this.gridWidth);
             else if (contents[0].equals(GRID_HEIGHT))
@@ -297,7 +287,7 @@ public class InputParameters implements StitchingAppParamFunctions {
               this.filenamePatternType = LoaderType.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(GRID_ORIGIN))
               this.origin = GridOrigin.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(NUMBERING_PATTERN))              
+            else if (contents[0].equals(NUMBERING_PATTERN))
               this.numberingPattern = GridDirection.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(ASSEMBLE_FROM_META))
               this.assembleFromMetadata = StitchingParamUtils.loadBoolean(contents[1], this.assembleFromMetadata);
@@ -310,15 +300,14 @@ public class InputParameters implements StitchingAppParamFunctions {
             else if (contents[0].equals(EXTENT_WIDTH))
               this.extentWidth = StitchingParamUtils.loadInteger(contents[1], this.gridWidth);
             else if (contents[0].equals(EXTENT_HEIGHT))
-              this.extentHeight = StitchingParamUtils.loadInteger(contents[1], this.gridHeight);         
+              this.extentHeight = StitchingParamUtils.loadInteger(contents[1], this.gridHeight);
             else if (contents[0].equals(TIME_SLICES))
               this.timeSlices = RangeParam.parseTimeSlices(contents[1]);
             else if (contents[0].equals(IS_TIME_SLICES_ENABLED))
               this.isTimeSlicesEnabled = StitchingParamUtils.loadBoolean(contents[1], this.isTimeSlicesEnabled);
             else if (contents[0].equals(IS_SUPPRESS_SUBGRID_WARNING_ENABLED))
               this.isSuppressSubGridWarning = StitchingParamUtils.loadBoolean(contents[1], this.isSuppressSubGridWarning);
-          } catch (IllegalArgumentException e)
-          {
+          } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
             Log.msg(LogType.MANDATORY, "Error parsing input option: " + e.getMessage());
             noErrors = false;
@@ -336,7 +325,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;    
+    return false;
   }
 
 
@@ -405,24 +394,24 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.filenamePattern = MacroUtils.loadMacroString(macroOptions, FILENAME_PATTERN, this.filenamePattern);
     this.filenamePatternType =
         MacroUtils.loadMacroLoaderType(macroOptions, FILENAME_PATTERN_TYPE,
-                                       this.filenamePatternType.name());
+            this.filenamePatternType.name());
     this.origin = MacroUtils.loadMacroGridOrigin(macroOptions, GRID_ORIGIN, this.origin.name());
     this.numberingPattern = MacroUtils.loadMacroGridNumbering(macroOptions, "numberingPattern",
-                                                              this.numberingPattern.name());
+        this.numberingPattern.name());
     this.assembleFromMetadata = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_FROM_META,
-                                                            this.assembleFromMetadata);
+        this.assembleFromMetadata);
     this.globalPositionsFile = MacroUtils.loadMacroString(macroOptions, GLOBAL_POSITIONS_FILE,
-                                                          this.globalPositionsFile);
+        this.globalPositionsFile);
     this.startRow = MacroUtils.loadMacroInteger(macroOptions, START_ROW, this.startRow);
     this.startCol = MacroUtils.loadMacroInteger(macroOptions, START_COL, this.startCol);
     this.extentWidth = MacroUtils.loadMacroInteger(macroOptions, EXTENT_WIDTH, this.extentWidth);
-    this.extentHeight = MacroUtils.loadMacroInteger(macroOptions, EXTENT_HEIGHT, this.extentHeight);   
+    this.extentHeight = MacroUtils.loadMacroInteger(macroOptions, EXTENT_HEIGHT, this.extentHeight);
     this.timeSlices = MacroUtils.loadMacroTimeslices(macroOptions, "timeSlices");
     this.isTimeSlicesEnabled = MacroUtils.loadMacroBoolean(macroOptions, IS_TIME_SLICES_ENABLED,
-                                                           this.isTimeSlicesEnabled);
+        this.isTimeSlicesEnabled);
     this.isSuppressSubGridWarning = MacroUtils.loadMacroBoolean(macroOptions,
-                                                                IS_SUPPRESS_SUBGRID_WARNING_ENABLED,
-                                                                this.isSuppressSubGridWarning);
+        IS_SUPPRESS_SUBGRID_WARNING_ENABLED,
+        this.isSuppressSubGridWarning);
   }
 
 
@@ -463,7 +452,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     pref.putInt(START_ROW, this.startRow);
     pref.putInt(START_COL, this.startCol);
     pref.putInt(EXTENT_WIDTH, this.extentWidth);
-    pref.putInt(EXTENT_HEIGHT, this.extentHeight);   
+    pref.putInt(EXTENT_HEIGHT, this.extentHeight);
     PreferencesUtils.recordPrefTimeslices(pref, this.timeSlices);
     pref.putBoolean(IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);
     pref.putBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
@@ -507,11 +496,13 @@ public class InputParameters implements StitchingAppParamFunctions {
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;    
+    return false;
   }
 
 
-  public boolean isSuppressSubGridWarning() { return isSuppressSubGridWarning; }
+  public boolean isSuppressSubGridWarning() {
+    return isSuppressSubGridWarning;
+  }
 
   public void setSuppressSubGridWarning(boolean val) {
     this.isSuppressSubGridWarning = val;
@@ -525,14 +516,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param gridWidth the gridWidth to set
    */
   public void setGridWidth(int gridWidth) {
     this.gridWidth = gridWidth;
   }
-
 
 
   /**
@@ -543,14 +532,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param gridHeight the gridHeight to set
    */
   public void setGridHeight(int gridHeight) {
     this.gridHeight = gridHeight;
   }
-
 
 
   /**
@@ -561,14 +548,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param startTile the startTile to set
    */
   public void setStartTile(int startTile) {
     this.startTile = startTile;
   }
-
 
 
   /**
@@ -579,14 +564,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param imageDir the imageDir to set
    */
   public void setImageDir(String imageDir) {
     this.imageDir = imageDir;
   }
-
 
 
   /**
@@ -597,14 +580,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param filenamePattern the filenamePattern to set
    */
   public void setFilenamePattern(String filenamePattern) {
     this.filenamePattern = filenamePattern;
   }
-
 
 
   /**
@@ -615,14 +596,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param filenamePatternLoaderType the filenamePatternLoaderType to set
    */
   public void setFilenamePatternLoaderType(LoaderType filenamePatternLoaderType) {
     this.filenamePatternType = filenamePatternLoaderType;
   }
-
 
 
   /**
@@ -633,14 +612,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param origin the origin to set
    */
   public void setOrigin(GridOrigin origin) {
     this.origin = origin;
   }
-
 
 
   /**
@@ -651,14 +628,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param numbering the numbering to set
    */
   public void setNumbering(GridDirection numbering) {
     this.numberingPattern = numbering;
   }
-
 
 
   /**
@@ -669,14 +644,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param assembleFromMetadata the assembleFromMetadata to set
    */
   public void setAssembleFromMetadata(boolean assembleFromMetadata) {
     this.assembleFromMetadata = assembleFromMetadata;
   }
-
 
 
   /**
@@ -687,14 +660,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param startRow the startRow to set
    */
   public void setStartRow(int startRow) {
     this.startRow = startRow;
   }
-
 
 
   /**
@@ -705,14 +676,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param startCol the startCol to set
    */
   public void setStartCol(int startCol) {
     this.startCol = startCol;
   }
-
 
 
   /**
@@ -723,14 +692,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param extentWidth the extentWidth to set
    */
   public void setExtentWidth(int extentWidth) {
     this.extentWidth = extentWidth;
   }
-
 
 
   /**
@@ -741,14 +708,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param extentHeight the extentHeight to set
    */
   public void setExtentHeight(int extentHeight) {
     this.extentHeight = extentHeight;
   }
-
 
 
   /**
@@ -759,14 +724,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-
   /**
    * @param isTimeSlicesEnabled the isTimeSlicesEnabled to set
    */
   public void setTimeSlicesEnabled(boolean isTimeSlicesEnabled) {
     this.isTimeSlicesEnabled = isTimeSlicesEnabled;
   }
-
 
 
   /**
@@ -778,6 +741,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 
   /**
    * Gets the global position file
+   *
    * @return the global position file
    */
   public String getGlobalPositionsFile() {

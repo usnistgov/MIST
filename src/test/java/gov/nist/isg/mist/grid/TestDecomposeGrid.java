@@ -41,6 +41,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -52,7 +53,7 @@ import java.util.List;
 
 /**
  * Test case for traversing a grid of tiles in different styles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -92,7 +93,7 @@ public class TestDecomposeGrid {
     }
     if (grid == null)
       return;
-    
+
     Log.msg(LogType.HELPFUL, "Printing: " + grid.getGridStats());
     grid.printNumberGrid();
 
@@ -133,7 +134,6 @@ public class TestDecomposeGrid {
         }
 
 
-
         for (int row = startRow; row < extentHeight + startRow; row++) {
           for (int col = startCol; col < extentWidth + startCol; col++) {
             for (int i = 0; i < grids.size(); i++) {
@@ -164,7 +164,7 @@ public class TestDecomposeGrid {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {

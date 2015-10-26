@@ -33,7 +33,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * Row column tile grid loader
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -62,15 +62,15 @@ public class RowColTileGridLoader extends TileGridLoader {
 
   /**
    * Initializes the row column tile grid loader
-   * 
-   * @param gridWidth the width of the grid
-   * @param gridHeight the height of the grid
-   * @param startTile the start tile number
+   *
+   * @param gridWidth   the width of the grid
+   * @param gridHeight  the height of the grid
+   * @param startTile   the start tile number
    * @param filePattern the file pattern
-   * @param origin the grid origin
+   * @param origin      the grid origin
    */
   public RowColTileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern,
-      GridOrigin origin) {
+                              GridOrigin origin) {
     super(gridWidth, gridHeight, startTile, filePattern);
     this.origin = origin;
 
@@ -159,29 +159,29 @@ public class RowColTileGridLoader extends TileGridLoader {
 
   /**
    * Gets the row matcher string
-   * 
+   *
    * @param filePattern the file pattern
-   * @param silent whether to display errors or not
+   * @param silent      whether to display errors or not
    * @return the file pattern string
    */
   public static String getRowMatcher(String filePattern, boolean silent) {
-    return TileGridLoaderUtils.getPattern(filePattern, rowPattern, silent);    
+    return TileGridLoaderUtils.getPattern(filePattern, rowPattern, silent);
   }
 
   /**
    * Gets the column matcher string
-   * 
+   *
    * @param filePattern the file pattern
-   * @param silent whether to show errors or not
+   * @param silent      whether to show errors or not
    * @return the column matcher string
    */
   public static String getColMatcher(String filePattern, boolean silent) {
-    return TileGridLoaderUtils.getPattern(filePattern, colPattern, silent);    
+    return TileGridLoaderUtils.getPattern(filePattern, colPattern, silent);
   }
 
   /**
    * Row column tile grid tester
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {

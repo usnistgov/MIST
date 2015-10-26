@@ -40,6 +40,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -48,7 +49,7 @@ import java.util.Iterator;
 
 /**
  * Test case for traversing a grid of tiles in different styles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -80,10 +81,10 @@ public class TestTraverseGrid {
     } catch (InvalidClassException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    
+
     if (subGrid == null)
       return;
-    
+
     Log.msg(LogType.HELPFUL, "Printing: " + subGrid.getGridStats());
     subGrid.printNumberGrid();
     Log.msg(LogType.HELPFUL, "Beginning Grid Traversals...");
@@ -108,7 +109,7 @@ public class TestTraverseGrid {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {

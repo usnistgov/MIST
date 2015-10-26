@@ -38,6 +38,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
@@ -45,9 +46,8 @@ import java.io.InvalidClassException;
 
 /**
  * FftwStitching executes the stitching using FFTW
- * @author Tim Blattner
  *
- * @param <T>
+ * @author Tim Blattner
  */
 public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
@@ -55,7 +55,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   private boolean init;
   private CPUStitchingThreadExecutor<T> fftwExecutor;
   private StitchingExecutor executor;
-  
+
   public FftwStitchingExecutor(StitchingExecutor executor) {
     this.librariesInitialized = false;
     this.init = false;
@@ -71,34 +71,38 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
-      JProgressBar progressBar, int timeSlice) throws Throwable {
+                              JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
-    
-    if (!this.init)
-    {
-      String defaultPlanName = tile.getWidth() + "x" + tile.getHeight() + params.getAdvancedParams().getFftwPlanType().toString()
-          + "Plan.dat";
-      
+
+    if (!this.init) {
+      String defaultPlanName = tile.getWidth() + "x" + tile.getHeight() + params.getAdvancedParams().getFftwPlanType().toString();
+      if (params.getAdvancedParams().isUseDoublePrecision()) {
+        defaultPlanName = defaultPlanName + "Plan.dat";
+      } else {
+        defaultPlanName = defaultPlanName + "Plan_f.dat";
+      }
+
+
       String plan = params.getAdvancedParams().getPlanPath();
       File file = new File(plan);
-           
+
       if (file.exists() && file.isDirectory()) {
         plan = file.getAbsolutePath() + File.separator + defaultPlanName;
       }
-      
+
       StitchingGuiUtils.updateProgressBar(progressBar, true, "Loading FFTW Plan...");
 
-      if(params.getAdvancedParams().isUseDoublePrecision()) {
+      if (params.getAdvancedParams().isUseDoublePrecision()) {
         FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), params.getAdvancedParams().getFftwPlanType()
-                .getVal(), params.getAdvancedParams().isLoadFFTWPlan(), plan);
+            .getVal(), params.getAdvancedParams().isLoadFFTWPlan(), plan);
 
         if (params.getAdvancedParams().isSaveFFTWPlan())
           FftwImageTile.savePlan(plan);
-      }else{
+      } else {
         FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), params.getAdvancedParams().getFftwPlanType()
-                .getVal(), params.getAdvancedParams().isLoadFFTWPlan(), plan);
+            .getVal(), params.getAdvancedParams().isLoadFFTWPlan(), plan);
 
         if (params.getAdvancedParams().isSaveFFTWPlan())
           FftwImageTile32.savePlan(plan);
@@ -110,49 +114,48 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
           + (params.getAdvancedParams().isSaveFFTWPlan() ? "/saving" : "") + " FFTW plan. Commencing stitching.");
 
       this.executor.initProgressBar();
-      
+
     }
-    
+
     this.fftwExecutor = new CPUStitchingThreadExecutor<T>(1, params.getAdvancedParams().getNumCPUThreads(), tile, grid, progressBar);
 
     tile.releasePixels();
-    
+
     this.fftwExecutor.execute();
 
-    if(this.fftwExecutor.isExceptionThrown())
+    if (this.fftwExecutor.isExceptionThrown())
       throw this.fftwExecutor.getWorkerThrowable();
-    
-   
+
+
   }
 
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
-    if (this.librariesInitialized)
-    {
+    if (this.librariesInitialized) {
       return true;
     }
-           
+
     String fftwLibraryPath = params.getAdvancedParams().getFftwLibraryPath();
     String fftwLibraryName = params.getAdvancedParams().getFftwLibraryName();
     String utilFnsPath = System.getProperty("user.dir") + File.separator + "util-fns";
 
-    if(params.getAdvancedParams().isUseDoublePrecision()) {
+    if (params.getAdvancedParams().isUseDoublePrecision()) {
       if (FftwImageTile.initLibrary(fftwLibraryPath, utilFnsPath, fftwLibraryName))
         this.librariesInitialized = true;
-    }else{
+    } else {
       if (FftwImageTile32.initLibrary(fftwLibraryPath, utilFnsPath, fftwLibraryName))
         this.librariesInitialized = true;
     }
-          
+
     return this.librariesInitialized;
   }
 
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
-        
+
     TileGrid<ImageTile<T>> grid = null;
 
-    if(params.getAdvancedParams().isUseDoublePrecision()) {
+    if (params.getAdvancedParams().isUseDoublePrecision()) {
       if (params.getInputParams().isTimeSlicesEnabled()) {
         try {
           grid = new TileGrid<ImageTile<T>>(params, timeSlice, FftwImageTile.class);
@@ -166,7 +169,7 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
           e.printStackTrace();
         }
       }
-    }else{
+    } else {
       if (params.getInputParams().isTimeSlicesEnabled()) {
         try {
           grid = new TileGrid<ImageTile<T>>(params, timeSlice, FftwImageTile32.class);
@@ -181,12 +184,13 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
         }
       }
     }
-    
+
     return grid;
   }
 
   @Override
-  public void cleanup() {}
+  public void cleanup() {
+  }
 
 
   @Override
@@ -200,20 +204,20 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     tile.readTile();
 
     // Account for image pixel data
-    if(ImageTile.freePixelData()) {
+    if (ImageTile.freePixelData()) {
       // If freeing image pixel data
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
-    }else{
+      requiredMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    } else {
       // If not freeing image pixel data
       // must hold whole image grid in memory
-      requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
+      requiredMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * (long) grid.getSubGridSize() * 2L; // 16 bit pixel data
     }
 
     // Account for image pixel data up conversion
-    long byteDepth = tile.getBitDepth()/8;
-    if(byteDepth != 2) {
+    long byteDepth = tile.getBitDepth() / 8;
+    if (byteDepth != 2) {
       // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
-      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+      requiredMemoryBytes += (long) numWorkers * (long) tile.getHeight() * (long) tile.getWidth() * byteDepth;
     }
 
     long size = (tile.getWidth() / 2 + 1) * tile.getHeight();
@@ -221,21 +225,21 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     // Account for FFTW fft data
     long perWorkerMemory = 0;
-    if(tile instanceof FftwImageTile) {
-      perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L; // pcmP fftw_alloc_real
-      perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 8L; // fftInP fftw_alloc_real
+    if (tile instanceof FftwImageTile) {
+      perWorkerMemory += (long) tile.getHeight() * (long) tile.getWidth() * 8L; // pcmP fftw_alloc_real
+      perWorkerMemory += (long) tile.getHeight() * (long) tile.getWidth() * 8L; // fftInP fftw_alloc_real
       perWorkerMemory += size * 16L; // pcmInP fftw_alloc_complex
-    }else{
-      perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L; // pcmP fftwf_alloc_real
-      perWorkerMemory += (long)tile.getHeight() * (long)tile.getWidth() * 4L; // fftInP fftwf_alloc_real
+    } else {
+      perWorkerMemory += (long) tile.getHeight() * (long) tile.getWidth() * 4L; // pcmP fftwf_alloc_real
+      perWorkerMemory += (long) tile.getHeight() * (long) tile.getWidth() * 4L; // fftInP fftwf_alloc_real
       perWorkerMemory += size * 8L; // pcmInP fftwf_alloc_complex
     }
-    perWorkerMemory += (long)Stitching.NUM_PEAKS * 4L; // peaks Pointer.allocateInts
+    perWorkerMemory += (long) Stitching.NUM_PEAKS * 4L; // peaks Pointer.allocateInts
 
-    requiredMemoryBytes += perWorkerMemory * (long)numWorkers;
+    requiredMemoryBytes += perWorkerMemory * (long) numWorkers;
 
     // pad with 10MB
-    requiredMemoryBytes += 10L*1024L*1024L;
+    requiredMemoryBytes += 10L * 1024L * 1024L;
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
 

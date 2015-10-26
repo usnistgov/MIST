@@ -35,7 +35,7 @@ import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
  * plate. Also converts the values to enforce 1-based indexing. When getting the value, it will
  * convert the value from 1-based to 0-based, and when setting the value it converts from 0-based to
  * 1-based.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -43,7 +43,7 @@ public class CheckSubGridOneBasedModel extends CheckSubGridModel {
 
   /**
    * Creates a sub grid validator.
-   * 
+   *
    * @param advPanel the panel where the subgrid exists
    */
   public CheckSubGridOneBasedModel(SubgridPanel advPanel) {
@@ -53,9 +53,9 @@ public class CheckSubGridOneBasedModel extends CheckSubGridModel {
   /**
    * Checks a sub grid validator, also keeping the value in bounds by min (inclusive) and max
    * (inclusive)
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min      the minimum value that is valid (inclusive)
+   * @param max      the maximum value that is valid (inclusive)
    * @param advPanel the panel where the subgrid exists
    */
   public CheckSubGridOneBasedModel(int min, int max, SubgridPanel advPanel) {

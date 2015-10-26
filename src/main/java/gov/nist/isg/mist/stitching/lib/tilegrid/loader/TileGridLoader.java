@@ -33,7 +33,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * Tile grid loader abstract class
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -41,7 +41,7 @@ public abstract class TileGridLoader {
 
   /**
    * Tile grid loader types
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -93,6 +93,7 @@ public abstract class TileGridLoader {
      * Acquisition starts in the lower right
      */
     LR("Lower Right");
+
     private GridOrigin(final String text) {
       this.text = text;
     }
@@ -128,10 +129,7 @@ public abstract class TileGridLoader {
     /**
      * Acquisition numbers based on row chained
      */
-    HORIZONTALCONTINUOUS("Horizontal Continuous"),
-
-
-    ;
+    HORIZONTALCONTINUOUS("Horizontal Continuous"),;
 
     private GridDirection(final String text) {
       this.text = text;
@@ -155,10 +153,10 @@ public abstract class TileGridLoader {
 
   /**
    * Constructs a tile grid loader
-   * 
-   * @param gridWidth the width of the grid
-   * @param gridHeight the height of the grid
-   * @param startTile the start tile index
+   *
+   * @param gridWidth   the width of the grid
+   * @param gridHeight  the height of the grid
+   * @param startTile   the start tile index
    * @param filePattern the file pattern
    */
   public TileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern) {
@@ -178,7 +176,7 @@ public abstract class TileGridLoader {
 
   /**
    * Gets the tile name for a given row, column
-   * 
+   *
    * @param row the row in the grid
    * @param col the column in the grid
    * @return the name of the tile
@@ -189,9 +187,9 @@ public abstract class TileGridLoader {
 
   /**
    * Sets the tile name for a given row, column
-   * 
-   * @param row the row in the grid
-   * @param col the column in the grid
+   *
+   * @param row  the row in the grid
+   * @param col  the column in the grid
    * @param name the name of the tile
    */
   public void setTileName(int row, int col, String name) {

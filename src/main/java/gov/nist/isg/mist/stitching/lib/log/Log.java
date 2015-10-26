@@ -31,19 +31,17 @@ package gov.nist.isg.mist.stitching.lib.log;
 import ij.IJ;
 
 /**
- * Utility functions for printing log information.
- * <p>
- * A log message is only printed if the log level is set to something greater than or equal to the
- * static log level.
- * 
+ * Utility functions for printing log information. <p> A log message is only printed if the log
+ * level is set to something greater than or equal to the static log level.
+ *
  * <pre>
- * <code> 
+ * <code>
  * Log.setDebugLevel(logLevel); // to set log level for printing
  * Log.msg(level, "Log message with newline");
  * Log.msgnonl(level, "Log message without newline");
  * </code>
  * </pre>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -88,7 +86,7 @@ public class Log {
     @Override
     public String toString() {
       return this.text;
-    }  
+    }
   }
 
   private static long startTime = 0;
@@ -111,7 +109,7 @@ public class Log {
 
   /**
    * Sets the logger level
-   * 
+   *
    * @param level the new log level
    */
   public static void setLogLevel(String level) {
@@ -124,7 +122,7 @@ public class Log {
 
   /**
    * Set logger level.
-   * 
+   *
    * @param level the new log level
    */
   public static void setLogLevel(LogType level) {
@@ -133,8 +131,8 @@ public class Log {
 
   /**
    * Prints debug message at level with newline
-   * 
-   * @param level the log level
+   *
+   * @param level   the log level
    * @param message the message
    */
   public static void msg(LogType level, String message) {
@@ -170,8 +168,8 @@ public class Log {
 
   /**
    * Prints debug message at level without newline
-   * 
-   * @param level the log level
+   *
+   * @param level   the log level
    * @param message the message
    */
   public static void msgnonl(LogType level, String message) {
@@ -203,8 +201,8 @@ public class Log {
 
   /**
    * Prints debug message at level with newline
-   * 
-   * @param level the log level
+   *
+   * @param level   the log level
    * @param message the message
    */
   public static void msgNoTime(LogType level, String message) {
@@ -229,8 +227,8 @@ public class Log {
 
   /**
    * Prints debug message at level without newline
-   * 
-   * @param level the log level
+   *
+   * @param level   the log level
    * @param message the message
    */
   public static void msgnonlNoTime(LogType level, String message) {
@@ -254,6 +252,7 @@ public class Log {
 
   /**
    * Gets the log level
+   *
    * @return the log level
    */
   public static LogType getLogLevel() {

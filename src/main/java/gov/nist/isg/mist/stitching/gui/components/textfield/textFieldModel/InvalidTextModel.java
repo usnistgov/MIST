@@ -36,10 +36,9 @@ import java.util.regex.Pattern;
 
 /**
  * Validator that checks values based on a two regex
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class InvalidTextModel implements TextFieldModel<String> {
 
@@ -50,15 +49,15 @@ public class InvalidTextModel implements TextFieldModel<String> {
    * Creates a regex validator based on a given regex
    *
    * @param invalidStrings the array of invalid strings
-   * @param errorText the error text associated with this validator
+   * @param errorText      the error text associated with this validator
    */
-  public InvalidTextModel(String errorText, String ... invalidStrings) {
+  public InvalidTextModel(String errorText, String... invalidStrings) {
     this.invalidText = Arrays.asList(invalidStrings);
     this.errorText = errorText;
 
     // update the error text to reflect that the invalid strings are invalid
     String extraErrorText = "<br><br>Invalid Character Sequences:";
-    for(String str : invalidStrings)
+    for (String str : invalidStrings)
       extraErrorText = extraErrorText + "<br>" + "\"" + str + "\"";
 
     extraErrorText = extraErrorText + "</html>";
@@ -90,7 +89,7 @@ public class InvalidTextModel implements TextFieldModel<String> {
   }
 
   @Override
-  public void updateTextFields() {    
+  public void updateTextFields() {
   }
 
 

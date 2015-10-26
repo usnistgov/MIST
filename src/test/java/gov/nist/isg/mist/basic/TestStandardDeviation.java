@@ -36,12 +36,13 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
  * Test case for reading an image.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -87,15 +88,14 @@ public class TestStandardDeviation {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     try {
-        TestStandardDeviation.testStdDev();
-    } catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage());
+      TestStandardDeviation.testStdDev();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage());
     }
   }
 }

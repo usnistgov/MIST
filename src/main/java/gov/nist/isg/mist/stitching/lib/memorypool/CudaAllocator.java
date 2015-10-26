@@ -32,7 +32,7 @@ import jcuda.driver.JCudaDriver;
 
 /**
  * Allocator type that allocates GPU memory (JCUDA)
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */

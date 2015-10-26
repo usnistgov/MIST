@@ -29,6 +29,7 @@
 package gov.nist.isg.mist.stitching.gui.components.filechooser;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,10 +40,9 @@ import java.io.File;
 /**
  * DirectoryChooserPanel is used as a wrapper to contain a directory chooser Utility functions for
  * getting the selected directory are available.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class DirectoryChooserPanel extends JPanel implements FocusListener, ActionListener {
 
@@ -54,10 +54,10 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Creates a directory chooser
-   * 
-   * @param label the label associated with the directory chooser
+   *
+   * @param label       the label associated with the directory chooser
    * @param defLocation the default directory
-   * @param sz the size of the text field
+   * @param sz          the size of the text field
    */
   public DirectoryChooserPanel(String label, String defLocation, int sz) {
     super(new FlowLayout(FlowLayout.CENTER));
@@ -83,8 +83,8 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Creates a directory chooser
-   * 
-   * @param label the label associated with the directory chooser
+   *
+   * @param label       the label associated with the directory chooser
    * @param defLocation the default directory
    */
   public DirectoryChooserPanel(String label, String defLocation) {
@@ -93,7 +93,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Creates a directory chooser with the default location being user.home
-   * 
+   *
    * @param label the label associated with the directory chooser
    */
   public DirectoryChooserPanel(String label) {
@@ -102,9 +102,9 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Creates a directory chooser with the default location being user.home
-   * 
+   *
    * @param label the label associated with the directory chooser
-   * @param sz the size of the text field
+   * @param sz    the size of the text field
    */
   public DirectoryChooserPanel(String label, int sz) {
     this(label, System.getProperty("user.home"), sz);
@@ -112,7 +112,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Gets the input text field for the directory chooser
-   * 
+   *
    * @return the input text field
    */
   public JTextField getInputField() {
@@ -136,7 +136,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Sets the value for the text field
-   * 
+   *
    * @param value the value
    */
   public void setValue(String value) {
@@ -145,7 +145,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   /**
    * Gets the value of the text field
-   * 
+   *
    * @return the text field value
    */
   public String getValue() {
@@ -154,7 +154,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
 
   @Override
   public void focusGained(FocusEvent arg0) {
-    this.input.selectAll();    
+    this.input.selectAll();
   }
 
   @Override
@@ -171,7 +171,7 @@ public class DirectoryChooserPanel extends JPanel implements FocusListener, Acti
     if (val == JFileChooser.APPROVE_OPTION) {
       this.input.setText(chooser.getSelectedFile().getAbsolutePath());
     }
-    
+
   }
 
 }

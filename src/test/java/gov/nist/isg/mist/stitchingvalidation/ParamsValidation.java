@@ -54,18 +54,15 @@ public class ParamsValidation {
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
 
-  public static void main(String [] args)
-  {
-    if (args.length > 0)
-    {
+  public static void main(String[] args) {
+    if (args.length > 0) {
       validationRootFolder = args[0];
     }
 
 
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
-    if (!rootFolder.exists() && !rootFolder.isDirectory())
-    {
+    if (!rootFolder.exists() && !rootFolder.isDirectory()) {
       System.out.println("Error: Unable to find root folder: " + validationRootFolder);
       System.exit(1);
     }
@@ -126,8 +123,7 @@ public class ParamsValidation {
           StitchingExecutor executor = new StitchingExecutor(params);
           try {
             executor.runStitching(false, false, false);
-          } catch(StitchingException e )
-          {
+          } catch (StitchingException e) {
             Log.msg(LogType.MANDATORY, e.getMessage());
           }
         }
@@ -138,7 +134,7 @@ public class ParamsValidation {
 
     long endTime = System.currentTimeMillis();
 
-    System.out.println("Total time: " + (endTime-startTime));
+    System.out.println("Total time: " + (endTime - startTime));
 
     File results = new File("validationDataSetResults.txt");
 
@@ -149,17 +145,15 @@ public class ParamsValidation {
       e.printStackTrace();
     }
 
-    try
-    {
+    try {
       if (writer != null)
-        writer.write("Runtime for " + roots.length + " experiements: " + (endTime-startTime));
+        writer.write("Runtime for " + roots.length + " experiements: " + (endTime - startTime));
 
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    try
-    {
+    try {
       if (writer != null)
         writer.close();
     } catch (IOException e) {

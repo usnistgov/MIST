@@ -30,6 +30,7 @@ package gov.nist.isg.mist.stitching.lib.imagetile.memory;
 
 import jcuda.driver.CUdeviceptr;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+
 import org.bridj.Pointer;
 
 import java.nio.ByteBuffer;
@@ -37,7 +38,7 @@ import java.nio.ByteBuffer;
 /**
  * Class that represents the memory required for stitching a pair of tiles. This class is used as a
  * super class for other TileWorkerMemories.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -49,9 +50,9 @@ public abstract class TileWorkerMemory<T> {
   /**
    * Initializes tile worker memory
    *
-   * @param tileWidth the width of the image tile
+   * @param tileWidth  the width of the image tile
    * @param tileHeight the height of the image tile
-   * */
+   */
   public TileWorkerMemory(int tileWidth, int tileHeight) {
     this.width = tileWidth;
     this.height = tileHeight;
@@ -136,14 +137,14 @@ public abstract class TileWorkerMemory<T> {
 
   /**
    * Returns a reference to the phase correlation matrix memory
-   * 
+   *
    * @return the pcm memory
    */
   public abstract Pointer<T> getPCMPMemory();
 
   /**
    * Gets the input phase correlation matrix memory
-   * 
+   *
    * @return the pcm input memory
    */
   public abstract Pointer<T> getPCMInMemory();

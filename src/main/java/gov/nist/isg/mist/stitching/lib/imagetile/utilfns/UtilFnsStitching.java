@@ -32,6 +32,7 @@ import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
+
 import org.bridj.Pointer;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ import java.util.TreeSet;
 
 /**
  * Utility functions for hooking into utility function native library bindings.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -68,7 +69,7 @@ public class UtilFnsStitching {
 
   /**
    * Gets whether the utilfns native library is enabled or not
-   * 
+   *
    * @return true if the utilfns library is enabled, otherwise false
    */
   public static boolean hasUtilFnsStitchingNativeLibrary() {
@@ -77,14 +78,14 @@ public class UtilFnsStitching {
 
   /**
    * Computes the phase correlation using native libraries.
-   * 
-   * @param c1 the pointers to the first piece of memory
-   * @param c2 the pointer to the second piece of memory
+   *
+   * @param c1     the pointers to the first piece of memory
+   * @param c2     the pointer to the second piece of memory
    * @param result the pointer to the result piece of memory
-   * @param size the size of that data
+   * @param size   the size of that data
    */
   public static void computePhaseCorrelation(Pointer<Double> c1, Pointer<Double> c2,
-      Pointer<Double> result, int size) {
+                                             Pointer<Double> result, int size) {
     if (hasUtilFnsStitching)
       UtilFnsLibrary.elt_prod_conj_norm(result, c1, c2, size);
     else
@@ -93,9 +94,9 @@ public class UtilFnsStitching {
 
   /**
    * Computes the phase correlation between two complex arrays
-   * 
-   * @param c1 complex array 1
-   * @param c2 complex array 2
+   *
+   * @param c1  complex array 1
+   * @param c2  complex array 2
    * @param ncc the normalized cross correlation matrix
    * @return the phase correlated matrix
    */
@@ -134,14 +135,14 @@ public class UtilFnsStitching {
 
   /**
    * Computes the phase correlation between two complex arrays
-   * 
-   * @param c1 complex array 1
-   * @param c2 complex array 2
+   *
+   * @param c1  complex array 1
+   * @param c2  complex array 2
    * @param ncc the normalized cross correlation matrix
-   * @param sz the size of the array
+   * @param sz  the size of the array
    */
   public static void computePhaseCorrelationJava(Pointer<Double> c1, Pointer<Double> c2,
-      Pointer<Double> ncc, int sz) {
+                                                 Pointer<Double> ncc, int sz) {
 
     double r, im, temp, c1_r, c1_im, c2_r, c2_im;
 
@@ -172,8 +173,8 @@ public class UtilFnsStitching {
 
   /**
    * Gets the max index using native libraries
-   * 
-   * @param c the pointer to the piece of memory
+   *
+   * @param c    the pointer to the piece of memory
    * @param size the size of the data
    * @return the index that has the highest correlation
    */
@@ -185,9 +186,9 @@ public class UtilFnsStitching {
 
   /**
    * Gets the max index in Java for float array
-   * 
-   * @param c the float array
-   * @param width width of data
+   *
+   * @param c      the float array
+   * @param width  width of data
    * @param height height of data
    * @return the index that has the highest correlation
    */
@@ -210,8 +211,8 @@ public class UtilFnsStitching {
 
   /**
    * Gets the max index using Java
-   * 
-   * @param c the pointer to the piece of memory
+   *
+   * @param c    the pointer to the piece of memory
    * @param size the size of the data
    * @return the index that has the highest correlation
    */
@@ -232,17 +233,17 @@ public class UtilFnsStitching {
 
   /**
    * Finds the nPeaks max values that are distance 10 from eachother using native libraries
-   * 
-   * @param pcm the phase correlation matrix pointer
+   *
+   * @param pcm    the phase correlation matrix pointer
    * @param nPeaks the number of peaks to find
-   * @param width the width of the data
+   * @param width  the width of the data
    * @param height the height of the data
-   * @param peaks the reference to the peaks memory
+   * @param peaks  the reference to the peaks memory
    * @return a list of the highest correlation triples that are distance 10 from eachother
    */
   @SuppressWarnings("unused")
   public static List<CorrelationTriple> multiPeakCorrelationMatrix(Pointer<Double> pcm, int nPeaks,
-      int width, int height, Pointer<Integer> peaks) {
+                                                                   int width, int height, Pointer<Integer> peaks) {
 
     if (hasUtilFnsStitching) {
       UtilFnsLibrary.get_multi_max_no_sort(pcm, nPeaks, width, height, MAX_DISTANCE, peaks);
@@ -260,11 +261,11 @@ public class UtilFnsStitching {
 
       return corrPeaks;
     }
-    
-    if(MAX_DISTANCE <= 1) {
+
+    if (MAX_DISTANCE <= 1) {
       return multiPeakCorrelationMatrixNoDist(pcm, nPeaks, width, height);
     }
-    
+
     return multiPeakCorrelationMatrixNoSort(pcm, nPeaks, width, height);
   }
 
@@ -294,7 +295,7 @@ public class UtilFnsStitching {
   }
 
   private static int filterNextMax(Pointer<Double> m, int[] maxFilter, int nMax, int width,
-      int height) {
+                                   int height) {
     double maxVal = Double.NEGATIVE_INFINITY;
     int maxIdx = 0;
     for (int i = 0; i < width * height; i++) {
@@ -311,24 +312,18 @@ public class UtilFnsStitching {
     return maxIdx;
   }
 
-  public static List<CorrelationTriple> multiPeakCorrelationMatrixNoDist(Pointer<Double> pcm, int nPeaks, int width, int height)
-  {
+  public static List<CorrelationTriple> multiPeakCorrelationMatrixNoDist(Pointer<Double> pcm, int nPeaks, int width, int height) {
     List<CorrelationTriple> peaks = new ArrayList<CorrelationTriple>();
     SortedSet<IndexValuePair> maxIndices = new TreeSet<IndexValuePair>();
 
-    for (int i = 0; i < width * height; i++)
-    {
-      if (maxIndices.size() < nPeaks)
-      {
+    for (int i = 0; i < width * height; i++) {
+      if (maxIndices.size() < nPeaks) {
         maxIndices.add(new IndexValuePair(i, pcm.getDoubleAtIndex(i)));
-      }
-      else
-      {
+      } else {
         IndexValuePair lastIndex = maxIndices.last();
 
         double val = lastIndex.getValue();
-        if (val < pcm.getDoubleAtIndex(i))
-        {
+        if (val < pcm.getDoubleAtIndex(i)) {
           // remove last
           maxIndices.remove(lastIndex);
           maxIndices.add(new IndexValuePair(i, pcm.getDoubleAtIndex(i)));
@@ -338,8 +333,7 @@ public class UtilFnsStitching {
     }
 
     int count = 0;
-    for (IndexValuePair pair : maxIndices)
-    {
+    for (IndexValuePair pair : maxIndices) {
       int index = pair.getIndex();
       int row = index / width;
       int col = index % width;
@@ -355,15 +349,15 @@ public class UtilFnsStitching {
 
   /**
    * Finds the nPeaks max values that are distance d (10) from each other using native libraries
-   * 
-   * @param pcm the phase correlation matrix pointer
+   *
+   * @param pcm    the phase correlation matrix pointer
    * @param nPeaks the number of peaks to find
-   * @param width the width of the data
+   * @param width  the width of the data
    * @param height the height of the data
    * @return a list of the highest correlation triples that are distance 10 from eachother
    */
   public static List<CorrelationTriple> multiPeakCorrelationMatrixNoSort(Pointer<Double> pcm,
-      int nPeaks, int width, int height) {
+                                                                         int nPeaks, int width, int height) {
 
     List<CorrelationTriple> peaks = new ArrayList<CorrelationTriple>();
 
@@ -411,15 +405,15 @@ public class UtilFnsStitching {
 
   /**
    * Finds the nPeaks max values that are distance d (10) from each other using native libraries
-   * 
-   * @param pcm the phase correlation matrix pointer
+   *
+   * @param pcm    the phase correlation matrix pointer
    * @param nPeaks the number of peaks to find
-   * @param width the width of the data
+   * @param width  the width of the data
    * @param height the height of the data
    * @return a list of the highest correlation triples that are distance 10 from eachother
    */
   public static List<CorrelationTriple> multiPeakCorrelationMatrixNoSort(float[][] pcm, int nPeaks,
-      int width, int height) {
+                                                                         int width, int height) {
 
     List<CorrelationTriple> peaks = new ArrayList<CorrelationTriple>();
 

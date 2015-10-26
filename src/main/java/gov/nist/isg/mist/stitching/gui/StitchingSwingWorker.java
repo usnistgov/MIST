@@ -37,16 +37,16 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.IOException;
 
 /**
  * Creates a separate thread for managing stitching execution. This thread is separate from the main
  * thread to enable continued interaction with GUI elements
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
@@ -58,13 +58,13 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
   /**
    * Initializes the stitching execution
-   * 
+   *
    * @param stitchingGUI the stitching application GUI
-   * @param type the type of execution to be done
+   * @param type         the type of execution to be done
    */
   public StitchingSwingWorker(StitchingGUIFrame stitchingGUI, ExecutionType type) {
     this.params = new StitchingAppParams();
-    
+
 
     this.executor = new StitchingExecutor(stitchingGUI, type, this.params);
     this.executionType = type;
@@ -126,7 +126,6 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
   }
 
 
-
   private void runSaveParams() {
     Log.msg(LogType.MANDATORY, "Checking Parameters for save");
 
@@ -171,8 +170,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
       File file = chooser.getSelectedFile();
 
       Log.msg(LogType.MANDATORY, "Loading Parameters");
-      if (this.params.loadParams(file))
-      {
+      if (this.params.loadParams(file)) {
         this.params.printParams();
 
         this.stitchingGUI.loadParamsIntoGUI(StitchingSwingWorker.this.params);

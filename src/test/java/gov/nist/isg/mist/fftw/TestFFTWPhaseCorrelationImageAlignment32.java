@@ -49,7 +49,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the phase correlation between two images using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -101,16 +101,15 @@ public class TestFFTWPhaseCorrelationImageAlignment32 {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
-      try {
-          TestFFTWPhaseCorrelationImageAlignment32.runTestPhaseCorrelationImageAlignment();
-      }catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-      }
+    try {
+      TestFFTWPhaseCorrelationImageAlignment32.runTestPhaseCorrelationImageAlignment();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 
 }

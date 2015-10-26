@@ -31,10 +31,9 @@ package gov.nist.isg.mist.stitching.gui.params.objects;
 /**
  * CudaDeviceParam represents a CUDA device. This is used to manage what devices are chosen by the
  * user
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CudaDeviceParam {
 
@@ -45,9 +44,9 @@ public class CudaDeviceParam {
 
   /**
    * Initializes a CUDA device parameter
-   * 
-   * @param id the id of the CUDA device
-   * @param name the name of the CUDA device
+   *
+   * @param id       the id of the CUDA device
+   * @param name     the name of the CUDA device
    * @param devMinor the device minor version
    * @param devMajor the device major version
    */

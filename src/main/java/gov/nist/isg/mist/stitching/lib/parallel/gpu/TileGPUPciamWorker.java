@@ -44,6 +44,7 @@ import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,10 +54,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 /**
  * Class that computes the PCIAM (phase correlation image alignment method) of a tile on the GPU.
  * One thread per GPU is used.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileGPUPciamWorker<T> implements Runnable {
 
@@ -87,30 +87,30 @@ public class TileGPUPciamWorker<T> implements Runnable {
 
   private int tileWidth;
   private int tileHeight;
-  
+
   private volatile boolean isCancelled;
 
 
   /**
    * Initializes a tile worker pool for computing PCIAM and FFT computations
-   * 
-   * @param workQueue the work queue
-   * @param bkQueue the bookkeeper queue
-   * @param ccfQueue the CCF queue
-   * @param memory the tile worker memory
-   * @param tileWidth the width of the image tile
-   * @param tileHeight the height of the image tile
-   * @param devID the device ID associated with this thread
-   * @param threadID the thread ID associated with this thread
-   * @param context the context associated with this thread
+   *
+   * @param workQueue    the work queue
+   * @param bkQueue      the bookkeeper queue
+   * @param ccfQueue     the CCF queue
+   * @param memory       the tile worker memory
+   * @param tileWidth    the width of the image tile
+   * @param tileHeight   the height of the image tile
+   * @param devID        the device ID associated with this thread
+   * @param threadID     the thread ID associated with this thread
+   * @param context      the context associated with this thread
    * @param peerContexts the array of all contexts used
-   * @param peerDevIds the array of all device IDs used
+   * @param peerDevIds   the array of all device IDs used
    */
   public TileGPUPciamWorker(PriorityBlockingQueue<StitchingTask<T>> workQueue,
-      PriorityBlockingQueue<StitchingTask<T>> bkQueue, PriorityBlockingQueue<StitchingTask<T>> ccfQueue,
-      TileWorkerMemory memory,
-      int tileWidth, int tileHeight, int devID, int threadID, CUcontext context, CUcontext[] peerContexts,
-      int[] peerDevIds) {
+                            PriorityBlockingQueue<StitchingTask<T>> bkQueue, PriorityBlockingQueue<StitchingTask<T>> ccfQueue,
+                            TileWorkerMemory memory,
+                            int tileWidth, int tileHeight, int devID, int threadID, CUcontext context, CUcontext[] peerContexts,
+                            int[] peerDevIds) {
     bkDone = false;
     this.memory = memory;
     this.workQueue = workQueue;
@@ -136,18 +136,18 @@ public class TileGPUPciamWorker<T> implements Runnable {
     JCudaDriver.cuCtxSetCurrent(this.context);
 
     // Allocate extra device memory for non peer-to-peer copy
-    int res = JCudaDriver.cuMemAlloc(this.devMem, CudaImageTile.fftSize * Sizeof.DOUBLE * 2);      
+    int res = JCudaDriver.cuMemAlloc(this.devMem, CudaImageTile.fftSize * Sizeof.DOUBLE * 2);
     checkCudaOutOfMemoryError(res);
-    
+
     // Allocate phase correlation matrix memory
     CUdeviceptr pcm = new CUdeviceptr();
     res = JCudaDriver.cuMemAlloc(pcm, this.tileWidth * this.tileHeight * Sizeof.DOUBLE);
     checkCudaOutOfMemoryError(res);
-    
+
     this.stream = new CUstream();
     JCudaDriver.cuStreamCreate(this.stream, CUstream_flags.CU_STREAM_DEFAULT);
-    CudaImageTile.bindBwdPlanToStream(this.stream, this.threadID);        
-    
+    CudaImageTile.bindBwdPlanToStream(this.stream, this.threadID);
+
     CUdevice dev = new CUdevice();
     JCudaDriver.cuDeviceGet(dev, this.devID);
 
@@ -158,7 +158,7 @@ public class TileGPUPciamWorker<T> implements Runnable {
         if (ctx != this.context) {
           CUdevice peerDev = new CUdevice();
           JCudaDriver.cuDeviceGet(peerDev, this.peerDevIds[i]);
-          int[] canAccessPeer = new int[] {0};
+          int[] canAccessPeer = new int[]{0};
           JCudaDriver.cuDeviceCanAccessPeer(canAccessPeer, dev, peerDev);
 
           if (canAccessPeer[0] == 0) {
@@ -173,7 +173,7 @@ public class TileGPUPciamWorker<T> implements Runnable {
       }
     }
 
-    
+
     try {
       while (!this.isCancelled && (!bkDone || this.workQueue.size() > 0)) {
         StitchingTask<T> task = this.workQueue.take();
@@ -206,12 +206,12 @@ public class TileGPUPciamWorker<T> implements Runnable {
                 pcm, this.memory, this.stream, this.threadID);
           }
 
-          
+
           int[] indices;
           indices =
               CudaStitching.multiPeakCorrelationMatrixIndices(pcm, Stitching.NUM_PEAKS,
                   tile.getWidth(), tile.getHeight(), this.memory, this.stream, this.threadID);
-                   
+
           task.setTask(TaskType.BK_CHECK_MEM);
           this.bkQueue.put(task);
 
@@ -234,19 +234,19 @@ public class TileGPUPciamWorker<T> implements Runnable {
 
       // Signal other workers that things are done
       this.workQueue.put(new StitchingTask<T>(null, null, TaskType.SENTINEL));
-     
+
     } catch (InterruptedException e) {
       Log.msg(LogType.MANDATORY, "Interrupted PCIAM worker");
     }
 
 
     if (this.stream != null) {
-       JCudaDriver.cuStreamDestroy(this.stream);
+      JCudaDriver.cuStreamDestroy(this.stream);
     }
 
     if (this.devMem != null)
       JCudaDriver.cuMemFree(this.devMem);
-    
+
     if (pcm != null)
       JCudaDriver.cuMemFree(pcm);
 
@@ -258,9 +258,8 @@ public class TileGPUPciamWorker<T> implements Runnable {
   public void cancel() {
     this.workQueue.put(new StitchingTask<T>(null, null, TaskType.CANCELLED));
   }
-  
-  private void checkCudaOutOfMemoryError(int res)
-  {
+
+  private void checkCudaOutOfMemoryError(int res) {
     if (res == CUresult.CUDA_ERROR_OUT_OF_MEMORY) {
       Log.msg(LogType.MANDATORY, "Error: Insufficient graphics memory to complete stitching.");
       if (!GraphicsEnvironment.isHeadless()) {
@@ -272,10 +271,10 @@ public class TileGPUPciamWorker<T> implements Runnable {
         System.exit(1);
       else
         this.executor.cancelExecution();
-      
+
     }
 
-    
+
   }
 
 }

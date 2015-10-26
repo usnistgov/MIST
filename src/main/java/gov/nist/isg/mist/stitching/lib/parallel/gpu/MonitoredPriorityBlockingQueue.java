@@ -33,16 +33,15 @@ import java.util.concurrent.PriorityBlockingQueue;
 /**
  * Class that adds a monitor on the size of the priority blocking queue. The class monitors the
  * maximum size that the queue achieves.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <E>
  */
 public class MonitoredPriorityBlockingQueue<E> extends PriorityBlockingQueue<E> {
 
   /**
-	 * 
-	 */
+   *
+   */
   private static final long serialVersionUID = 1L;
 
   private int monitorSize;
@@ -50,7 +49,7 @@ public class MonitoredPriorityBlockingQueue<E> extends PriorityBlockingQueue<E> 
   /**
    * Creates a monitor implementation of a blocking queue. This queue monitors the maximum size of
    * the queue
-   * 
+   *
    * @param size the size of the queue
    */
   public MonitoredPriorityBlockingQueue(int size) {
@@ -60,7 +59,7 @@ public class MonitoredPriorityBlockingQueue<E> extends PriorityBlockingQueue<E> 
 
   @Override
   public E take() throws InterruptedException {
-  
+
     if (this.monitorSize < super.size()) {
       this.monitorSize = super.size();
     }
@@ -72,7 +71,7 @@ public class MonitoredPriorityBlockingQueue<E> extends PriorityBlockingQueue<E> 
 
   /**
    * Gets the monitored size of the queue
-   * 
+   *
    * @return the maximum size the queue achieved.
    */
   public int getMonitorSize() {

@@ -45,7 +45,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the phase correlation between two images using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -71,7 +71,7 @@ public class TestFFTWPhaseCorrelationImageAlignment {
     Log.msg(LogType.INFO, origin.toString());
 
     if (FftwImageTile.initLibrary(System.getProperty("user.dir") + File.separator + "libs"
-        + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns--l",
+            + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns--l",
         "libfftw3")) {
       FftwImageTile tile = new FftwImageTile(file1);
 
@@ -99,16 +99,15 @@ public class TestFFTWPhaseCorrelationImageAlignment {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
-      try {
-          TestFFTWPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
-      }catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-      }
+    try {
+      TestFFTWPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 
 }

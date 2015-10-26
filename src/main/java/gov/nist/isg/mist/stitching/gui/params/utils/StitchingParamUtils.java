@@ -31,13 +31,14 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * StitchingParamUtils are utility functions for stitching parameters
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class StitchingParamUtils {
-  
+
   /**
    * Loads a double value from a string
+   *
    * @param val the double value in string format
    * @param def the default value
    * @return the double value
@@ -53,6 +54,7 @@ public class StitchingParamUtils {
 
   /**
    * Loads a integer value from a string
+   *
    * @param val the integer value in string format
    * @param def the default value
    * @return the integer value
@@ -69,6 +71,7 @@ public class StitchingParamUtils {
 
   /**
    * Loads a boolean value from a string
+   *
    * @param val the boolean value in string format
    * @param def the default value
    * @return the boolean value

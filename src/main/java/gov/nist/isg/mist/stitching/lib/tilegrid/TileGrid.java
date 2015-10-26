@@ -42,35 +42,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class that generates a grid of tiles. Given an origin and numbering strategy.
- * <p>
- * The grid can be initialized using two methods:
- * 
+ * Class that generates a grid of tiles. Given an origin and numbering strategy. <p> The grid can be
+ * initialized using two methods:
+ *
  * <pre>
  * <code>
- * (1) Using the constructor: TileGrid(int startRow, int startCol, int extentWidth, int extentHeight,
-      TileGridLoader gridLoader, File imageDir, Class<?> classType)
+ * (1) Using the constructor: TileGrid(int startRow, int startCol, int extentWidth, int
+ * extentHeight,
+ * TileGridLoader gridLoader, File imageDir, Class<?> classType)
  * <p>
- * (2) Using the constructors: TileGrid(StitchingAppParams params, 
+ * (2) Using the constructors: TileGrid(StitchingAppParams params,
  * 		Class&lt;?&gt; classType)
  *    or TileGrid(StitchingAppParams params, int timeSlice,
  * 			Class&lt;?&gt; classType)
  * </code>
  * </pre>
  * <p>
- * 
+ *
  * The TileGridLoader class is used to construct the names of tiles in the TileGrid
- * 
+ *
  * A sub-grid can be created using the variouis constructors. You can decompose a grid of tiles into
  * independent sections using:
- * 
+ *
  * <pre>
  * <code>partitionGrid(int numSlices, GridDecomposition type)
  * </code>
  * </pre>
- * 
+ *
  * Example usage:
- * 
+ *
  * <pre>
  * <code>
  * int startRow = 0;
@@ -79,58 +79,54 @@ import java.util.List;
  * int extentHeight = 4;
  * File tileDir = new File("C:\\Data\\dataDir");
  * TileGrid&lt;ImageTile&lt;CUdeviceptr&gt;&gt; grid = null;
- * 
+ *
  * SequentialTileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern,
-      GridOrigin origin, GridDirection direction)
- * 
- * try {     
- *     grid = new TileGrid&lt;ImageTile&lt;CUdeviceptr&gt;&gt;(startRow, startCol, 
- *     extentWidth, extentHeight, 
- *     new SequentialTileGridLoader(16, 22, 1, "F_{pppp}.tif", GridOrigin.UL, GridDirection.ROW), 
- *     , newtileDir, 
+ * GridOrigin origin, GridDirection direction)
+ *
+ * try {
+ *     grid = new TileGrid&lt;ImageTile&lt;CUdeviceptr&gt;&gt;(startRow, startCol,
+ *     extentWidth, extentHeight,
+ *     new SequentialTileGridLoader(16, 22, 1, "F_{pppp}.tif", GridOrigin.UL, GridDirection.ROW),
+ *     , newtileDir,
  *     JCUDAImageTile.class);
  * } catch (InvalidClassException e) {
- *    Log.msg(LogType.MANDATORY, e.getMessage());			
+ *    Log.msg(LogType.MANDATORY, e.getMessage());
  * }
- * 
+ *
  * int numGPUs = 2;
- * 
- * List&lt;TileGrid&lt;ImageTile&lt;T&gt;&gt;&gt; grids = grid.partitionGrid(numGPUs, 
+ *
+ * List&lt;TileGrid&lt;ImageTile&lt;T&gt;&gt;&gt; grids = grid.partitionGrid(numGPUs,
  * 			GridDecomposition.HORIZONTAL);
  * </code>
  * </pre>
- * <p>
- * There are two methods for access data. One using subGrid, which will shift based on the starting
- * row and starting column specified.
- * 
+ * <p> There are two methods for access data. One using subGrid, which will shift based on the
+ * starting row and starting column specified.
+ *
  * <pre>
  * <code>grid.getSubGridTile(row, col);</code>
  * </pre>
- * <p>
- * or by accessing the grid using the plate width and plate height of the grid with
- * 
+ * <p> or by accessing the grid using the plate width and plate height of the grid with
+ *
  * <pre>
  * <code>grid.getTile(row, col);</code>
  * </pre>
- * 
- * <p>
- * Also provided are utility functions to verify if a tile exists or not inside of a subgrid by
+ *
+ * <p> Also provided are utility functions to verify if a tile exists or not inside of a subgrid by
  * using
- * 
+ *
  * <pre>
  * <code>grid.hasTile(row, col);</code>
  * </pre>
- * 
+ *
+ * @param <T> must be ImageTile type
  * @author Tim Blattner
  * @version 1.0
- * @param <T> must be ImageTile type
- * 
  */
 public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Grid decomposition types.
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -149,6 +145,7 @@ public class TileGrid<T extends ImageTile<?>> {
      * Block decomposition
      */
     BLOCK("Block");
+
     private GridDecomposition(final String text) {
       this.text = text;
     }
@@ -173,18 +170,17 @@ public class TileGrid<T extends ImageTile<?>> {
   /**
    * Initialize TileSubGrid starting at row and column, and hold extentWidth and extentHeight
    * rows/columns
-   * 
-   * @param startRow the start row for the subgrid
-   * @param startCol the start column for the subgrid
-   * @param extentWidth the width of the subgrid
+   *
+   * @param startRow     the start row for the subgrid
+   * @param startCol     the start column for the subgrid
+   * @param extentWidth  the width of the subgrid
    * @param extentHeight the height of the subgrid
-   * @param gridLoader The tile grid loader
-   * @param imageDir image directory
-   * @param classType the type of object
-   * @throws InvalidClassException
+   * @param gridLoader   The tile grid loader
+   * @param imageDir     image directory
+   * @param classType    the type of object
    */
   public TileGrid(int startRow, int startCol, int extentWidth, int extentHeight,
-      TileGridLoader gridLoader, File imageDir, Class<?> classType) throws InvalidClassException {
+                  TileGridLoader gridLoader, File imageDir, Class<?> classType) throws InvalidClassException {
     this.startRow = startRow;
     this.startCol = startCol;
     this.extentWidth = extentWidth;
@@ -197,10 +193,9 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Initializes the tile grid
-   * 
-   * @param params the stitching parameters
+   *
+   * @param params    the stitching parameters
    * @param classType the class type
-   * @throws InvalidClassException
    */
   public TileGrid(StitchingAppParams params, Class<?> classType) throws InvalidClassException {
     this(params.getInputParams().getStartRow(), params.getInputParams().getStartCol(), params.getInputParams().getExtentWidth(), params.getInputParams()
@@ -208,31 +203,30 @@ public class TileGrid<T extends ImageTile<?>> {
   }
 
   /**
-   * Initializes the tile grid 
-   * 
-   * @param params the stitching parameters
+   * Initializes the tile grid
+   *
+   * @param params    the stitching parameters
    * @param timeSlice the time slice
    * @param classType the class type
-   * @throws InvalidClassException
    */
   public TileGrid(StitchingAppParams params, int timeSlice, Class<?> classType)
       throws InvalidClassException {
     this(params.getInputParams().getStartRow(), params.getInputParams().getStartCol(), params.getInputParams().getExtentWidth(), params.getInputParams()
-        .getExtentHeight(), params.getInputParams().getTileGridLoader(timeSlice), new File(params.getInputParams().getImageDir()),
+            .getExtentHeight(), params.getInputParams().getTileGridLoader(timeSlice), new File(params.getInputParams().getImageDir()),
         classType);
   }
 
   /**
    * References of the original TileGrid, but with different startRow, col, width, and height
-   * 
-   * @param original the original reference tile grid
-   * @param startRow the start row of the new grid
-   * @param startCol the start column of the new grid
-   * @param extentWidth the extent width of the new grid
+   *
+   * @param original     the original reference tile grid
+   * @param startRow     the start row of the new grid
+   * @param startCol     the start column of the new grid
+   * @param extentWidth  the extent width of the new grid
    * @param extentHeight the extent height of the new grid
    */
   public TileGrid(TileGrid<T> original, int startRow, int startCol, int extentWidth,
-      int extentHeight) {
+                  int extentHeight) {
     this.tiles = original.getTiles();
     this.gridLoader = original.getGridLoader();
     this.imageDir = original.getImageDir();
@@ -250,7 +244,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Converts the image tiles to a list
-   * 
+   *
    * @return the list of tiles
    */
   public List<T> convertToList() {
@@ -294,7 +288,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Gets a tile inside of a sub-grid at the row and column
-   * 
+   *
    * @param row the row in the subgrid (0 to extentHeight-1)
    * @param col the column in the subgrid (0 to extentWidth-1)
    * @return the image tile at the given row and column
@@ -305,7 +299,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Gets neighbors of this tile
-   * 
+   *
    * @param tile the tile to check neighbors for
    * @return the neighbors of the tile
    */
@@ -364,18 +358,16 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Initializes ImageTile Grid
-   * 
+   *
    * @param the type of object
-   * @throws InvalidClassException
    */
   @SuppressWarnings("unchecked")
-  private void initImageTileGrid(Class<?> imageTileClass) throws InvalidClassException {    
+  private void initImageTileGrid(Class<?> imageTileClass) throws InvalidClassException {
 
     this.tiles = (T[][]) Array.newInstance(imageTileClass, this.gridLoader.getGridHeight(), this.gridLoader.getGridWidth());
     Constructor<?> constructor = null;
 
-    try
-    {
+    try {
       constructor = imageTileClass.getConstructor(File.class, // File 
           int.class, // row
           int.class, // col
@@ -391,13 +383,12 @@ public class TileGrid<T extends ImageTile<?>> {
     } catch (IllegalArgumentException e) {
       e.printStackTrace();
     }
-    
-    if (constructor == null)
-    {
+
+    if (constructor == null) {
       Log.msg(LogType.MANDATORY, "Error: constructor has changed. initImageTileGrid unable to find constructor using reflection.");
       throw new InvalidClassException("Unable to load constructor.");
     }
-      
+
     for (int r = 0; r < this.gridLoader.getGridHeight(); r++) {
       for (int c = 0; c < this.gridLoader.getGridWidth(); c++) {
 
@@ -416,7 +407,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Gets the tile
-   * 
+   *
    * @param row the row location
    * @param col the column location
    * @return the tile
@@ -427,7 +418,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Checks if the tile exists in the grid
-   * 
+   *
    * @param tile the tile to check
    * @return true if the tile exists, otherwise false
    */
@@ -437,7 +428,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Checks if the tile's row/column exists in the grid
-   * 
+   *
    * @param row the row in the grid
    * @param col the column in the grid
    * @return true if the tile exists in the grid, otherwise false
@@ -458,7 +449,7 @@ public class TileGrid<T extends ImageTile<?>> {
 
   /**
    * Gets a human readable statistics of the global tile grid
-   * 
+   *
    * @return the grid stats
    */
   public String getGridStats() {
@@ -466,13 +457,13 @@ public class TileGrid<T extends ImageTile<?>> {
   }
 
   /**
-   * Partitions the grid into numSlices. The method will reduce numSlices to create
-   * even-sized partitions.
-   * 
+   * Partitions the grid into numSlices. The method will reduce numSlices to create even-sized
+   * partitions.
+   *
    * @param numSlices the number slices to decompose
-   * @param type the type of grid decomposition
+   * @param type      the type of grid decomposition
    * @return a list of TileGrids that contain a startRow/startCol and width and height based on the
-   *         decomposition type.
+   * decomposition type.
    */
   public List<TileGrid<T>> partitionGrid(int numSlices, GridDecomposition type) {
 

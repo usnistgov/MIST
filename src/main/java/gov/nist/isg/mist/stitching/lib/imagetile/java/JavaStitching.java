@@ -42,23 +42,22 @@ import java.util.List;
 
 /**
  * f * @author Tim Blattner
- * 
+ *
  * @version 2013.08.7
- * 
  */
 public class JavaStitching {
 
   /**
    * Computes the phase correlatoin image alignment between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
+   *
+   * @param t1     image 1
+   * @param t2     image 2
    * @param memory the tile worker memory
    * @return the best relative displacement along the x and y axis and the correlation between two
-   *         images
+   * images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(JavaImageTile t1,
-      JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                 JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
     float[][] pcm = memory.getArrayMemory();
     pcm = peakCorrelationMatrix(t1, t2, pcm);
 //    int idx = UtilFnsStitching.getMaxIdxJava(pcm, t1.getWidth(), t1.getHeight());
@@ -101,9 +100,9 @@ public class JavaStitching {
 
   /**
    * Computes the peak correlation matrix between two images
-   * 
-   * @param t1 image 1
-   * @param t2 image 2
+   *
+   * @param t1  image 1
+   * @param t2  image 2
    * @param ncc the normalized cross correlation matrix
    * @return the peak correlation matrix
    */
@@ -120,7 +119,6 @@ public class JavaStitching {
 
     return ncc;
   }
-
 
 
 }

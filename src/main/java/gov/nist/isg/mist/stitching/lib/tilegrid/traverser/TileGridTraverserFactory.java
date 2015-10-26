@@ -40,33 +40,32 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
  */
 public class TileGridTraverserFactory {
 
-    /**
-     * Generates a traversal surrounding a tile grid
-     *
-     * @param <T>
-     * @param type the type of traversal
-     * @param grid the subgrid to traverse
-     * @return the traverser
-     */
-    public static <T extends ImageTile<?>> TileGridTraverser<T> makeTraverser(
-            TileGridTraverser.Traversals type, TileGrid<T> grid) {
-        switch (type) {
-            case ROW:
-                return new TileGridRowTraverser<T>(grid);
-            case COLUMN:
-                return new TileGridColumnTraverser<T>(grid);
-            case COLUMN_CHAINED:
-                return new TileGridColumnChainedTraverser<T>(grid);
-            case DIAGONAL:
-                return new TileGridDiagonalTraverser<T>(grid);
-            case DIAGONAL_CHAINED:
-                return new TileGridDiagonalChainedTraverser<T>(grid);
-            case ROW_CHAINED:
-                return new TileGridRowChainedTraverser<T>(grid);
-            default:
-                return new TileGridRowTraverser<T>(grid);
+  /**
+   * Generates a traversal surrounding a tile grid
+   *
+   * @param type the type of traversal
+   * @param grid the subgrid to traverse
+   * @return the traverser
+   */
+  public static <T extends ImageTile<?>> TileGridTraverser<T> makeTraverser(
+      TileGridTraverser.Traversals type, TileGrid<T> grid) {
+    switch (type) {
+      case ROW:
+        return new TileGridRowTraverser<T>(grid);
+      case COLUMN:
+        return new TileGridColumnTraverser<T>(grid);
+      case COLUMN_CHAINED:
+        return new TileGridColumnChainedTraverser<T>(grid);
+      case DIAGONAL:
+        return new TileGridDiagonalTraverser<T>(grid);
+      case DIAGONAL_CHAINED:
+        return new TileGridDiagonalChainedTraverser<T>(grid);
+      case ROW_CHAINED:
+        return new TileGridRowChainedTraverser<T>(grid);
+      default:
+        return new TileGridRowTraverser<T>(grid);
 
-        }
     }
+  }
 
 }

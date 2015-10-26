@@ -43,6 +43,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -57,76 +58,73 @@ import java.io.InvalidClassException;
  */
 public class TestFFTWGridPhaseCorrelation32 {
 
-    /**
-     * Computes the phase correlation using a single thread on a grid of tiles using FFTW
-     */
-    public static void runTestGridPhaseCorrelation32() throws FileNotFoundException{
+  /**
+   * Computes the phase correlation using a single thread on a grid of tiles using FFTW
+   */
+  public static void runTestGridPhaseCorrelation32() throws FileNotFoundException {
 
-        Log.setLogLevel(LogType.INFO);
-        int startRow = 0;
-        int startCol = 0;
-        int extentWidth = 23;
-        int extentHeight = 30;
+    Log.setLogLevel(LogType.INFO);
+    int startRow = 0;
+    int startCol = 0;
+    int extentWidth = 23;
+    int extentHeight = 30;
 
-        Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation FFTW");
+    Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation FFTW");
 
-        File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
-        FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f");
+    File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
+    FftwImageTile32.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3f");
 
-        Log.msg(LogType.INFO, "Generating tile grid");
-        TileGrid<ImageTile<Pointer<Float>>> grid = null;
-        try {
+    Log.msg(LogType.INFO, "Generating tile grid");
+    TileGrid<ImageTile<Pointer<Float>>> grid = null;
+    try {
 
-            TileGridLoader loader =
-                    new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
-                            GridDirection.VERTICALCOMBING);
+      TileGridLoader loader =
+          new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+              GridDirection.VERTICALCOMBING);
 
-            grid =
-                    new TileGrid<ImageTile<Pointer<Float>>>(startRow, startCol, extentWidth, extentHeight,
-                            loader, tileDir, FftwImageTile32.class);
-        } catch (InvalidClassException e) {
-            Log.msg(LogType.MANDATORY, e.getMessage());
-        }
-
-        if (grid == null)
-            return;
-
-        ImageTile<Pointer<Float>> tile = grid.getSubGridTile(0, 0);
-
-        tile.readTile();
-
-        Log.msg(LogType.INFO, "Loading FFTW plan");
-
-        FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library32.FFTW_MEASURE, true, "test.dat");
-
-        FftwImageTile32.savePlan("test.dat");
-
-        Log.msg(LogType.INFO, "Creating sub-grid");
-        TileGridTraverser<ImageTile<Pointer<Float>>> gridTraverser =
-                TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, grid);
-
-        Log.msg(LogType.INFO, "Computing translations");
-        TimeUtil.tick();
-        Stitching32.stitchGridFftw(gridTraverser, grid);
-
-        Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
-
-
-
+      grid =
+          new TileGrid<ImageTile<Pointer<Float>>>(startRow, startCol, extentWidth, extentHeight,
+              loader, tileDir, FftwImageTile32.class);
+    } catch (InvalidClassException e) {
+      Log.msg(LogType.MANDATORY, e.getMessage());
     }
 
-    /**
-     * Executes the test case
-     *
-     * @param args not used
-     */
-    public static void main(String args[]) {
-        try {
-            TestFFTWGridPhaseCorrelation32.runTestGridPhaseCorrelation32();
-        }
-        catch (FileNotFoundException e)
-        {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-        }
+    if (grid == null)
+      return;
+
+    ImageTile<Pointer<Float>> tile = grid.getSubGridTile(0, 0);
+
+    tile.readTile();
+
+    Log.msg(LogType.INFO, "Loading FFTW plan");
+
+    FftwImageTile32.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library32.FFTW_MEASURE, true, "test.dat");
+
+    FftwImageTile32.savePlan("test.dat");
+
+    Log.msg(LogType.INFO, "Creating sub-grid");
+    TileGridTraverser<ImageTile<Pointer<Float>>> gridTraverser =
+        TileGridTraverserFactory.makeTraverser(Traversals.DIAGONAL, grid);
+
+    Log.msg(LogType.INFO, "Computing translations");
+    TimeUtil.tick();
+    Stitching32.stitchGridFftw(gridTraverser, grid);
+
+    Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
+
+
+  }
+
+  /**
+   * Executes the test case
+   *
+   * @param args not used
+   */
+  public static void main(String args[]) {
+    try {
+      TestFFTWGridPhaseCorrelation32.runTestGridPhaseCorrelation32();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
+  }
 }

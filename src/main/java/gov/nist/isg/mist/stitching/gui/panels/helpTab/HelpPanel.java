@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,36 +49,35 @@ import java.net.URISyntaxException;
 
 /**
  * Creates the help panel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class HelpPanel extends JPanel implements GUIParamFunctions {
 
   private static final String documentationURL =
       "https://github.com/NIST-ISG/MIST/wiki";
 
-    private static final String sourceURL =
-            "https://github.com/NIST-ISG/MIST";
+  private static final String sourceURL =
+      "https://github.com/NIST-ISG/MIST";
 
 
-    private static final String aboutUsURL =
-            "https://isg.nist.gov";
+  private static final String aboutUsURL =
+      "https://isg.nist.gov";
 
-    private static final String testDatasetURL =
-            "https://github.com/NIST-ISG/MIST#sample-data-sets";
+  private static final String testDatasetURL =
+      "https://github.com/NIST-ISG/MIST#sample-data-sets";
 
-    private static final String license =
-            "<html>This software was developed at the National Institute of Standards and<br>" +
-                    "Technology by employees of the Federal Government in the course of<br>" +
-                    "their official duties. Pursuant to title 17 Section 105 of the United<br>" +
-                    "States Code this software is not subject to copyright protection and is<br>" +
-                    "in the public domain. This software is an experimental system. NIST<br>" +
-                    "assumes no responsibility whatsoever for its use by other parties, and<br>" +
-                    "makes no guarantees, expressed or implied, about its quality, reliability,<br>" +
-                    "or any other characteristic. We would appreciate acknowledgement if the<br>" +
-                    "software is used.</html>";
+  private static final String license =
+      "<html>This software was developed at the National Institute of Standards and<br>" +
+          "Technology by employees of the Federal Government in the course of<br>" +
+          "their official duties. Pursuant to title 17 Section 105 of the United<br>" +
+          "States Code this software is not subject to copyright protection and is<br>" +
+          "in the public domain. This software is an experimental system. NIST<br>" +
+          "assumes no responsibility whatsoever for its use by other parties, and<br>" +
+          "makes no guarantees, expressed or implied, about its quality, reliability,<br>" +
+          "or any other characteristic. We would appreciate acknowledgement if the<br>" +
+          "software is used.</html>";
 
   private static final long serialVersionUID = 1L;
 
@@ -91,8 +91,8 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
   public HelpPanel() {
 
     this.openLocalHelp = new JButton("Open Local Help Documentation");
-      HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("mist-user-guide");
-      this.openLocalHelp.addActionListener(helpDialog);
+    HelpDocumentationViewer helpDialog = new HelpDocumentationViewer("mist-user-guide");
+    this.openLocalHelp.addActionListener(helpDialog);
 
 
     this.openLocalHelp.setPreferredSize(new Dimension(220, 40));
@@ -112,14 +112,11 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
     GridBagConstraints c = new GridBagConstraints();
 
 
-
-
     c.gridy = 0;
     c.insets = new Insets(10, 10, 0, 0);
     c.anchor = GridBagConstraints.FIRST_LINE_START;
-    
-    c.fill = GridBagConstraints.HORIZONTAL;
 
+    c.fill = GridBagConstraints.HORIZONTAL;
 
 
     JPanel helpButtonPanel = new JPanel();
@@ -127,45 +124,42 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
     vertPanel.add(helpButtonPanel, c);
 
 
-
     c.gridy = 1;
-      JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MIST" + "</a></html>");
-      aboutUsLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-      vertPanel.add(aboutUsLink, c);
+    JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MIST" + "</a></html>");
+    aboutUsLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    vertPanel.add(aboutUsLink, c);
 
-      c.gridy = 2;
-      JLabel link = new JLabel("<html><a href=\"" + documentationURL + "\">" + "Online Documentation" + "</a></html>");
+    c.gridy = 2;
+    JLabel link = new JLabel("<html><a href=\"" + documentationURL + "\">" + "Online Documentation" + "</a></html>");
 
     link.setCursor(new Cursor(Cursor.HAND_CURSOR));
     vertPanel.add(link, c);
 
-      c.gridy = 3;
-      JLabel srclink = new JLabel("<html><a href=\"" + sourceURL +"\">" + "Source Code" + "</a></html>");
+    c.gridy = 3;
+    JLabel srclink = new JLabel("<html><a href=\"" + sourceURL + "\">" + "Source Code" + "</a></html>");
 
-      srclink.setCursor(new Cursor(Cursor.HAND_CURSOR));
-      vertPanel.add(srclink, c);
+    srclink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    vertPanel.add(srclink, c);
 
-      c.gridy = 4;
-      JLabel examplesLink = new JLabel("<html><a href=\"" + testDatasetURL + "\">" + "Sample Datasets" + "</a></html>");
-      examplesLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    c.gridy = 4;
+    JLabel examplesLink = new JLabel("<html><a href=\"" + testDatasetURL + "\">" + "Sample Datasets" + "</a></html>");
+    examplesLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-      vertPanel.add(examplesLink, c);
+    vertPanel.add(examplesLink, c);
 
 
     c.gridy = 5;
-      vertPanel.add(new JLabel(license), c);
+    vertPanel.add(new JLabel(license), c);
 
     mainPanel.add(vertPanel);
-
-
 
 
     add(mainPanel);
 
     goWebsiteDocumentation(link);
-      goWebsiteSourceCode(srclink);
-      goWebsiteAboutUs(aboutUsLink);
-      goWebsiteExamples(examplesLink);
+    goWebsiteSourceCode(srclink);
+    goWebsiteAboutUs(aboutUsLink);
+    goWebsiteExamples(examplesLink);
 
   }
 
@@ -183,51 +177,52 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
     });
   }
 
-    private static void goWebsiteSourceCode(JLabel website) {
-        website.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(sourceURL));
-                } catch (URISyntaxException ex) {
-                } catch (IOException ex) {
+  private static void goWebsiteSourceCode(JLabel website) {
+    website.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        try {
+          Desktop.getDesktop().browse(new URI(sourceURL));
+        } catch (URISyntaxException ex) {
+        } catch (IOException ex) {
 
-                }
-            }
-        });
-    }
-    private static void goWebsiteAboutUs(JLabel website) {
-        website.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(aboutUsURL));
-                } catch (URISyntaxException ex) {
-                } catch (IOException ex) {
+        }
+      }
+    });
+  }
 
-                }
-            }
-        });
-    }
+  private static void goWebsiteAboutUs(JLabel website) {
+    website.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        try {
+          Desktop.getDesktop().browse(new URI(aboutUsURL));
+        } catch (URISyntaxException ex) {
+        } catch (IOException ex) {
 
-    private static void goWebsiteExamples(JLabel website) {
-        website.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(testDatasetURL));
-                } catch (URISyntaxException ex) {
-                } catch (IOException ex) {
+        }
+      }
+    });
+  }
 
-                }
-            }
-        });
-    }
+  private static void goWebsiteExamples(JLabel website) {
+    website.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        try {
+          Desktop.getDesktop().browse(new URI(testDatasetURL));
+        } catch (URISyntaxException ex) {
+        } catch (IOException ex) {
+
+        }
+      }
+    });
+  }
 
 
-  
   @Override
-  public void loadParamsIntoGUI(StitchingAppParams params) { }
+  public void loadParamsIntoGUI(StitchingAppParams params) {
+  }
 
   @Override
   public boolean checkAndParseGUI(StitchingAppParams params) {
@@ -248,7 +243,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
 
   @Override
   public void enableLoadingParams() {
-    this.loadingParams = true;  
+    this.loadingParams = true;
   }
 
   @Override
@@ -263,7 +258,8 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
   }
 
   @Override
-  public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) { }
+  public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) {
+  }
 
 
 }

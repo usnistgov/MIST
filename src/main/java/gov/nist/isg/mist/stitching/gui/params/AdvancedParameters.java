@@ -46,11 +46,11 @@ import java.util.prefs.Preferences;
 
 /**
  * AdvancedParameters are the advanced parameters for Stitching
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class AdvancedParameters implements StitchingAppParamFunctions {
-  
+
   private static final String PROGRAM_TYPE = "programType";
   private static final String NUM_CPU_THREADS = "numCPUThreads";
   private static final String LOAD_FFTW_PLAN = "loadFFTWPlan";
@@ -69,8 +69,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private static final String NUM_FFT_PEAKS = "numFFTPeaks";
   private static final String OVERLAP_UNCERTAINTY = "overlapUncertainty";
   private static final String IS_USE_DOUBLE_PRECISION = "isUseDoublePrecision";
-      
-  
+
+
   private StitchingType programType;
   private int numCPUThreads;
 
@@ -100,8 +100,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private double overlapUncertainty;
   private boolean useDoublePrecision;
 
-  public AdvancedParameters()
-  {
+  public AdvancedParameters() {
     this.programType = StitchingType.AUTO;
     this.numCPUThreads = Runtime.getRuntime().availableProcessors();
 
@@ -233,8 +232,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
 
   @Override
   public boolean loadParams(File file) {
-    try
-    {
+    try {
       boolean noErrors = true;
 
       Log.msg(LogType.MANDATORY, "Loading advanced parameters");
@@ -252,8 +250,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
           contents[0] = contents[0].trim();
           contents[1] = contents[1].trim();
 
-          try
-          {
+          try {
             if (contents[0].equals(PROGRAM_TYPE))
               this.programType = StitchingType.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(NUM_CPU_THREADS))
@@ -275,7 +272,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
             else if (contents[0].equals(GLOBAL_OPT))
               this.globalOpt = GlobalOptimizationType.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(USE_HILL_CLIMBING))
-              this.useHillClimbing = StitchingParamUtils.loadBoolean(contents[1], this.useHillClimbing);          
+              this.useHillClimbing = StitchingParamUtils.loadBoolean(contents[1], this.useHillClimbing);
             else if (contents[0].equals(STAGE_REPEATABILITY))
               this.stageRepeatability = StitchingParamUtils.loadInteger(contents[1], this.stageRepeatability);
             else if (contents[0].equals(HORIZONTAL_OVERLAP))
@@ -307,11 +304,10 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
               } else {
                 Log.msg(LogType.MANDATORY, "Error parsing config file line: " + line);
               }
-            }    
-          } catch (IllegalArgumentException e)
-          {
+            }
+          } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
-            Log.msg(LogType.MANDATORY, "Error parsing advanced option: " + e.getMessage());            
+            Log.msg(LogType.MANDATORY, "Error parsing advanced option: " + e.getMessage());
             noErrors = false;
           }
         }
@@ -326,7 +322,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;    
+    return false;
   }
 
   @Override
@@ -342,7 +338,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryFileName = pref.get(FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = pref.getBoolean(SAVE_FFTW_PLAN, this.saveFFTWPlan);
     this.globalOpt = PreferencesUtils.loadPrefGlobalOptimizationType(pref, GLOBAL_OPT, this.globalOpt.name());
-    this.useHillClimbing = pref.getBoolean(USE_HILL_CLIMBING, this.useHillClimbing);    
+    this.useHillClimbing = pref.getBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = pref.getInt(STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = pref.getDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
     this.verticalOverlap = pref.getDouble(VERTICAL_OVERLAP, this.verticalOverlap);
@@ -364,11 +360,11 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       devNum++;
     }
 
-    return true;    
+    return true;
   }
 
   @Override
-  public void printParams(LogType logLevel) {    
+  public void printParams(LogType logLevel) {
     Log.msg(logLevel, PROGRAM_TYPE + ": " + this.programType);
     Log.msg(logLevel, NUM_CPU_THREADS + ": " + this.numCPUThreads);
     Log.msg(logLevel, LOAD_FFTW_PLAN + ": " + this.loadFFTWPlan);
@@ -393,11 +389,11 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       for (CudaDeviceParam dev : this.cudaDevices) {
         Log.msg(logLevel, "cudaDevice: " + dev);
       }
-    }    
+    }
   }
 
   @Override
-  public void loadMacro(String macroOptions) {    
+  public void loadMacro(String macroOptions) {
     this.programType = MacroUtils.loadMacroProgramType(macroOptions, PROGRAM_TYPE, this.programType.name());
     this.numCPUThreads = MacroUtils.loadMacroInteger(macroOptions, NUM_CPU_THREADS, this.numCPUThreads);
     this.loadFFTWPlan = MacroUtils.loadMacroBoolean(macroOptions, LOAD_FFTW_PLAN, this.loadFFTWPlan);
@@ -408,7 +404,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryFileName = MacroUtils.loadMacroString(macroOptions, FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = MacroUtils.loadMacroBoolean(macroOptions, SAVE_FFTW_PLAN, this.saveFFTWPlan);
     this.globalOpt = MacroUtils.loadMacroGlobalOptimizationType(macroOptions, GLOBAL_OPT, this.globalOpt.name());
-    this.useHillClimbing = MacroUtils.loadMacroBoolean(macroOptions, USE_HILL_CLIMBING, this.useHillClimbing);    
+    this.useHillClimbing = MacroUtils.loadMacroBoolean(macroOptions, USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = MacroUtils.loadMacroInteger(macroOptions, STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = MacroUtils.loadMacroDouble(macroOptions, HORIZONTAL_OVERLAP, this.horizontalOverlap);
     this.verticalOverlap = MacroUtils.loadMacroDouble(macroOptions, VERTICAL_OVERLAP, this.verticalOverlap);
@@ -455,7 +451,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   }
 
   @Override
-  public void saveParams(Preferences pref) {   
+  public void saveParams(Preferences pref) {
     pref.put(PROGRAM_TYPE, this.programType.name());
     pref.putInt(NUM_CPU_THREADS, this.numCPUThreads);
     pref.putBoolean(LOAD_FFTW_PLAN, this.loadFFTWPlan);
@@ -466,7 +462,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.put(PLAN_PATH, this.planPath);
     pref.put(FFTW_LIBRARY_PATH, this.fftwLibraryPath);
     pref.put(GLOBAL_OPT, this.globalOpt.name());
-    pref.putBoolean(USE_HILL_CLIMBING, this.useHillClimbing);   
+    pref.putBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     pref.putInt(STAGE_REPEATABILITY, this.stageRepeatability);
     pref.putDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
     pref.putDouble(VERTICAL_OVERLAP, this.verticalOverlap);
@@ -479,7 +475,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   @Override
   public boolean saveParams(FileWriter fw) {
     String newLine = "\n";
-    try {     
+    try {
       fw.write(PROGRAM_TYPE + ": " + this.programType.name() + newLine);
       fw.write(NUM_CPU_THREADS + ": " + this.numCPUThreads + newLine);
       fw.write(LOAD_FFTW_PLAN + ": " + this.loadFFTWPlan + newLine);
@@ -490,7 +486,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(PLAN_PATH + ": " + this.planPath + newLine);
       fw.write(FFTW_LIBRARY_PATH + ": " + this.fftwLibraryPath + newLine);
       fw.write(GLOBAL_OPT + ": " + this.globalOpt.name() + newLine);
-      fw.write(USE_HILL_CLIMBING + ": " + this.useHillClimbing + newLine);      
+      fw.write(USE_HILL_CLIMBING + ": " + this.useHillClimbing + newLine);
 
       fw.write(STAGE_REPEATABILITY + ": " + this.stageRepeatability + newLine);
       fw.write(HORIZONTAL_OVERLAP + ": " + this.horizontalOverlap + newLine);
@@ -512,7 +508,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     } catch (IOException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
-    return false;    
+    return false;
   }
 
   /**
@@ -758,9 +754,13 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.numFFTPeaks = numFFTPeaks;
   }
 
-  public boolean isUseDoublePrecision() { return this.useDoublePrecision; }
+  public boolean isUseDoublePrecision() {
+    return this.useDoublePrecision;
+  }
 
-  public void setUseDoublePrecision(boolean val) { this.useDoublePrecision = val; }
+  public void setUseDoublePrecision(boolean val) {
+    this.useDoublePrecision = val;
+  }
 
   /**
    * @return the overlapUncertainty

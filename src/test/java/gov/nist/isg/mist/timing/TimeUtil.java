@@ -30,7 +30,7 @@ package gov.nist.isg.mist.timing;
 
 /**
  * Timing utlity functions for obtaining timing information in milliseconds.
- * 
+ *
  * <pre>
  * <code>
  * TimeUtil.tick();
@@ -38,7 +38,7 @@ package gov.nist.isg.mist.timing;
  * System.out.println("The compute time is: " + TimeUtil.tock() + " ms");
  * </code>
  * </pre>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -60,7 +60,7 @@ public class TimeUtil {
 
   /**
    * Utility function to get the time from calling tick. Must call tick before calling tock.
-   * 
+   *
    * @return the difference between calling tick and tock
    */
   public static long tock() {

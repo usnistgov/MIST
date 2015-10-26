@@ -39,21 +39,21 @@ import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.File;
 
 /**
  * Cretes a panel to select FFTW options
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
-	 * 
-	 */
+   *
+   */
   private static final long serialVersionUID = 1L;
 
   private TextFieldInputPanel<Integer> numThreadsCPU;
@@ -119,7 +119,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the number of CPU threads the user specified
-   * 
+   *
    * @return the number of CPU threads
    */
   public int getNumCPUThreads() {
@@ -129,7 +129,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the user specified FFTW plan type
-   * 
+   *
    * @return the FFTW plan type
    */
   public FftwPlanType getPlanType() {
@@ -138,7 +138,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets whether or not the user wishes the save the plan to file
-   * 
+   *
    * @return true if the user wants the plan to be saved
    */
   public boolean getSavePlanToFile() {
@@ -147,7 +147,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets whether or not the user wishes the load the plan from file
-   * 
+   *
    * @return true if the user wants the plan to be loaded
    */
   public boolean getLoadPlanFromFile() {
@@ -156,7 +156,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the path for the plan that the user specified
-   * 
+   *
    * @return the plan path
    */
   public String getSavedPlanPath() {
@@ -165,7 +165,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the FFTW library path that the user specified
-   * 
+   *
    * @return the path to the library
    */
   public String getFftwLibraryPath() {
@@ -181,7 +181,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the FFTW library name that the user specified
-   * 
+   *
    * @return the name of the library
    */
   public String getFftwLibraryName() {
@@ -216,7 +216,7 @@ public class FFTWPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the FFTW library filename that the user specified
-   * 
+   *
    * @return the FFTW library filename
    */
   public String getFftwLibraryFileName() {

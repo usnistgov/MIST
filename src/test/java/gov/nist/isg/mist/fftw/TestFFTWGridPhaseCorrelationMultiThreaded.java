@@ -42,6 +42,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.SequentialTileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -50,7 +51,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles with multithreading using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -61,35 +62,35 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
    */
   public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     // UtilFnsStitching.disableUtilFnsNativeLibrary();
-      Log.setLogLevel(LogType.INFO);
-      int startRow = 0;
-      int startCol = 0;
-      int extentWidth = 23;
-      int extentHeight = 30;
+    Log.setLogLevel(LogType.INFO);
+    int startRow = 0;
+    int startCol = 0;
+    int extentWidth = 23;
+    int extentHeight = 30;
 
-      Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded FFTW");
+    Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded FFTW");
 
-      File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
-      FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3");
+    File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
+    FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3");
 
-      Log.msg(LogType.INFO, "Generating tile grid");
-      TileGrid<ImageTile<Pointer<Double>>> grid = null;
-      try {
-          TileGridLoader loader =
-                  new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
-                          GridDirection.VERTICALCOMBING);
+    Log.msg(LogType.INFO, "Generating tile grid");
+    TileGrid<ImageTile<Pointer<Double>>> grid = null;
+    try {
+      TileGridLoader loader =
+          new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+              GridDirection.VERTICALCOMBING);
 
 
-          grid =
-                  new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,
-                          loader, tileDir, FftwImageTile.class);
-      } catch (InvalidClassException e) {
-          Log.msg(LogType.MANDATORY, e.getMessage());
-      }
+      grid =
+          new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,
+              loader, tileDir, FftwImageTile.class);
+    } catch (InvalidClassException e) {
+      Log.msg(LogType.MANDATORY, e.getMessage());
+    }
 
     if (grid == null)
       return;
-    
+
     ImageTile<Pointer<Double>> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
 
@@ -100,8 +101,8 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
     FftwImageTile.savePlan("test.dat");
 
     // 4, 34 -> 5,34
-      int numProducers = 1;
-      int numWorkers = 22;
+    int numProducers = 1;
+    int numWorkers = 22;
     CPUStitchingThreadExecutor<Pointer<Double>> executor =
         new CPUStitchingThreadExecutor<Pointer<Double>>(numProducers, numWorkers, tile, grid);
 
@@ -113,9 +114,9 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
 
     Log.msg(LogType.INFO, "Computing global optimization");
 
-      Stitching.outputRelativeDisplacements(grid, new File(
-              "C:\\majurski\\image-data\\1h_Wet_10Perc\\fftw",
-              "relDisp.txt"));
+    Stitching.outputRelativeDisplacements(grid, new File(
+        "C:\\majurski\\image-data\\1h_Wet_10Perc\\fftw",
+        "relDisp.txt"));
 
 
     Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
@@ -127,16 +128,14 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
     try {
-        TestFFTWGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
-    }
-    catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestFFTWGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

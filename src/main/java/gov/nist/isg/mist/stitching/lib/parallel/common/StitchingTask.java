@@ -32,10 +32,9 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
 /**
  * A task descriptor passed between threads.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
 
@@ -102,7 +101,7 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
      * The task is notifying that it is being cancelled
      */
     CANCELLED,
-    
+
     SENTINEL,
 
   }
@@ -117,10 +116,10 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
 
   /**
    * Initializes a task with a tile, its neighbor, and its type
-   * 
-   * @param tile the origin tile
+   *
+   * @param tile     the origin tile
    * @param neighbor the neighbor tile
-   * @param task the task type
+   * @param task     the task type
    */
   public StitchingTask(ImageTile<T> tile, ImageTile<T> neighbor, TaskType task) {
     this(tile, neighbor, null, 0, 0, task);
@@ -129,16 +128,16 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
 
   /**
    * Initializes a task for use with CCF. Also used by other constructors
-   * 
-   * @param tile the origin tile
+   *
+   * @param tile     the origin tile
    * @param neighbor the neighbor tile
-   * @param indices the indices for CCF computation (could be 1 or more)
-   * @param devID the GPU device id
+   * @param indices  the indices for CCF computation (could be 1 or more)
+   * @param devID    the GPU device id
    * @param threadID the thread id
-   * @param task the task type
+   * @param task     the task type
    */
-  public StitchingTask(ImageTile<T> tile, ImageTile<T> neighbor, int[] indices,  int devID,
-      int threadID, TaskType task) {
+  public StitchingTask(ImageTile<T> tile, ImageTile<T> neighbor, int[] indices, int devID,
+                       int threadID, TaskType task) {
     this.tile = tile;
     this.neighbor = neighbor;
     this.task = task;
@@ -163,8 +162,6 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
 
   /**
    * Sets indices for this task
-   * 
-   * @param indices
    */
   public void setIndices(int[] indices) {
     this.indices = indices;
@@ -179,8 +176,6 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
 
   /**
    * Sets the task type
-   * 
-   * @param task
    */
   public void setTask(TaskType task) {
     this.task = task;
@@ -216,14 +211,9 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
   }
 
   /**
-   * Compares a task with another task determining the priority of tasks. 
-   * Priority from lowest to highest:
-   * CANCELLED,
-   * BK_CHECK_MEM,
-   * MULTI_MAX,
-   * PCIAM_NORTH/PCIAM_WEST,
-   * FFT
-   * 
+   * Compares a task with another task determining the priority of tasks. Priority from lowest to
+   * highest: CANCELLED, BK_CHECK_MEM, MULTI_MAX, PCIAM_NORTH/PCIAM_WEST, FFT
+   *
    * @param o the other task
    */
   @Override
@@ -253,7 +243,7 @@ public class StitchingTask<T> implements Comparable<StitchingTask<T>> {
     else if (this.getTask() == TaskType.SENTINEL)
       return -1;
     else if (o.getTask() == TaskType.SENTINEL)
-      return 1;    
+      return 1;
     else
       return 0;
   }

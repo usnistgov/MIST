@@ -33,6 +33,7 @@ import jcuda.LibUtils.ARCHType;
 import jcuda.LibUtils.OSType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -40,13 +41,13 @@ import java.lang.reflect.Field;
 
 /**
  * Utility class for adding paths at runtime to the environment.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
 public class LibraryUtils {
 
-    public static final String JCUDA_VERSION = "6.5";
+  public static final String JCUDA_VERSION = "6.5";
 //  public static final String JCUDA_VERSION = "5.0";
 
   /**
@@ -72,8 +73,8 @@ public class LibraryUtils {
       if (arch != ARCHType.X86_64) {
         if (!GraphicsEnvironment.isHeadless())
           JOptionPane.showMessageDialog(null, "Warning: 32-bit architecture detected.\n"
-              + "Unable to use FFTW or CUDA, " + "please upgrade to 64-bit if possible.\n"
-              + "Due to memory limits, saving large images may fail.", "32-bit Detected",
+                  + "Unable to use FFTW or CUDA, " + "please upgrade to 64-bit if possible.\n"
+                  + "Due to memory limits, saving large images may fail.", "32-bit Detected",
               JOptionPane.WARNING_MESSAGE);
       }
 

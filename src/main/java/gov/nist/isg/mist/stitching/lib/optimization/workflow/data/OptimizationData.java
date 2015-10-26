@@ -36,51 +36,49 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 public class OptimizationData<T> {
 
 
-    public enum TaskType {
-        READ,
-        BK_CHECK_NEIGHBORS,
-        BK_CHECK_MEMORY,
-        OPTIMIZE_NORTH,
-        OPTIMIZE_WEST,
-        BK_DONE,
-        CANCELLED
+  public enum TaskType {
+    READ,
+    BK_CHECK_NEIGHBORS,
+    BK_CHECK_MEMORY,
+    OPTIMIZE_NORTH,
+    OPTIMIZE_WEST,
+    BK_DONE,
+    CANCELLED
 
-    }
-
-
-    private ImageTile<T> tile;
-    private ImageTile<T> neighbor;
-
-    private TaskType type;
-
-    public OptimizationData(ImageTile<T> tile, TaskType type)
-    {
-        this.tile = tile;
-        this.type = type;
-    }
+  }
 
 
-    public OptimizationData(ImageTile<T> tile, ImageTile<T> neighbor, TaskType type)
-    {
-        this.tile = tile;
-        this.neighbor = neighbor;
+  private ImageTile<T> tile;
+  private ImageTile<T> neighbor;
 
-        this.type = type;
-    }
+  private TaskType type;
 
-    public ImageTile<T> getTile() {
-        return tile;
-    }
+  public OptimizationData(ImageTile<T> tile, TaskType type) {
+    this.tile = tile;
+    this.type = type;
+  }
 
-    public ImageTile<T> getNeighbor() {
-        return neighbor;
-    }
 
-    public TaskType getType() {
-        return type;
-    }
+  public OptimizationData(ImageTile<T> tile, ImageTile<T> neighbor, TaskType type) {
+    this.tile = tile;
+    this.neighbor = neighbor;
 
-    public void setType(TaskType type) {
-        this.type = type;
-    }
+    this.type = type;
+  }
+
+  public ImageTile<T> getTile() {
+    return tile;
+  }
+
+  public ImageTile<T> getNeighbor() {
+    return neighbor;
+  }
+
+  public TaskType getType() {
+    return type;
+  }
+
+  public void setType(TaskType type) {
+    this.type = type;
+  }
 }

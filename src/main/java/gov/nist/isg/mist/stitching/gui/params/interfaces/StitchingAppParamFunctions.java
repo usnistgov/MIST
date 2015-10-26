@@ -34,39 +34,44 @@ import java.util.prefs.Preferences;
 
 /**
  * StitchingAppParamFunctions describes the stitching app param functions
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public interface StitchingAppParamFunctions {
 
   /**
    * Checks parameters
+   *
    * @return true if parameters check is successful, otherwise false
    */
   public boolean checkParams();
-  
+
   /**
    * Loads parameters from a fileReader
+   *
    * @param file the file to load params from
    * @return true if loading was successful, otherwise false
    */
   public boolean loadParams(File file);
-  
+
   /**
    * Loads parameters from preferences
+   *
    * @param preferences the preferences you wish to load
    * @return true if loading was successful, otherwise false
    */
   public boolean loadParams(Preferences preferences);
-  
+
   /**
-   * Prints parameters specifying a log level 
+   * Prints parameters specifying a log level
+   *
    * @param logLevel the log level to use for printing parameters
    */
   public void printParams(LogType logLevel);
 
   /**
    * Loads parameters from macro
+   *
    * @param macroOptions the macro options to load
    */
   public void loadMacro(String macroOptions);
@@ -75,19 +80,21 @@ public interface StitchingAppParamFunctions {
    * Records parameters into macro
    */
   public void recordMacro();
-  
+
   /**
    * Saves parameters into preferences
+   *
    * @param preferences the preferences to save
    */
   public void saveParams(Preferences preferences);
-  
+
   /**
    * Saves parameters into file
+   *
    * @param writer the file writer to save
    * @return true if the save was successful, otherwise false
    */
   public boolean saveParams(FileWriter writer);
-  
-  
+
+
 }

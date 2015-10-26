@@ -33,7 +33,7 @@ import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
 /**
  * Validator that checks if the subgrid parameters are correct based on the width and height of a
  * plate.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -43,7 +43,7 @@ public class CheckSubGridModel extends IntModel {
 
   /**
    * Creates a sub grid validator.
-   * 
+   *
    * @param advPanel the panel where the subgrid exists
    */
   public CheckSubGridModel(SubgridPanel advPanel) {
@@ -53,9 +53,9 @@ public class CheckSubGridModel extends IntModel {
   /**
    * Checks a sub grid validator, also keeping the value in bounds by min (inclusive) and max
    * (inclusive)
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min      the minimum value that is valid (inclusive)
+   * @param max      the maximum value that is valid (inclusive)
    * @param advPanel the panel where the subgrid exists
    */
   public CheckSubGridModel(int min, int max, SubgridPanel advPanel) {

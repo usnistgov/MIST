@@ -31,17 +31,14 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
 
     TileGrid<ImageTile<T>> grid = null;
 
-    if (params.getInputParams().isTimeSlicesEnabled())
-    {
+    if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
         grid =
             new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }
-    else
-    {
+    } else {
       try {
         grid = new TileGrid<ImageTile<T>>(params, JavaImageTile.class);
       } catch (InvalidClassException e) {
@@ -72,7 +69,7 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
 
     TileWorkerMemory memory = null;
     for (ImageTile<T> t : traverser) {
-      if(this.isCanceled) return;
+      if (this.isCanceled) return;
 
       t.setThreadID(0);
 
@@ -95,7 +92,7 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
         Log.msgNoTime(
             Log.LogType.HELPFUL,
             " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-            + t.getWestTranslation());
+                + t.getWestTranslation());
 
 
         west.releaseFftMemory();
@@ -114,7 +111,7 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
         Log.msgNoTime(
             Log.LogType.HELPFUL,
             " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName() + "\"): "
-            + t.getNorthTranslation());
+                + t.getNorthTranslation());
 
 
         north.releaseFftMemory();
@@ -150,28 +147,28 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
     tile.readTile();
 
     // Account for image pixel data
-    requiredMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    requiredMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
 
     // Account for image pixel data up conversion
-    long byteDepth = tile.getBitDepth()/8;
-    if(byteDepth != 2) {
+    long byteDepth = tile.getBitDepth() / 8;
+    if (byteDepth != 2) {
       // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
-      requiredMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
+      requiredMemoryBytes += (long) numWorkers * (long) tile.getHeight() * (long) tile.getWidth() * byteDepth;
     }
 
     // Account for Java FFT data
     int[] n =
         {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
-         JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+            JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
     long size = 1;
-    for(int val : n)
+    for (int val : n)
       size *= val;
     requiredMemoryBytes += memoryPoolCount * size * 4L; // float[n1][n2]
 
     requiredMemoryBytes += size * 4L; // new float[fftHeight][fftWidth];
 
     // pad with 100MB
-    requiredMemoryBytes += 100L*1024L*1024L;
+    requiredMemoryBytes += 100L * 1024L * 1024L;
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }

@@ -47,7 +47,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles with multithreading using Java.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -80,10 +80,10 @@ public class TestJavaGridPhaseCorrelationMultiThreaded {
     }
 
     Log.msg(LogType.HELPFUL, "Loading Java plan");
-    
+
     if (grid == null)
       return;
-    
+
     ImageTile<float[][]> tile = grid.getSubGridTile(0, 0);
     JavaImageTile.initJavaPlan(tile);
 
@@ -102,15 +102,14 @@ public class TestJavaGridPhaseCorrelationMultiThreaded {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
-      try {
-          TestJavaGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
-      } catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
-      }
+    try {
+      TestJavaGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
+    }
   }
 }

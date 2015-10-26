@@ -35,7 +35,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * Test case for computing the custom CUDA kernels
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -71,7 +71,7 @@ public class TestJCUDACustomKernel {
 
       Pointer kernelParams =
           Pointer.to(Pointer.to(deviceData1), Pointer.to(deviceData2), Pointer.to(deviceData3),
-              Pointer.to(new int[] {64}));
+              Pointer.to(new int[]{64}));
 
       checkError(JCudaDriver.cuLaunchKernel(function, numBlocks, 1, 1, numThreads, 1, 1, 32, null,
           kernelParams, null));
@@ -92,7 +92,7 @@ public class TestJCUDACustomKernel {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {

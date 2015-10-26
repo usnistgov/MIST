@@ -45,10 +45,9 @@ import java.util.concurrent.ExecutionException;
 /**
  * Creates the main NIST image sitching application. Run as a standalone application or a Fiji
  * plugin. Also can be run as a macro.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class MIST implements PlugIn {
 
@@ -59,7 +58,7 @@ public class MIST implements PlugIn {
 
   /**
    * Enumeration of execution types to run
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -112,7 +111,7 @@ public class MIST implements PlugIn {
   /**
    * Starts the application. If a macro is running, then it will execute using the macro parameters.
    * Otherwise it will use the GUI.
-   * 
+   *
    * @param app the stitching gui
    */
   public static void runApp(StitchingGUIFrame app) {
@@ -151,7 +150,7 @@ public class MIST implements PlugIn {
 
   /**
    * Checks if stitching is being executed or not
-   * 
+   *
    * @return true if stitching is executing
    */
   public static boolean isStitching() {
@@ -174,7 +173,7 @@ public class MIST implements PlugIn {
 
   /**
    * Checks if the run is a macro or not
-   * 
+   *
    * @return true if the run is a macro
    */
   public static boolean isMacro() {
@@ -183,7 +182,7 @@ public class MIST implements PlugIn {
 
   /**
    * Gets the macro options
-   * 
+   *
    * @return the macro options
    */
   public static String getMacroOptions() {
@@ -212,7 +211,7 @@ public class MIST implements PlugIn {
 
   /**
    * Main entry point for executing
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
@@ -225,7 +224,7 @@ public class MIST implements PlugIn {
       MIST.runApp(gui);
     }
 
-    
+
   }
 
   @Override

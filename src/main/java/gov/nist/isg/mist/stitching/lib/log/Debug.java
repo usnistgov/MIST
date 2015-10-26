@@ -31,19 +31,17 @@ package gov.nist.isg.mist.stitching.lib.log;
 import ij.IJ;
 
 /**
- * Utility functions for printing debug information.
- * <p>
- * A debug message is only printed if the debug level is set to something greater than or equal to
- * the static debug level.
- * 
+ * Utility functions for printing debug information. <p> A debug message is only printed if the
+ * debug level is set to something greater than or equal to the static debug level.
+ *
  * <pre>
- * <code> 
+ * <code>
  * Debug.setDebugLevel(debugLevel); // to set debug level for printing
  * Debug.msg(level, "Debug message with newline");
  * Debug.msgnonl(level, "Debug message without newline");
  * </code>
  * </pre>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -90,7 +88,7 @@ public class Debug {
     public String toString() {
       return this.text;
     }
-  
+
 
   }
 
@@ -98,7 +96,7 @@ public class Debug {
 
   /**
    * Sets the debugger level
-   * 
+   *
    * @param level the new debug level
    */
   public static void setDebugLevel(String level) {
@@ -111,7 +109,7 @@ public class Debug {
 
   /**
    * Set debugger level.
-   * 
+   *
    * @param level the new debug level
    */
   public static void setDebugLevel(DebugType level) {
@@ -120,8 +118,8 @@ public class Debug {
 
   /**
    * Prints debug message at level with newline
-   * 
-   * @param level the debug level
+   *
+   * @param level   the debug level
    * @param message the message
    */
   public static void msg(DebugType level, String message) {
@@ -146,8 +144,8 @@ public class Debug {
 
   /**
    * Prints debug message at level without newline
-   * 
-   * @param level the debug level
+   *
+   * @param level   the debug level
    * @param message the message
    */
   public static void msgnonl(DebugType level, String message) {
@@ -170,11 +168,11 @@ public class Debug {
 
   /**
    * Gets the debug level
+   *
    * @return the debug level
    */
-  public static DebugType getDebugLevel()
-  {
+  public static DebugType getDebugLevel() {
     return debugLevel;
   }
-  
+
 }

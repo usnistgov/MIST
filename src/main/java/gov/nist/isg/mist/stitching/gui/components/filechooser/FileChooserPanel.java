@@ -29,6 +29,7 @@
 package gov.nist.isg.mist.stitching.gui.components.filechooser;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,10 +40,9 @@ import java.io.File;
 /**
  * FileChooserPanel is used as a wrapper to contain a file chooser Utility functions for getting the
  * selected file are available.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class FileChooserPanel extends JPanel implements FocusListener, ActionListener {
 
@@ -68,7 +68,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   /**
    * Creates a file chooser
    *
-   * @param label the label associated with the file chooser
+   * @param label    the label associated with the file chooser
    * @param helpText the help text
    */
   public FileChooserPanel(String label, String helpText) {
@@ -77,9 +77,9 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
   /**
    * Creates a file chooser
-   * 
-   * @param label the label associated with the file chooser
-   * @param helpText the help text
+   *
+   * @param label       the label associated with the file chooser
+   * @param helpText    the help text
    * @param defLocation the default file
    */
   public FileChooserPanel(String label, String helpText, String defLocation) {
@@ -96,7 +96,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
     this.input.setToolTipText(label);
 
     this.button.addActionListener(this);
-    
+
     add(this.label);
     add(this.input);
     add(this.button);
@@ -118,7 +118,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
       // Add question mark
       questionButton = new JButton("?");
-      questionButton.setPreferredSize(new Dimension(15,20));
+      questionButton.setPreferredSize(new Dimension(15, 20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();
@@ -132,7 +132,6 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
       add(questionButton);
     }
   }
-
 
 
   /**
@@ -151,8 +150,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
   }
 
   @Override
-  public void setEnabled(boolean enabled)
-  {
+  public void setEnabled(boolean enabled) {
     super.setEnabled(enabled);
     label.setEnabled(enabled);
     input.setEnabled(enabled);
@@ -161,7 +159,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
   /**
    * Sets the value for the file chooser
-   * 
+   *
    * @param value the file location
    */
   public void setValue(String value) {
@@ -170,7 +168,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
   /**
    * Gets the value for the file chooser
-   * 
+   *
    * @return the value of the file chooser
    */
   public String getValue() {
@@ -183,13 +181,13 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
    * @param text the text to set the help text to
    */
   public void setHelpText(String text) {
-    if(text != null)
+    if (text != null)
       this.helpTextArea.setText(text);
   }
 
   /**
    * Gets the file for the file chooser
-   * 
+   *
    * @return the file for the file chooser
    */
   public File getFile() {
@@ -198,21 +196,21 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
 
   @Override
   public void focusGained(FocusEvent arg0) {
-    this.input.selectAll();    
+    this.input.selectAll();
   }
 
   @Override
   public void focusLost(FocusEvent arg0) {
-    this.input.setSelectionEnd(0);    
+    this.input.setSelectionEnd(0);
   }
 
   @Override
   public void actionPerformed(ActionEvent arg0) {
 
-    if(arg0.getSource() == this.questionButton) {
-        this.helpDialog.setVisible(true);
+    if (arg0.getSource() == this.questionButton) {
+      this.helpDialog.setVisible(true);
     }
-    if(arg0.getSource() == this.button) {
+    if (arg0.getSource() == this.button) {
       JFileChooser chooser = new JFileChooser(FileChooserPanel.this.input.getText());
       chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
@@ -221,7 +219,7 @@ public class FileChooserPanel extends JPanel implements FocusListener, ActionLis
         this.input.setText(chooser.getSelectedFile().getAbsolutePath());
       }
     }
-  }    
-  
+  }
+
 
 }

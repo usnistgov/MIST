@@ -33,10 +33,9 @@ import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
 
 /**
  * Validator that checks integers and if valid updates a referenced sub-grid
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CheckSubGridAndFileSizeModel extends CheckSubGridModel {
 
@@ -45,9 +44,9 @@ public class CheckSubGridAndFileSizeModel extends CheckSubGridModel {
 
   /**
    * Creates a validator that updates the sub-grid when the check passes
-   * 
+   *
    * @param subgridPanel the panel where the sub-grid exists
-   * @param outputPanel the output panel to reference the file size
+   * @param outputPanel  the output panel to reference the file size
    */
   public CheckSubGridAndFileSizeModel(SubgridPanel subgridPanel, OutputPanel outputPanel) {
     super(subgridPanel);
@@ -57,14 +56,14 @@ public class CheckSubGridAndFileSizeModel extends CheckSubGridModel {
 
   /**
    * Creates a validator that updates the sub-grid when the check passes
-   * 
-   * @param min the minimum value that is valid (inclusive)
-   * @param max the maximum value that is valid (inclusive)
+   *
+   * @param min          the minimum value that is valid (inclusive)
+   * @param max          the maximum value that is valid (inclusive)
    * @param subgridPanel the panel where the subgrid exists
-   * @param outputPanel the output panel to reference the file size
+   * @param outputPanel  the output panel to reference the file size
    */
   public CheckSubGridAndFileSizeModel(int min, int max, SubgridPanel subgridPanel,
-      OutputPanel outputPanel) {
+                                      OutputPanel outputPanel) {
     super(min, max, subgridPanel);
     this.outputPanel = outputPanel;
     this.subgridPanel = subgridPanel;

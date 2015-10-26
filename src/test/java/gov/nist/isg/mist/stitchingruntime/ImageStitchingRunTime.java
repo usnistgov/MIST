@@ -42,6 +42,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class ImageStitchingRunTime {
 
   static {
     LibraryUtils.initalize();
-  }  
+  }
 
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
@@ -63,22 +64,20 @@ public class ImageStitchingRunTime {
 //  private static String fftwLibraryPath = "C:\\Users\\tjb3\\Documents\\MIST-ISG\\MIST\\lib\\fftw";
 
   private static String validationRootFolder = "E:\\image-data\\Stitching_Paper_Data\\datasets";
-//  private static String validationRootFolder = "C:\\majurski\\image-data\\Stitching_Paper_Data";
+  //  private static String validationRootFolder = "C:\\majurski\\image-data\\Stitching_Paper_Data";
 //  private static String validationRootFolder = "E:\\image-data\\ImageJ_Conference";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
   private static int NUM_RUNS = 1;
 
-  public static void main(String [] args)
-  {
+  public static void main(String[] args) {
 
 
     boolean useMLE = false;
 
     if (args.length >= 0) {
-      switch(args.length)
-      {
+      switch (args.length) {
         case 1:
           validationRootFolder = args[0];
           break;
@@ -96,7 +95,7 @@ public class ImageStitchingRunTime {
           fftwPlanPath = args[1];
           fftwLibraryPath = args[2];
           String tmp = args[3];
-          if(tmp.contains("-mle")) {
+          if (tmp.contains("-mle")) {
             useMLE = true;
             System.out.println("Using MLE and outlier filtering");
           }
@@ -105,7 +104,7 @@ public class ImageStitchingRunTime {
           System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath> <-mle>");
           break;
       }
-    }else{
+    } else {
       System.out.println("Usage: ImageStitchingRunTime <rootFolder> <fftwPlanPath> <fftwLibraryPath> <-mle>");
     }
 
@@ -124,8 +123,7 @@ public class ImageStitchingRunTime {
   private static void runFolder(boolean useMLE) {
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
-    if (!rootFolder.exists() && !rootFolder.isDirectory())
-    {
+    if (!rootFolder.exists() && !rootFolder.isDirectory()) {
       System.out.println("Error: Unable to find root folder: " + validationRootFolder);
       System.exit(1);
     }
@@ -143,9 +141,9 @@ public class ImageStitchingRunTime {
     StitchingAppParams params;
 
     File runtimeResults;
-    if(useMLE) {
+    if (useMLE) {
       runtimeResults = new File(validationRootFolder + File.separator + "mle-runtimes.txt");
-    }else{
+    } else {
       runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
     }
     try {
@@ -172,9 +170,6 @@ public class ImageStitchingRunTime {
         List<CudaDeviceParam> cudaDevices = cudaPanel.getSelectedDevices();
 
 
-
-
-
         params.getInputParams().setImageDir(r.getAbsolutePath());
         params.getAdvancedParams().setNumCPUThreads(Runtime.getRuntime().availableProcessors());
         params.getAdvancedParams().setPlanPath(fftwPlanPath);
@@ -190,12 +185,12 @@ public class ImageStitchingRunTime {
         params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
 
-        if(useMLE) {
+        if (useMLE) {
           params.getAdvancedParams()
               .setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
           params.getAdvancedParams()
               .setTranslationFilterType(OptimizationUtils.TranslationFilterType.Outlier);
-        }else {
+        } else {
           params.getAdvancedParams()
               .setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
           params.getAdvancedParams()
@@ -213,7 +208,6 @@ public class ImageStitchingRunTime {
             if (!cudaPanel.isCudaAvailable())
               continue;
           }
-
 
 
           double totalRunTime = 0;

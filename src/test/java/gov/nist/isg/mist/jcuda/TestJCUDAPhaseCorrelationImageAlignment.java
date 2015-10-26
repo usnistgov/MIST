@@ -49,7 +49,7 @@ import java.io.IOException;
 
 /**
  * Test case for computing the phase correlation between two images using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -81,7 +81,7 @@ public class TestJCUDAPhaseCorrelationImageAlignment {
     Log.msg(LogType.INFO, origin.toString());
 
     Log.msg(LogType.INFO, "Initializing JCUDA");
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[] {0}, neighbor);
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, neighbor);
     CudaImageTile.initFunc(1);
     try {
       CudaImageTile.initPlans(neighbor.getWidth(), neighbor.getHeight(), contexts[0], 0);
@@ -115,18 +115,15 @@ public class TestJCUDAPhaseCorrelationImageAlignment {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
-      try
-      {
-        TestJCUDAPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
-      }
-      catch (FileNotFoundException e)
-      {
-          Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-      }
+    try {
+      TestJCUDAPhaseCorrelationImageAlignment.runTestPhaseCorrelationImageAlignment();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 
 }

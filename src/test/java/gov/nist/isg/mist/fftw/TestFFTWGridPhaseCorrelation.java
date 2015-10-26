@@ -43,6 +43,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -51,7 +52,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -60,7 +61,7 @@ public class TestFFTWGridPhaseCorrelation {
   /**
    * Computes the phase correlation using a single thread on a grid of tiles using FFTW
    */
-  public static void runTestGridPhaseCorrelation() throws FileNotFoundException{
+  public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
 
     Log.setLogLevel(LogType.INFO);
     int startRow = 0;
@@ -90,7 +91,7 @@ public class TestFFTWGridPhaseCorrelation {
 
     if (grid == null)
       return;
-    
+
     ImageTile<Pointer<Double>> tile = grid.getSubGridTile(0, 0);
 
     tile.readTile();
@@ -112,21 +113,18 @@ public class TestFFTWGridPhaseCorrelation {
     Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
 
 
-
   }
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
-      try {
-          TestFFTWGridPhaseCorrelation.runTestGridPhaseCorrelation();
-      }
-      catch (FileNotFoundException e)
-      {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
-      }
+    try {
+      TestFFTWGridPhaseCorrelation.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+    }
   }
 }

@@ -32,26 +32,27 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
+
 import java.io.FileNotFoundException;
 
 
 /**
  * StitchingExecutorInterface interface for various stitching executors
- * @author Tim Blattner
  *
- * @param <T>
+ * @author Tim Blattner
  */
 public interface StitchingExecutorInterface<T> {
 
   /**
    * Initializes a grid of tiles
-   * @param params the stitching application params
+   *
+   * @param params    the stitching application params
    * @param timeSlice the timeslice
    * @return the grid initialized using the stitching app params
    */
   TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
       throws FileNotFoundException;
-  
+
   /**
    * Cancels the execution
    */
@@ -59,24 +60,25 @@ public interface StitchingExecutorInterface<T> {
 
   /**
    * Launches stitching
-   * @param grid the image tile grid
-   * @param params the stitching application parameters
+   *
+   * @param grid        the image tile grid
+   * @param params      the stitching application parameters
    * @param progressBar the progress bar
-   * @param timeSlice the timeslice
-   * @throws Throwable
+   * @param timeSlice   the timeslice
    */
   void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice)
       throws Throwable;
 
   /**
    * Checks for required libraries.
-   * @param params the stitching application params
+   *
+   * @param params     the stitching application params
    * @param displayGui whether to display gui or not
    * @return true if the libraries are available, otherwise false
    */
   boolean checkForLibs(StitchingAppParams params, boolean displayGui);
 
-  
+
   /**
    * Cleans-up / releases any resources used by the executor
    */
@@ -85,11 +87,12 @@ public interface StitchingExecutorInterface<T> {
 
   /**
    * Checks to see if the JVM has enough memory to launch this grid
-   * @param grid the image tile grid
+   *
+   * @param grid       the image tile grid
    * @param numWorkers the number of worker threads
    */
   <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
       throws FileNotFoundException;
 
-  
+
 }

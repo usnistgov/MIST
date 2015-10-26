@@ -46,7 +46,7 @@ import static jcuda.driver.JCudaDriver.*;
 
 /**
  * Utility class for initializing JCUDA.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -82,15 +82,14 @@ public class CudaUtils {
   public static final int TBL_COL_CAPABIL = 3;
 
 
-
   private static boolean initialized = false;
   private static CUdevice[] devices = null;
   private static CUcontext[] contexts = null;
 
   /**
    * Initializes GPUs
-   * 
-   * @param nGPUs the number of GPUs
+   *
+   * @param nGPUs  the number of GPUs
    * @param gpuIds the array of GPU ids
    * @return the contexts to the GPUs
    */
@@ -117,7 +116,7 @@ public class CudaUtils {
 
   /**
    * Checks if GPUs have been initialized or not
-   * 
+   *
    * @return true if GPUs have been initialized, otherwise false
    */
   public static boolean isGPUInitialized() {
@@ -126,7 +125,7 @@ public class CudaUtils {
 
   /**
    * Gets the GPU contexts
-   * 
+   *
    * @return the GPU contexts
    */
   public static CUcontext[] getGPUContexts() {
@@ -135,8 +134,8 @@ public class CudaUtils {
 
   /**
    * Initializes JCUDA
-   * 
-   * @param devices the list of devices to initialize
+   *
+   * @param devices  the list of devices to initialize
    * @param initTile the initial image tile
    * @return the contexts to the GPUs, or null if intiailization failed
    */
@@ -154,13 +153,13 @@ public class CudaUtils {
 
   /**
    * Initializes JCUDA
-   * 
-   * @param nGPUs the number of GPUs to initialize
-   * @param gpuIDs the array of GPU ids
+   *
+   * @param nGPUs    the number of GPUs to initialize
+   * @param gpuIDs   the array of GPU ids
    * @param initTile the initial image tile
    * @return the context to the GPUs, or null if intiailization failed
    */
-  public static CUcontext[] initJCUDA(int nGPUs, int[] gpuIDs, ImageTile<?> initTile) {    
+  public static CUcontext[] initJCUDA(int nGPUs, int[] gpuIDs, ImageTile<?> initTile) {
     if (contexts != null)
       return contexts;
 
@@ -190,7 +189,7 @@ public class CudaUtils {
 
   /**
    * Destroys the GPU contexts
-   * 
+   *
    * @param nGPUs the number of GPUs
    */
   public static void destroyJCUDA(int nGPUs) {
@@ -204,11 +203,8 @@ public class CudaUtils {
 
   /**
    * Gets GPU table information
-   * 
+   *
    * @return the array of GPU information for displaying in a table
-   * @throws UnsatisfiedLinkError
-   * @throws NoClassDefFoundError
-   * @throws CudaException 
    */
   public static String[][] getTableInformation() throws UnsatisfiedLinkError, NoClassDefFoundError, CudaException {
     setExceptionsEnabled(true);
@@ -287,9 +283,9 @@ public class CudaUtils {
 
   /**
    * Prints description of device Modified from: http://www.jcuda.org/samples/JCudaDeviceQuery.java
-   * 
+   *
    * @param device the CUDA device
-   * @param dev the dev ID
+   * @param dev    the dev ID
    */
   public static void printDescription(CUdevice device, int dev) {
     byte deviceName[] = new byte[CHAR_LEN];
@@ -322,7 +318,7 @@ public class CudaUtils {
   /**
    * Returns a short description of the given CUdevice_attribute constant Obtained from JCUDA
    * deviceQuery example: http://www.jcuda.org/samples/JCudaDeviceQuery.java
-   * 
+   *
    * @return A short description of the given constant
    */
   private static String getAttributeDescription(int attribute) {
@@ -420,7 +416,7 @@ public class CudaUtils {
   /**
    * Returns a list of all CUdevice_attribute constants Obtained from:
    * http://www.jcuda.org/samples/JCudaDeviceQuery.java
-   * 
+   *
    * @return A list of all CUdevice_attribute constants
    */
   private static List<Integer> getAttributes() {
@@ -474,7 +470,7 @@ public class CudaUtils {
   /**
    * Creates a String from a zero-terminated string in a byte array Obtained from:
    * http://www.jcuda.org/samples/JCudaDeviceQuery.java
-   * 
+   *
    * @param bytes The byte array
    * @return The String
    */
@@ -491,11 +487,10 @@ public class CudaUtils {
   }
 
 
-  public static long getFreeCudaMemory(CUcontext context)
-  {
+  public static long getFreeCudaMemory(CUcontext context) {
     JCudaDriver.cuCtxSetCurrent(context);
-    long [] free = new long[1];
-    long [] total = new long[1];
+    long[] free = new long[1];
+    long[] total = new long[1];
     JCudaDriver.cuMemGetInfo(free, total);
 
     return free[0];

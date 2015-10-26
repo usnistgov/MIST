@@ -44,9 +44,11 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Trav
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.memorypool.PointerAllocator32;
+
 import org.bridj.Pointer;
 
 import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -54,10 +56,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 /**
  * Image stitching multi-threaded entry point that sets up multithreaded execution. Initializes task
  * queues, threads, and the memory pool. Execute to initiate execution.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHandler {
 
@@ -81,17 +82,16 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
 
   /**
    * Creates a CPU stitching thread executor
-   * 
+   *
    * @param numProducers the number of producers
-   * @param numWorkers the number of workers
-   * @param initTile the initial tile
-   * @param grid the grid of images
-   * @param progressBar the progress bar
-   * @throws OutOfMemoryError
+   * @param numWorkers   the number of workers
+   * @param initTile     the initial tile
+   * @param grid         the grid of images
+   * @param progressBar  the progress bar
    */
   @SuppressWarnings("unchecked")
   public CPUStitchingThreadExecutor(int numProducers, int numWorkers, ImageTile<T> initTile,
-      TileGrid<ImageTile<T>> grid, JProgressBar progressBar) throws OutOfMemoryError {
+                                    TileGrid<ImageTile<T>> grid, JProgressBar progressBar) throws OutOfMemoryError {
     this.threads = new ArrayList<Thread>(numProducers + numWorkers + 1);
     this.bookKeepers = new ArrayList<BookKeeper<T>>();
     this.producers = new ArrayList<TileProducer<T>>();
@@ -102,7 +102,7 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
 
     this.exceptionThrown = false;
     this.workerThrowable = null;
-    
+
     int gWidth = grid.getExtentWidth();
     int gHeight = grid.getExtentHeight();
 
@@ -127,8 +127,8 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       int[] size = {FftwImageTile32.fftSize};
 
       this.memoryPool =
-              (DynamicMemoryPool<T>) new DynamicMemoryPool<Pointer<Float>>(memoryPoolSize, false,
-                      new PointerAllocator32(), size);
+          (DynamicMemoryPool<T>) new DynamicMemoryPool<Pointer<Float>>(memoryPoolSize, false,
+              new PointerAllocator32(), size);
     } else if (initTile instanceof JavaImageTile) {
 
       int[] size =
@@ -191,7 +191,7 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
    * @param grid
    */
   public CPUStitchingThreadExecutor(int numProducers, int numWorkers, ImageTile<T> initTile,
-      TileGrid<ImageTile<T>> grid) {
+                                    TileGrid<ImageTile<T>> grid) {
     this(numProducers, numWorkers, initTile, grid, null);
 
   }
@@ -245,9 +245,10 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
   public boolean isExceptionThrown() {
     return this.exceptionThrown;
   }
-  public Throwable getWorkerThrowable() { return this.workerThrowable; }
 
-
+  public Throwable getWorkerThrowable() {
+    return this.workerThrowable;
+  }
 
 
 }

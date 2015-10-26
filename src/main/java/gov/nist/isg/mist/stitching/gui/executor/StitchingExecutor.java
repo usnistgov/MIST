@@ -61,9 +61,11 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.GlobalOptimization;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGridUtils;
+
 import org.bridj.Pointer;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -72,16 +74,15 @@ import java.util.List;
 
 /**
  * StitchingExecutor is the thread that executes stitching.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class StitchingExecutor implements Runnable {
 
   /**
    * Type of stitching execution to be done
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -148,19 +149,19 @@ public class StitchingExecutor implements Runnable {
 
   /**
    * Initializes the stitching execution with only params
+   *
    * @param params the stitching app parameters
    */
-  public StitchingExecutor(StitchingAppParams params)
-  {
+  public StitchingExecutor(StitchingAppParams params) {
     this(null, null, params);
   }
 
   /**
    * Initializes the stitching execution
-   * 
+   *
    * @param stitchingGUI the stitching application GUI
-   * @param type the type of execution to be done
-   * @param params the stitching app parameters
+   * @param type         the type of execution to be done
+   * @param params       the stitching app parameters
    */
   public StitchingExecutor(StitchingGUIFrame stitchingGUI, ExecutionType type, StitchingAppParams params) {
     this.params = params;
@@ -201,8 +202,7 @@ public class StitchingExecutor implements Runnable {
           break;
 
       }
-    } catch(StitchingException e)
-    {
+    } catch (StitchingException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
 
@@ -214,11 +214,9 @@ public class StitchingExecutor implements Runnable {
   /**
    * Cancels execution
    */
-  public void cancelExecution()
-  {
+  public void cancelExecution() {
     this.isCancelled = true;
-    if (this.executor != null)
-    {
+    if (this.executor != null) {
       this.executor.cancelExecution();
     }
 
@@ -227,24 +225,20 @@ public class StitchingExecutor implements Runnable {
   }
 
 
-
   /**
    * Cancels the optimization thread
    */
-  public void cancelOptimization()
-  {
+  public void cancelOptimization() {
     if (this.optimizationThread != null && this.optimizationThread.isAlive()) {
       this.globalOptimization.cancelOptimization();
       this.optimizationThread.interrupt();
     }
   }
 
-  public void cancelExport()
-  {
-      if (this.imageExporter != null)
-      {
-          this.imageExporter.cancel();
-      }
+  public void cancelExport() {
+    if (this.imageExporter != null) {
+      this.imageExporter.cancel();
+    }
   }
 
 
@@ -261,7 +255,7 @@ public class StitchingExecutor implements Runnable {
       runStitching(false, true, false);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
-                                 + "Invalid values are highlighted in red");
+          + "Invalid values are highlighted in red");
     }
   }
 
@@ -307,10 +301,11 @@ public class StitchingExecutor implements Runnable {
 
   /**
    * Executes stitching
-   * 
-   * @param assembleFromMeta whether to assemble from meta data or not
-   * @param displayGui whether to display any gui or not
-   * @param stopExecutionIfFileNotFound sets whether to throws a stitching exception if a file not found exception is found
+   *
+   * @param assembleFromMeta            whether to assemble from meta data or not
+   * @param displayGui                  whether to display any gui or not
+   * @param stopExecutionIfFileNotFound sets whether to throws a stitching exception if a file not
+   *                                    found exception is found
    */
   @SuppressWarnings("unchecked")
   public <T> void runStitching(boolean assembleFromMeta, boolean displayGui, boolean stopExecutionIfFileNotFound) throws StitchingException {
@@ -322,42 +317,41 @@ public class StitchingExecutor implements Runnable {
 
     if (assembleFromMeta) {
       stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
-    }else{
-      switch(this.params.getAdvancedParams().getProgramType()) {
+    } else {
+      switch (this.params.getAdvancedParams().getProgramType()) {
         case AUTO:
           // initialize and check fftw first
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
 
           // If the libs are not available for FFTW, then check Java
-          if (!stitchingExecutorInf.checkForLibs(this.params, displayGui))
-          {
+          if (!stitchingExecutorInf.checkForLibs(this.params, displayGui)) {
             stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
           }
 
           break;
         case CUDA:
-          stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);       
+          stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
           break;
         case FFTW:
           // update the fftw library to change between the float and double versions
-          if(params.getAdvancedParams().isUseDoublePrecision()) {
+          if (params.getAdvancedParams().isUseDoublePrecision()) {
             String libFN = params.getAdvancedParams().getFftwLibraryFileName();
-            if(libFN.startsWith("libfftw3f")) {
+            if (libFN.startsWith("libfftw3f")) {
               params.getAdvancedParams().setFftwLibraryFileName("libfftw3" + libFN.substring(9));
             }
             libFN = params.getAdvancedParams().getFftwLibraryName();
-            if(libFN.startsWith("libfftw3f")) {
+            if (libFN.startsWith("libfftw3f")) {
               params.getAdvancedParams().setFftwLibraryName("libfftw3" + libFN.substring(9));
             }
 
             stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
-          }else{
+          } else {
             String libFN = params.getAdvancedParams().getFftwLibraryFileName();
-            if(!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+            if (!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
               params.getAdvancedParams().setFftwLibraryFileName("libfftw3f" + libFN.substring(8));
             }
             libFN = params.getAdvancedParams().getFftwLibraryName();
-            if(!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+            if (!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
               params.getAdvancedParams().setFftwLibraryName("libfftw3f" + libFN.substring(8));
             }
 
@@ -365,7 +359,7 @@ public class StitchingExecutor implements Runnable {
           }
           break;
         case JAVA:
-          stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();                     
+          stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
           break;
         default:
           break;
@@ -385,7 +379,7 @@ public class StitchingExecutor implements Runnable {
       return;
 
 
-    if(!params.getInputParams().isSuppressSubGridWarning()) {
+    if (!params.getInputParams().isSuppressSubGridWarning()) {
       // open dialog telling the user if they are stitching with a subgrid
       int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
       int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
@@ -393,15 +387,15 @@ public class StitchingExecutor implements Runnable {
         Log.msg(LogType.MANDATORY, "MIST is stitching a Sub Grid.");
         if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
           String[] options = {"Ok",
-                              "Cancel"};
+              "Cancel"};
           int n = JOptionPane.showOptionDialog(stitchingGUI,
-                                               "MIST is stitching a Sub Grid.",
-                                               "Warning: SubGrid",
-                                               JOptionPane.YES_NO_OPTION,
-                                               JOptionPane.WARNING_MESSAGE,
-                                               null,
-                                               options,
-                                               options[0]);
+              "MIST is stitching a Sub Grid.",
+              "Warning: SubGrid",
+              JOptionPane.YES_NO_OPTION,
+              JOptionPane.WARNING_MESSAGE,
+              null,
+              options,
+              options[0]);
           if (n == 1) {
             this.cancelExecution();
             return;
@@ -410,8 +404,6 @@ public class StitchingExecutor implements Runnable {
 
       }
     }
-
-
 
 
     if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
@@ -445,8 +437,7 @@ public class StitchingExecutor implements Runnable {
       int maxTimeSlice = timeSliceParam.getMax();
 
       for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
-        if (this.isCancelled)
-        {
+        if (this.isCancelled) {
           this.cancelExecution();
           return;
         }
@@ -455,12 +446,10 @@ public class StitchingExecutor implements Runnable {
         this.stitchingStatistics.addTimeSlice(timeSlice);
 
 
-        if (this.params.getInputParams().isTimeSlicesEnabled())
-        {
-          StitchingGuiUtils.updateProgressLabel(this.progressLabel, timeSlice, 
+        if (this.params.getInputParams().isTimeSlicesEnabled()) {
+          StitchingGuiUtils.updateProgressLabel(this.progressLabel, timeSlice,
               maxTimeSlice, group, timeSlices.size());
         }
-
 
 
         boolean runSequential = false;
@@ -479,16 +468,16 @@ public class StitchingExecutor implements Runnable {
           if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
             ImageTile.enableFreePixelData();
             Log.msg(LogType.MANDATORY,
-                    "Insufficient memory to hold all image tiles in memory, turning on the freeing of pixel data");
+                "Insufficient memory to hold all image tiles in memory, turning on the freeing of pixel data");
 
             if (!executor.checkMemory(grid, params.getAdvancedParams().getNumCPUThreads())) {
               Log.msg(LogType.MANDATORY,
-                      "Insufficient memory to perform stitching with " + params
-                          .getAdvancedParams().getNumCPUThreads()
+                  "Insufficient memory to perform stitching with " + params
+                      .getAdvancedParams().getNumCPUThreads()
                       + " threads, attempting backoff for timeslice: "
                       + timeSlice);
               Log.msg(LogType.MANDATORY,
-                      "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
+                  "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
 
               // perform thread count backoff to find what maximum number of threads can be supported
               for (int n = params.getAdvancedParams().getNumCPUThreads(); n >= 1; n--) {
@@ -497,8 +486,8 @@ public class StitchingExecutor implements Runnable {
                   break;
               }
               Log.msg(LogType.MANDATORY,
-                      "Attempting to perform stitching with " + params
-                          .getAdvancedParams().getNumCPUThreads() + " threads.");
+                  "Attempting to perform stitching with " + params
+                      .getAdvancedParams().getNumCPUThreads() + " threads.");
 
               // check if the 1 thread method has sufficient memory, if not run sequential stitching
               if (params.getAdvancedParams().getNumCPUThreads() == 1) {
@@ -506,7 +495,7 @@ public class StitchingExecutor implements Runnable {
                   // only run sequential stitching if not assembling from metadata
                   if (!params.getInputParams().isAssembleFromMetadata()) {
                     Log.msg(LogType.MANDATORY,
-                            "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
+                        "Attempting to use sequential stitching, this version is expected to take awhile (see FAQ for suggestions)");
 
                     runSequential = true;
                     stitchingExecutorInf =
@@ -535,20 +524,18 @@ public class StitchingExecutor implements Runnable {
           this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
 
 
-
         } catch (OutOfMemoryError e) {
           showError(outOfMemoryMessage);
           Log.msg(LogType.MANDATORY,
-                  "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
+              "SUGGESTION: Try lowering the number of compute threads which lowers the memory requirements");
           throw new StitchingException("Out of memory thrown: " + outOfMemoryMessage, e);
         } catch (CudaException e) {
           showError("CUDA exception thrown: " + e.getMessage());
           throw new StitchingException("CUDA exception thrown: " + e.getMessage(), e);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
           Log.msg(LogType.MANDATORY,
-                  "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: "
-                          + timeSlice);
+              "Error unable to find file: " + e.getMessage() + ". Skipping timeslice: "
+                  + timeSlice);
 
           if (stopExecutionIfFileNotFound)
             throw new StitchingException("Error unable to find file: " + e.getMessage() + ". Failed at timeslice: " + timeSlice, e);
@@ -560,22 +547,19 @@ public class StitchingExecutor implements Runnable {
         } catch (Throwable e) {
 
           Log.msg(LogType.MANDATORY, "Error occurred in stitching worker: " + e.toString());
-          for(StackTraceElement st : e.getStackTrace())
+          for (StackTraceElement st : e.getStackTrace())
             Log.msg(LogType.MANDATORY, st.toString());
           throw new StitchingException("Error occurred in stitching worker", e);
         }
 
 
-        if (this.params.getInputParams().isTimeSlicesEnabled())
-        {
+        if (this.params.getInputParams().isTimeSlicesEnabled()) {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
                   + this.stitchingStatistics.getDuration(RunTimers.TotalStitchingTime) + "ms" + " time slice: "
                   + timeSlice + " of " + maxTimeSlice);
-        }
-        else
-        {
+        } else {
           Log.msg(
               LogType.MANDATORY,
               "Completed Stitching in "
@@ -585,22 +569,22 @@ public class StitchingExecutor implements Runnable {
         // Always create the output directory
         File outputDir = new File(this.params.getOutputParams().getOutputPath());
         outputDir.mkdirs();
-        
-        if (optimizationSuccessful) {
-            try {
-              if (this.params.getOutputParams().isOutputMeta()) {
-                this.outputMeta(grid, this.progressBar, timeSlice);
-              }
 
-              if (checkOutputGridMemory(grid)) {
-                outputGrid(grid, this.progressBar, timeSlice);
-              } else {
-                Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
-              }
-            } catch (FileNotFoundException e) {
-              Log.msg(LogType.MANDATORY,
-                      "Unable find file: " + e.getMessage() + ". Cancelling writing full image.");
+        if (optimizationSuccessful) {
+          try {
+            if (this.params.getOutputParams().isOutputMeta()) {
+              this.outputMeta(grid, this.progressBar, timeSlice);
             }
+
+            if (checkOutputGridMemory(grid)) {
+              outputGrid(grid, this.progressBar, timeSlice);
+            } else {
+              Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
+            }
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY,
+                "Unable find file: " + e.getMessage() + ". Cancelling writing full image.");
+          }
         }
 
         releaseTiles(grid);
@@ -612,9 +596,7 @@ public class StitchingExecutor implements Runnable {
     this.stitchingStatistics.writeLog(this.params.getOutputParams().getLogFile());
 
 
-
-
-    if(displayGui) {
+    if (displayGui) {
 
       int displayWarningDialog = 0;
       String accumulatedWarningString = "";
@@ -624,22 +606,22 @@ public class StitchingExecutor implements Runnable {
 
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           String str = this.stitchingStatistics.runErrorChecks(timeSlice);
-          if(!str.contains(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
+          if (!str.contains(StitchingStatistics.ErrorReportStatus.PASSED.toString())) {
             displayWarningDialog++;
             accumulatedWarningString = accumulatedWarningString + str + "\n";
           }
         }
       }
 
-      if(displayWarningDialog > 0) {
+      if (displayWarningDialog > 0) {
         File statsFile = this.params.getOutputParams().getStatsFile();
         String warnStr = "Stitching experiment(s) generated warnings:\n \n";
-        if(displayWarningDialog == 1) {
+        if (displayWarningDialog == 1) {
           warnStr = warnStr + accumulatedWarningString + "\n \n";
         }
         warnStr = warnStr + "For more details check the log or the statistics file:\n" + statsFile
             .getAbsolutePath();
-        new MessageDialog(IJ.getInstance(),"Stitching Warning",warnStr);
+        new MessageDialog(IJ.getInstance(), "Stitching Warning", warnStr);
       }
     }
 
@@ -649,12 +631,13 @@ public class StitchingExecutor implements Runnable {
 
 
   /**
-   * Initializes the progress bar based on the total translations of extent-width and extent-height.
+   * Initializes the progress bar based on the total translations of extent-width and
+   * extent-height.
    */
   public void initProgressBar() {
     final int totalTranslations =
         (this.params.getInputParams().getExtentHeight() * (this.params.getInputParams().getExtentWidth() - 1))
-        + ((this.params.getInputParams().getExtentHeight() - 1) * this.params.getInputParams().getExtentWidth());
+            + ((this.params.getInputParams().getExtentHeight() - 1) * this.params.getInputParams().getExtentWidth());
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Stitching...", 0,
         totalTranslations, 0, false);
@@ -688,16 +671,16 @@ public class StitchingExecutor implements Runnable {
       case DEFAULT:
         OptimizationRepeatability optimizationRepeatability =
             new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
-                                             this.stitchingStatistics);
+                this.stitchingStatistics);
 
-        if(runSequential)
+        if (runSequential)
           optimizationRepeatability.computeGlobalOptimizationRepeatablitySequential();
         else
           optimizationRepeatability.computeGlobalOptimizationRepeatablity();
 
 
-          if (optimizationRepeatability.isExceptionThrown())
-            throw optimizationRepeatability.getWorkerThrowable();
+        if (optimizationRepeatability.isExceptionThrown())
+          throw optimizationRepeatability.getWorkerThrowable();
 
         break;
       case NONE:
@@ -735,12 +718,12 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> void outputGrid(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      int timeSlice) throws FileNotFoundException  {
+                              int timeSlice) throws FileNotFoundException {
 
     if (this.isCancelled)
       return;
 
-    ImagePlus img = null;    
+    ImagePlus img = null;
 
     if (this.params.getOutputParams().isOutputFullImage()) {
 
@@ -761,8 +744,7 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> void outputMeta(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      int timeSlice)
-  {
+                              int timeSlice) {
 
     File metaDir = new File(this.params.getOutputParams().getOutputPath());
     metaDir.mkdirs();
@@ -771,22 +753,21 @@ public class StitchingExecutor implements Runnable {
 
     int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
 
-    // abs positions    
+    // abs positions
     Stitching.outputAbsolutePositions(grid, this.params.getOutputParams().getAbsPosFile(timeSlice, nDigits));
 
     // relative positions
     Stitching.outputRelativeDisplacements(grid,
-                                          this.params.getOutputParams().getRelPosFile(timeSlice, nDigits));
+        this.params.getOutputParams().getRelPosFile(timeSlice, nDigits));
 
     // relative positions no optimization
-    if(this.params.getOutputParams().isOutputMeta())
+    if (this.params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, this.params.getOutputParams()
           .getRelPosNoOptFile(timeSlice, nDigits));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      int timeSlice) throws FileNotFoundException
-  {
+                                      int timeSlice) throws FileNotFoundException {
     ImagePlus img = null;
     StitchingGuiUtils.updateProgressBar(progress, true, "Writing Full Image");
 
@@ -801,7 +782,7 @@ public class StitchingExecutor implements Runnable {
     int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
     Log.msg(LogType.MANDATORY, "Writing full image to: " + imageFile.getAbsolutePath()
-                               + "  Width: " + width + " Height: " + height);
+        + "  Width: " + width + " Height: " + height);
 
     this.stitchingStatistics.startTimer(RunTimers.OutputFullImageTileTime);
     Blender blend = null;
@@ -856,8 +837,7 @@ public class StitchingExecutor implements Runnable {
   }
 
   private <T> void displayFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
-      ImagePlus img) throws FileNotFoundException
-  {
+                                    ImagePlus img) throws FileNotFoundException {
     if (img == null) {
       ImageTile<T> initImg = grid.getSubGridTile(0, 0);
       initImg.readTile();
@@ -865,8 +845,8 @@ public class StitchingExecutor implements Runnable {
       int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
       int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
-        if ( this.isCancelled)
-            return;
+      if (this.isCancelled)
+        return;
 
       Blender blend = null;
       try {
@@ -899,25 +879,23 @@ public class StitchingExecutor implements Runnable {
 
       if (blend != null) {
 
-          if ( this.isCancelled)
-              return;
+        if (this.isCancelled)
+          return;
 
         try {
           blend.init(width, height, initImg.getImagePlus());
 
           imageExporter = new LargeImageExporter<T>(grid, 0, 0, width, height, blend, progress);
           img = imageExporter.exportImage(null);
-        } catch (OutOfMemoryError e)
-        {
+        } catch (OutOfMemoryError e) {
           Log.msg(LogType.MANDATORY, "Error: Insufficient memory for image.");
           showError("Out of memory error: " + e.getMessage());
           return;
-        }
-        catch (NegativeArraySizeException e) {
+        } catch (NegativeArraySizeException e) {
           Log.msg(LogType.MANDATORY, "Error: Java does not support sizes of size width*height > "
-                  + Integer.MAX_VALUE);
+              + Integer.MAX_VALUE);
           showError("Error: Java does not support sizes of size width*height > "
-                  + Integer.MAX_VALUE);
+              + Integer.MAX_VALUE);
 
           return;
         }
@@ -1037,7 +1015,6 @@ public class StitchingExecutor implements Runnable {
     }
 
 
-
     if (img == null) {
       Log.msg(LogType.MANDATORY, "Error: Unable to display image.");
     } else {
@@ -1055,10 +1032,10 @@ public class StitchingExecutor implements Runnable {
 
   /**
    * Gets the stitching statistics associated with this stitching executor
+   *
    * @return the stitching statistics
    */
-  public StitchingStatistics getStitchingStatistics()
-  {
+  public StitchingStatistics getStitchingStatistics() {
     return this.stitchingStatistics;
   }
 
@@ -1082,17 +1059,17 @@ public class StitchingExecutor implements Runnable {
     long width = TileGridUtils.getFullImageWidth(grid, tile.getWidth());
     long height = TileGridUtils.getFullImageHeight(grid, tile.getHeight());
 
-    long numberPixels = width*height;
-    if(numberPixels >= (long)Integer.MAX_VALUE)
+    long numberPixels = width * height;
+    if (numberPixels >= (long) Integer.MAX_VALUE)
       return false;
 
-    long byteDepth = tile.getBitDepth()/8;
+    long byteDepth = tile.getBitDepth() / 8;
 
     // Account for the memory required to hold a single image
     // Output image is build by read, copy into output, free sequentially
     long requiredMemoryBytes = tile.getHeight() * tile.getWidth() * byteDepth;
 
-    switch(this.params.getOutputParams().getBlendingMode()) {
+    switch (this.params.getOutputParams().getBlendingMode()) {
       case OVERLAY:
         // requires enough memory to hold the output image
         requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
@@ -1118,7 +1095,7 @@ public class StitchingExecutor implements Runnable {
         // Account for the pixel weights
         requiredMemoryBytes +=
             tile.getHeight() * tile.getWidth()
-            * 8; // lookupTable = new double[initImgHeight][initImgWidth];
+                * 8; // lookupTable = new double[initImgHeight][initImgWidth];
 
         // Account for average blend data
         if (byteDepth == 3) {
@@ -1145,7 +1122,6 @@ public class StitchingExecutor implements Runnable {
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }
-
 
 
 }

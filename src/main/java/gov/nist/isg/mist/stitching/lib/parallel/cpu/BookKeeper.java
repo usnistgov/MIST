@@ -43,10 +43,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * A thread dedicated to managing the state, dependencies, and freeing memory of image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class BookKeeper<T> implements Runnable {
 
@@ -68,8 +67,8 @@ public class BookKeeper<T> implements Runnable {
    * @param grid
    */
   public BookKeeper(PriorityBlockingQueue<StitchingTask<T>> bkQueue,
-      PriorityBlockingQueue<StitchingTask<T>> workQueue, DynamicMemoryPool<T> memoryPool,
-      TileGrid<ImageTile<T>> grid) {
+                    PriorityBlockingQueue<StitchingTask<T>> workQueue, DynamicMemoryPool<T> memoryPool,
+                    TileGrid<ImageTile<T>> grid) {
     this.bkQueue = bkQueue;
     this.workQueue = workQueue;
     this.memoryPool = memoryPool;
@@ -84,7 +83,7 @@ public class BookKeeper<T> implements Runnable {
     int maxFftCount = this.grid.getExtentWidth() * this.grid.getExtentHeight();
     int maxPciamCount = ((this.grid.getExtentWidth() - 1) * this.grid.getExtentHeight())
         + ((this.grid.getExtentHeight() - 1) * this.grid.getExtentWidth());
-    
+
     try {
       while (!this.isCancelled
           && (this.fft_count != maxFftCount || this.pciam_count != maxPciamCount)) {

@@ -50,16 +50,16 @@ import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 
 import javax.swing.*;
+
 import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * A thread dedicated to computing FFTs and phase correlations for image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileWorker<T> implements Runnable {
 
@@ -79,23 +79,22 @@ public class TileWorker<T> implements Runnable {
 
   /**
    * Initializes a tile worker pool for computing PCIAM and FFT computations
-   * 
-   * @param workQueue the work queue to pull data from
-   * @param bkQueue the bookkeeper queue to pass data to
-   * @param memoryPool the pool of memory
-   * @param initTile the initial image tile
+   *
+   * @param workQueue   the work queue to pull data from
+   * @param bkQueue     the bookkeeper queue to pass data to
+   * @param memoryPool  the pool of memory
+   * @param initTile    the initial image tile
    * @param progressBar the progress bar
-   * @throws OutOfMemoryError
    */
   public TileWorker(PriorityBlockingQueue<StitchingTask<T>> workQueue,
-      PriorityBlockingQueue<StitchingTask<T>> bkQueue, DynamicMemoryPool<T> memoryPool,
-      ImageTile<T> initTile, JProgressBar progressBar) throws OutOfMemoryError {
+                    PriorityBlockingQueue<StitchingTask<T>> bkQueue, DynamicMemoryPool<T> memoryPool,
+                    ImageTile<T> initTile, JProgressBar progressBar) throws OutOfMemoryError {
     readDone = false;
     bkDone = false;
     if (initTile instanceof FftwImageTile)
       this.memory = new FftwTileWorkerMemory(initTile);
     else if (initTile instanceof FftwImageTile32)
-        this.memory = new FftwTileWorkerMemory32(initTile);
+      this.memory = new FftwTileWorkerMemory32(initTile);
     else if (initTile instanceof CudaImageTile)
       this.memory = new CudaTileWorkerMemory(initTile);
     else if (initTile instanceof JavaImageTile)
@@ -120,13 +119,12 @@ public class TileWorker<T> implements Runnable {
             "WP Task acquired: " + task.getTask() + "  size: " + this.workQueue.size());
 
         if (task.getTask() == TaskType.FFT) {
-            try {
-                task.getTile().computeFft(this.memoryPool, this.memory);
-            } catch(FileNotFoundException e)
-            {
-                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-                continue;
-            }
+          try {
+            task.getTile().computeFft(this.memoryPool, this.memory);
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+            continue;
+          }
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
           this.bkQueue.put(task);
         } else if (task.getTask() == TaskType.PCIAM_NORTH) {
@@ -134,13 +132,12 @@ public class TileWorker<T> implements Runnable {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple corr;
-            try {
-                corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            } catch (FileNotFoundException e)
-            {
-                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-                continue;
-            }
+          try {
+            corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+            continue;
+          }
 
 
           tile.setNorthTranslation(corr);
@@ -160,13 +157,12 @@ public class TileWorker<T> implements Runnable {
           ImageTile<T> neighbor = task.getNeighbor();
 
           CorrelationTriple corr;
-            try {
-                corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            }catch (FileNotFoundException e)
-            {
-                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-                continue;
-            }
+          try {
+            corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
+            continue;
+          }
 
 
           tile.setWestTranslation(corr);

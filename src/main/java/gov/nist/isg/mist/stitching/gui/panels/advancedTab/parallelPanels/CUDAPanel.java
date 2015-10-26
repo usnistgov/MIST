@@ -39,6 +39,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,7 +47,7 @@ import java.util.List;
 
 /**
  * Creates a panel to display CUDA parameters
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -70,7 +71,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
    */
   public CUDAPanel() {
     super(new GridBagLayout());
-    
+
     this.c = new GridBagConstraints();
 
     int numProc = Runtime.getRuntime().availableProcessors();
@@ -88,8 +89,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
       Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
       Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
-    }
-    catch (NoClassDefFoundError ex) {
+    } catch (NoClassDefFoundError ex) {
       Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
       Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
@@ -97,12 +97,12 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
       Log.msg(LogType.MANDATORY, "Warning: Unable to load CUDA. Disabling CUDA execution option.");
       Log.msg(LogType.INFO, ex.getMessage());
       this.isCudaAvailable = false;
-    }   
+    }
   }
 
   /**
    * Gets whether CUDA is available or not.
-   * 
+   *
    * @return true if CUDA is available, otherwise false
    */
   public boolean isCudaAvailable() {
@@ -126,13 +126,13 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
   /**
    * Gets the selected devices from the table
+   *
    * @return the selected devices as a list of cudaDeviceParams
    */
-  public List<CudaDeviceParam> getSelectedDevices()
-  {
+  public List<CudaDeviceParam> getSelectedDevices() {
     return this.tableModel.getSelectedDevices();
   }
-  
+
   /**
    * Adds the table to the panel
    */
@@ -146,10 +146,10 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
 //    TableColumnAdjuster tca = new TableColumnAdjuster(this.deviceTable);
 //    tca.adjustColumns();    
-    
-    
+
+
     this.deviceTable.setToolTipText("Select which device(s) to be used for" + " stitching");
-   
+
     this.c.gridy = 4;
     JScrollPane scroll = new JScrollPane(this.deviceTable);
 
@@ -165,7 +165,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
   /**
    * Gets the number of CPU threads that the user specified
-   * 
+   *
    * @return the number of CPU threads
    */
   public int getNumCPUThreads() {

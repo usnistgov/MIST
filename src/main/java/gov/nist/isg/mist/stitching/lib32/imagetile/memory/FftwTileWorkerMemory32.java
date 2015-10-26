@@ -34,6 +34,7 @@ import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FFTW3Library32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import jcuda.driver.CUdeviceptr;
+
 import org.bridj.Pointer;
 
 import java.nio.ByteBuffer;
@@ -41,7 +42,7 @@ import java.nio.ByteBuffer;
 /**
  * Class that represents all the memory required for image stitching using FFTW. Memory is reused
  * for independent translation computation for image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -54,7 +55,7 @@ public class FftwTileWorkerMemory32 extends TileWorkerMemory<Float> {
 
   /**
    * Initializes the FFTW tile worker memory
-   * 
+   *
    * @param initTile the initial tile
    */
   public FftwTileWorkerMemory32(ImageTile<?> initTile) {

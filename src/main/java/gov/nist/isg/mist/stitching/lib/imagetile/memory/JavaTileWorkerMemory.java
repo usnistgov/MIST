@@ -31,16 +31,16 @@ package gov.nist.isg.mist.stitching.lib.imagetile.memory;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import jcuda.driver.CUdeviceptr;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+
 import org.bridj.Pointer;
 
 import java.nio.ByteBuffer;
 
 /**
  * Represents memory that a Java Tile will be working with
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class JavaTileWorkerMemory extends TileWorkerMemory {
 
@@ -48,7 +48,7 @@ public class JavaTileWorkerMemory extends TileWorkerMemory {
 
   /**
    * Initializes the Java tile worker memory
-   * 
+   *
    * @param initTile the initial tile
    */
   public JavaTileWorkerMemory(ImageTile<?> initTile) {

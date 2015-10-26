@@ -35,6 +35,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import jcuda.driver.CUstream;
+
 import org.bridj.BridJ;
 import org.bridj.Pointer;
 
@@ -44,26 +45,24 @@ import java.io.FileNotFoundException;
 /**
  * Represents an image tile that uses native library bindings with FFTW. Must initialize the
  * libraries before using native bindings and initialize FFTW plans.
- * 
+ *
  * <pre>
  * <code>
- * FFTWImageTile.initLibrary(fftwPath, ""); 
- * \\/* 
+ * FFTWImageTile.initLibrary(fftwPath, "");
+ * \\/*
  *  * Or if you want to use native bindings for other routines...
  *  * FFTWImageTile.initLibrary(fftwPath, utilFnsPath);
  *  *\\/
- *    FFTWImageTile.initPlans(width, height, tryLoadExistingBoolean, 
+ *    FFTWImageTile.initPlans(width, height, tryLoadExistingBoolean,
  *    pathToOldPlan);
  * </pre>
- * 
+ *
  * </code>
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
-
 
 
   /**
@@ -86,13 +85,13 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
   /**
    * Creates an image tile in a grid
    *
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
    */
   public FftwImageTile32(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
                          int startCol) {
@@ -102,14 +101,14 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
   /**
    * Creates an image tile in a grid
    *
-   * @param file the image tile file
-   * @param row the row location in the grid
-   * @param col the column location in the grid
-   * @param gridWidth the width of the tile grid (subgrid)
+   * @param file       the image tile file
+   * @param row        the row location in the grid
+   * @param col        the column location in the grid
+   * @param gridWidth  the width of the tile grid (subgrid)
    * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow the start row of the tile grid (subgrid)
-   * @param startCol the start column of the tile grid (subgrid)
-   * @param read whether or not to read the tile here
+   * @param startRow   the start row of the tile grid (subgrid)
+   * @param startCol   the start column of the tile grid (subgrid)
+   * @param read       whether or not to read the tile here
    */
   public FftwImageTile32(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
                          int startCol, boolean read) {
@@ -136,7 +135,6 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
   }
 
 
-
   @Override
   public void releaseFftMemory() {
     if (super.isMemoryLoaded()) {
@@ -161,9 +159,8 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
 
 
     for (long r = 0; r < super.getHeight(); r++)
-      for (long c = 0; c < super.getWidth(); c++)
-      {
-        fftIn.setFloatAtIndex(r*super.getWidth()+c, super.getPixels().getPixelValue((int)c, (int)r));
+      for (long c = 0; c < super.getWidth(); c++) {
+        fftIn.setFloatAtIndex(r * super.getWidth() + c, super.getPixels().getPixelValue((int) c, (int) r));
       }
 
     FFTW3Library32.fftwf_execute_dft_r2c(plan_fwd, fftIn, this.fft);
@@ -182,9 +179,8 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
       this.fftIn = memory.getFFTInP();
       int count = 0;
       for (long r = 0; r < super.getHeight(); r++)
-        for (long c = 0; c < super.getWidth(); c++)
-        {
-          fftIn.setFloatAtIndex(r*super.getWidth()+c, super.getPixels().getPixelValue((int)c, (int)r));
+        for (long c = 0; c < super.getWidth(); c++) {
+          fftIn.setFloatAtIndex(r * super.getWidth() + c, super.getPixels().getPixelValue((int) c, (int) r));
         }
 
       FFTW3Library32.fftwf_execute_dft_r2c(plan_fwd, this.fftIn, this.fft);
@@ -193,7 +189,7 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
 
   @Override
   public void computeFft(DynamicMemoryPool<Pointer<Float>> pool, TileWorkerMemory memory,
-      CUstream stream) throws FileNotFoundException {
+                         CUstream stream) throws FileNotFoundException {
     this.computeFft(pool, memory);
   }
 
@@ -223,13 +219,13 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
   /**
    * Initializes native libraries
    *
-   * @param libFFTWPath the path to the FFTW library
-   * @param libUtilFnsPath the path to the UtilFns library
+   * @param libFFTWPath     the path to the FFTW library
+   * @param libUtilFnsPath  the path to the UtilFns library
    * @param fftwLibraryName the name of the FFTW library
    * @return true if all libraries are loaded, otherwise false
    */
   public static boolean initLibrary(String libFFTWPath, String libUtilFnsPath,
-      String fftwLibraryName) {
+                                    String fftwLibraryName) {
     boolean loaded = false;
     try {
       BridJ.addNativeLibraryAlias("fftw", fftwLibraryName);
@@ -286,11 +282,11 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
   /**
    * Initializes a FFTW plan using the width, height, and flags
    *
-   * @param width the width for the tile
-   * @param height the height for the tile
-   * @param flags the FFTW flag(s) for the plan
+   * @param width    the width for the tile
+   * @param height   the height for the tile
+   * @param flags    the FFTW flag(s) for the plan
    * @param loadPlan true if you want to try to load a plan from disk
-   * @param plan the plan's path you are trying to load
+   * @param plan     the plan's path you are trying to load
    */
   public static void initPlans(int width, int height, int flags, boolean loadPlan, String plan) {
     if (loadPlan) {

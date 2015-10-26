@@ -52,7 +52,7 @@ import java.util.List;
 /**
  * Creates an object that manages statistics for a stitching execution. Execution times, parameters
  * used, and observed results are stored (such as computed repeatability and overlap)
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -81,7 +81,7 @@ public class StitchingStatistics {
 
   /**
    * Enum represented the different runtimes observed
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -116,7 +116,7 @@ public class StitchingStatistics {
      * The output image pyramid timer
      */
     OutputImgPyramidTime("Output Image Pyramid Time");
-    
+
 
     private String key;
 
@@ -165,11 +165,9 @@ public class StitchingStatistics {
   private List<HashMap<Direction, Boolean>> hasHighPercentMissingRowCol;
 
 
-
-
   /**
    * Initializes the stitching statistics
-   * 
+   *
    * @param runParams the run-time parameters
    */
   public StitchingStatistics(StitchingAppParams runParams) {
@@ -178,8 +176,8 @@ public class StitchingStatistics {
 
   /**
    * Initializes the stitching statistics with a name
-   * 
-   * @param name the name given for these statistics
+   *
+   * @param name      the name given for these statistics
    * @param runParams the run-time parameters
    */
   public StitchingStatistics(String name, StitchingAppParams runParams) {
@@ -235,7 +233,7 @@ public class StitchingStatistics {
       HashMap<Direction, List<Integer>> emptyRowCol = new HashMap<Direction, List<Integer>>();
       HashMap<Direction, Integer> numRowCol = new HashMap<Direction, Integer>();
       HashMap<Direction, Boolean> noValidTranslations = new HashMap<Direction, Boolean>();
-      HashMap<Direction, Double> computedOverlap  = new HashMap<Direction, Double>();
+      HashMap<Direction, Double> computedOverlap = new HashMap<Direction, Double>();
       HashMap<Direction, Boolean> highRepeatability = new HashMap<Direction, Boolean>();
       HashMap<Direction, Boolean> highPercMissRowCol = new HashMap<Direction, Boolean>();
 
@@ -260,7 +258,7 @@ public class StitchingStatistics {
 
   /**
    * Sets the current time slice during execution
-   * 
+   *
    * @param timeslice the current time slice
    */
   public void setCurrentTimeSlice(int timeslice) {
@@ -270,8 +268,6 @@ public class StitchingStatistics {
 
   /**
    * Adds timeslice to these statistics
-   * 
-   * @param timeSlice
    */
   public void addTimeSlice(int timeSlice) {
     this.timeSlicesRun.add(timeSlice);
@@ -279,7 +275,7 @@ public class StitchingStatistics {
 
   /**
    * Sets the execution type for the execution
-   * 
+   *
    * @param type the type of execution
    */
   public void setExecutionType(StitchingType type) {
@@ -302,7 +298,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the end-to-end timer duration
-   * 
+   *
    * @return the end-to-end timer duration
    */
   public long getEndToEndDuration() {
@@ -311,7 +307,7 @@ public class StitchingStatistics {
 
   /**
    * Starts a given timer
-   * 
+   *
    * @param timer the timer to start
    */
   public void startTimer(RunTimers timer) {
@@ -321,7 +317,7 @@ public class StitchingStatistics {
 
   /**
    * Stops a given timer
-   * 
+   *
    * @param timer the timer to stop
    */
   public void stopTimer(RunTimers timer) {
@@ -331,8 +327,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the repeatability for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir           the direction
    * @param repeatability the repeatability
    */
   public void setRepeatability(Direction dir, int repeatability) {
@@ -342,8 +338,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the overlap for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir     the direction
    * @param overlap the overlap
    */
   public void setOverlap(Direction dir, double overlap) {
@@ -352,8 +348,9 @@ public class StitchingStatistics {
   }
 
   /**
-   * Sets whether the stitching experiment is running the sequential version or not
-   * for the current timeslice
+   * Sets whether the stitching experiment is running the sequential version or not for the current
+   * timeslice
+   *
    * @param val true if running sequential, otherwise false
    */
   public void setIsRunSequential(boolean val) {
@@ -363,7 +360,7 @@ public class StitchingStatistics {
   /**
    * Sets the computed overlap for a direction
    *
-   * @param dir the direction
+   * @param dir     the direction
    * @param overlap the overlap
    */
   public void setComputedOverlap(Direction dir, double overlap) {
@@ -373,8 +370,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the number of valid tiles after filtering for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir      the direction
    * @param numTiles the number of valid tiles
    */
   public void setNumValidTilesAfterFilter(Direction dir, int numTiles) {
@@ -385,8 +382,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the minimum filter threshold for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param threshold the threshold
    */
   public void setMinFilterThreshold(Direction dir, double threshold) {
@@ -396,8 +393,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the maximum filter threshold for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param threshold the threshold
    */
   public void setMaxFilterThreshold(Direction dir, double threshold) {
@@ -407,8 +404,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the standard deviation filter threshold for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param threshold the threshold
    */
   public void setStdDevThreshold(Direction dir, double threshold) {
@@ -418,8 +415,8 @@ public class StitchingStatistics {
 
   /**
    * Sets the list of empty rows/cols for a direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir         the direction
    * @param emptyRowCol the list of empty rows/cols
    */
   public void setEmptyRowsCols(Direction dir, List<Integer> emptyRowCol) {
@@ -430,7 +427,7 @@ public class StitchingStatistics {
   /**
    * Sets the number of rows/cols for a direction
    *
-   * @param dir the direction
+   * @param dir       the direction
    * @param numRowCol the number of rows/cols
    */
   public void setNumRowsCols(Direction dir, int numRowCol) {
@@ -440,7 +437,7 @@ public class StitchingStatistics {
 
   /**
    * Checks to see if a timer has computed its duration
-   * 
+   *
    * @param timer the time to check
    * @return true if the timer has a duration, otherwise false
    */
@@ -450,7 +447,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the duration for a timer
-   * 
+   *
    * @param timer the timer to get the duration for
    * @return the duration
    */
@@ -460,8 +457,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if a timer has a duration for a time slice
-   * 
-   * @param timer the timer to check
+   *
+   * @param timer     the timer to check
    * @param timeSlice the time slice to check
    * @return the duration for a timer for a given time slice
    */
@@ -476,8 +473,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the duration for a timer at a given time slice
-   * 
-   * @param timer the timer to get the duration for
+   *
+   * @param timer     the timer to get the duration for
    * @param timeSlice the time slice
    * @return the duration for the timer
    */
@@ -492,7 +489,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the repeatability for a direction
-   * 
+   *
    * @param dir the direction
    * @return the repeatability
    */
@@ -502,7 +499,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if a direction has repeatability
-   * 
+   *
    * @param dir the direction
    * @return true if the direction has a repeatability
    */
@@ -512,8 +509,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the repeatability for a direction at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the repeatability
    */
@@ -527,8 +524,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if a direction has a repeatability at a given direction
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the repeatability
    */
@@ -539,7 +536,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the overlap for a direction
-   * 
+   *
    * @param dir the direction
    * @return the overlap
    */
@@ -550,17 +547,17 @@ public class StitchingStatistics {
 
   /**
    * Gets whether a timeslice is running sequential or not
+   *
    * @param timeslice the timeslice
    * @return true if running sequential, otherwise false
    */
-  public boolean isRunSequential(int timeslice)
-  {
+  public boolean isRunSequential(int timeslice) {
     return this.isRunSequential.get(timeslice);
   }
 
   /**
    * Checks if a direction has an overlap
-   * 
+   *
    * @param dir the direction
    * @return true if it has an overlap
    */
@@ -570,8 +567,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the overlap for a direction and timeslice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the overlap or -1 if it does not exist
    */
@@ -586,7 +583,7 @@ public class StitchingStatistics {
   /**
    * Gets the computed overlap for a direction and timeslice
    *
-   * @param dir the direction
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the overlap or -1 if it does not exist
    */
@@ -600,8 +597,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if overlap exists for a direction at a particular time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true if the overlap exists
    */
@@ -612,7 +609,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the number of valid tiles after filtering for a direction
-   * 
+   *
    * @param dir the direction
    * @return the number of valid tiles after filtering
    */
@@ -622,7 +619,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if a direction has valid tiles after filtering
-   * 
+   *
    * @param dir the direction
    * @return true if valid tiles exists
    */
@@ -632,8 +629,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the number of valid tiles after filter for a direction and time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the number of valid tiles after filtering or -1 if none
    */
@@ -647,8 +644,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if the number of valid tiles after filtering exists for a direction and time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true if a direction has valid tiles after filter, otherwise false
    */
@@ -659,7 +656,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the minimum filter threshold for a direction
-   * 
+   *
    * @param dir the direction
    * @return the minimum filter threshold
    */
@@ -669,7 +666,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if the minimum filter theshold exists for a direction
-   * 
+   *
    * @param dir the direction
    * @return true if the minimum filter threshold exists
    */
@@ -679,8 +676,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the minimum filter threshold for a direction at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the minimum filter threshold or -1 if it does not exist
    */
@@ -694,8 +691,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if the minimum filter theshold exists for a direction at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true if the minimum filter threshold exists
    */
@@ -706,7 +703,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the maximum filter threshold for a direction
-   * 
+   *
    * @param dir the direction
    * @return the maximum filter threshold
    */
@@ -716,7 +713,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if the maximum filter threshold exists for a direction
-   * 
+   *
    * @param dir the direction
    * @return true if the maximum filter threshold exists
    */
@@ -726,8 +723,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the maximum filter threshold for a direction at a timeslice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the maximum filter threshold or -1 if it does not exist
    */
@@ -741,8 +738,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if the maximum filter threshold exists for a direction at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true if the maximum filter threshold exists
    */
@@ -753,7 +750,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the standard deviation threshold for a direction
-   * 
+   *
    * @param dir the direction
    * @return the standard deviation threshold
    */
@@ -763,7 +760,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if the standard deviation threshold for a direction exists
-   * 
+   *
    * @param dir the direction
    * @return true if the standard deviation threshold exists
    */
@@ -773,8 +770,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the standard deviation threshold for a direction at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return the standard deviation threshold or -1 if it does not exist
    */
@@ -788,8 +785,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if the standard deviation threshold for a direction exists at a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true if the standard deviation threshold exists
    */
@@ -800,7 +797,7 @@ public class StitchingStatistics {
 
   /**
    * Gets the list of empty row/cols for a direction
-   * 
+   *
    * @param dir the direction
    * @return the list of empty rows/cols
    */
@@ -810,7 +807,7 @@ public class StitchingStatistics {
 
   /**
    * Checks if the list of empty row/cols for a direction exist
-   * 
+   *
    * @param dir the direction
    * @return true the list of empty rows/cols exists
    */
@@ -820,9 +817,8 @@ public class StitchingStatistics {
 
   /**
    * Gets the list of empty row/cols for a direction at a time slice
-   * 
+   *
    * @param dir the direction
-   * @param timeSlice
    * @return the list of empty rows/cols or null
    */
   public List<Integer> getEmptyRowCols(Direction dir, int timeSlice) {
@@ -843,8 +839,8 @@ public class StitchingStatistics {
 
   /**
    * Checks if the list of empty row/cols for a direction exist for a time slice
-   * 
-   * @param dir the direction
+   *
+   * @param dir       the direction
    * @param timeSlice the time slice
    * @return true the list of empty rows/cols exists
    */
@@ -854,7 +850,6 @@ public class StitchingStatistics {
   }
 
 
-
   @Override
   public String toString() {
     return this.name;
@@ -862,16 +857,14 @@ public class StitchingStatistics {
 
   /**
    * Writes the statitics to a file
-   * 
+   *
    * @param fileName the file path
    */
-  public void writeStatistics(String fileName)
-  {
+  public void writeStatistics(String fileName) {
     this.writeStatistics(new File(fileName));
   }
 
-  private void updateErrorStatus(int timeSlice, ErrorReportStatus status)
-  {
+  private void updateErrorStatus(int timeSlice, ErrorReportStatus status) {
     ErrorReportStatus curStatus = this.errorReportStatus.get(timeSlice);
 
     if (curStatus == ErrorReportStatus.PASSED || curStatus == ErrorReportStatus.WARNING)
@@ -879,19 +872,18 @@ public class StitchingStatistics {
 
   }
 
-  private String getErrorReportStatus(int timeSlice)
-  {
+  private String getErrorReportStatus(int timeSlice) {
     return this.errorReportStatus.get(timeSlice).name();
   }
 
 
   /**
    * Runs error checks on the statistics file
+   *
    * @param timeSlice the timeslice you want to check
    * @return the string of errors
    */
-  public String runErrorChecks(int timeSlice)
-  {
+  public String runErrorChecks(int timeSlice) {
     String newLine = "\n";
 
     String errorMessage = "";
@@ -904,7 +896,7 @@ public class StitchingStatistics {
         updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
         errorMessage += "- No reliable " + dir + " translations found" + newLine;
         errorMessage += "Due to the content of the image data, MIST is not able to compute any "
-                        + dir + " translations with high confidence." + newLine;
+            + dir + " translations with high confidence." + newLine;
       }
 
       double overlap = getOverlap(dir, timeSlice);
@@ -913,8 +905,8 @@ public class StitchingStatistics {
       if (overlap != computedOverlap) {
         updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
         errorMessage += "- Computed " + dir + " overlap = " + computedOverlap + ". Value was clipped "
-                        + "to " + overlap + newLine + "Clipped value can be adjusted using the "
-                        + "percent overlap uncertainty or you can specify the overlap." + newLine;
+            + "to " + overlap + newLine + "Clipped value can be adjusted using the "
+            + "percent overlap uncertainty or you can specify the overlap." + newLine;
       }
 
       double repeatability = getRepeatability(dir, timeSlice);
@@ -941,21 +933,21 @@ public class StitchingStatistics {
 
     if (this.errorReportStatus.get(timeSlice) == ErrorReportStatus.FAILED) {
       output += "- We suggest that the user performs some combination of pre-processing " + newLine
-                + "steps to to increase the confidence in the computed translations. " + newLine
-                + "Pre-processing steps can include: (1) filtering the images, (2) segment " + newLine
-                + "regions of interest and setting the background to zero to perform " + newLine
-                + "feature-based translation computation. " + newLine
-                + "- Please stitch the pre-processed images as the registration channel. " + newLine
-                + "- Using \"Assemble From Metadata\" you can stitch the pre-processed images "
-                + "and assemble the original images. " + newLine;
+          + "steps to to increase the confidence in the computed translations. " + newLine
+          + "Pre-processing steps can include: (1) filtering the images, (2) segment " + newLine
+          + "regions of interest and setting the background to zero to perform " + newLine
+          + "feature-based translation computation. " + newLine
+          + "- Please stitch the pre-processed images as the registration channel. " + newLine
+          + "- Using \"Assemble From Metadata\" you can stitch the pre-processed images "
+          + "and assemble the original images. " + newLine;
 
       output += "- For now MIST can only display a naively stitched image. " + newLine;
     }
 
     if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED) {
       output += "- The developers are interested in problematic data sets. " + newLine
-                + "Issues with stitching can be submitted to: " + newLine
-                + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github.com/NIST-ISG/MIST/issues";
+          + "Issues with stitching can be submitted to: " + newLine
+          + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github.com/NIST-ISG/MIST/issues";
       output += newLine;
     }
 
@@ -967,22 +959,22 @@ public class StitchingStatistics {
     // write the contents of the log file to disk
     Log.msg(LogType.MANDATORY, "Saving Log to \"" + file.getAbsolutePath() + "\"");
 
-    try{
+    try {
       // ensure the directory to write the statistics file to exists
       File parent = file.getParentFile();
-      if(!parent.exists()) parent.mkdir();
+      if (!parent.exists()) parent.mkdir();
 
       FileWriter writer = new FileWriter(file);
       String logContents = IJ.getLog();
-      if(logContents != null) {
+      if (logContents != null) {
         writer.write(logContents);
-      }else{
+      } else {
         writer.write("IJ Log string was null. \n\nThis is likely due to the stitching being run in Headless mode.");
       }
 
       writer.close();
 
-    }catch(IOException e) {
+    } catch (IOException e) {
       Log.msg(LogType.MANDATORY, "Saving Log contents to disk failed");
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
@@ -991,7 +983,7 @@ public class StitchingStatistics {
 
   /**
    * Writes the statistics to a file
-   * 
+   *
    * @param file the file to write the statistics
    */
   public void writeStatistics(File file) {
@@ -1002,7 +994,7 @@ public class StitchingStatistics {
     try {
       // ensure the directory to write the statistics file to exists
       File parent = file.getParentFile();
-      if(!parent.exists()) parent.mkdir();
+      if (!parent.exists()) parent.mkdir();
 
       FileWriter writer = new FileWriter(file);
 
@@ -1088,7 +1080,7 @@ public class StitchingStatistics {
             }
 
             writer.write(dir + " valid tiles after filter: "
-                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + " (" + df.format(100.0*getNumValidTilesAfterFilter(dir, timeSlice)/totalTiles) + "%)" + newLine);
+                + getNumValidTilesAfterFilter(dir, timeSlice) + " out of " + totalTiles + " (" + df.format(100.0 * getNumValidTilesAfterFilter(dir, timeSlice) / totalTiles) + "%)" + newLine);
           }
 
           if (hasMinFilterThreshold(dir, timeSlice))
@@ -1106,7 +1098,7 @@ public class StitchingStatistics {
           if (hasEmptyRowCols(dir, timeSlice)) {
             List<Integer> emptyRowColsLst = getEmptyRowCols(dir, timeSlice);
             writer.write(dir + " missing row/col: "
-                    + Arrays.toString(emptyRowColsLst.toArray()) + newLine);
+                + Arrays.toString(emptyRowColsLst.toArray()) + newLine);
 
             writer.write(dir + " percentage missing row/col: " + df.format(
                 100.0 * emptyRowColsLst.size() / getNumRowCols(dir, timeSlice)) + "%" + newLine);

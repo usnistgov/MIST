@@ -48,10 +48,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * Class that computes the FFT of a tile on the GPU. One thread per GPU is used.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileGPUFftWorker<T> implements Runnable {
 
@@ -73,18 +72,18 @@ public class TileGPUFftWorker<T> implements Runnable {
 
   /**
    * Initializes a tile worker pool for computing PCIAM and FFT computations
-   * 
-   * @param workQueue the work queue to pull data from
-   * @param bkQueue the bookkeeper queue to pass data to
+   *
+   * @param workQueue  the work queue to pull data from
+   * @param bkQueue    the bookkeeper queue to pass data to
    * @param memoryPool the pool of memory
-   * @param memory the tile worker memory
-   * @param devID the GPU device ID
-   * @param threadID the thread ID
-   * @param context the GPU context
+   * @param memory     the tile worker memory
+   * @param devID      the GPU device ID
+   * @param threadID   the thread ID
+   * @param context    the GPU context
    */
   public TileGPUFftWorker(PriorityBlockingQueue<StitchingTask<T>> workQueue,
-      PriorityBlockingQueue<StitchingTask<T>> bkQueue, DynamicMemoryPool<T> memoryPool,
-      TileWorkerMemory memory, int devID, int threadID, CUcontext context) {
+                          PriorityBlockingQueue<StitchingTask<T>> bkQueue, DynamicMemoryPool<T> memoryPool,
+                          TileWorkerMemory memory, int devID, int threadID, CUcontext context) {
     this.readDone = false;
     this.context = context;
     this.memory = memory;
@@ -115,13 +114,12 @@ public class TileGPUFftWorker<T> implements Runnable {
           task.getTile().setDev(this.devID);
           task.getTile().setThreadID(this.threadID);
 
-            try {
-                task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
-            } catch (FileNotFoundException e)
-            {
-                Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping file");
-                continue;
-            }
+          try {
+            task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
+          } catch (FileNotFoundException e) {
+            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping file");
+            continue;
+          }
 
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
 
@@ -146,7 +144,7 @@ public class TileGPUFftWorker<T> implements Runnable {
     } catch (InterruptedException e) {
       Log.msg(LogType.MANDATORY, "Interrupted FFT worker");
     }
-    
+
     JCudaDriver.cuStreamDestroy(this.stream);
   }
 

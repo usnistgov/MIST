@@ -35,10 +35,9 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
 /**
  * Creates an overlay blending function
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class OverlayBlend implements Blender {
 
@@ -84,7 +83,7 @@ public class OverlayBlend implements Blender {
       for (int col = 0; col < pixels.getViewWidth(); col++) {
 
         int[] pixelChannels = imgPlus.getPixel(col, row);
-        
+
 
         int val = 0;
         for (int channel = 0; channel < this.numChannels; channel++) {
@@ -104,6 +103,7 @@ public class OverlayBlend implements Blender {
   }
 
   @Override
-  public void postProcess() {}
+  public void postProcess() {
+  }
 
 }

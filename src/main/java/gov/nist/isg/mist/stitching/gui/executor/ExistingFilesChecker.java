@@ -34,6 +34,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -44,36 +45,35 @@ import java.util.List;
 
 /**
  * Checks for existing files before execution
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class ExistingFilesChecker implements Comparator<String> {
-
 
 
   private StitchingAppParams params;
 
   /**
    * Initializes an ExistingFilesChecker
+   *
    * @param params the parameters used
    */
-  public ExistingFilesChecker(StitchingAppParams params)
-  {
+  public ExistingFilesChecker(StitchingAppParams params) {
     this.params = params;
   }
 
 
   /**
    * Checks for existing files
+   *
    * @param displayGui whether to show a gui or not
    * @return true if the user accepts the changes, otherwise false
    */
-  public boolean checkExistingFiles(boolean displayGui)
-  {
+  public boolean checkExistingFiles(boolean displayGui) {
     List<String> existingOverwrittenFiles = checkOverwriteExistingOutputFiles();
 
     if (existingOverwrittenFiles.size() > 0) {
-      
+
       Collections.sort(existingOverwrittenFiles, this);
 
       Log.msg(LogType.MANDATORY, "Warning: the following files will be overwritten:");
@@ -85,7 +85,7 @@ public class ExistingFilesChecker implements Comparator<String> {
 
         if (existingOverwrittenFiles.size() > 0) {
           if (canOverwriteExistingFilesCheck(existingOverwrittenFiles)) {
-            Log.msg(LogType.MANDATORY, "Overwritting files has been approved.");          
+            Log.msg(LogType.MANDATORY, "Overwritting files has been approved.");
           } else {
             Log.msg(LogType.MANDATORY, "Overwritting files has not been approved.");
             Log.msg(LogType.MANDATORY,
@@ -126,7 +126,6 @@ public class ExistingFilesChecker implements Comparator<String> {
     }
 
 
-
     return true;
   }
 
@@ -152,7 +151,7 @@ public class ExistingFilesChecker implements Comparator<String> {
     }
 
     File logFile = this.params.getOutputParams().getLogFile();
-    if(logFile.exists())
+    if (logFile.exists())
       fileList.add(logFile.getAbsolutePath());
 
 
@@ -162,8 +161,8 @@ public class ExistingFilesChecker implements Comparator<String> {
       fileList.add(statFile.getAbsolutePath());
 
     if (checkOutputImage || checkOutputMeta) {
-      
-      List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();                      
+
+      List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
 
       for (RangeParam timeSliceParam : timeSlices) {
         int minTimeSlice = timeSliceParam.getMin();
@@ -172,7 +171,7 @@ public class ExistingFilesChecker implements Comparator<String> {
         int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
 
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
-          if (checkOutputImage) {              
+          if (checkOutputImage) {
             File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice, nDigits);
 
             if (imgFile.exists())
@@ -180,7 +179,6 @@ public class ExistingFilesChecker implements Comparator<String> {
           }
 
           if (checkOutputMeta) {
-
 
 
             File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice, nDigits);
@@ -200,7 +198,7 @@ public class ExistingFilesChecker implements Comparator<String> {
         }
       }
 
-    } 
+    }
     return fileList;
 
   }

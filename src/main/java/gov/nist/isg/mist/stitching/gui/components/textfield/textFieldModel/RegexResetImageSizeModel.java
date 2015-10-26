@@ -32,10 +32,9 @@ import gov.nist.isg.mist.stitching.gui.panels.outputTab.OutputPanel;
 
 /**
  * Validator that checks values based on a regex
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class RegexResetImageSizeModel extends RegexModel {
 
@@ -43,13 +42,13 @@ public class RegexResetImageSizeModel extends RegexModel {
 
   /**
    * Creates a regex validator based on a given regex
-   * 
-   * @param regex the regex to check
-   * @param errorText the error text associated with this validator
-   * @param outputPanel the output panel to reset image size
+   *
+   * @param regex          the regex to check
+   * @param errorText      the error text associated with this validator
+   * @param outputPanel    the output panel to reset image size
    * @param invalidStrings the invalid strings for this validator
    */
-  public RegexResetImageSizeModel(String regex, String errorText, OutputPanel outputPanel, String ... invalidStrings) {
+  public RegexResetImageSizeModel(String regex, String errorText, OutputPanel outputPanel, String... invalidStrings) {
     super(regex, errorText, invalidStrings);
     this.outputPanel = outputPanel;
   }

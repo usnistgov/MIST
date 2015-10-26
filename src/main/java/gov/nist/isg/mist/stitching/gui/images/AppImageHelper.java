@@ -28,6 +28,7 @@ import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
@@ -36,19 +37,19 @@ import java.net.URL;
 
 /**
  * App image helper provides utility classes for loading images for the stitching application
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class AppImageHelper {
 
-  
-  private AppImageHelper() {}
+
+  private AppImageHelper() {
+  }
 
   /**
    * Loads the specified image into an image icon
-   * 
+   *
    * @param name the filename of the image
    * @return the image icon
    * @throws FileNotFoundException if name does not exist
@@ -72,12 +73,12 @@ public class AppImageHelper {
 
   /**
    * Loads the specified image and reduces the size by the given amount.
-   * 
-   * @param name the filename of the image
+   *
+   * @param name       the filename of the image
    * @param reduceSize the amount to reduce the image size by
    * @return the reduced image size
    * @throws FileNotFoundException if the name does not exist
-   * @throws IOException if an IOexception occurs
+   * @throws IOException           if an IOexception occurs
    */
   public static ImageIcon loadImage(String name, double reduceSize) throws FileNotFoundException,
       IOException {
@@ -106,9 +107,9 @@ public class AppImageHelper {
 
   /**
    * Loads the specified image and resizes to a given width and height
-   * 
-   * @param name the filename of the image
-   * @param width the desired width of the image
+   *
+   * @param name   the filename of the image
+   * @param width  the desired width of the image
    * @param height the desired height of the image
    * @return the resized image
    * @throws FileNotFoundException if the name does not exist

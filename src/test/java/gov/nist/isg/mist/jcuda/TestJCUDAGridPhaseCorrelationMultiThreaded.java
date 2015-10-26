@@ -54,7 +54,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles with multithreading using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -69,7 +69,7 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
   /**
    * Computes the phase correlation using a multiple thread on a grid of tiles using FFTW
    */
-  public static void runTestGridPhaseCorrelation() throws FileNotFoundException{
+  public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     int startRow = 0;
     int startCol = 0;
     int extentWidth = 4;// 16;
@@ -99,11 +99,11 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
 
     if (grid == null)
       return;
-    
+
     ImageTile<CUdeviceptr> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
 
-    int[] devIDs = new int[] {0, 1, 2};
+    int[] devIDs = new int[]{0, 1, 2};
     CUcontext[] contexts = CudaUtils.initJCUDA(1, devIDs, tile);
 
     GPUStitchingThreadExecutor<CUdeviceptr> executor =
@@ -136,15 +136,14 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
     try {
-        TestJCUDAGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
-    }catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestJCUDAGridPhaseCorrelationMultiThreaded.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

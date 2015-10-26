@@ -36,7 +36,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 
 /**
  * Test case for generating different image acquisition strategies.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -65,7 +65,7 @@ public class TestCreateGrid {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {

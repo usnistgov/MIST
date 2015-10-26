@@ -41,6 +41,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.timing.TimeUtil;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -49,7 +50,7 @@ import java.io.InvalidClassException;
 
 /**
  * Test case for stitching a grid of tiles with multithreading using FFTW.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -60,11 +61,11 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
    */
   public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     // UtilFnsStitching.disableUtilFnsNativeLibrary();
-      Log.setLogLevel(LogType.INFO);
-      int startRow = 0;
-      int startCol = 0;
-      int extentWidth = 23;
-      int extentHeight = 30;
+    Log.setLogLevel(LogType.INFO);
+    int startRow = 0;
+    int startCol = 0;
+    int extentWidth = 23;
+    int extentHeight = 30;
 
     Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded FFTW");
 
@@ -74,9 +75,9 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
     Log.msg(LogType.INFO, "Generating tile grid");
     TileGrid<ImageTile<Pointer<Float>>> grid = null;
     try {
-        TileGridLoader loader =
-                new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
-                        GridDirection.VERTICALCOMBING);
+      TileGridLoader loader =
+          new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+              GridDirection.VERTICALCOMBING);
 
 
       grid =
@@ -88,7 +89,7 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
 
     if (grid == null)
       return;
-    
+
     ImageTile<Pointer<Float>> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
 
@@ -99,8 +100,8 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
     FftwImageTile32.savePlan("test.dat");
 
 
-      int numProducers = 1;
-      int numWorkers = 22;
+    int numProducers = 1;
+    int numWorkers = 22;
     CPUStitchingThreadExecutor<Pointer<Float>> executor =
         new CPUStitchingThreadExecutor<Pointer<Float>>(numProducers, numWorkers, tile, grid);
 
@@ -126,16 +127,14 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String args[]) {
     try {
-        TestFFTWGridPhaseCorrelationMultiThreaded32.runTestGridPhaseCorrelation();
-    }
-    catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestFFTWGridPhaseCorrelationMultiThreaded32.runTestGridPhaseCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

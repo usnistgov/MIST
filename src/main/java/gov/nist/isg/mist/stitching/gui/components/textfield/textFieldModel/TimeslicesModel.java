@@ -33,10 +33,9 @@ import java.util.List;
 
 /**
  * Validator that checks timeslice format
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class TimeslicesModel implements TextFieldModel<List<RangeParam>> {
 
@@ -72,7 +71,7 @@ public class TimeslicesModel implements TextFieldModel<List<RangeParam>> {
   }
 
   @Override
-  public void updateTextFields() {    
+  public void updateTextFields() {
   }
 
 }

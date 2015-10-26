@@ -37,104 +37,101 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 /**
  * Traversal type for traversing by diagonal
  *
- * @param <T>
  * @author Tim Blattner
  * @version 1.0
  */
 public class TileGridDiagonalTraverser<T extends ImageTile<?>> implements TileGridTraverser<T>, Iterator<T> {
 
-    private TileGrid<T> subGrid;
-    private int currentRowPosition;
-    private int currentColumnPosition;
+  private TileGrid<T> subGrid;
+  private int currentRowPosition;
+  private int currentColumnPosition;
 
-    private int linear;
+  private int linear;
 
-    private int diagRow;
-    private int diagCol;
-    private int diagDirRow;
-    private int diagDirCol;
+  private int diagRow;
+  private int diagCol;
+  private int diagDirRow;
+  private int diagDirCol;
 
-    /**
-     * Initializes a diagonal traverser given a subgrid
-     *
-     * @param subgrid
-     */
-    public TileGridDiagonalTraverser(TileGrid<T> subgrid) {
-        this.subGrid = subgrid;
-        this.currentRowPosition = 0;
-        this.currentColumnPosition = 0;
-        this.linear = 0;
+  /**
+   * Initializes a diagonal traverser given a subgrid
+   */
+  public TileGridDiagonalTraverser(TileGrid<T> subgrid) {
+    this.subGrid = subgrid;
+    this.currentRowPosition = 0;
+    this.currentColumnPosition = 0;
+    this.linear = 0;
 
-        this.diagRow = 0;
-        this.diagCol = 0;
-        this.diagDirRow = 0;
-        this.diagDirCol = 1;
-    }
+    this.diagRow = 0;
+    this.diagCol = 0;
+    this.diagDirRow = 0;
+    this.diagDirCol = 1;
+  }
 
-    @Override
-    public Iterator<T> iterator() {
-        return this;
-    }
+  @Override
+  public Iterator<T> iterator() {
+    return this;
+  }
 
-    @Override
-    public int getCurrentRow() {
-        return this.currentRowPosition;
-    }
+  @Override
+  public int getCurrentRow() {
+    return this.currentRowPosition;
+  }
 
-    @Override
-    public int getCurrentColumn() {
-        return this.currentColumnPosition;
-    }
+  @Override
+  public int getCurrentColumn() {
+    return this.currentColumnPosition;
+  }
 
-    @Override
-    public String toString() {
-        return "Traversing by diagonal: " + this.subGrid;
-    }
+  @Override
+  public String toString() {
+    return "Traversing by diagonal: " + this.subGrid;
+  }
 
 
-    @Override
-    public boolean hasNext() {
-        return this.linear < this.subGrid.getSubGridSize();
-    }
+  @Override
+  public boolean hasNext() {
+    return this.linear < this.subGrid.getSubGridSize();
+  }
 
-    @Override
-    public T next() {
-        T actualTile =
-                this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
-                        + this.subGrid.getStartCol());
+  @Override
+  public T next() {
+    T actualTile =
+        this.subGrid.getTile(this.currentRowPosition + this.subGrid.getStartRow(), this.currentColumnPosition
+            + this.subGrid.getStartCol());
 
-        this.linear++;
+    this.linear++;
 
-        this.currentRowPosition++;
-        this.currentColumnPosition--;
+    this.currentRowPosition++;
+    this.currentColumnPosition--;
 
-        if (hasNext()) {
-            if (this.currentColumnPosition < 0 || this.currentRowPosition >= this.subGrid.getExtentHeight()) {
-                int diagNextRow = this.diagRow + this.diagDirRow;
-                int diagNextCol = this.diagCol + this.diagDirCol;
+    if (hasNext()) {
+      if (this.currentColumnPosition < 0 || this.currentRowPosition >= this.subGrid.getExtentHeight()) {
+        int diagNextRow = this.diagRow + this.diagDirRow;
+        int diagNextCol = this.diagCol + this.diagDirCol;
 
-                if (diagNextCol == this.subGrid.getExtentWidth()) {
-                    this.diagDirRow = 1;
-                    this.diagDirCol = 0;
+        if (diagNextCol == this.subGrid.getExtentWidth()) {
+          this.diagDirRow = 1;
+          this.diagDirCol = 0;
 
-                    diagNextRow = this.diagRow + this.diagDirRow;
-                    diagNextCol = this.diagCol + this.diagDirCol;
-                }
-
-                this.diagRow = diagNextRow;
-                this.diagCol = diagNextCol;
-
-                this.currentRowPosition = this.diagRow;
-                this.currentColumnPosition = this.diagCol;
-
-            }
+          diagNextRow = this.diagRow + this.diagDirRow;
+          diagNextCol = this.diagCol + this.diagDirCol;
         }
 
-        return actualTile;
+        this.diagRow = diagNextRow;
+        this.diagCol = diagNextCol;
+
+        this.currentRowPosition = this.diagRow;
+        this.currentColumnPosition = this.diagCol;
+
+      }
     }
 
-    @Override
-    public void remove() {
-        // Not implemented/not needed
-    }
+    return actualTile;
+  }
+
+  @Override
+  public void remove() {
+    // Not implemented/not needed
+  }
 }

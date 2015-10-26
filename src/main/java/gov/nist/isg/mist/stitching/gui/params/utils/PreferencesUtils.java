@@ -44,16 +44,17 @@ import java.util.prefs.Preferences;
 
 /**
  * Preferences utility functions
- * @author Tim Blattner
  *
+ * @author Tim Blattner
  */
 public class PreferencesUtils {
-  
+
   /**
    * Loads the grid origin from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the grid origin
    */
   public static GridOrigin loadPrefGridOrigin(Preferences pref, String key, String def) {
@@ -61,11 +62,10 @@ public class PreferencesUtils {
 
     GridOrigin origin = null;
 
-    try
-    {          
+    try {
       origin = GridOrigin.valueOf(res.toUpperCase());
-    } catch (IllegalArgumentException e)
-    {  }
+    } catch (IllegalArgumentException e) {
+    }
 
     if (origin == null) {
       Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid GridOrigin");
@@ -78,9 +78,10 @@ public class PreferencesUtils {
 
   /**
    * Loads the grid numbering from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the grid numbering
    */
   public static GridDirection loadPrefGridNumbering(Preferences pref, String key, String def) {
@@ -90,8 +91,8 @@ public class PreferencesUtils {
 
     try {
       numbering = GridDirection.valueOf(res.toUpperCase());
-    } catch (IllegalArgumentException e)
-    {  }
+    } catch (IllegalArgumentException e) {
+    }
     if (numbering == null) {
       Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid Direction");
       numbering = GridDirection.HORIZONTALCOMBING;
@@ -103,8 +104,9 @@ public class PreferencesUtils {
 
   /**
    * Loads the time slices from preferences
+   *
    * @param pref the preferences
-   * @param key the key
+   * @param key  the key
    * @return the list of time slices
    */
   public static List<RangeParam> loadPrefTimeslices(Preferences pref, String key) {
@@ -115,9 +117,10 @@ public class PreferencesUtils {
 
   /**
    * Loads the program type from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the program type
    */
   public static StitchingType loadPrefProgramType(Preferences pref, String key, String def) {
@@ -134,9 +137,10 @@ public class PreferencesUtils {
 
   /**
    * Loads the fftw plan type from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the fftw plan type
    */
   public static FftwPlanType loadPrefFFTWPlanType(Preferences pref, String key, String def) {
@@ -153,9 +157,10 @@ public class PreferencesUtils {
 
   /**
    * Loads the blending mode from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the blending mode
    */
   public static BlendingMode loadPrefBlendingModeType(Preferences pref, String key, String def) {
@@ -172,13 +177,14 @@ public class PreferencesUtils {
 
   /**
    * Loads the global optimization from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the global optimization
    */
   public static GlobalOptimizationType loadPrefGlobalOptimizationType(Preferences pref, String key,
-      String def) {
+                                                                      String def) {
     String res = pref.get(key, def);
 
     GlobalOptimizationType type = GlobalOptimizationType.valueOf(res.toUpperCase());
@@ -190,52 +196,55 @@ public class PreferencesUtils {
 
     return type;
   }
-  
+
   /**
    * Loads the logging type from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the global optimization
    */
   public static LogType loadPrefLogType(Preferences pref, String key, String def) {
     String res = pref.get(key, def);
-    
+
     LogType type = LogType.valueOf(res.toUpperCase());
-    
+
     if (type == null) {
-      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + 
+      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key +
           " must be valid LogType");
     }
-    
+
     return type;
   }
-  
+
   /**
    * Loads the debug type from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the global optimization
    */
   public static DebugType loadPrefDebugType(Preferences pref, String key, String def) {
     String res = pref.get(key, def);
-    
+
     DebugType type = DebugType.valueOf(res.toUpperCase());
-    
+
     if (type == null) {
-      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + 
+      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key +
           " must be valid DebugType");
     }
-    
+
     return type;
   }
 
   /**
    * Loads the file pattern loader type from preferences
+   *
    * @param pref the preferences
-   * @param key the key value
-   * @param def the default value
+   * @param key  the key value
+   * @param def  the default value
    * @return the file pattern loader type
    */
   public static LoaderType loadFilePatternLoaderType(Preferences pref, String key, String def) {
@@ -252,8 +261,9 @@ public class PreferencesUtils {
 
   /**
    * Loads the time slices from preferences
+   *
    * @param pref the preferences
-   * @param dev the Cuda device id
+   * @param dev  the Cuda device id
    * @return the Cuda device param
    */
   public static CudaDeviceParam loadPrefCUDADevice(Preferences pref, int dev) {
@@ -290,10 +300,11 @@ public class PreferencesUtils {
 
   /**
    * Records timeslices to preferences
-   * @param pref the preferences
+   *
+   * @param pref       the preferences
    * @param timeSlices the list of time slices
    */
-  public static void recordPrefTimeslices(Preferences pref, List<RangeParam>timeSlices) {
+  public static void recordPrefTimeslices(Preferences pref, List<RangeParam> timeSlices) {
     String timeSliceStr = "";
     for (int i = 0; i < timeSlices.size(); i++) {
       if (i == timeSlices.size() - 1)
@@ -306,10 +317,11 @@ public class PreferencesUtils {
 
   /**
    * Records Cuda devices to preferences
-   * @param pref the preferences
+   *
+   * @param pref        the preferences
    * @param cudaDevices the cuda device param
    */
-  public static void recordPrefCUDADevices(Preferences pref, List<CudaDeviceParam>cudaDevices) {
+  public static void recordPrefCUDADevices(Preferences pref, List<CudaDeviceParam> cudaDevices) {
     if (cudaDevices != null) {
       for (int i = 0; i < cudaDevices.size(); i++) {
         CudaDeviceParam dev = cudaDevices.get(i);

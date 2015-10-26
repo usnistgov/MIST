@@ -45,6 +45,7 @@ import ij.IJ;
 import ij.gui.GUI;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
@@ -52,10 +53,9 @@ import java.util.prefs.Preferences;
 
 /**
  * Creates the main NIST image sitching gui.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class StitchingGUIFrame extends JFrame implements ActionListener, GUIParamFunctions {
 
@@ -84,8 +84,8 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
   /**
    * Initializes the stitching GUI
-   * 
-   * @param title the tile of the dialog
+   *
+   * @param title  the tile of the dialog
    * @param parent the parent frame
    */
   public StitchingGUIFrame(String title, Frame parent) {
@@ -96,7 +96,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     init();
 
     add(this.mainFrame);
-    Dimension guiSize = new Dimension(600,620);
+    Dimension guiSize = new Dimension(600, 620);
     this.setPreferredSize(guiSize);
     this.setSize(guiSize);
     this.setMinimumSize(guiSize);
@@ -106,7 +106,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
   /**
    * Initializes the stitching gui (only if not in headless)
-   * 
+   *
    * @param headless whether the gui is run in headless mode or not
    */
   public void init(boolean headless) {
@@ -212,7 +212,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
   /**
    * Gets the input panel in this gui
-   * 
+   *
    * @return the input panel
    */
   public InputPanel getInputPanel() {
@@ -290,14 +290,14 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
     Log.setLogLevel(oldParams.getLogParams().getLogLevel());
     Debug.setDebugLevel(oldParams.getLogParams().getDebugLevel());
-    
+
     this.loadParamsIntoGUI(oldParams);
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
 
-    if(!MIST.isStitching()) {
+    if (!MIST.isStitching()) {
       ExecutionType type = null;
       if (e.getSource().equals(this.beginStitchingButton)) {
         if (this.inputPanel.isAssembleWithMetadata())
@@ -311,11 +311,11 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
       else if (e.getSource().equals(this.previewNoOverlapButton))
         type = ExecutionType.PreviewNoOverlap;
 
-      if(type != null) {
+      if (type != null) {
         StitchingSwingWorker executor = new StitchingSwingWorker(this, type);
         executor.execute();
       }
-    }else{
+    } else {
       Log.msg(LogType.MANDATORY, "Stitching is already executing.");
     }
 
@@ -347,7 +347,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
         && this.advancedPanel.checkAndParseGUI(params) && this.subgridPanel.checkAndParseGUI(params)
         && this.helpPanel.checkAndParseGUI(params))
       return true;
-    
+
     return false;
   }
 
@@ -356,7 +356,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     if (this.inputPanel.checkGUIArgs() && this.outputPanel.checkGUIArgs() && this.advancedPanel.checkGUIArgs()
         && this.subgridPanel.checkGUIArgs() && this.helpPanel.checkGUIArgs())
       return true;
-    
+
     return false;
   }
 

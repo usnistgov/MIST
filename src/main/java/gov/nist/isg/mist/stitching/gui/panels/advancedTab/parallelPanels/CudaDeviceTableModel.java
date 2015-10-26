@@ -32,15 +32,15 @@ import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 
 import javax.swing.table.AbstractTableModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Creates a table that shows all the available CUDA enabled GPUs.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class CudaDeviceTableModel extends AbstractTableModel {
 
@@ -51,7 +51,7 @@ public class CudaDeviceTableModel extends AbstractTableModel {
 
   private String[] headers = {"Selected?", "ID", " Name", "Compute Capability"};
 
-  
+
   /**
    * Initializes the table
    */
@@ -63,7 +63,7 @@ public class CudaDeviceTableModel extends AbstractTableModel {
 
   /**
    * Checks the devices that were selected in the past
-   * 
+   *
    * @param selectedDevices the selected devices
    */
   public void updateSelectedDevices(List<CudaDeviceParam> selectedDevices) {
@@ -98,7 +98,7 @@ public class CudaDeviceTableModel extends AbstractTableModel {
 
   /**
    * Gets a list of the devices that the user selected
-   * 
+   *
    * @return the list of selected devices
    */
   public List<CudaDeviceParam> getSelectedDevices() {

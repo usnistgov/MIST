@@ -34,12 +34,13 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the FFT of an image using Java.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -83,15 +84,14 @@ public class TestJavaComputeFFT {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     try {
-        TestJavaComputeFFT.runTestFFTImage();
-    } catch(FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestJavaComputeFFT.runTestFFTImage();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

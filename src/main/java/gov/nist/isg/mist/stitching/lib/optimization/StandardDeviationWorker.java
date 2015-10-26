@@ -41,10 +41,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Class that represents a thread that computes the standard deviation of the overlap region for a
  * tile.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class StandardDeviationWorker<T> implements Runnable {
   private static final long TIMEOUT = 1000L;
@@ -58,15 +57,15 @@ public class StandardDeviationWorker<T> implements Runnable {
   /**
    * Constructs a standard deviation worker to compute the standard deviations of a list of tiles
    * using multi-threading.
-   * 
-   * @param queue the queue of tiles to be processed
-   * @param grid the grid of tiles
-   * @param dir the direction
-   * @param overlap the percent overlap
+   *
+   * @param queue            the queue of tiles to be processed
+   * @param grid             the grid of tiles
+   * @param dir              the direction
+   * @param overlap          the percent overlap
    * @param percOverlapError the percent overlap error
    */
   public StandardDeviationWorker(BlockingQueue<ImageTile<T>> queue, TileGrid<ImageTile<T>> grid,
-      Direction dir, double overlap, double percOverlapError) {
+                                 Direction dir, double overlap, double percOverlapError) {
     this.tiles = queue;
     this.grid = grid;
     this.dir = dir;
@@ -105,21 +104,20 @@ public class StandardDeviationWorker<T> implements Runnable {
           continue;
         }
         try {
-            readTile(tile);
-            readTile(neighbor);
+          readTile(tile);
+          readTile(neighbor);
 
-            switch (this.dir) {
-                case North:
-                    tile.computeStdDevNorth(neighbor, this.overlap, this.percOverlapError);
-                    break;
-                case West:
-                    tile.computeStdDevWest(neighbor, this.overlap, this.percOverlapError);
-                    break;
-            }
-        } catch (FileNotFoundException e)
-        {
-            Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage() + ". Skipping");
-            continue;
+          switch (this.dir) {
+            case North:
+              tile.computeStdDevNorth(neighbor, this.overlap, this.percOverlapError);
+              break;
+            case West:
+              tile.computeStdDevWest(neighbor, this.overlap, this.percOverlapError);
+              break;
+          }
+        } catch (FileNotFoundException e) {
+          Log.msg(LogType.MANDATORY, "Unable to load file: " + e.getMessage() + ". Skipping");
+          continue;
         }
 
         releaseTile(tile);
@@ -136,7 +134,7 @@ public class StandardDeviationWorker<T> implements Runnable {
 
   /**
    * Synchronously reads a tile
-   * 
+   *
    * @param tile the tile to be read
    */
   private static synchronized <T> void readTile(ImageTile<T> tile) throws FileNotFoundException {
@@ -145,7 +143,7 @@ public class StandardDeviationWorker<T> implements Runnable {
 
   /**
    * Synchronously releases a tile
-   * 
+   *
    * @param tile the tile to be released
    */
   private static synchronized <T> void releaseTile(ImageTile<T> tile) {

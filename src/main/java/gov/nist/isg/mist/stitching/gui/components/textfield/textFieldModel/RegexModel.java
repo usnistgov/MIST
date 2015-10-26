@@ -33,10 +33,9 @@ import java.util.regex.Pattern;
 
 /**
  * Validator that checks values based on a regex
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class RegexModel extends InvalidTextModel {
 
@@ -44,11 +43,11 @@ public class RegexModel extends InvalidTextModel {
 
   /**
    * Creates a regex validator based on a given regex
-   * 
-   * @param regex the regex to check
+   *
+   * @param regex     the regex to check
    * @param errorText the error text associated with this validator
    */
-  public RegexModel(String regex, String errorText, String ... invalidStrings) {
+  public RegexModel(String regex, String errorText, String... invalidStrings) {
     super(errorText, invalidStrings);
     this.pattern = Pattern.compile(regex);
   }

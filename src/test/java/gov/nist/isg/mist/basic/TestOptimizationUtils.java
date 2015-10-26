@@ -40,6 +40,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.SequentialTileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
+
 import org.bridj.Pointer;
 
 import java.io.File;
@@ -52,7 +53,7 @@ import java.util.Random;
 
 /**
  * Test case for reading an image.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
  */
@@ -87,7 +88,7 @@ public class TestOptimizationUtils {
 
     if (subGrid == null)
       return;
-    
+
     Random rand = new Random(1000);
 
     List<CorrelationTriple> northList = new ArrayList<CorrelationTriple>();
@@ -110,10 +111,10 @@ public class TestOptimizationUtils {
     }
 
     Log.msg(LogType.MANDATORY, "Getting top 5 correlations");
-          List<CorrelationTriple> topFiveNorth =
-                  OptimizationUtils.getTopCorrelations(subGrid, Direction.North, 5);
-          List<CorrelationTriple> topFiveWest =
-                  OptimizationUtils.getTopCorrelations(subGrid, Direction.West, 5);
+    List<CorrelationTriple> topFiveNorth =
+        OptimizationUtils.getTopCorrelations(subGrid, Direction.North, 5);
+    List<CorrelationTriple> topFiveWest =
+        OptimizationUtils.getTopCorrelations(subGrid, Direction.West, 5);
 
 
     Collections.sort(northList);
@@ -142,15 +143,14 @@ public class TestOptimizationUtils {
 
   /**
    * Executes the test case
-   * 
+   *
    * @param args not used
    */
   public static void main(String[] args) {
     try {
-        TestOptimizationUtils.testGetTopCorrelation();
-    } catch (FileNotFoundException e)
-    {
-        Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+      TestOptimizationUtils.testGetTopCorrelation();
+    } catch (FileNotFoundException e) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }
   }
 }

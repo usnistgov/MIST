@@ -68,7 +68,7 @@ public class DropDownPanel extends JPanel implements FocusListener, ActionListen
 
       // Add question mark
       JButton questionButton = new JButton("?");
-      questionButton.setPreferredSize(new Dimension(15,20));
+      questionButton.setPreferredSize(new Dimension(15, 20));
       questionButton.setFocusable(false);
 
       Insets insets = questionButton.getInsets();
@@ -90,8 +90,7 @@ public class DropDownPanel extends JPanel implements FocusListener, ActionListen
   }
 
   @Override
-  public void setEnabled(boolean enabled)
-  {
+  public void setEnabled(boolean enabled) {
     super.setEnabled(enabled);
     label.setEnabled(enabled);
     comboBox.setEnabled(enabled);
@@ -101,13 +100,17 @@ public class DropDownPanel extends JPanel implements FocusListener, ActionListen
     this.helpTextArea.setText(helpText);
   }
 
-  public JComboBox getComboBox() { return this.comboBox; }
+  public JComboBox getComboBox() {
+    return this.comboBox;
+  }
 
   @Override
-  public void focusGained(FocusEvent arg0) { }
+  public void focusGained(FocusEvent arg0) {
+  }
 
   @Override
-  public void focusLost(FocusEvent arg0) {}
+  public void focusLost(FocusEvent arg0) {
+  }
 
   @Override
   public void actionPerformed(ActionEvent e) {

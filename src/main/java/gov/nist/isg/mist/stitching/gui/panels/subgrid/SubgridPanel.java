@@ -39,6 +39,7 @@ import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -47,10 +48,9 @@ import java.io.IOException;
 
 /**
  * Creates the advanced options panel
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
@@ -70,7 +70,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Initializes the advanced options panel
-   * 
+   *
    * @param outputPanel the output panel to reference for image size
    */
   public SubgridPanel(OutputPanel outputPanel) {
@@ -121,7 +121,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Sets the reference to the InputPanel
-   * 
+   *
    * @param inputPanel the input panel that we wish to reference
    */
   public void setInputPanel(InputPanel inputPanel) {
@@ -141,8 +141,8 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     c.anchor = GridBagConstraints.NORTHEAST;
     c.gridy = 0;
     vertPanel.add(qButton, c);
-    
-    c.anchor = GridBagConstraints.LINE_START;    
+
+    c.anchor = GridBagConstraints.LINE_START;
     c.gridy = 1;
     c.fill = GridBagConstraints.HORIZONTAL;
 
@@ -163,7 +163,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     vertPanel.add(widthHeightPanel, c);
 
     c.gridy = 4;
-    vertPanel.add(suppressSubGridWarning,c);
+    vertPanel.add(suppressSubGridWarning, c);
 
     c.gridy = 5;
     vertPanel.add(this.picLabel, c);
@@ -217,7 +217,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Sets the check box to use the full grid
-   * 
+   *
    * @param val true to check the full grid checkbox
    */
   public void setUseFullGrid(boolean val) {
@@ -226,7 +226,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the error text for the sub-grid
-   * 
+   *
    * @return the error text associated with the subgrid panel
    */
   public String getErrorText() {
@@ -245,7 +245,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Checks if the sub-grid is valid or not
-   * 
+   *
    * @return true if the grid is valid otherwise false
    */
   public boolean isValidSubGrid() {
@@ -317,13 +317,16 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Get whether the user has selected to suppress the subgrid warnings
+   *
    * @return whether to suppress the subgrid warning or not
    */
-  public boolean isSuppressSubGridWarning() { return this.suppressSubGridWarning.isSelected(); }
+  public boolean isSuppressSubGridWarning() {
+    return this.suppressSubGridWarning.isSelected();
+  }
 
   /**
    * Gets the start row for the sub-grid
-   * 
+   *
    * @return the start row
    */
   public int getStartRow() {
@@ -332,7 +335,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the start column for the sub-grid
-   * 
+   *
    * @return the start column
    */
   public int getStartCol() {
@@ -341,7 +344,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the extend width for the sub-grid
-   * 
+   *
    * @return the width of the sub-grid
    */
   public int getExtentWidth() {
@@ -350,7 +353,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the extent height for the sub-grid
-   * 
+   *
    * @return the height of the sub-grid
    */
   public int getExtentHeight() {
@@ -359,7 +362,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   /**
    * Gets the input panel tab
-   * 
+   *
    * @return the input panel tab
    */
   public InputPanel getInputPanel() {

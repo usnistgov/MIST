@@ -35,10 +35,9 @@ import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
 /**
  * Creates an average blending function
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class AverageBlend implements Blender {
 
@@ -55,7 +54,7 @@ public class AverageBlend implements Blender {
       NegativeArraySizeException {
     this.width = width;
     this.height = height;
-    
+
     if (initImg.getBitDepth() == 24) {
       this.numChannels = 3;
     } else {

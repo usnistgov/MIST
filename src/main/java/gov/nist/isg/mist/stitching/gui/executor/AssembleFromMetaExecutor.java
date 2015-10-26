@@ -38,15 +38,15 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGridUtils;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 /**
  * Assemble from meta data executor updates a grid of tiles from a file
- * @author Tim Blattner
  *
- * @param <T>
+ * @author Tim Blattner
  */
 public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T> {
 
@@ -55,7 +55,8 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   }
 
   @Override
-  public void cancelExecution() {}
+  public void cancelExecution() {
+  }
 
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
@@ -64,25 +65,20 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
-  CudaException, FileNotFoundException {
+      CudaException, FileNotFoundException {
 
     String absPosFilename = params.getInputParams().getGlobalPositionsFile();
     String parsedFilename;
 
-    if (!TileGridLoaderUtils.hasTimeFilePattern(absPosFilename) && params.getInputParams().isTimeSlicesEnabled())
-    {
+    if (!TileGridLoaderUtils.hasTimeFilePattern(absPosFilename) && params.getInputParams().isTimeSlicesEnabled()) {
       throw new IllegalArgumentException("Timeslices are being used. The global positions filename should contain '{t}' to represent the timeslice.");
     }
 
-    if (TileGridLoaderUtils.hasTimeFilePattern(absPosFilename))
-    {
+    if (TileGridLoaderUtils.hasTimeFilePattern(absPosFilename)) {
       parsedFilename = TileGridLoaderUtils.parseTimeSlicePattern(absPosFilename, timeSlice, true);
-    }
-    else
-    {
+    } else {
       parsedFilename = absPosFilename;
     }
-
 
 
     File absPosFile = new File(parsedFilename); //params.getOutputParams().getAbsPosFile(timeSlice);
@@ -91,7 +87,7 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
       Log.msg(LogType.MANDATORY, "Error: Global position file does not exist for timeslice "
           + timeSlice + ": " + absPosFile.getAbsolutePath());
 
-        throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
+      throw new FileNotFoundException("Global position file not found: " + absPosFile.getAbsolutePath());
     }
 
     if (grid == null) {
@@ -101,9 +97,7 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
     if (Stitching.parseAbsolutePositions(grid, absPosFile)) {
       TileGridUtils.translateTranslations(grid);
-    }
-    else
-    {
+    } else {
       throw new FileNotFoundException("Error parsing: " + absPosFile.getAbsolutePath());
     }
 
@@ -111,32 +105,30 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
-        
+
     TileGrid<ImageTile<T>> grid = null;
-    
-    if (params.getInputParams().isTimeSlicesEnabled())
-    {    
+
+    if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
         grid =
             new TileGrid<ImageTile<T>>(params, timeSlice, FftwImageTile.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }
-    else
-    {
+    } else {
       try {
         grid = new TileGrid<ImageTile<T>>(params, FftwImageTile.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    }    
-    
+    }
+
     return grid;
   }
 
   @Override
-  public void cleanup() {}
+  public void cleanup() {
+  }
 
   @Override
   public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {

@@ -38,21 +38,17 @@ import java.awt.image.WritableRaster;
 
 /**
  * Utility for viewing an image tile two dimensionally, given a starting row, col, height, and
- * width.
- * <p>
- * The tile's data is accessed as:
- * 
+ * width. <p> The tile's data is accessed as:
+ *
  * <pre>
  * <code> (row + startRow) * dataWidth + (col + startCol)
  * </code>
  * </pre>
- * <p>
- * The class is used mainly to compute regions for CCF computation, but has been adapted intothe
+ * <p> The class is used mainly to compute regions for CCF computation, but has been adapted intothe
  * visualizer as well for writing data to a writeable raster.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * 
  */
 public class Array2DView {
 
@@ -84,13 +80,13 @@ public class Array2DView {
 
   /**
    * Gets pixel value inside of array2dView at index row and column
-   * 
+   *
    * @param row the row of the pixel
    * @param col the column of the pixel
    * @return the value at row and column
    */
   public double get(int row, int col) {
-    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
+    return this.data.getPixelValue(col + this.startCol, row + this.startRow);
   }
 
 
@@ -102,25 +98,13 @@ public class Array2DView {
    * @return the value at row and column
    */
   public float getf(int row, int col) {
-    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
-  }
-
-
-  /**
-   * Gets pixel value inside of array2dView at index row and column
-   *
-   * @param row the row of the pixel
-   * @param col the column of the pixel
-   * @return the value at row and column
-   */
-  public double getd(int row, int col) {
-    return this.data.getPixelValue(col+this.startCol, row+this.startRow);
+    return this.data.getPixelValue(col + this.startCol, row + this.startRow);
   }
 
 
   /**
    * Gets the index at the specified row and column
-   * 
+   *
    * @param row the row
    * @param col the column
    * @return the index
@@ -180,7 +164,7 @@ public class Array2DView {
 
   /**
    * Computes the average in the array 2d view
-   * 
+   *
    * @return the average
    */
   public double getAvg() {
@@ -199,7 +183,7 @@ public class Array2DView {
 
   /**
    * Computes the standard deviation using a two-pass method
-   * 
+   *
    * @return the standard deviation
    */
   public double getStdDevTwoPass() {
@@ -215,15 +199,15 @@ public class Array2DView {
       }
     }
 
-    return Math.sqrt(v / (size-1.0));
+    return Math.sqrt(v / (size - 1.0));
   }
 
   /**
    * Writes the entire view into a raster from an x and y location
-   * 
+   *
    * @param raster the raster you are writing to
-   * @param x the x index inside of the raster
-   * @param y the y index inside of the rasters
+   * @param x      the x index inside of the raster
+   * @param y      the y index inside of the rasters
    */
   public void writeViewData(WritableRaster raster, int x, int y) {
     Log.msg(LogType.VERBOSE, "x : " + x + " y: " + y + " viewHeight: " + this.viewHeight

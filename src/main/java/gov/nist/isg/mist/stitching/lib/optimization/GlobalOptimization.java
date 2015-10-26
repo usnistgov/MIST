@@ -38,20 +38,21 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
+
 import java.io.FileNotFoundException;
 
 /**
  * Class for computing the global optimization of a TileGrid.
- * 
+ *
+ * @param <T> the underlying data type of the TileGrid
  * @author Tim Blattner
  * @version 1.0
- * @param <T> the underlying data type of the TileGrid
  */
 public class GlobalOptimization<T> implements Runnable {
 
   /**
    * Global Optimization type enum
-   * 
+   *
    * @author Tim Blattner
    * @version 1.0
    */
@@ -97,14 +98,14 @@ public class GlobalOptimization<T> implements Runnable {
 
   /**
    * Constructs a global optimization execution for a grid of tiles
-   * 
-   * @param grid the grid of tiles
-   * @param progressBar the progress bar (null if none)
-   * @param params the stitching parameters
+   *
+   * @param grid                the grid of tiles
+   * @param progressBar         the progress bar (null if none)
+   * @param params              the stitching parameters
    * @param stitchingStatistics the stitching statistics
    */
   public GlobalOptimization(TileGrid<ImageTile<T>> grid, final JProgressBar progressBar,
-      StitchingAppParams params, StitchingStatistics stitchingStatistics) {
+                            StitchingAppParams params, StitchingStatistics stitchingStatistics) {
     this.grid = grid;
     this.progressBar = progressBar;
     this.params = params;
@@ -130,20 +131,20 @@ public class GlobalOptimization<T> implements Runnable {
         try {
           this.optimizationRepeatability.computeGlobalOptimizationRepeatablity();
 
-          if(this.optimizationRepeatability.isExceptionThrown()) {
+          if (this.optimizationRepeatability.isExceptionThrown()) {
             this.exceptionThrown = true;
             this.workerThrowable = this.optimizationRepeatability.getWorkerThrowable();
             Log.msg(LogType.MANDATORY,
-                    "Error occurred in optimization worker thread(s): " + workerThrowable
-                        .getMessage());
+                "Error occurred in optimization worker thread(s): " + workerThrowable
+                    .getMessage());
           }
         } catch (GlobalOptimizationException e) {
           this.exceptionThrown = true;
           this.workerThrowable = e;
         } catch (FileNotFoundException ex) {
-               Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
+          Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
         }
-        break;        
+        break;
       case NONE:
         break;
       default:
@@ -160,13 +161,18 @@ public class GlobalOptimization<T> implements Runnable {
       this.optimizationRepeatability.cancelOptimization();
     }
   }
-  
+
   /**
    * Gets whether an exception was thrown or not
+   *
    * @return true if an exception was thrown, otherwise false
    */
-  public boolean isExceptionThrown() { return this.exceptionThrown; }
+  public boolean isExceptionThrown() {
+    return this.exceptionThrown;
+  }
 
-  public Throwable getWorkerThrowable() { return this.workerThrowable; }
+  public Throwable getWorkerThrowable() {
+    return this.workerThrowable;
+  }
 
 }
