@@ -50,42 +50,6 @@ import java.io.FileNotFoundException;
  */
 public class GlobalOptimization<T> implements Runnable {
 
-  /**
-   * Global Optimization type enum
-   *
-   * @author Tim Blattner
-   * @version 1.0
-   */
-  public enum GlobalOptimizationType {
-    /**
-     * Run default optimization
-     */
-    DEFAULT("Default"),
-
-    /**
-     * Compute Repeatability
-     */
-    COMPUTEREPEATABILITY("Compute Repeatability"),
-
-    /**
-     * No optimization is run
-     */
-    NONE("None");
-
-    private GlobalOptimizationType(final String text) {
-      this.text = text;
-    }
-
-    private final String text;
-
-    @Override
-    public String toString() {
-      return this.text;
-    }
-
-
-  }
-
   private TileGrid<ImageTile<T>> grid;
   private JProgressBar progressBar;
   private StitchingAppParams params;
@@ -118,39 +82,29 @@ public class GlobalOptimization<T> implements Runnable {
 
   @Override
   public void run() {
-    GlobalOptimizationType type = this.params.getAdvancedParams().getGlobalOpt();
     Stitching.USE_HILLCLIMBING = this.params.getAdvancedParams().isUseHillClimbing();
 
     OptimizationUtils.backupTranslations(this.grid);
 
-    switch (type) {
-      case COMPUTEREPEATABILITY:
-      case DEFAULT:
-        this.optimizationRepeatability =
-            new OptimizationRepeatability<T>(this.grid, this.progressBar, this.params, this.stitchingStatistics);
-        try {
-          this.optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+    this.optimizationRepeatability =
+        new OptimizationRepeatability<T>(this.grid, this.progressBar, this.params, this.stitchingStatistics);
+    try {
+      this.optimizationRepeatability.computeGlobalOptimizationRepeatablity();
 
-          if (this.optimizationRepeatability.isExceptionThrown()) {
-            this.exceptionThrown = true;
-            this.workerThrowable = this.optimizationRepeatability.getWorkerThrowable();
-            Log.msg(LogType.MANDATORY,
-                "Error occurred in optimization worker thread(s): " + workerThrowable
-                    .getMessage());
-          }
-        } catch (GlobalOptimizationException e) {
-          this.exceptionThrown = true;
-          this.workerThrowable = e;
-        } catch (FileNotFoundException ex) {
-          Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
-        }
-        break;
-      case NONE:
-        break;
-      default:
-        break;
-
+      if (this.optimizationRepeatability.isExceptionThrown()) {
+        this.exceptionThrown = true;
+        this.workerThrowable = this.optimizationRepeatability.getWorkerThrowable();
+        Log.msg(LogType.MANDATORY,
+            "Error occurred in optimization worker thread(s): " + workerThrowable
+                .getMessage());
+      }
+    } catch (GlobalOptimizationException e) {
+      this.exceptionThrown = true;
+      this.workerThrowable = e;
+    } catch (FileNotFoundException ex) {
+      Log.msg(LogType.MANDATORY, "Unable to find file: " + ex.getMessage() + ". Cancelling global optimization.");
     }
+
   }
 
   /**

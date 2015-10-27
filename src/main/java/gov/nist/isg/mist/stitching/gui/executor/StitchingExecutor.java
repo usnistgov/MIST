@@ -519,7 +519,7 @@ public class StitchingExecutor implements Runnable {
 
           this.stitchingStatistics.stopTimer(RunTimers.RelativeDisplacementTime);
 
-          optimizationSuccessful = optimizeAndComposeGrid(grid, this.progressBar, assembleFromMeta, runSequential);
+          optimizationSuccessful = optimizeAndComposeGrid(grid, this.progressBar, assembleFromMeta, runSequential, params.getAdvancedParams().isUseDoublePrecision());
 
           this.stitchingStatistics.stopTimer(RunTimers.TotalStitchingTime);
 
@@ -647,7 +647,7 @@ public class StitchingExecutor implements Runnable {
   /*
    * Returns true if the optimization was successful, otherwise false.
    */
-  private <T> boolean optimizeAndComposeGrid(final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta, boolean runSequential)
+  private <T> boolean optimizeAndComposeGrid(final TileGrid<ImageTile<T>> grid, final JProgressBar progressBar, boolean assembleFromMeta, boolean runSequential, boolean useDoublePrecision)
       throws Throwable {
 
     if (this.isCancelled)
@@ -660,41 +660,29 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.startTimer(RunTimers.GlobalOptimizationTime);
 
-    GlobalOptimization.GlobalOptimizationType type = this.params.getAdvancedParams().getGlobalOpt();
     Stitching.USE_HILLCLIMBING = this.params.getAdvancedParams().isUseHillClimbing();
 
 
     OptimizationUtils.backupTranslations(grid);
 
-    switch (type) {
-      case COMPUTEREPEATABILITY:
-      case DEFAULT:
-        OptimizationRepeatability optimizationRepeatability =
-            new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
-                this.stitchingStatistics);
 
-        if (runSequential)
-          optimizationRepeatability.computeGlobalOptimizationRepeatablitySequential();
-        else
-          optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+    OptimizationRepeatability optimizationRepeatability =
+        new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
+            this.stitchingStatistics);
+
+    if (runSequential)
+      optimizationRepeatability.computeGlobalOptimizationRepeatablitySequential();
+    else
+      optimizationRepeatability.computeGlobalOptimizationRepeatablity();
 
 
-        if (optimizationRepeatability.isExceptionThrown())
-          throw optimizationRepeatability.getWorkerThrowable();
-
-        break;
-      case NONE:
-        break;
-      default:
-        break;
-    }
+    if (optimizationRepeatability.isExceptionThrown())
+      throw optimizationRepeatability.getWorkerThrowable();
 
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalOptimizationTime);
 
-    Log.msg(
-        LogType.HELPFUL,
-        "Completed Global Optimization in "
+    Log.msg(LogType.HELPFUL, "Completed Global Optimization in "
             + this.stitchingStatistics.getDuration(RunTimers.GlobalOptimizationTime) + "ms");
 
     StitchingGuiUtils.updateProgressBar(progressBar, true, "Composing tiles");
@@ -704,8 +692,8 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 
-    Log.msg(LogType.HELPFUL,
-        "Completed MST in " + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime) + "ms");
+    Log.msg(LogType.HELPFUL, "Completed MST in "
+        + this.stitchingStatistics.getDuration(RunTimers.GlobalPositionTime) + "ms");
 
     StitchingGuiUtils.updateProgressBarCompleted(progressBar);
 

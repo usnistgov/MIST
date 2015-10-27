@@ -36,7 +36,6 @@ import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.optimization.GlobalOptimization.GlobalOptimizationType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 import java.io.*;
@@ -87,7 +86,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private List<CudaDeviceParam> cudaDevices;
 
   // Global Optimization
-  private GlobalOptimizationType globalOpt;
+
   private boolean useHillClimbing;
   private OptimizationUtils.OverlapType overlapComputationType;
   private OptimizationUtils.TranslationFilterType translationFilterType;
@@ -122,7 +121,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.cudaDevices = new ArrayList<CudaDeviceParam>();
 
     // Global Optimization
-    this.globalOpt = GlobalOptimizationType.DEFAULT;
     this.useHillClimbing = true;
 
 
@@ -140,7 +138,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
 
   @Override
   public boolean checkParams() {
-    return checkParallelParams() && checkGlobalOptimizationParams();
+    return checkParallelParams();
   }
 
   private boolean checkParallelParams() {
@@ -167,12 +165,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     return check;
   }
 
-  private boolean checkGlobalOptimizationParams() {
-    if (this.globalOpt == null)
-      return false;
-    return true;
-
-  }
 
   private boolean checkCUDAParams() {
     String[][] info = CudaUtils.getTableInformation();
@@ -269,8 +261,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
               this.fftwLibraryFileName = contents[1];
             else if (contents[0].equals(SAVE_FFTW_PLAN))
               this.saveFFTWPlan = StitchingParamUtils.loadBoolean(contents[1], this.saveFFTWPlan);
-            else if (contents[0].equals(GLOBAL_OPT))
-              this.globalOpt = GlobalOptimizationType.valueOf(contents[1].toUpperCase());
             else if (contents[0].equals(USE_HILL_CLIMBING))
               this.useHillClimbing = StitchingParamUtils.loadBoolean(contents[1], this.useHillClimbing);
             else if (contents[0].equals(STAGE_REPEATABILITY))
@@ -337,7 +327,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryPath = pref.get(FFTW_LIBRARY_PATH, this.fftwLibraryPath);
     this.fftwLibraryFileName = pref.get(FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = pref.getBoolean(SAVE_FFTW_PLAN, this.saveFFTWPlan);
-    this.globalOpt = PreferencesUtils.loadPrefGlobalOptimizationType(pref, GLOBAL_OPT, this.globalOpt.name());
     this.useHillClimbing = pref.getBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = pref.getInt(STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = pref.getDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
@@ -374,7 +363,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, FFTW_LIBRARY_FILENAME + ": " + this.fftwLibraryFileName);
     Log.msg(logLevel, PLAN_PATH + ": " + this.planPath);
     Log.msg(logLevel, FFTW_LIBRARY_PATH + ": " + this.fftwLibraryPath);
-    Log.msg(logLevel, GLOBAL_OPT + ": " + this.globalOpt);
     Log.msg(logLevel, USE_HILL_CLIMBING + ": " + this.useHillClimbing);
 
     Log.msg(logLevel, STAGE_REPEATABILITY + ": " + this.stageRepeatability);
@@ -403,7 +391,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryPath = MacroUtils.loadMacroString(macroOptions, FFTW_LIBRARY_PATH, this.fftwLibraryPath);
     this.fftwLibraryFileName = MacroUtils.loadMacroString(macroOptions, FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = MacroUtils.loadMacroBoolean(macroOptions, SAVE_FFTW_PLAN, this.saveFFTWPlan);
-    this.globalOpt = MacroUtils.loadMacroGlobalOptimizationType(macroOptions, GLOBAL_OPT, this.globalOpt.name());
     this.useHillClimbing = MacroUtils.loadMacroBoolean(macroOptions, USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = MacroUtils.loadMacroInteger(macroOptions, STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = MacroUtils.loadMacroDouble(macroOptions, HORIZONTAL_OVERLAP, this.horizontalOverlap);
@@ -438,7 +425,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     MacroUtils.recordString(FFTW_LIBRARY_FILENAME + ": ", this.fftwLibraryFileName);
     MacroUtils.recordString(PLAN_PATH + ": ", this.planPath);
     MacroUtils.recordString(FFTW_LIBRARY_PATH + ": ", this.fftwLibraryPath);
-    MacroUtils.recordString(GLOBAL_OPT + ": ", this.globalOpt.name());
     MacroUtils.recordBoolean(USE_HILL_CLIMBING + ": ", this.useHillClimbing);
     MacroUtils.recordInteger(STAGE_REPEATABILITY + ": ", this.stageRepeatability);
     MacroUtils.recordDouble(HORIZONTAL_OVERLAP + ": ", this.horizontalOverlap);
@@ -461,7 +447,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.put(FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     pref.put(PLAN_PATH, this.planPath);
     pref.put(FFTW_LIBRARY_PATH, this.fftwLibraryPath);
-    pref.put(GLOBAL_OPT, this.globalOpt.name());
     pref.putBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     pref.putInt(STAGE_REPEATABILITY, this.stageRepeatability);
     pref.putDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
@@ -485,7 +470,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(FFTW_LIBRARY_FILENAME + ": " + this.fftwLibraryFileName + newLine);
       fw.write(PLAN_PATH + ": " + this.planPath + newLine);
       fw.write(FFTW_LIBRARY_PATH + ": " + this.fftwLibraryPath + newLine);
-      fw.write(GLOBAL_OPT + ": " + this.globalOpt.name() + newLine);
       fw.write(USE_HILL_CLIMBING + ": " + this.useHillClimbing + newLine);
 
       fw.write(STAGE_REPEATABILITY + ": " + this.stageRepeatability + newLine);
@@ -649,20 +633,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
    */
   public void setCudaDevices(List<CudaDeviceParam> cudaDevices) {
     this.cudaDevices = cudaDevices;
-  }
-
-  /**
-   * @return the globalOpt
-   */
-  public GlobalOptimizationType getGlobalOpt() {
-    return this.globalOpt;
-  }
-
-  /**
-   * @param globalOpt the globalOpt to set
-   */
-  public void setGlobalOpt(GlobalOptimizationType globalOpt) {
-    this.globalOpt = globalOpt;
   }
 
   /**

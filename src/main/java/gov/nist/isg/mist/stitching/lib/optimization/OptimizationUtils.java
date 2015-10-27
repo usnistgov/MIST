@@ -527,6 +527,7 @@ public class OptimizationUtils {
     Log.msg(LogType.VERBOSE,
         "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
 
+
     double mu = Double.NaN;
     List<CorrelationTriple> topCorrelations;
     switch (overlapType) {

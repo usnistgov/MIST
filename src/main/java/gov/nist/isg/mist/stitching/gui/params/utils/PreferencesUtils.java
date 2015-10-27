@@ -34,7 +34,6 @@ import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.optimization.GlobalOptimization.GlobalOptimizationType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.LoaderType;
@@ -170,28 +169,6 @@ public class PreferencesUtils {
 
     if (type == null) {
       Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid BlendingMode");
-    }
-
-    return type;
-  }
-
-  /**
-   * Loads the global optimization from preferences
-   *
-   * @param pref the preferences
-   * @param key  the key value
-   * @param def  the default value
-   * @return the global optimization
-   */
-  public static GlobalOptimizationType loadPrefGlobalOptimizationType(Preferences pref, String key,
-                                                                      String def) {
-    String res = pref.get(key, def);
-
-    GlobalOptimizationType type = GlobalOptimizationType.valueOf(res.toUpperCase());
-
-    if (type == null) {
-      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key
-          + " must be valid GlobalOptimizationType");
     }
 
     return type;

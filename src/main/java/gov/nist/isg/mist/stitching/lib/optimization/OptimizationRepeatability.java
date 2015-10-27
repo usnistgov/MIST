@@ -49,6 +49,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 
 import javax.swing.*;
 
@@ -112,7 +113,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
    * @param params              the stitching app parameters
    * @param stitchingStatistics the statistics file
    */
-  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar, StitchingAppParams params, StitchingStatistics stitchingStatistics) {
+  public OptimizationRepeatability(TileGrid<ImageTile<T>> grid, JProgressBar progressBar,
+                                   StitchingAppParams params, StitchingStatistics stitchingStatistics) {
     this.grid = grid;
     this.progressBar = progressBar;
     this.params = params;
@@ -161,21 +163,13 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
 
-//    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
-//    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
-//    if(this.params.getOutputParams().isOutputMeta())
-//      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
-
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
-    if (this.isUserDefinedRepeatability) {
+    if (this.isUserDefinedRepeatability)
       computedRepeatability = this.userDefinedRepeatability;
-    }
 
-
-    if (this.isCancelled) {
+    if (this.isCancelled)
       return;
-    }
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
@@ -207,22 +201,38 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
         double oldCorr = westTrans.getCorrelation();
         CorrelationTriple bestWest;
+        // TODO setup this to use single precision
         try {
-          if (Stitching.USE_HILLCLIMBING) {
-
-            if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
-              bestWest =
-                  Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                      westTrans.getY(), west, t);
+          if(this.params.getAdvancedParams().isUseDoublePrecision()) {
+            if (Stitching.USE_HILLCLIMBING) {
+              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestWest =
+                    Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                        westTrans.getY(), west, t);
+              } else {
+                bestWest =
+                    Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                        westTrans.getY(), west, t);
+              }
             } else {
-              bestWest =
-                  Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                      westTrans.getY(), west, t);
+              bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, west, t);
             }
-
-          } else {
-            bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, west, t);
+          }else{
+            if (Stitching32.USE_HILLCLIMBING) {
+              if (Stitching32.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestWest =
+                    Stitching32.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                        westTrans.getY(), west, t);
+              } else {
+                bestWest =
+                    Stitching32.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                        westTrans.getY(), west, t);
+              }
+            } else {
+              bestWest = Stitching32.computeCCF_LR(xMin, xMax, yMin, yMax, west, t);
+            }
           }
+
 
           t.setWestTranslation(bestWest);
 
@@ -260,21 +270,36 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
         double oldCorr = northTrans.getCorrelation();
         CorrelationTriple bestNorth;
         try {
-          if (Stitching.USE_HILLCLIMBING) {
-
-            if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
-              bestNorth =
-                  Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                      northTrans.getY(), north, t);
+          if(this.params.getAdvancedParams().isUseDoublePrecision()) {
+            if (Stitching.USE_HILLCLIMBING) {
+              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestNorth =
+                    Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                        northTrans.getY(), north, t);
+              } else {
+                bestNorth =
+                    Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                        northTrans.getY(), north, t);
+              }
             } else {
-              bestNorth =
-                  Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                      northTrans.getY(), north, t);
+              bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, north, t);
             }
-
-          } else {
-            bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, north, t);
+          }else{
+            if (Stitching32.USE_HILLCLIMBING) {
+              if (Stitching32.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                bestNorth =
+                    Stitching32.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                        northTrans.getY(), north, t);
+              } else {
+                bestNorth =
+                    Stitching32.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                        northTrans.getY(), north, t);
+              }
+            } else {
+              bestNorth = Stitching32.computeCCF_UD(xMin, xMax, yMin, yMax, north, t);
+            }
           }
+
 
           t.setNorthTranslation(bestNorth);
 
@@ -336,11 +361,6 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     int repeatabilityWest = correctTranslationsModel(percOverlapError, Direction.West);
 
-//    // Save to x,y starting point output folder TODO: Might remove this or make it an official meta output
-//    File hillClimbPosFile = this.params.getOutputParams().getHillClimbPositionFile(this.stitchingStatistics.getCurrentTimeslice());
-//    if(this.params.getOutputParams().isOutputMeta())
-//      Stitching.outputRelativeDisplacements(this.grid, hillClimbPosFile);
-
     computedRepeatability = repeatabilityNorth > repeatabilityWest ? repeatabilityNorth : repeatabilityWest;
 
     if (this.isUserDefinedRepeatability) {
@@ -395,7 +415,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     Thread tmp;
     for (int i = 0; i < numThreads; i++) {
-      OptimizationRepeatabilityWorker<T> worker = new OptimizationRepeatabilityWorker<T>(tileQueue, bkQueue, this.grid, computedRepeatability, this.progressBar);
+      OptimizationRepeatabilityWorker<T> worker = new OptimizationRepeatabilityWorker<T>(tileQueue,
+          bkQueue, this.grid, computedRepeatability, this.progressBar,
+          this.params.getAdvancedParams().isUseDoublePrecision());
       this.optimizationWorkers.add(worker);
       tmp = new Thread(worker);
       tmp.setUncaughtExceptionHandler(this);

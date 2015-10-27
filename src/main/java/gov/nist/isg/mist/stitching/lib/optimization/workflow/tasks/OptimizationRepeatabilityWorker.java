@@ -37,6 +37,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 import gov.nist.isg.mist.stitching.lib.optimization.workflow.data.OptimizationData;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 
 import javax.swing.*;
 
@@ -61,6 +62,7 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
   private int repeatabilty;
   private volatile boolean isCancelled;
   private static boolean bkDone = false;
+  private boolean useDoublePrecision = true;
 
 
   /**
@@ -73,13 +75,15 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
    * @param progressBar  the progress bar
    */
   public OptimizationRepeatabilityWorker(BlockingQueue<OptimizationData<T>> queue, BlockingQueue<OptimizationData<T>> bkQueue,
-                                         TileGrid<ImageTile<T>> grid, int repeatabilty, JProgressBar progressBar) {
+                                         TileGrid<ImageTile<T>> grid, int repeatabilty, JProgressBar progressBar,
+                                         boolean useDoublePrecision) {
     this.tiles = queue;
     this.bkQueue = bkQueue;
     this.grid = grid;
     this.progressBar = progressBar;
     this.repeatabilty = repeatabilty;
     this.isCancelled = false;
+    this.useDoublePrecision = useDoublePrecision;
     bkDone = false;
   }
 
@@ -112,21 +116,34 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
           double oldCorr = northTrans.getCorrelation();
           CorrelationTriple bestNorth;
           try {
-            if (Stitching.USE_HILLCLIMBING) {
-
-              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
-                bestNorth =
-                    Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                        northTrans.getY(), neighbor, tile);
+            if(this.useDoublePrecision) {
+              if (Stitching.USE_HILLCLIMBING) {
+                if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                  bestNorth =
+                      Stitching.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                          northTrans.getY(), neighbor, tile);
+                } else {
+                  bestNorth =
+                      Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                          northTrans.getY(), neighbor, tile);
+                }
               } else {
-                bestNorth =
-                    Stitching.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
-                        northTrans.getY(), neighbor, tile);
+                bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, neighbor, tile);
               }
-
-
-            } else {
-              bestNorth = Stitching.computeCCF_UD(xMin, xMax, yMin, yMax, neighbor, tile);
+            }else{
+              if (Stitching32.USE_HILLCLIMBING) {
+                if (Stitching32.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                  bestNorth =
+                      Stitching32.computeCCF_Exhaustive_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                          northTrans.getY(), neighbor, tile);
+                } else {
+                  bestNorth =
+                      Stitching32.computeCCF_HillClimbing_UD(xMin, xMax, yMin, yMax, northTrans.getX(),
+                          northTrans.getY(), neighbor, tile);
+                }
+              } else {
+                bestNorth = Stitching32.computeCCF_UD(xMin, xMax, yMin, yMax, neighbor, tile);
+              }
             }
           } catch (NullPointerException e) {
             continue;
@@ -161,18 +178,34 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
           CorrelationTriple bestWest;
 
           try {
-            if (Stitching.USE_HILLCLIMBING) {
-              if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
-                bestWest =
-                    Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                        westTrans.getY(), neighbor, tile);
+            if(this.useDoublePrecision) {
+              if (Stitching.USE_HILLCLIMBING) {
+                if (Stitching.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                  bestWest =
+                      Stitching.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                          westTrans.getY(), neighbor, tile);
+                } else {
+                  bestWest =
+                      Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                          westTrans.getY(), neighbor, tile);
+                }
               } else {
-                bestWest =
-                    Stitching.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
-                        westTrans.getY(), neighbor, tile);
+                bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, neighbor, tile);
               }
-            } else {
-              bestWest = Stitching.computeCCF_LR(xMin, xMax, yMin, yMax, neighbor, tile);
+            }else{
+              if (Stitching32.USE_HILLCLIMBING) {
+                if (Stitching32.USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH) {
+                  bestWest =
+                      Stitching32.computeCCF_Exhaustive_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                          westTrans.getY(), neighbor, tile);
+                } else {
+                  bestWest =
+                      Stitching32.computeCCF_HillClimbing_LR(xMin, xMax, yMin, yMax, westTrans.getX(),
+                          westTrans.getY(), neighbor, tile);
+                }
+              } else {
+                bestWest = Stitching32.computeCCF_LR(xMin, xMax, yMin, yMax, neighbor, tile);
+              }
             }
           } catch (NullPointerException e) {
             continue;

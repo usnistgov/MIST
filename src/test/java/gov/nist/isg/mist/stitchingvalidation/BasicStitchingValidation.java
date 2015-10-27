@@ -122,68 +122,69 @@ public class BasicStitchingValidation {
 //        }
 
 
+    double nbIter = 5;
     double elapsedTime = 0;
-    for (int i = 0; i < 5; i++) {
-      File metaDataPath = new File(rootFolder, StitchingType.JAVA.name().toLowerCase());
-      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-      params.getAdvancedParams().setProgramType(StitchingType.JAVA);
-
-      Log.setLogLevel(LogType.NONE);
-      long startTime = System.currentTimeMillis();
-      StitchingExecutor executor = new StitchingExecutor(params);
-
-      try {
-        executor.runStitching(false, false, false);
-      } catch (StitchingException e) {
-        Log.msg(LogType.MANDATORY, e.getMessage());
-      }
-      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-
-    }
-    System.out.println("Avg Java 32bit Elapsed: " + (elapsedTime / 5) + " ms");
-
-
-    elapsedTime = 0;
-    for (int i = 0; i < 5; i++) {
-      File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
-      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-      params.getAdvancedParams().setProgramType(StitchingType.FFTW);
-
-      Log.setLogLevel(LogType.NONE);
-      long startTime = System.currentTimeMillis();
-      StitchingExecutor executor = new StitchingExecutor(params);
-
-      try {
-        executor.runStitching(false, false, false);
-      } catch (StitchingException e) {
-        Log.msg(LogType.MANDATORY, e.getMessage());
-      }
-      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-
-    }
-    System.out.println("Avg FFTW 32bit Elapsed: " + (elapsedTime / 5) + " ms");
-
-
-//        params.getAdvancedParams().setUseDoublePrecision(true);
-//        elapsedTime = 0;
-//        for(int i = 0; i < 5; i++) {
-//            File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
-//            params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//            params.getAdvancedParams().setProgramType(StitchingType.FFTW);
+//    for (int i = 0; i < nbIter; i++) {
+//      File metaDataPath = new File(rootFolder, StitchingType.JAVA.name().toLowerCase());
+//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
+//      params.getAdvancedParams().setProgramType(StitchingType.JAVA);
 //
-//            Log.setLogLevel(LogType.NONE);
-//            long startTime = System.currentTimeMillis();
-//            StitchingExecutor executor = new StitchingExecutor(params);
+//      Log.setLogLevel(LogType.NONE);
+//      long startTime = System.currentTimeMillis();
+//      StitchingExecutor executor = new StitchingExecutor(params);
 //
-//            try {
-//                executor.runStitching(false, false, false);
-//            } catch (StitchingException e) {
-//                Log.msg(LogType.MANDATORY, e.getMessage());
-//            }
-//            elapsedTime = elapsedTime + (System.currentTimeMillis()-startTime);
+//      try {
+//        executor.runStitching(false, false, false);
+//      } catch (StitchingException e) {
+//        Log.msg(LogType.MANDATORY, e.getMessage());
+//      }
+//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
 //
-//        }
-//        System.out.println("Avg 64bit Elapsed: " + (elapsedTime/5) + " ms");
+//    }
+//    System.out.println("Avg Java 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
+//    elapsedTime = 0;
+//    for (int i = 0; i < nbIter; i++) {
+//      File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
+//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
+//      params.getAdvancedParams().setProgramType(StitchingType.FFTW);
+//
+//      Log.setLogLevel(LogType.NONE);
+//      long startTime = System.currentTimeMillis();
+//      StitchingExecutor executor = new StitchingExecutor(params);
+//
+//      try {
+//        executor.runStitching(false, false, false);
+//      } catch (StitchingException e) {
+//        Log.msg(LogType.MANDATORY, e.getMessage());
+//      }
+//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+//
+//    }
+//    System.out.println("Avg FFTW 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
+        params.getAdvancedParams().setUseDoublePrecision(true);
+        elapsedTime = 0;
+        for(int i = 0; i < nbIter; i++) {
+            File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
+            params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
+            params.getAdvancedParams().setProgramType(StitchingType.FFTW);
+
+            Log.setLogLevel(LogType.NONE);
+            long startTime = System.currentTimeMillis();
+            StitchingExecutor executor = new StitchingExecutor(params);
+
+            try {
+                executor.runStitching(false, false, false);
+            } catch (StitchingException e) {
+                Log.msg(LogType.MANDATORY, e.getMessage());
+            }
+            elapsedTime = elapsedTime + (System.currentTimeMillis()-startTime);
+
+        }
+        System.out.println("Avg 64bit Elapsed: " + (elapsedTime/nbIter) + " ms");
 
 
     System.exit(1);
