@@ -2,17 +2,12 @@ package gov.nist.isg.mist.mle;
 
 import java.io.File;
 
-import javax.swing.*;
-
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
-import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
 /**
  * Created by mmajurski on 7/9/15.

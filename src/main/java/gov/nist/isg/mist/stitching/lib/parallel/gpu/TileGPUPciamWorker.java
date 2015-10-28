@@ -28,7 +28,7 @@
 
 package gov.nist.isg.mist.stitching.lib.parallel.gpu;
 
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -48,7 +48,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
 /**

@@ -29,8 +29,8 @@
 package gov.nist.isg.mist.stitchingruntime;
 
 import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
@@ -41,13 +41,9 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
 
-import javax.swing.*;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ImageStitchingRunTime {

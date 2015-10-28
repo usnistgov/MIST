@@ -33,7 +33,7 @@ import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.FFTWPan
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.JavaPanel;
 import jcuda.LibUtils.ARCHType;
 import gov.nist.isg.mist.stitching.gui.components.buttongroup.ButtonGroupPanel;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;

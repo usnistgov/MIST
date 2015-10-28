@@ -29,7 +29,7 @@
 package gov.nist.isg.mist.stitching.lib.parallel.gpu;
 
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import jcuda.CudaException;

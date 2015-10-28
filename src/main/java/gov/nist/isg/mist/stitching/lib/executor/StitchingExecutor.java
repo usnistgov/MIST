@@ -26,14 +26,13 @@
 //
 // ================================================================
 
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.MessageDialog;

@@ -24,11 +24,10 @@
 // Time-stamp: <Oct 1, 2014 1:43:18 PM tjb3>
 //
 // ================================================================
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
 import ij.macro.Interpreter;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;

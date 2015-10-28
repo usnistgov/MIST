@@ -24,10 +24,9 @@
 // Time-stamp: <Oct 1, 2014 1:45:09 PM tjb3>
 //
 // ================================================================
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import jcuda.CudaException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 

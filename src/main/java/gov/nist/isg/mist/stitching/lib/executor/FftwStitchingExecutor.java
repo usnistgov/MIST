@@ -24,7 +24,7 @@
 // Time-stamp: <Oct 1, 2014 1:44:34 PM tjb3>
 //
 // ================================================================
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;

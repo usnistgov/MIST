@@ -25,7 +25,7 @@
 //
 // ================================================================
 
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;

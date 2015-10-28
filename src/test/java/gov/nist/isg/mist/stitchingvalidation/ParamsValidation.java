@@ -28,8 +28,8 @@
 
 package gov.nist.isg.mist.stitchingvalidation;
 
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;

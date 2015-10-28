@@ -35,7 +35,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import javax.swing.*;
 
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Debug;

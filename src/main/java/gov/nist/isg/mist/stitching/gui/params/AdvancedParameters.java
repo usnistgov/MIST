@@ -31,7 +31,7 @@ import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.PreferencesUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.StitchingParamUtils;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;

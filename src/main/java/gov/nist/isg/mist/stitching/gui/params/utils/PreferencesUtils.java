@@ -26,7 +26,7 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params.utils;
 
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;

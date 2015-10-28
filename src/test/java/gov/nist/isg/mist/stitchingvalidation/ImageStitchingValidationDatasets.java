@@ -28,12 +28,11 @@
 
 package gov.nist.isg.mist.stitchingvalidation;
 
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.gui.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -41,8 +40,6 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import javax.swing.*;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class ImageStitchingValidationDatasets {
 
