@@ -72,23 +72,24 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
   public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     int startRow = 0;
     int startCol = 0;
-    int extentWidth = 4;// 16;
-    int extentHeight = 4;// 22;
+    int extentWidth = 23;
+    int extentHeight = 30;
 
-    JCudaDriver.setExceptionsEnabled(true);
-    Debug.setDebugLevel(DebugType.VERBOSE);
-    Log.setLogLevel(LogType.VERBOSE);
+    File tileDir = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\");
+
+    JCudaDriver.setExceptionsEnabled(false);
+    Debug.setDebugLevel(DebugType.NONE);
+    Log.setLogLevel(LogType.MANDATORY);
     // Debug.setDebugLevel(LogType.VERBOSE);
     Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation Multithreaded JCUDA");
 
-    File tileDir = new File("F:\\StitchingData\\joe_bad_data");
 
     Log.msg(LogType.INFO, "Generating tile grid");
     TileGrid<ImageTile<CUdeviceptr>> grid = null;
     try {
       TileGridLoader loader =
-          new SequentialTileGridLoader(14, 18, 1, "worm_img_{pppp}.tif", GridOrigin.UL,
-              GridDirection.HORIZONTALCOMBING);
+          new SequentialTileGridLoader(extentWidth, extentHeight, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+              GridDirection.VERTICALCOMBING);
 
       grid =
           new TileGrid<ImageTile<CUdeviceptr>>(startRow, startCol, extentWidth, extentHeight,
@@ -118,17 +119,7 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
 
     Log.msg(LogType.INFO, "Computing global optimization");
 
-    // GlobalOptimization.execute(grid, 0.9, OptimizationType.GLOBAL,
-    // OP_TYPE.MEDIAN);
-
     Log.msg(LogType.INFO, "Computing absolute positions");
-    // GraphUtils.generateGraphComposition(0.9, grid);
-
-    // SingleImageGUI.runGUI(grid, "F:\\output_pyramids",
-    // tileDir.getAbsolutePath());
-    Stitching.outputRelativeDisplacements(grid, new File(
-        "F:\\StitchingData\\70perc_input_images\\OutData",
-        "4x4relativePositionsWorkflowWithOptimization.txt"));
 
     Log.msg(LogType.MANDATORY, "Completed Test in " + TimeUtil.tock() + " ms");
 

@@ -102,7 +102,7 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded {
 
     // 4, 34 -> 5,34
     int numProducers = 1;
-    int numWorkers = 22;
+    int numWorkers = 12;
     CPUStitchingThreadExecutor<Pointer<Double>> executor =
         new CPUStitchingThreadExecutor<Pointer<Double>>(numProducers, numWorkers, tile, grid);
 

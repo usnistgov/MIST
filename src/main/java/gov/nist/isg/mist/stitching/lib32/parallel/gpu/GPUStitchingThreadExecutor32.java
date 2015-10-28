@@ -44,9 +44,6 @@ import gov.nist.isg.mist.stitching.lib.memorypool.CudaAllocator;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.gpu.BookKeeper;
-import gov.nist.isg.mist.stitching.lib.parallel.gpu.TileCpuCcfWorker;
-import gov.nist.isg.mist.stitching.lib.parallel.gpu.TileGPUFftWorker;
-import gov.nist.isg.mist.stitching.lib.parallel.gpu.TileGPUPciamWorker;
 import gov.nist.isg.mist.stitching.lib.parallel.gpu.TileProducer;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid.GridDecomposition;
@@ -75,9 +72,9 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
   private List<Thread> threads;
 
   private List<BookKeeper<T>> bookKeepers;
-  private List<TileCpuCcfWorker<T>> ccfWorkers;
-  private List<TileGPUFftWorker<T>> fftWorkers;
-  private List<TileGPUPciamWorker<T>> pciamWorkers;
+  private List<TileCpuCcfWorker32<T>> ccfWorkers;
+  private List<TileGPUFftWorker32<T>> fftWorkers;
+  private List<TileGPUPciamWorker32<T>> pciamWorkers;
   private List<TileProducer<T>> producers;
 
   private PriorityBlockingQueue<StitchingTask<T>> bkQueue;
@@ -121,9 +118,9 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
     this.contexts = contexts;
     this.threads = new ArrayList<Thread>();
     this.bookKeepers = new ArrayList<BookKeeper<T>>();
-    this.ccfWorkers = new ArrayList<TileCpuCcfWorker<T>>();
-    this.fftWorkers = new ArrayList<TileGPUFftWorker<T>>();
-    this.pciamWorkers = new ArrayList<TileGPUPciamWorker<T>>();
+    this.ccfWorkers = new ArrayList<TileCpuCcfWorker32<T>>();
+    this.fftWorkers = new ArrayList<TileGPUFftWorker32<T>>();
+    this.pciamWorkers = new ArrayList<TileGPUPciamWorker32<T>>();
     this.producers = new ArrayList<TileProducer<T>>();
     this.bkQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
     this.ccfQueue = new PriorityBlockingQueue<StitchingTask<T>>(BlockingQueueSize);
@@ -193,14 +190,14 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
     }
 
     for (int i = 0; i < this.numGPUs; i++) {
-      TileGPUFftWorker<T> fftWorker;
+      TileGPUFftWorker32<T> fftWorker;
       fftWorker =
-          new TileGPUFftWorker<T>(this.fftQueues[i], this.bkQueue, this.memoryPools[i], this.memories[i],
+          new TileGPUFftWorker32<T>(this.fftQueues[i], this.bkQueue, this.memoryPools[i], this.memories[i],
               devIDs[i], i, this.contexts[i]);
 
-      TileGPUPciamWorker<T> pciamWorker;
+      TileGPUPciamWorker32<T> pciamWorker;
       pciamWorker =
-          new TileGPUPciamWorker<T>(this.pciamQueues[i], this.bkQueue, this.ccfQueue,
+          new TileGPUPciamWorker32<T>(this.pciamQueues[i], this.bkQueue, this.ccfQueue,
               this.memories[i], initTile.getWidth(), initTile.getHeight(), devIDs[i], i, this.contexts[i], contexts, devIDs);
 
 
@@ -218,9 +215,9 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
     }
 
     for (int i = 0; i < numWorkers; i++) {
-      TileCpuCcfWorker<T> ccfWorker;
+      TileCpuCcfWorker32<T> ccfWorker;
       ccfWorker =
-          new TileCpuCcfWorker<T>(this.ccfQueue, numNeighbors, progressBar);
+          new TileCpuCcfWorker32<T>(this.ccfQueue, numNeighbors, progressBar);
 
       this.ccfWorkers.add(ccfWorker);
 
@@ -289,13 +286,13 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
     for (TileProducer<T> producer : this.producers)
       producer.cancel();
 
-    for (TileGPUFftWorker<T> fftWorker : this.fftWorkers)
+    for (TileGPUFftWorker32<T> fftWorker : this.fftWorkers)
       fftWorker.cancel();
 
-    for (TileGPUPciamWorker<T> pciamWorker : this.pciamWorkers)
+    for (TileGPUPciamWorker32<T> pciamWorker : this.pciamWorkers)
       pciamWorker.cancel();
 
-    for (TileCpuCcfWorker<T> ccfWorker : this.ccfWorkers)
+    for (TileCpuCcfWorker32<T> ccfWorker : this.ccfWorkers)
       ccfWorker.cancel();
 
     for (BookKeeper<T> bookKeeper : this.bookKeepers)

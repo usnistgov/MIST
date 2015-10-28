@@ -37,9 +37,9 @@ import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -295,14 +295,14 @@ public class Stitching32 {
       t.readTile();
 
       if (memoryPool == null) {
-        int[] size = {CudaImageTile32.fftSize * Sizeof.DOUBLE * 2};
+        int[] size = {CudaImageTile32.fftSize * Sizeof.FLOAT * 2};
 
         memoryPool =
             new DynamicMemoryPool<CUdeviceptr>(memoryPoolSize, false, new CudaAllocator(), size);
       }
 
       if (memory == null)
-        memory = new CudaTileWorkerMemory(t);
+        memory = new CudaTileWorkerMemory32(t);
 
       int row = t.getRow();
       int col = t.getCol();

@@ -28,18 +28,14 @@
 
 package gov.nist.isg.mist.jcuda;
 
-import gov.nist.isg.mist.timing.TimeUtil;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUdeviceptr;
-import jcuda.driver.JCudaDriver;
-import jcuda.jcufft.JCufft;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
+
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
-import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
@@ -53,10 +49,14 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
+import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
+import gov.nist.isg.mist.timing.TimeUtil;
+import jcuda.LogLevel;
+import jcuda.driver.CUcontext;
+import jcuda.driver.CUdeviceptr;
+import jcuda.driver.JCudaDriver;
+import jcuda.jcufft.JCufft;
 
 /**
  * Test case for stitching a grid of tiles using FFTW.
@@ -64,7 +64,7 @@ import java.io.InvalidClassException;
  * @author Tim Blattner
  * @version 1.0
  */
-public class TestJCUDAGridPhaseCorrelation {
+public class TestJCUDAGridPhaseCorrelation32 {
   static {
 
     // Initialize libraries
@@ -77,8 +77,9 @@ public class TestJCUDAGridPhaseCorrelation {
   public static void runTestGridPhaseCorrelation() throws FileNotFoundException {
     JCudaDriver.setExceptionsEnabled(true);
     JCufft.setExceptionsEnabled(true);
-
+    JCudaDriver.setLogLevel(LogLevel.LOG_DEBUG);
     Log.setLogLevel(LogType.INFO);
+    Debug.setDebugLevel(Debug.DebugType.INFO);
 
     int startRow = 0;
     int startCol = 0;
@@ -89,7 +90,7 @@ public class TestJCUDAGridPhaseCorrelation {
 
     Log.msg(LogType.MANDATORY, "Running Test Grid Phase Correlation JCUDA");
 
-    CudaImageTile tile = new CudaImageTile(new File(tileDir, "KB_2012_04_13_1hWet_10Perc_IR_00001.tif"));
+    CudaImageTile32 tile = new CudaImageTile32(new File(tileDir, "KB_2012_04_13_1hWet_10Perc_IR_00001.tif"));
 
     Log.msg(LogType.INFO, "Loading CUFFT plan");
 
@@ -104,7 +105,7 @@ public class TestJCUDAGridPhaseCorrelation {
 
       grid =
           new TileGrid<ImageTile<CUdeviceptr>>(startRow, startCol, extentWidth, extentHeight,
-              loader, tileDir, CudaImageTile.class);
+              loader, tileDir, CudaImageTile32.class);
     } catch (InvalidClassException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
@@ -116,7 +117,7 @@ public class TestJCUDAGridPhaseCorrelation {
     Log.msg(LogType.INFO, "Computing translations");
     TimeUtil.tick();
 
-    Stitching.stitchGridCuda(gridTraverser, grid, contexts[0]);
+    Stitching32.stitchGridCuda(gridTraverser, grid, contexts[0]);
 
     OptimizationUtils.printGrid(grid, Direction.West, DisplacementValue.X);
     OptimizationUtils.printGrid(grid, Direction.West, DisplacementValue.Y);
@@ -133,7 +134,7 @@ public class TestJCUDAGridPhaseCorrelation {
    */
   public static void main(String args[]) {
     try {
-      TestJCUDAGridPhaseCorrelation.runTestGridPhaseCorrelation();
+      TestJCUDAGridPhaseCorrelation32.runTestGridPhaseCorrelation();
     } catch (FileNotFoundException e) {
       Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage());
     }

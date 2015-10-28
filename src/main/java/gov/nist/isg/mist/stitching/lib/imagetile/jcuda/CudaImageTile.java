@@ -337,8 +337,10 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
    * @param dev the GPU device
    */
   public static void destroyPlans(int dev) {
-    JCufft.cufftDestroy(plan_fwd[dev]);
-    JCufft.cufftDestroy(plan_bwd[dev]);
+    if(plan_fwd != null)
+      JCufft.cufftDestroy(plan_fwd[dev]);
+    if(plan_bwd != null)
+      JCufft.cufftDestroy(plan_bwd[dev]);
   }
 
   /**

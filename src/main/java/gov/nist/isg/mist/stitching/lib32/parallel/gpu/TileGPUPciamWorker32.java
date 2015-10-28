@@ -141,12 +141,12 @@ public class TileGPUPciamWorker32<T> implements Runnable {
     JCudaDriver.cuCtxSetCurrent(this.context);
 
     // Allocate extra device memory for non peer-to-peer copy
-    int res = JCudaDriver.cuMemAlloc(this.devMem, CudaImageTile32.fftSize * Sizeof.DOUBLE * 2);
+    int res = JCudaDriver.cuMemAlloc(this.devMem, CudaImageTile32.fftSize * Sizeof.FLOAT * 2);
     checkCudaOutOfMemoryError(res);
 
     // Allocate phase correlation matrix memory
     CUdeviceptr pcm = new CUdeviceptr();
-    res = JCudaDriver.cuMemAlloc(pcm, this.tileWidth * this.tileHeight * Sizeof.DOUBLE);
+    res = JCudaDriver.cuMemAlloc(pcm, this.tileWidth * this.tileHeight * Sizeof.FLOAT);
     checkCudaOutOfMemoryError(res);
 
     this.stream = new CUstream();
@@ -201,7 +201,7 @@ public class TileGPUPciamWorker32<T> implements Runnable {
 
             // copy device to device
             JCudaDriver.cuMemcpyPeerAsync(this.devMem, this.context, fft,
-                this.peerContextMap.get(cudaTile.getDev()), CudaImageTile32.fftSize * Sizeof.DOUBLE * 2,
+                this.peerContextMap.get(cudaTile.getDev()), CudaImageTile32.fftSize * Sizeof.FLOAT * 2,
                 this.stream);
 
             CudaStitching32.peakCorrelationMatrix(this.devMem, (CudaImageTile32) tile, pcm, this.memory, this.stream,

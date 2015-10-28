@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
 import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
+import gov.nist.isg.mist.stitching.lib32.executor.CudaStitchingExecutor32;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.MessageDialog;
@@ -329,9 +330,11 @@ public class StitchingExecutor implements Runnable {
 
           break;
         case CUDA:
-
-          stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
-
+          if(this.params.getAdvancedParams().isUseDoublePrecision()) {
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
+          }else{
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor32<CUdeviceptr>(this);
+          }
           break;
         case FFTW:
           if (params.getAdvancedParams().isUseDoublePrecision()) {

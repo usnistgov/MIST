@@ -31,6 +31,7 @@ package gov.nist.isg.mist.stitching.lib.imagetile.jcuda;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import jcuda.CudaException;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
@@ -169,12 +170,22 @@ public class CudaUtils {
     contexts = initGPUs(nGPUs, gpuIDs);
 
     Log.msg(LogType.INFO, "Initializing GPU functions");
-    CudaImageTile.initFunc(nGPUs);
+    if(initTile instanceof CudaImageTile)
+      CudaImageTile.initFunc(nGPUs);
+    if(initTile instanceof CudaImageTile32)
+      CudaImageTile32.initFunc(nGPUs);
+
     for (int i = 0; i < nGPUs; i++) {
       Log.msg(LogType.INFO, "Initializing functions for GPU " + i);
       try {
-        if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
-          return null;
+        if(initTile instanceof CudaImageTile) {
+          if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
+            return null;
+        }
+        if(initTile instanceof CudaImageTile32) {
+          if (!CudaImageTile32.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
+            return null;
+        }
       } catch (IOException e) {
         Log.msg(LogType.MANDATORY, "Unable to load CUDA PTX file.");
         return null;
@@ -195,6 +206,7 @@ public class CudaUtils {
   public static void destroyJCUDA(int nGPUs) {
     for (int i = 0; i < nGPUs; i++) {
       CudaImageTile.destroyPlans(i);
+      CudaImageTile32.destroyPlans(i);
       JCudaDriver.cuCtxDestroy(contexts[i]);
     }
 

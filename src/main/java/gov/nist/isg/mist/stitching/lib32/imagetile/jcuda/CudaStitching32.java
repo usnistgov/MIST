@@ -139,7 +139,7 @@ public class CudaStitching32 {
     JCudaDriver.cuLaunchKernel(CudaImageTile32.elt_prod_function[dev], numBlocks, 1, 1, numThreads,
         1, 1, 0, stream, kernelParams, null);
 
-    JCufft.cufftExecZ2D(CudaImageTile32.plan_bwd[dev], ptr, pcm);
+    JCufft.cufftExecC2R(CudaImageTile32.plan_bwd[dev], ptr, pcm);
 
   }
 
@@ -168,7 +168,7 @@ public class CudaStitching32 {
     JCudaDriver.cuLaunchKernel(CudaImageTile32.elt_prod_function[dev], numBlocks, 1, 1, numThreads,
         1, 1, 0, stream, kernelParams, null);
 
-    JCufft.cufftExecZ2D(CudaImageTile32.plan_bwd[dev], ptr, pcm);
+    JCufft.cufftExecC2R(CudaImageTile32.plan_bwd[dev], ptr, pcm);
 
   }
 

@@ -28,18 +28,19 @@
 
 package gov.nist.isg.mist.jcuda;
 
-import gov.nist.isg.mist.timing.TimeUtil;
-import jcuda.LogLevel;
-import jcuda.driver.JCudaDriver;
-import jcuda.runtime.JCuda;
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import java.io.File;
-import java.io.FileNotFoundException;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
+import gov.nist.isg.mist.timing.TimeUtil;
+import jcuda.LogLevel;
+import jcuda.driver.JCudaDriver;
+import jcuda.runtime.JCuda;
 
 /**
  * Test case for computing the FFT using CUDA cuFFT
@@ -47,7 +48,7 @@ import java.io.FileNotFoundException;
  * @author Tim Blattner
  * @version 1.0
  */
-public class TestJCUDACUFFT {
+public class TestJCUDACUFFT32 {
 
   private static void runTestJCUDACUFFT() throws FileNotFoundException {
     LibraryUtils.initalize();
@@ -61,7 +62,7 @@ public class TestJCUDACUFFT {
     // BridJ.addLibraryPath(System.getProperty("user.dir") + File.separator
     // + "libs" + File.separator + "jcuda");
 
-    CudaImageTile tile = new CudaImageTile(file);
+    CudaImageTile32 tile = new CudaImageTile32(file);
 
     CudaUtils.initJCUDA(1, new int[]{0}, tile);
 
@@ -83,7 +84,7 @@ public class TestJCUDACUFFT {
    */
   public static void main(String[] args) {
     try {
-      TestJCUDACUFFT.runTestJCUDACUFFT();
+      TestJCUDACUFFT32.runTestJCUDACUFFT();
     } catch (FileNotFoundException e) {
       Log.msg(LogType.MANDATORY, "File not found: " + e.getMessage());
     }

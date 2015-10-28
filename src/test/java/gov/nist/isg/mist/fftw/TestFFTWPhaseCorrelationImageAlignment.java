@@ -28,6 +28,8 @@
 
 package gov.nist.isg.mist.fftw;
 
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.timing.TimeUtil;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
@@ -61,8 +63,8 @@ public class TestFFTWPhaseCorrelationImageAlignment {
     Log.msg(LogType.MANDATORY, "Running Test Phase Correlation Image Alignment FFTW");
 
     // Read two images.
-    File file1 = new File("F:\\StitchingData\\worms1\\worm_img_0002.tif");
-    File file2 = new File("F:\\StitchingData\\worms1\\worm_img_0016.tif");
+    File file1 = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00002.tif");
+    File file2 = new File("C:\\majurski\\image-data\\1h_Wet_10Perc\\KB_2012_04_13_1hWet_10Perc_IR_00003.tif");
 
     FftwImageTile neighbor = new FftwImageTile(file1, 0, 0, 2, 2, 0, 0);
     FftwImageTile origin = new FftwImageTile(file2, 1, 0, 2, 2, 0, 0);
@@ -70,14 +72,12 @@ public class TestFFTWPhaseCorrelationImageAlignment {
     Log.msg(LogType.INFO, neighbor.toString());
     Log.msg(LogType.INFO, origin.toString());
 
-    if (FftwImageTile.initLibrary(System.getProperty("user.dir") + File.separator + "libs"
-            + File.separator + "fftw", System.getProperty("user.dir") + File.separator + "util-fns--l",
-        "libfftw3")) {
+    if (FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3")) {
       FftwImageTile tile = new FftwImageTile(file1);
 
       Log.msg(LogType.INFO, "Loading FFTW plan");
       TimeUtil.tick();
-      FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), 0x42, true, "test.dat");
+      FftwImageTile.initPlans(tile.getWidth(), tile.getHeight(), FFTW3Library.FFTW_MEASURE, true, "test.dat");
       Log.msg(LogType.INFO, "Loaded plan in " + TimeUtil.tock() + " ms");
 
       FftwImageTile.savePlan("test.dat");
