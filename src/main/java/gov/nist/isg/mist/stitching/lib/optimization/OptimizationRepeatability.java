@@ -201,7 +201,6 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
         double oldCorr = westTrans.getCorrelation();
         CorrelationTriple bestWest;
-        // TODO setup this to use single precision
         try {
           if(this.params.getAdvancedParams().isUseDoublePrecision()) {
             if (Stitching.USE_HILLCLIMBING) {

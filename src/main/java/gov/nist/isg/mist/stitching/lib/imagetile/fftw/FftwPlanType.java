@@ -37,6 +37,11 @@ package gov.nist.isg.mist.stitching.lib.imagetile.fftw;
 public enum FftwPlanType {
 
   /**
+   * Selects Estimate FFTW planning mode
+   */
+  ESTIMATE("Measure", FFTW3Library.FFTW_ESTIMATE),
+
+  /**
    * Selects measure FFTW planning mode
    */
   MEASURE("Measure", FFTW3Library.FFTW_MEASURE),

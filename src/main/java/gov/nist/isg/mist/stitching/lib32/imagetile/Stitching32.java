@@ -38,6 +38,8 @@ import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -85,7 +87,7 @@ public class Stitching32 {
    * The correlation threshold for checking the number of peaks
    */
   @Deprecated
-  public static final double CORR_THRESHOLD = 0.9;
+  public static final float CORR_THRESHOLD = 0.9f;
 
   /**
    * Defintes hill climbing direction using cartesian coordinates when observering a two dimensional
@@ -140,6 +142,9 @@ public class Stitching32 {
     else if (t1 instanceof CudaImageTile)
       return CudaStitching.phaseCorrelationImageAlignment((CudaImageTile) t1, (CudaImageTile) t2,
           memory, null);
+    else if (t1 instanceof CudaImageTile32)
+      return CudaStitching32.phaseCorrelationImageAlignment((CudaImageTile32) t1, (CudaImageTile32) t2,
+          memory, null);
     else
       return null;
   }
@@ -182,9 +187,9 @@ public class Stitching32 {
    * @param stream the CUDA stream
    * @return the correlation triple between these two tiles
    */
-  public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile t1,
-                                                                     CudaImageTile t2, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
-    return CudaStitching.phaseCorrelationImageAlignment(t1, t2, memory, stream);
+  public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile32 t1,
+                                                                     CudaImageTile32 t2, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
+    return CudaStitching32.phaseCorrelationImageAlignment(t1, t2, memory, stream);
   }
 
 
@@ -276,8 +281,8 @@ public class Stitching32 {
     CUstream stream = new CUstream();
     JCudaDriver.cuStreamCreate(stream, CUstream_flags.CU_STREAM_DEFAULT);
 
-    CudaImageTile.bindBwdPlanToStream(stream, dev);
-    CudaImageTile.bindFwdPlanToStream(stream, dev);
+    CudaImageTile32.bindBwdPlanToStream(stream, dev);
+    CudaImageTile32.bindFwdPlanToStream(stream, dev);
 
     double pWidth = grid.getExtentWidth();
     double pHeight = grid.getExtentHeight();
@@ -290,7 +295,7 @@ public class Stitching32 {
       t.readTile();
 
       if (memoryPool == null) {
-        int[] size = {CudaImageTile.fftSize * Sizeof.DOUBLE * 2};
+        int[] size = {CudaImageTile32.fftSize * Sizeof.DOUBLE * 2};
 
         memoryPool =
             new DynamicMemoryPool<CUdeviceptr>(memoryPoolSize, false, new CudaAllocator(), size);
@@ -308,8 +313,8 @@ public class Stitching32 {
 
       if (col > grid.getStartCol()) {
         ImageTile<CUdeviceptr> west = grid.getTile(row, col - 1);
-        t.setWestTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile) west,
-            (CudaImageTile) t, memory, stream));
+        t.setWestTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile32) west,
+            (CudaImageTile32) t, memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName()
             + "\"): " + t.getWestTranslation());
@@ -326,8 +331,8 @@ public class Stitching32 {
       if (row > grid.getStartRow()) {
         ImageTile<CUdeviceptr> north = grid.getTile(row - 1, col);
 
-        t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile) north,
-            (CudaImageTile) t,
+        t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile32) north,
+            (CudaImageTile32) t,
             memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName()
@@ -1326,8 +1331,8 @@ public class Stitching32 {
   /**
    * Computes the cross correlation between two arrays
    *
-   * @param a1 double array 1
-   * @param a2 double array 2
+   * @param a1 float array 1
+   * @param a2 float array 2
    * @return the cross correlation
    */
   public static float crossCorrelation(Array2DView a1, Array2DView a2) {
@@ -1355,10 +1360,10 @@ public class Stitching32 {
         norm2 += a2_ij * a2_ij;
       }
 
-    double numer = sum_prod - sum1 * sum2 / sz;
-    double denom = Math.sqrt((norm1 - sum1 * sum1 / sz) * (norm2 - sum2 * sum2 / sz));
+    float numer = sum_prod - sum1 * sum2 / sz;
+    float denom = (float) Math.sqrt((norm1 - sum1 * sum1 / sz) * (norm2 - sum2 * sum2 / sz));
 
-    float val = (float) (numer / denom);
+    float val = numer / denom;
 
     if (Float.isNaN(val) || Float.isInfinite(val)) {
       val = -1.0f;

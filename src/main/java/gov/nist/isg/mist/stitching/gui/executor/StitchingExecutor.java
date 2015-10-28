@@ -330,10 +330,11 @@ public class StitchingExecutor implements Runnable {
 
           break;
         case CUDA:
+
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
+
           break;
         case FFTW:
-          // update the fftw library to change between the float and double versions
           if (params.getAdvancedParams().isUseDoublePrecision()) {
             String libFN = params.getAdvancedParams().getFftwLibraryFileName();
             if (libFN.startsWith("libfftw3f")) {
@@ -579,7 +580,8 @@ public class StitchingExecutor implements Runnable {
             if (checkOutputGridMemory(grid)) {
               outputGrid(grid, this.progressBar, timeSlice);
             } else {
-              Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
+              if(this.params.getOutputParams().isOutputFullImage())
+                Log.msg(LogType.MANDATORY, "Not enough memory to create output stitched image.");
             }
           } catch (FileNotFoundException e) {
             Log.msg(LogType.MANDATORY,

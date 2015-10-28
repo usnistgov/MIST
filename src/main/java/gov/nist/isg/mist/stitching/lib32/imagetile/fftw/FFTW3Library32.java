@@ -55,7 +55,7 @@ import org.bridj.util.DefaultParameterizedType;
  * a few opensource projects.</a>.<br> For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>
  * or <a href="http://bridj.googlecode.com/">BridJ</a> .
  */
-@Library("fftw")
+@Library("fftwf")
 @Runtime(CRuntime.class)
 @SuppressWarnings({"rawtypes", "unchecked", "deprecation"})
 public class FFTW3Library32 {
