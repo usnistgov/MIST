@@ -35,6 +35,7 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 
 import javax.swing.*;
 
@@ -114,14 +115,21 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
-        grid =
-            new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile.class);
+        if(params.getAdvancedParams().isUseDoublePrecision()) {
+          grid = new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile.class);
+        }else{
+          grid = new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile32.class);
+        }
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
     } else {
       try {
-        grid = new TileGrid<ImageTile<T>>(params, JavaImageTile.class);
+        if(params.getAdvancedParams().isUseDoublePrecision()) {
+          grid = new TileGrid<ImageTile<T>>(params, JavaImageTile.class);
+        }else{
+          grid = new TileGrid<ImageTile<T>>(params, JavaImageTile32.class);
+        }
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
@@ -130,7 +138,12 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
 
-    JavaImageTile.initJavaPlan(tile);
+    if(params.getAdvancedParams().isUseDoublePrecision()) {
+      JavaImageTile.initJavaPlan(tile);
+    }else{
+      JavaImageTile32.initJavaPlan(tile);
+    }
+
     this.init = true;
 
     return grid;
@@ -168,12 +181,22 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     }
 
     // Account for Java FFT data
-    int[] n =
-        {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
-            JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
     long size = 1;
-    for (int val : n)
-      size *= val;
+    if(tile instanceof JavaImageTile) {
+      int n[] = {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
+          JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+
+      for (int val : n)
+        size *= val;
+    }else{
+      int n[] = {JavaImageTile32.fftPlan.getFrequencySampling2().getCount(),
+          JavaImageTile32.fftPlan.getFrequencySampling1().getCount() * 2};
+
+      for (int val : n)
+        size *= val;
+    }
+
+
     requiredMemoryBytes += memoryPoolCount * size * 4L; // float[n1][n2]
 
     requiredMemoryBytes += size * 4L; // new float[fftHeight][fftWidth];

@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
@@ -72,11 +73,10 @@ public class ImageStitchingValidationDatasets {
 
     CUDAPanel cudaPanel = new CUDAPanel();
 
-    JFrame frame = new JFrame("Select CUDA Devices");
-    JOptionPane.showMessageDialog(frame, cudaPanel);
+//    JFrame frame = new JFrame("Select CUDA Devices");
+//    JOptionPane.showMessageDialog(frame, cudaPanel);
 
-    Log.setLogLevel(LogType.NONE);
-//    Log.setLogLevel(LogType.MANDATORY);
+    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
@@ -98,12 +98,17 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
-      params.getOutputParams().setOutputFullImage(true);
+      params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-      params.getAdvancedParams().setNumCPUThreads(8);
+      params.getAdvancedParams().setNumCPUThreads(24);
+
+
+      params.getOutputParams().setOutputFullImage(true);
+      boolean assembleFromMetadata = true;
+      params.getInputParams().setAssembleFromMetadata(assembleFromMetadata);
 
       for (StitchingType t : StitchingType.values()) {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.CUDA)
+        if (t == StitchingType.AUTO)
           continue;
 
         if (t == StitchingType.CUDA) {
@@ -111,25 +116,38 @@ public class ImageStitchingValidationDatasets {
             continue;
         }
 
-        System.out.println("Stitching Type: " + t);
 
-//        File metaDataPath = new File(r, t.name().toLowerCase());
-        File metaDataPath = new File(r, "FFTW");
+        File metaDataPath = new File(r, "PRECISION");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
+        params.getInputParams().setGlobalPositionsFile(metaDataPath.getAbsolutePath() + File.separator + t.name().toLowerCase() + "32-global-positions-0.txt");
+
+
+        // Run the single precision version
+        System.out.println("Stitching Type: " + t + "32");
+        params.getAdvancedParams().setUseDoublePrecision(false);
+        params.getOutputParams().setOutFilePrefix(t.name().toLowerCase() + "32-");
         params.getAdvancedParams().setProgramType(t);
-        params.getOutputParams().setOutFilePrefix("img-");
-        params.getOutputParams().setOutputFullImage(false);
-
-//        params.getAdvancedParams().setNumFFTPeaks(2);
-
-
-        StitchingExecutor executor = new StitchingExecutor(params);
 
         try {
-          executor.runStitching(false, false, false);
+          new StitchingExecutor(params).runStitching(assembleFromMetadata, false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }
+
+
+        params.getInputParams().setGlobalPositionsFile(metaDataPath.getAbsolutePath() + File.separator + t.name().toLowerCase() + "64-global-positions-0.txt");
+        // Run the double precision version
+        System.out.println("Stitching Type: " + t + "64");
+        params.getAdvancedParams().setUseDoublePrecision(true);
+        params.getOutputParams().setOutFilePrefix(t.name().toLowerCase() + "64-");
+        params.getAdvancedParams().setProgramType(t);
+
+        try {
+          new StitchingExecutor(params).runStitching(assembleFromMetadata, false, false);
+        } catch (StitchingException e) {
+          Log.msg(LogType.MANDATORY, e.getMessage());
+        }
+
       }
     }
 

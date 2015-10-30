@@ -37,6 +37,8 @@ import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaStitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
@@ -133,6 +135,9 @@ public class Stitching32 {
     if (t1 instanceof JavaImageTile)
       return JavaStitching.phaseCorrelationImageAlignment((JavaImageTile) t1, (JavaImageTile) t2,
           memory);
+    else if (t1 instanceof JavaImageTile32)
+      return JavaStitching32.phaseCorrelationImageAlignment((JavaImageTile32) t1, (JavaImageTile32) t2,
+          memory);
     else if (t1 instanceof FftwImageTile)
       return FftwStitching.phaseCorrelationImageAlignment((FftwImageTile) t1, (FftwImageTile) t2,
           memory);
@@ -158,9 +163,9 @@ public class Stitching32 {
    * @param memory the tile worker memory
    * @return the correlation triple between these two tiles
    */
-  public static CorrelationTriple phaseCorrelationImageAlignmentJava(JavaImageTile t1,
-                                                                     JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
-    return JavaStitching.phaseCorrelationImageAlignment(t1, t2,
+  public static CorrelationTriple phaseCorrelationImageAlignmentJava(JavaImageTile32 t1,
+                                                                     JavaImageTile32 t2, TileWorkerMemory memory) throws FileNotFoundException {
+    return JavaStitching32.phaseCorrelationImageAlignment(t1, t2,
         memory);
   }
 

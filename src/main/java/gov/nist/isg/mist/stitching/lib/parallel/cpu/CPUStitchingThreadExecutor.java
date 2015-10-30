@@ -43,6 +43,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.memorypool.PointerAllocator32;
 
 import org.bridj.Pointer;
@@ -134,6 +135,14 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       int[] size =
           {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
               JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+
+      this.memoryPool =
+          (DynamicMemoryPool<T>) new DynamicMemoryPool<float[][]>(memoryPoolSize, false,
+              new JavaAllocator(), size);
+    }else if (initTile instanceof JavaImageTile32) {
+      int[] size =
+          {JavaImageTile32.fftPlan.getFrequencySampling2().getCount(),
+              JavaImageTile32.fftPlan.getFrequencySampling1().getCount() * 2};
 
       this.memoryPool =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<float[][]>(memoryPoolSize, false,

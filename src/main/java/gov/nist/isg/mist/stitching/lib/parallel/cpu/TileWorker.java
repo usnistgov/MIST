@@ -46,8 +46,11 @@ import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
+import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.memory.JavaTileWorkerMemory32;
 
 import javax.swing.*;
 
@@ -76,6 +79,7 @@ public class TileWorker<T> implements Runnable {
   private JProgressBar progressBar;
 
   private volatile boolean isCancelled;
+  private boolean useDoublePrecision;
 
   /**
    * Initializes a tile worker pool for computing PCIAM and FFT computations
@@ -99,14 +103,19 @@ public class TileWorker<T> implements Runnable {
       this.memory = new CudaTileWorkerMemory(initTile);
     else if (initTile instanceof JavaImageTile)
       this.memory = new JavaTileWorkerMemory(initTile);
+    else if (initTile instanceof JavaImageTile32)
+      this.memory = new JavaTileWorkerMemory32(initTile);
 
     this.workQueue = workQueue;
     this.bkQueue = bkQueue;
     this.memoryPool = memoryPool;
     this.progressBar = progressBar;
     this.isCancelled = false;
+    this.useDoublePrecision = initTile instanceof JavaImageTile;
+
   }
 
+  // TODO update this to use 32bit ccf if required
 
   @Override
   public void run() {
@@ -117,6 +126,7 @@ public class TileWorker<T> implements Runnable {
 
         Debug.msg(DebugType.VERBOSE,
             "WP Task acquired: " + task.getTask() + "  size: " + this.workQueue.size());
+
 
         if (task.getTask() == TaskType.FFT) {
           try {
@@ -133,7 +143,11 @@ public class TileWorker<T> implements Runnable {
 
           CorrelationTriple corr;
           try {
-            corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            if(this.useDoublePrecision) {
+              corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            }else{
+              corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            }
           } catch (FileNotFoundException e) {
             Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
             continue;
@@ -158,7 +172,11 @@ public class TileWorker<T> implements Runnable {
 
           CorrelationTriple corr;
           try {
-            corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            if(this.useDoublePrecision) {
+              corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            }else{
+              corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
+            }
           } catch (FileNotFoundException e) {
             Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
             continue;

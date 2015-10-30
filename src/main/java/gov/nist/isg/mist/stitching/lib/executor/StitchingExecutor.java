@@ -317,11 +317,34 @@ public class StitchingExecutor implements Runnable {
 
     if (assembleFromMeta) {
       stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
+      this.params.getOutputParams().setOutputMeta(false); // if assembling from meta, don't also output meta
     } else {
       switch (this.params.getAdvancedParams().getProgramType()) {
         case AUTO:
           // initialize and check fftw first
-          stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
+          if (params.getAdvancedParams().isUseDoublePrecision()) {
+            String libFN = params.getAdvancedParams().getFftwLibraryFileName();
+            if (libFN.startsWith("libfftw3f")) {
+              params.getAdvancedParams().setFftwLibraryFileName("libfftw3" + libFN.substring(9));
+            }
+            libFN = params.getAdvancedParams().getFftwLibraryName();
+            if (libFN.startsWith("libfftw3f")) {
+              params.getAdvancedParams().setFftwLibraryName("libfftw3" + libFN.substring(9));
+            }
+
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Double>>(this);
+          } else {
+            String libFN = params.getAdvancedParams().getFftwLibraryFileName();
+            if (!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+              params.getAdvancedParams().setFftwLibraryFileName("libfftw3f" + libFN.substring(8));
+            }
+            libFN = params.getAdvancedParams().getFftwLibraryName();
+            if (!libFN.startsWith("libfftw3f") && libFN.startsWith("libfftw3")) {
+              params.getAdvancedParams().setFftwLibraryName("libfftw3f" + libFN.substring(8));
+            }
+
+            stitchingExecutorInf = (StitchingExecutorInterface<T>) new FftwStitchingExecutor<Pointer<Float>>(this);
+          }
 
           // If the libs are not available for FFTW, then check Java
           if (!stitchingExecutorInf.checkForLibs(this.params, displayGui)) {

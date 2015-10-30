@@ -38,8 +38,8 @@ public class BasicStitchingValidation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
-//  private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
+//    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
+  private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 

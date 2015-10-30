@@ -86,10 +86,6 @@ public class TestFFTTiming {
 
       int nbItr = 50;
 
-      planType = FftwPlanType.ESTIMATE;
-      System.out.println("FFTW Estimate Plan");
-      TestFFTTiming.run(nbItr);
-
       planType = FftwPlanType.MEASURE;
       System.out.println("FFTW Measure Plan");
       TestFFTTiming.run(nbItr);

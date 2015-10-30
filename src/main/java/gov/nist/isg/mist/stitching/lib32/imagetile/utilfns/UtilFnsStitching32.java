@@ -29,11 +29,10 @@
 package gov.nist.isg.mist.stitching.lib32.imagetile.utilfns;
 
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.IndexValuePair;
-import gov.nist.isg.mist.stitching.lib32.imagetile.utilfns.UtilFnsStitching32;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 
 import org.bridj.Pointer;
 
@@ -108,8 +107,8 @@ public class UtilFnsStitching32 {
     float c1_real, c1_imag, c2_real, c2_imag;
     float r, im, temp;
 
-    for (int row = 0; row < JavaImageTile.fftPlan.getFrequencySampling2().getCount(); row++) {
-      for (int col = 0; col < JavaImageTile.fftPlan.getFrequencySampling1().getCount(); col++) {
+    for (int row = 0; row < JavaImageTile32.fftPlan.getFrequencySampling2().getCount(); row++) {
+      for (int col = 0; col < JavaImageTile32.fftPlan.getFrequencySampling1().getCount(); col++) {
         c1_real = c1[row][col * 2];
         c1_imag = c1[row][col * 2 + 1];
 
@@ -121,9 +120,9 @@ public class UtilFnsStitching32 {
 
         temp = (float) Math.sqrt(r * r + im * im);
 
-        if (Double.isNaN(temp) || temp == 0) {
-          r = (float) FLOAT_EPSILON;
-          temp = (float) FLOAT_EPSILON;
+        if (Float.isNaN(temp) || temp == 0) {
+          r = FLOAT_EPSILON;
+          temp = FLOAT_EPSILON;
         }
 
 
