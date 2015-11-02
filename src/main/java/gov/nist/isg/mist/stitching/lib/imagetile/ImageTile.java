@@ -33,6 +33,7 @@ import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import jcuda.driver.CUstream;
@@ -805,6 +806,13 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
     Log.msg(LogType.INFO, "Loading image: " + this.fpath);
 
     ImagePlus image = new ImagePlus(this.fpath);
+
+//    String[] commands = {"Despeckle","Gaussian Blur..."};
+//    String[] params = {"", "sigma=1"};
+//    for(int i = 0; i < commands.length; i++) {
+//      IJ.run(image, commands[i], params[i]);
+//    }
+
 
     this.width = image.getWidth();
     this.height = image.getHeight();

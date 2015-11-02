@@ -94,7 +94,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       throw new CudaException("Error initializing CUDA");
     }
 
-    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor);
+    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor, params.getAdvancedParams().isEnableCudaExceptions());
 
     tile.releasePixels();
 

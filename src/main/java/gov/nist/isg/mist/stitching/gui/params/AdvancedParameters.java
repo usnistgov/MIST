@@ -68,6 +68,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private static final String NUM_FFT_PEAKS = "numFFTPeaks";
   private static final String OVERLAP_UNCERTAINTY = "overlapUncertainty";
   private static final String IS_USE_DOUBLE_PRECISION = "isUseDoublePrecision";
+  private static final String IS_ENABLE_CUDA_EXCEPTIONS = "isEnableCudaExceptions";
 
 
   private StitchingType programType;
@@ -98,6 +99,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private int numFFTPeaks;
   private double overlapUncertainty;
   private boolean useDoublePrecision;
+  private boolean enableCudaExceptions;
 
   public AdvancedParameters() {
     this.programType = StitchingType.AUTO;
@@ -275,6 +277,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
               this.overlapUncertainty = StitchingParamUtils.loadDouble(contents[1], this.overlapUncertainty);
             else if (contents[0].equals(IS_USE_DOUBLE_PRECISION))
               this.useDoublePrecision = StitchingParamUtils.loadBoolean(contents[1], this.useDoublePrecision);
+            else if (contents[0].equals(IS_ENABLE_CUDA_EXCEPTIONS))
+              this.enableCudaExceptions = StitchingParamUtils.loadBoolean(contents[1], this.enableCudaExceptions);
             else if (contents[0].startsWith(CUDA_DEVICE)) {
               if (this.cudaDevices == null)
                 this.cudaDevices = new ArrayList<CudaDeviceParam>();
@@ -334,6 +338,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.numFFTPeaks = pref.getInt(NUM_FFT_PEAKS, this.numFFTPeaks);
     this.overlapUncertainty = pref.getDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = pref.getBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    this.enableCudaExceptions = pref.getBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
 
     if (this.cudaDevices == null)
       this.cudaDevices = new ArrayList<CudaDeviceParam>();
@@ -371,6 +376,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, NUM_FFT_PEAKS + ": " + this.numFFTPeaks);
     Log.msg(logLevel, OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty);
     Log.msg(logLevel, IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision);
+    Log.msg(logLevel, IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions);
 
 
     if (this.cudaDevices != null) {
@@ -398,6 +404,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.numFFTPeaks = MacroUtils.loadMacroInteger(macroOptions, NUM_FFT_PEAKS, this.numFFTPeaks);
     this.overlapUncertainty = MacroUtils.loadMacroDouble(macroOptions, OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = MacroUtils.loadMacroBoolean(macroOptions, IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    this.enableCudaExceptions = MacroUtils.loadMacroBoolean(macroOptions, IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
 
     if (this.cudaDevices == null)
       this.cudaDevices = new ArrayList<CudaDeviceParam>();
@@ -432,6 +439,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     MacroUtils.recordInteger(NUM_FFT_PEAKS + ": ", this.numFFTPeaks);
     MacroUtils.recordDouble(OVERLAP_UNCERTAINTY + ": ", this.overlapUncertainty);
     MacroUtils.recordBoolean(IS_USE_DOUBLE_PRECISION + ": ", this.useDoublePrecision);
+    MacroUtils.recordBoolean(IS_ENABLE_CUDA_EXCEPTIONS + ": ", this.enableCudaExceptions);
 
     MacroUtils.recordCUDADevices(this.cudaDevices);
   }
@@ -454,6 +462,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.putInt(NUM_FFT_PEAKS, this.numFFTPeaks);
     pref.putDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     pref.putBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    pref.putBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     PreferencesUtils.recordPrefCUDADevices(pref, this.cudaDevices);
   }
 
@@ -478,6 +487,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(NUM_FFT_PEAKS + ": " + this.numFFTPeaks + newLine);
       fw.write(OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty + newLine);
       fw.write(IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision + newLine);
+      fw.write(IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions+ newLine);
 
 
       if (this.cudaDevices != null) {
@@ -731,6 +741,10 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   public void setUseDoublePrecision(boolean val) {
     this.useDoublePrecision = val;
   }
+
+  public boolean isEnableCudaExceptions() { return this.enableCudaExceptions; }
+
+  public void setEnableCudaExceptions(boolean val) { this.enableCudaExceptions = val; }
 
   /**
    * @return the overlapUncertainty

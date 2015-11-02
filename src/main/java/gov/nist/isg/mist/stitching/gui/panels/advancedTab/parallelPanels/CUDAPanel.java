@@ -62,9 +62,12 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
   private JButton deviceQuery = new JButton("Execute Device Query");
   private JButton refreshTable = new JButton("Refresh Device Table");
 
+  private JCheckBox enableCudaExceptions = new JCheckBox("Enable CUDA Exceptions? (Debugging Only)");
+
   private GridBagConstraints c;
 
   private boolean isCudaAvailable;
+
 
   /**
    * Initializes the CUDA panel
@@ -113,11 +116,13 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
 
     this.c.gridy = 1;
+    add(this.enableCudaExceptions, this.c);
+    this.c.gridy = 2;
     add(this.numThreadsCPU, this.c);
     this.deviceQuery.addActionListener(this);
-    this.c.gridy = 2;
-    add(this.deviceQuery, this.c);
     this.c.gridy = 3;
+    add(this.deviceQuery, this.c);
+    this.c.gridy = 4;
     add(this.refreshTable, this.c);
     this.refreshTable.addActionListener(this);
     addTable();
@@ -150,7 +155,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
     this.deviceTable.setToolTipText("Select which device(s) to be used for" + " stitching");
 
-    this.c.gridy = 4;
+    this.c.gridy = 5;
     JScrollPane scroll = new JScrollPane(this.deviceTable);
 
     // tie the size of the table to the size of the scroll pane
@@ -181,6 +186,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
     if (this.isCudaAvailable) {
       this.numThreadsCPU.setValue(params.getAdvancedParams().getNumCPUThreads());
       this.tableModel.updateSelectedDevices(params.getAdvancedParams().getCudaDevices());
+      this.enableCudaExceptions.setSelected(params.getAdvancedParams().isEnableCudaExceptions());
     }
   }
 
@@ -265,6 +271,7 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
 
       params.getAdvancedParams().setNumCPUThreads(val);
       params.getAdvancedParams().setCudaDevices(cudaDevices);
+      params.getAdvancedParams().setEnableCudaExceptions(this.enableCudaExceptions.isSelected());
     }
 
   }

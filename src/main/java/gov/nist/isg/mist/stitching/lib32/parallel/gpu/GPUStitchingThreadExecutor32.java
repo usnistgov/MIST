@@ -110,7 +110,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
   @SuppressWarnings("unchecked")
   public GPUStitchingThreadExecutor32(int numGPUs, int numWorkers, ImageTile<T> initTile,
                                       TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs, JProgressBar progressBar,
-                                      StitchingExecutor executor) throws OutOfMemoryError, CudaException {
+                                      StitchingExecutor executor, boolean enableCudaExceptions) throws OutOfMemoryError, CudaException {
 
     JCudaDriver.setExceptionsEnabled(true);
 
@@ -235,7 +235,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
     tmp.setUncaughtExceptionHandler(this);
     this.threads.add(tmp);
 
-    JCudaDriver.setExceptionsEnabled(false);
+    JCudaDriver.setExceptionsEnabled(enableCudaExceptions);
 
   }
 
@@ -251,7 +251,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
    */
   public GPUStitchingThreadExecutor32(int numGPUs, int numWorkers, ImageTile<T> initTile,
                                       TileGrid<ImageTile<T>> grid, CUcontext[] contexts, int[] devIDs) {
-    this(numGPUs, numWorkers, initTile, grid, contexts, devIDs, null, null);
+    this(numGPUs, numWorkers, initTile, grid, contexts, devIDs, null, null, false);
   }
 
   /**
