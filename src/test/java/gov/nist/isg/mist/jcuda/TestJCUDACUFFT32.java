@@ -64,7 +64,8 @@ public class TestJCUDACUFFT32 {
 
     CudaImageTile32 tile = new CudaImageTile32(file);
 
-    CudaUtils.initJCUDA(1, new int[]{0}, tile);
+    boolean enableCudaExceptions = true;
+    CudaUtils.initJCUDA(1, new int[]{0}, tile, enableCudaExceptions);
 
     TimeUtil.tick();
     tile.setDev(0);

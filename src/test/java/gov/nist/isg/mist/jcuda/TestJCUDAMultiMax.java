@@ -92,7 +92,8 @@ public class TestJCUDAMultiMax {
         "libfftw3");
     FftwImageTile.initPlans(tile1.getWidth(), tile1.getHeight(), 0x21, true, "test.dat");
 
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, cudaTile1);
+    boolean enableCudaExceptions = true;
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, cudaTile1, enableCudaExceptions);
 
     CudaTileWorkerMemory cudaMem = new CudaTileWorkerMemory(cudaTile1);
     FftwTileWorkerMemory mem = new FftwTileWorkerMemory(tile1);

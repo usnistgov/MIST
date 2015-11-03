@@ -103,12 +103,8 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setNumCPUThreads(24);
 
 
-      params.getOutputParams().setOutputFullImage(true);
-      boolean assembleFromMetadata = true;
-      params.getInputParams().setAssembleFromMetadata(assembleFromMetadata);
-
       for (StitchingType t : StitchingType.values()) {
-        if (t == StitchingType.AUTO)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
           continue;
 
         if (t == StitchingType.CUDA) {
@@ -119,7 +115,6 @@ public class ImageStitchingValidationDatasets {
 
         File metaDataPath = new File(r, "PRECISION");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-        params.getInputParams().setGlobalPositionsFile(metaDataPath.getAbsolutePath() + File.separator + t.name().toLowerCase() + "32-global-positions-0.txt");
 
 
         // Run the single precision version
@@ -129,13 +124,12 @@ public class ImageStitchingValidationDatasets {
         params.getAdvancedParams().setProgramType(t);
 
         try {
-          new StitchingExecutor(params).runStitching(assembleFromMetadata, false, false);
+          new StitchingExecutor(params).runStitching(false, false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }
 
 
-        params.getInputParams().setGlobalPositionsFile(metaDataPath.getAbsolutePath() + File.separator + t.name().toLowerCase() + "64-global-positions-0.txt");
         // Run the double precision version
         System.out.println("Stitching Type: " + t + "64");
         params.getAdvancedParams().setUseDoublePrecision(true);
@@ -143,7 +137,7 @@ public class ImageStitchingValidationDatasets {
         params.getAdvancedParams().setProgramType(t);
 
         try {
-          new StitchingExecutor(params).runStitching(assembleFromMetadata, false, false);
+          new StitchingExecutor(params).runStitching(false, false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }

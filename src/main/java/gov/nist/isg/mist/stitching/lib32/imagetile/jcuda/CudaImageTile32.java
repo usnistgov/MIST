@@ -274,7 +274,7 @@ public class CudaImageTile32 extends ImageTile<CUdeviceptr> {
    * @return true if the plan was initialized successfully, otherwise false
    * @throws IOException fails to read PTX CUDA file
    */
-  public static boolean initPlans(int width, int height, CUcontext context, int id)
+  public static boolean initPlans(int width, int height, CUcontext context, int id, boolean enableCudaExceptions)
       throws IOException {
 
     File testFile = new File(CUDA_MODULE_NAME);
@@ -322,7 +322,7 @@ public class CudaImageTile32 extends ImageTile<CUdeviceptr> {
       JCufft.cufftPlan2d(plan_fwd[id], height, width, cufftType.CUFFT_R2C);
       JCufft.cufftPlan2d(plan_bwd[id], height, width, cufftType.CUFFT_C2R);
 
-      JCufft.setExceptionsEnabled(false);
+      JCufft.setExceptionsEnabled(enableCudaExceptions);
 
     } catch (UnsatisfiedLinkError ex) {
       Log.msg(LogType.MANDATORY, "Unable to load CUFFT library. Currently it is "

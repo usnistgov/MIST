@@ -62,6 +62,7 @@ import gov.nist.isg.mist.stitching.lib.optimization.GlobalOptimization;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGridUtils;
 import jcuda.driver.JCudaDriver;
+import jcuda.jcufft.JCufft;
 
 import org.bridj.Pointer;
 
@@ -360,6 +361,7 @@ public class StitchingExecutor implements Runnable {
             stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor32<CUdeviceptr>(this);
           }
 
+          JCufft.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
           JCudaDriver.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
 
           break;

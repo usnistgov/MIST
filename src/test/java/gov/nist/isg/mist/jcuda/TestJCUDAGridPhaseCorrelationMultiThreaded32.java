@@ -104,7 +104,8 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded32 {
     tile.readTile();
 
     int[] devIDs = new int[]{0, 1, 2};
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, devIDs, tile);
+    boolean enableCudaExceptions = true;
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, devIDs, tile, enableCudaExceptions);
 
     GPUStitchingThreadExecutor32<CUdeviceptr> executor =
         new GPUStitchingThreadExecutor32<CUdeviceptr>(contexts.length, 12, tile, grid, contexts,

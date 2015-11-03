@@ -81,10 +81,11 @@ public class TestJCUDAPhaseCorrelationImageAlignment32 {
     Log.msg(LogType.INFO, origin.toString());
 
     Log.msg(LogType.INFO, "Initializing JCUDA");
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, neighbor);
+    boolean enableCudaExceptions = true;
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, neighbor, enableCudaExceptions);
     CudaImageTile32.initFunc(1);
     try {
-      CudaImageTile32.initPlans(neighbor.getWidth(), neighbor.getHeight(), contexts[0], 0);
+      CudaImageTile32.initPlans(neighbor.getWidth(), neighbor.getHeight(), contexts[0], 0, enableCudaExceptions);
     } catch (IOException e) {
       e.printStackTrace();
     }

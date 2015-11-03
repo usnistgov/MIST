@@ -94,7 +94,8 @@ public class TestJCUDAGridPhaseCorrelation32 {
 
     Log.msg(LogType.INFO, "Loading CUFFT plan");
 
-    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, tile);
+    boolean enableCudaExceptions = true;
+    CUcontext[] contexts = CudaUtils.initJCUDA(1, new int[]{0}, tile, enableCudaExceptions);
 
     Log.msg(LogType.INFO, "Generating tile grid");
     TileGrid<ImageTile<CUdeviceptr>> grid = null;

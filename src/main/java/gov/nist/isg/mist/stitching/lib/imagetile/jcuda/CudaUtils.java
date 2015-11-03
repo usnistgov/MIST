@@ -140,7 +140,7 @@ public class CudaUtils {
    * @param initTile the initial image tile
    * @return the contexts to the GPUs, or null if intiailization failed
    */
-  public static CUcontext[] initJCUDA(List<CudaDeviceParam> devices, ImageTile<?> initTile) {
+  public static CUcontext[] initJCUDA(List<CudaDeviceParam> devices, ImageTile<?> initTile, boolean enableCudaExceptions) {
     int nGPUs = devices.size();
     int[] gpuIDs = new int[nGPUs];
 
@@ -148,7 +148,7 @@ public class CudaUtils {
       gpuIDs[i] = devices.get(i).getId();
     }
 
-    return initJCUDA(nGPUs, gpuIDs, initTile);
+    return initJCUDA(nGPUs, gpuIDs, initTile, enableCudaExceptions);
 
   }
 
@@ -160,7 +160,7 @@ public class CudaUtils {
    * @param initTile the initial image tile
    * @return the context to the GPUs, or null if intiailization failed
    */
-  public static CUcontext[] initJCUDA(int nGPUs, int[] gpuIDs, ImageTile<?> initTile) {
+  public static CUcontext[] initJCUDA(int nGPUs, int[] gpuIDs, ImageTile<?> initTile, boolean enableCudaExceptions) {
     if (contexts != null)
       return contexts;
 
@@ -179,11 +179,11 @@ public class CudaUtils {
       Log.msg(LogType.INFO, "Initializing functions for GPU " + i);
       try {
         if(initTile instanceof CudaImageTile) {
-          if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
+          if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i, enableCudaExceptions))
             return null;
         }
         if(initTile instanceof CudaImageTile32) {
-          if (!CudaImageTile32.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i))
+          if (!CudaImageTile32.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i, enableCudaExceptions))
             return null;
         }
       } catch (IOException e) {
