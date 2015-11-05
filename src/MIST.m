@@ -119,14 +119,6 @@ h_tabpanel(1) = uipanel('Position', [0,0,1,1], 'Parent', hctfig,...
   'Units', 'normalized', 'Visible', 'off', ...
   'Backgroundcolor', background_color, 'BorderWidth',1);
 
-% the NIST logo into the bottom right corner
-try
-  axes('Parent', h_tabpanel(1), 'Units', 'normalized', 'position', [0.8125 -0.035 0.16 0.2]);
-  imshow(imread('NIST_Logo.png'), []);
-catch err
-  warning('NIST logo failed to load and display on the GUI');
-  % logo failed to load
-end
 
 %---------------------------------------------------------------------------------------------
 %  Aquisition Technique
