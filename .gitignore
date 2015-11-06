@@ -1,0 +1,14 @@
+/bin/
+/out/
+\bin\
+\out\
+.classpath
+*.dat
+*.class
+target
+
+
+target/classes/docs/Combined-User-Install-Guide.md.html
+.idea/workspace.xml
+.idea\workspace.xml
+.idea/codeStyleSettings.xml
