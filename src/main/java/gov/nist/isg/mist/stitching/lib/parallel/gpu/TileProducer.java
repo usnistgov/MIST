@@ -41,10 +41,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * A thread dedicated to reading and allocating memory for image tiles.
- * 
+ *
  * @author Tim Blattner
  * @version 1.0
- * @param <T>
  */
 public class TileProducer<T> implements Runnable {
 
@@ -56,13 +55,13 @@ public class TileProducer<T> implements Runnable {
 
   /**
    * Initializes a producer thread
-   * 
+   *
    * @param traverser the traverser
    * @param workQueue the work queu
-   * @param pool the pool of memory
+   * @param pool      the pool of memory
    */
   public TileProducer(TileGridTraverser<ImageTile<T>> traverser,
-      PriorityBlockingQueue<StitchingTask<T>> workQueue, DynamicMemoryPool<T> pool) {
+                      PriorityBlockingQueue<StitchingTask<T>> workQueue, DynamicMemoryPool<T> pool) {
     this.traverser = traverser;
     this.workQueue = workQueue;
     this.pool = pool;
@@ -75,13 +74,14 @@ public class TileProducer<T> implements Runnable {
       if (this.isCancelled)
         break;
 
-        try {
-            tile.readTile();
-        } catch (FileNotFoundException e)
-        {
-            Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
-            continue;
-        }
+      try {
+        tile.readTile();
+      } catch (FileNotFoundException e) {
+//        Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage());
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
+        continue;
+      }
       tile.setFftState(State.IN_FLIGHT);
       tile.allocateFftMemory(this.pool);
       this.workQueue.put(new StitchingTask<T>(tile, null, TaskType.FFT));

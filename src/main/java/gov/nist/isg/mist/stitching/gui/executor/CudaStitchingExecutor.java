@@ -111,9 +111,8 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
     
     if (this.librariesInitialized)
-    {
       return true;
-    }
+
     
     try {
       int[] count = new int[1];

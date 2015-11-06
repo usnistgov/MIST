@@ -13,6 +13,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: gov.nih.imagej:imagej:1.46" level="project" />
     <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
     <orderEntry type="library" name="Maven: org.jcuda:jcuda:6.5" level="project" />
     <orderEntry type="library" name="Maven: org.jcuda:jcufft:6.5" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20100113" level="project" />

@@ -426,8 +426,7 @@ public class StitchingExecutor implements Runnable {
       int maxTimeSlice = timeSliceParam.getMax();
 
       for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
-        if (this.isCancelled)
-        {
+        if (this.isCancelled) {
           this.cancelExecution();
           return;
         }
