@@ -113,7 +113,7 @@ public class ImageStitchingValidationDatasets {
         }
 
 
-        File metaDataPath = new File(r, "PRECISION");
+        File metaDataPath = new File(r, "PRECISION2");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
 
 
