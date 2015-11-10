@@ -68,19 +68,6 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
-
-    if (displayGui) {
-      int res =
-          JOptionPane.showConfirmDialog(null,
-              "Warning: Using the Java stitching library uses single precision. \n"
-                  + "If your results are not accurate enough please install FFTW or CUDA",
-              "Java Usage Warning", JOptionPane.WARNING_MESSAGE, JOptionPane.OK_CANCEL_OPTION,
-              null);
-      if (res == JOptionPane.CANCEL_OPTION) {
-        Log.msg(LogType.MANDATORY, "Java Execution cancelled.");
-        return false;
-      }
-    }
     return true;
   }
 
