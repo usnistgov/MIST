@@ -25,10 +25,11 @@
 //
 // ================================================================
 
-package gov.nist.isg.mist.stitching.lib.executor;
+package gov.nist.isg.mist.stitching.gui.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import jcuda.CudaException;
 import jcuda.Sizeof;
 import jcuda.driver.CUcontext;
@@ -44,27 +45,27 @@ import gov.nist.isg.mist.stitching.lib.parallel.gpu.GPUStitchingThreadExecutor;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 import javax.swing.*;
-
 import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 import java.util.List;
 
 /**
  * CudaStitchingExecutor executes the stitching using CUDA
- *
  * @author Tim Blattner
+ *
+ * @param <T>
  */
-public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
+public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
   private boolean librariesInitialized;
   private boolean init;
-  private CUcontext[] contexts;
+  private CUcontext[] contexts;  
   private int[] devIDs;
   private StitchingExecutor executor;
-
-  private GPUStitchingThreadExecutor<T> gpuExecutor;
-
-  public CudaStitchingExecutor(StitchingExecutor executor) {
+  
+  private GPUStitchingThreadExecutor<T>gpuExecutor;
+  
+  public CudaStitchingExecutor(StitchingExecutor executor) {   
     this.librariesInitialized = false;
     this.init = false;
     this.contexts = null;
@@ -80,10 +81,11 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
-                              JProgressBar progressBar, int timeSlice) throws Throwable {
+      JProgressBar progressBar, int timeSlice) throws Throwable {
 
     ImageTile<T> tile = grid.getSubGridTile(0, 0);
     tile.readTile();
+
 
 
     this.executor.initProgressBar();
@@ -93,36 +95,36 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       Log.msg(LogType.MANDATORY, "Error initializing CUDA");
       throw new CudaException("Error initializing CUDA");
     }
-
-    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor, params.getAdvancedParams().isEnableCudaExceptions());
+    
+    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor);
 
     tile.releasePixels();
 
     this.gpuExecutor.execute();
 
-    if (this.gpuExecutor.isExceptionThrown())
+    if(this.gpuExecutor.isExceptionThrown())
       throw this.gpuExecutor.getWorkerThrowable();
 
   }
 
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
-
-    if (this.librariesInitialized) {
+    
+    if (this.librariesInitialized)
       return true;
-    }
 
+    
     try {
       int[] count = new int[1];
       int ret = JCudaDriver.cuDeviceGetCount(count);
-      if (ret == cudaError.cudaSuccess && count[0] > 0) {
+      if (ret == cudaError.cudaSuccess && count[0] > 0) {        
         this.librariesInitialized = true;
         return true;
       }
 
       JCufft.setExceptionsEnabled(true);
       JCufft.initialize();
-      JCufft.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
+      JCufft.setExceptionsEnabled(false);
 
       return true;
     } catch (UnsatisfiedLinkError err) {
@@ -143,17 +145,20 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
       throws FileNotFoundException {
-
+        
     TileGrid<ImageTile<T>> grid = null;
-
-    if (params.getInputParams().isTimeSlicesEnabled()) {
+    
+    if (params.getInputParams().isTimeSlicesEnabled())
+    {    
       try {
         grid =
             new TileGrid<ImageTile<T>>(params, timeSlice, CudaImageTile.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }
-    } else {
+    }
+    else
+    {
       try {
         grid = new TileGrid<ImageTile<T>>(params, CudaImageTile.class);
       } catch (InvalidClassException e) {
@@ -166,15 +171,16 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     tile.readTile();
 
 
-    if (!this.init) {
+    if (!this.init)
+    {
 
       if (devices.size() == 0) {
-        this.devIDs = new int[]{0};
+        this.devIDs = new int[] {0};
         Log.msg(LogType.MANDATORY, "No device selected from " + "table. Using default (0)");
-        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile, params.getAdvancedParams().isEnableCudaExceptions());
+        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile);
       } else {
         Log.msg(LogType.MANDATORY, devices.size() + " device(s) selected from table.");
-        this.contexts = CudaUtils.initJCUDA(devices, tile, params.getAdvancedParams().isEnableCudaExceptions());
+        this.contexts = CudaUtils.initJCUDA(devices, tile);
         this.devIDs = new int[devices.size()];
         for (int j = 0; j < devices.size(); j++)
           this.devIDs[j] = devices.get(j).getId();
@@ -184,12 +190,13 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     }
 
 
+    
     return grid;
   }
 
   @Override
   public void cleanup() {
-    CudaUtils.destroyJCUDA(this.contexts.length);
+    CudaUtils.destroyJCUDA(this.contexts.length);    
   }
 
   @Override
@@ -205,49 +212,50 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     tile.readTile();
 
     // Account for image pixel data
-    if (ImageTile.freePixelData()) {
+    if(ImageTile.freePixelData()) {
       // If freeing image pixel data
       // only memorypool size tiles are stored
-      requiredCPUMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
-    } else {
+      requiredCPUMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * memoryPoolCount * 2L; // 16 bit pixel data
+    }else{
       // If not freeing image pixel data
       // must hold whole image grid in memory
-      requiredCPUMemoryBytes += (long) tile.getHeight() * (long) tile.getWidth() * (long) grid.getSubGridSize() * 2L; // 16 bit pixel data
+      requiredCPUMemoryBytes += (long)tile.getHeight() * (long)tile.getWidth() * (long)grid.getSubGridSize() * 2L; // 16 bit pixel data
     }
 
     // Account for image pixel data type conversion
-    long byteDepth = tile.getBitDepth() / 2;
-    if (byteDepth != 2) {
+    long byteDepth = tile.getBitDepth()/2;
+    if(byteDepth != 2) {
       // if up-converting at worst case there will be numWorkers copies of the old precision pixel data
-      requiredCPUMemoryBytes += (long) numWorkers * (long) tile.getHeight() * (long) tile.getWidth() * byteDepth;
+      requiredCPUMemoryBytes += (long)numWorkers * (long)tile.getHeight() * (long)tile.getWidth() * byteDepth;
     }
+
 
 
     // Check GPU side memory
     long minGPUMemory = Long.MAX_VALUE;
-    for (CUcontext c : contexts) {
+    for(CUcontext c : contexts) {
       minGPUMemory = Math.min(minGPUMemory, CudaUtils.getFreeCudaMemory(c));
     }
 
     // from CudaTileWorkerMemory.java
     long perGPUPinnedMemory = 0;
-    perGPUPinnedMemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.DOUBLE;
-    perGPUPinnedMemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.INT;
-    perGPUPinnedMemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.INT;
-    perGPUPinnedMemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.INT;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
+    perGPUPinnedMemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.INT;
 
     // from CudaTileWorkerMemory.java and TileGPUPciamWorker.java
     long perGPUmemory = 0;
-    perGPUmemory += (long) CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
-    perGPUmemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.DOUBLE;
-    perGPUmemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.DOUBLE;
-    perGPUmemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
 
-    perGPUmemory += (long) tile.getHeight() * (long) tile.getWidth() * Sizeof.DOUBLE;
-    perGPUmemory += (long) CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
+    perGPUmemory += (long)tile.getHeight() * (long)tile.getWidth() * Sizeof.DOUBLE;
+    perGPUmemory += (long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE;
 
 
-    perGPUmemory += memoryPoolCount * ((long) CudaImageTile.fftSize * 2L * Sizeof.DOUBLE);
+    perGPUmemory += memoryPoolCount * ((long)CudaImageTile.fftSize * 2L * Sizeof.DOUBLE);
 
 
     requiredCPUMemoryBytes += perGPUPinnedMemory;
@@ -255,9 +263,9 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
 
     // pad with 10MB
-    requiredCPUMemoryBytes += 10L * 1024L * 1024L;
+    requiredCPUMemoryBytes += 10L*1024L*1024L;
     // pad with 10MB
-    requiredGPUMemoryBytes += 10L * 1024L * 1024L;
+    requiredGPUMemoryBytes += 10L*1024L*1024L;
 
     return (requiredCPUMemoryBytes < Runtime.getRuntime().maxMemory()) && (requiredGPUMemoryBytes < minGPUMemory);
   }
