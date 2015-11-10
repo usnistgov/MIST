@@ -25,7 +25,7 @@
 //
 // ================================================================
 
-package gov.nist.isg.mist.stitching.gui.executor;
+package gov.nist.isg.mist.stitching.lib.executor;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
@@ -96,7 +96,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
       throw new CudaException("Error initializing CUDA");
     }
     
-    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor);
+    this.gpuExecutor = new GPUStitchingThreadExecutor<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor, params.getAdvancedParams().isEnableCudaExceptions());
 
     tile.releasePixels();
 
@@ -124,7 +124,7 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
 
       JCufft.setExceptionsEnabled(true);
       JCufft.initialize();
-      JCufft.setExceptionsEnabled(false);
+      JCufft.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
 
       return true;
     } catch (UnsatisfiedLinkError err) {
@@ -171,16 +171,15 @@ public class CudaStitchingExecutor<T> implements StitchingExecutorInterface<T>{
     tile.readTile();
 
 
-    if (!this.init)
-    {
+    if (!this.init) {
 
       if (devices.size() == 0) {
         this.devIDs = new int[] {0};
         Log.msg(LogType.MANDATORY, "No device selected from " + "table. Using default (0)");
-        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile);
+        this.contexts = CudaUtils.initJCUDA(1, this.devIDs, tile, params.getAdvancedParams().isEnableCudaExceptions());
       } else {
         Log.msg(LogType.MANDATORY, devices.size() + " device(s) selected from table.");
-        this.contexts = CudaUtils.initJCUDA(devices, tile);
+        this.contexts = CudaUtils.initJCUDA(devices, tile, params.getAdvancedParams().isEnableCudaExceptions());
         this.devIDs = new int[devices.size()];
         for (int j = 0; j < devices.size(); j++)
           this.devIDs[j] = devices.get(j).getId();
