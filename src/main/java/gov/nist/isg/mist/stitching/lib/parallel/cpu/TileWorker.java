@@ -49,6 +49,8 @@ import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.JavaTileWorkerMemory32;
 
@@ -95,27 +97,33 @@ public class TileWorker<T> implements Runnable {
                     ImageTile<T> initTile, JProgressBar progressBar) throws OutOfMemoryError {
     readDone = false;
     bkDone = false;
-    if (initTile instanceof FftwImageTile)
+    if (initTile instanceof FftwImageTile) {
       this.memory = new FftwTileWorkerMemory(initTile);
-    else if (initTile instanceof FftwImageTile32)
+      this.useDoublePrecision = true;
+    } else if (initTile instanceof FftwImageTile32) {
       this.memory = new FftwTileWorkerMemory32(initTile);
-    else if (initTile instanceof CudaImageTile)
+      this.useDoublePrecision = false;
+    } else if (initTile instanceof CudaImageTile) {
       this.memory = new CudaTileWorkerMemory(initTile);
-    else if (initTile instanceof JavaImageTile)
+      this.useDoublePrecision = true;
+    } else if (initTile instanceof CudaImageTile32) {
+      this.memory = new CudaTileWorkerMemory32(initTile);
+      this.useDoublePrecision = false;
+    } else if (initTile instanceof JavaImageTile) {
       this.memory = new JavaTileWorkerMemory(initTile);
-    else if (initTile instanceof JavaImageTile32)
+      this.useDoublePrecision = true;
+    } else if (initTile instanceof JavaImageTile32) {
       this.memory = new JavaTileWorkerMemory32(initTile);
+      this.useDoublePrecision = false;
+    }
 
     this.workQueue = workQueue;
     this.bkQueue = bkQueue;
     this.memoryPool = memoryPool;
     this.progressBar = progressBar;
     this.isCancelled = false;
-    this.useDoublePrecision = initTile instanceof JavaImageTile;
 
   }
-
-  // TODO update this to use 32bit ccf if required
 
   @Override
   public void run() {
@@ -143,9 +151,9 @@ public class TileWorker<T> implements Runnable {
 
           CorrelationTriple corr;
           try {
-            if(this.useDoublePrecision) {
+            if (this.useDoublePrecision) {
               corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            }else{
+            } else {
               corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
             }
           } catch (FileNotFoundException e) {
@@ -172,9 +180,9 @@ public class TileWorker<T> implements Runnable {
 
           CorrelationTriple corr;
           try {
-            if(this.useDoublePrecision) {
+            if (this.useDoublePrecision) {
               corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            }else{
+            } else {
               corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
             }
           } catch (FileNotFoundException e) {

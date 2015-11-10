@@ -49,7 +49,6 @@ import java.util.TreeSet;
  */
 public class UtilFnsStitching32 {
 
-  // TODO look for better way to get epsilon value
   private static final double DBL_EPSILON = 2.22e-16d;
   private static final float FLOAT_EPSILON = 1.19e-7f;
   private static boolean hasUtilFnsStitching = false;
@@ -299,10 +298,10 @@ public class UtilFnsStitching32 {
 
   private static int filterNextMax(Pointer<Float> m, int[] maxFilter, int nMax, int width,
                                    int height) {
-    double maxVal = Float.NEGATIVE_INFINITY;
+    float maxVal = Float.NEGATIVE_INFINITY;
     int maxIdx = 0;
     for (int i = 0; i < width * height; i++) {
-      double val = m.getDoubleAtIndex(i);
+      float val = m.getFloatAtIndex(i);
 
       if (val > maxVal) {
         if (checkDistance(maxFilter, nMax, i, width)) {
@@ -389,7 +388,7 @@ public class UtilFnsStitching32 {
   }
 
   private static int filterNextMax(float[][] m, int[] maxFilter, int nMax, int width, int height) {
-    double maxVal = Float.NEGATIVE_INFINITY;
+    float maxVal = Float.NEGATIVE_INFINITY;
     int maxIdx = 0;
     for (int row = 0; row < height; row++) {
       for (int col = 0; col < width; col++) {

@@ -177,7 +177,6 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
 
     if (super.isMemoryLoaded()) {
       this.fftIn = memory.getFFTInP();
-      int count = 0;
       for (long r = 0; r < super.getHeight(); r++)
         for (long c = 0; c < super.getWidth(); c++) {
           fftIn.setFloatAtIndex(r * super.getWidth() + c, super.getPixels().getPixelValue((int) c, (int) r));
@@ -237,10 +236,10 @@ public class FftwImageTile32 extends ImageTile<Pointer<Float>> {
       loaded = true;
 
     } catch (UnsatisfiedLinkError ex) {
-      Log.msg(LogType.MANDATORY, "Unabled to load FFTW: " + ex.toString());
+      Log.msg(LogType.MANDATORY, "Unable to load FFTW: " + ex.toString());
       return false;
     } catch (Exception e) {
-      Log.msg(LogType.MANDATORY, "Unabled to load FFTW: " + e.toString());
+      Log.msg(LogType.MANDATORY, "Unable to load FFTW: " + e.toString());
       return false;
     }
 

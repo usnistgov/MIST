@@ -96,7 +96,9 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
       throw new CudaException("Error initializing CUDA");
     }
 
-    this.gpuExecutor = new GPUStitchingThreadExecutor32<T>(this.contexts.length, params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs, progressBar, this.executor, params.getAdvancedParams().isEnableCudaExceptions());
+    this.gpuExecutor = new GPUStitchingThreadExecutor32<T>(this.contexts.length,
+        params.getAdvancedParams().getNumCPUThreads(), tile, grid, this.contexts, this.devIDs,
+        progressBar, this.executor, params.getAdvancedParams().isEnableCudaExceptions());
 
     tile.releasePixels();
 
@@ -110,9 +112,9 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
 
-    if (this.librariesInitialized) {
+    if (this.librariesInitialized)
       return true;
-    }
+
 
     try {
       int[] count = new int[1];
@@ -150,8 +152,7 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
 
     if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
-        grid =
-            new TileGrid<ImageTile<T>>(params, timeSlice, CudaImageTile32.class);
+        grid = new TileGrid<ImageTile<T>>(params, timeSlice, CudaImageTile32.class);
       } catch (InvalidClassException e) {
         e.printStackTrace();
       }

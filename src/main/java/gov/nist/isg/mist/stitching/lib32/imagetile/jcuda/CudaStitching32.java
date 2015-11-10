@@ -205,8 +205,7 @@ public class CudaStitching32 {
   }
 
   /**
-   * Finds the n max peaks in the phase correlation matrix that are a distance of 10 from
-   * eachother.
+   * Finds the n max peaks in the phase correlation matrix
    *
    * @param pcm    the phase correlation matrix
    * @param nPeaks the number of peaks to be found

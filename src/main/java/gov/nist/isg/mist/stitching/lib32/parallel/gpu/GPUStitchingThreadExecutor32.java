@@ -165,7 +165,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
       JCudaDriver.cuCtxSetCurrent(contexts[i]);
 
       this.memories[i] = new CudaTileWorkerMemory32(initTile);
-      int[] sz = {CudaImageTile32.fftSize * Sizeof.DOUBLE * 2};
+      int[] sz = {CudaImageTile32.fftSize * Sizeof.FLOAT * 2};
 
       this.memoryPools[i] =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<CUdeviceptr>(memoryPoolSize, false,
@@ -216,8 +216,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
 
     for (int i = 0; i < numWorkers; i++) {
       TileCpuCcfWorker32<T> ccfWorker;
-      ccfWorker =
-          new TileCpuCcfWorker32<T>(this.ccfQueue, numNeighbors, progressBar);
+      ccfWorker =  new TileCpuCcfWorker32<T>(this.ccfQueue, numNeighbors, progressBar);
 
       this.ccfWorkers.add(ccfWorker);
 

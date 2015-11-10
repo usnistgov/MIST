@@ -80,7 +80,8 @@ public class TileProducer<T> implements Runnable {
       try {
         tile.readTile();
       } catch (FileNotFoundException e) {
-        Log.msg(Log.LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping tile");
+        Thread thread = Thread.currentThread();
+        thread.getUncaughtExceptionHandler().uncaughtException(thread, e);
         continue;
       }
       tile.setFftState(State.IN_FLIGHT);

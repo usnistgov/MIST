@@ -64,11 +64,11 @@ public class StitchingStatistics {
    * The version number for the stitching statistics
    */
   public static final double VERSION = 1.0;
-  private int currentTimeslice;
+//  private int currentTimeslice;
 
-  public int getCurrentTimeslice() {
-    return currentTimeslice;
-  }
+//  public int getCurrentTimeslice() {
+//    return currentTimeslice;
+//  }
 
   /**
    * Enum representing what error report status
@@ -264,6 +264,12 @@ public class StitchingStatistics {
   public void setCurrentTimeSlice(int timeslice) {
     currentTimeSlice = timeslice;
   }
+
+  /**
+   * Gets the current time slice during execution
+   *
+   */
+  public int getCurrentTimeSlice() { return this.currentTimeSlice; }
 
 
   /**

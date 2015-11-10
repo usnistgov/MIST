@@ -129,16 +129,14 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static <T> CorrelationTriple phaseCorrelationImageAlignment(ImageTile<T> t1,
-                                                                     ImageTile<T> t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                     ImageTile<T> t2,
+                                                                     TileWorkerMemory memory) throws FileNotFoundException {
 
     if (t1 instanceof JavaImageTile)
       return JavaStitching.phaseCorrelationImageAlignment((JavaImageTile) t1, (JavaImageTile) t2,
           memory);
     else if (t1 instanceof FftwImageTile)
       return FftwStitching.phaseCorrelationImageAlignment((FftwImageTile) t1, (FftwImageTile) t2,
-          memory);
-    else if (t1 instanceof FftwImageTile32)
-      return FftwStitching32.phaseCorrelationImageAlignment((FftwImageTile32) t1, (FftwImageTile32) t2,
           memory);
     else if (t1 instanceof CudaImageTile)
       return CudaStitching.phaseCorrelationImageAlignment((CudaImageTile) t1, (CudaImageTile) t2,
@@ -284,6 +282,7 @@ public class Stitching {
 
     double pWidth = grid.getExtentWidth();
     double pHeight = grid.getExtentHeight();
+    // TODO work out why there is a +20 at the end of this math
     int memoryPoolSize = (int) Math.ceil(Math.sqrt(pWidth * pWidth + pHeight * pHeight)) + 20;
 
     for (ImageTile<CUdeviceptr> t : traverser) {

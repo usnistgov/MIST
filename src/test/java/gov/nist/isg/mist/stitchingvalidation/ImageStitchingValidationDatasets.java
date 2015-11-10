@@ -76,7 +76,7 @@ public class ImageStitchingValidationDatasets {
 //    JFrame frame = new JFrame("Select CUDA Devices");
 //    JOptionPane.showMessageDialog(frame, cudaPanel);
 
-    Log.setLogLevel(LogType.MANDATORY);
+    Log.setLogLevel(LogType.NONE);
 
     StitchingAppParams params;
 
@@ -104,7 +104,7 @@ public class ImageStitchingValidationDatasets {
 
 
       for (StitchingType t : StitchingType.values()) {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA)
           continue;
 
         if (t == StitchingType.CUDA) {
@@ -124,7 +124,7 @@ public class ImageStitchingValidationDatasets {
         params.getAdvancedParams().setProgramType(t);
 
         try {
-          new StitchingExecutor(params).runStitching(false, false, false);
+          (new StitchingExecutor(params)).runStitching(false, false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }
@@ -137,7 +137,7 @@ public class ImageStitchingValidationDatasets {
         params.getAdvancedParams().setProgramType(t);
 
         try {
-          new StitchingExecutor(params).runStitching(false, false, false);
+          (new StitchingExecutor(params)).runStitching(false, false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }

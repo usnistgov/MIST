@@ -27,7 +27,6 @@
 
 package gov.nist.isg.mist.stitching.lib32.memorypool;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
 import gov.nist.isg.mist.stitching.lib.memorypool.Allocator;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FFTW3Library32;
 

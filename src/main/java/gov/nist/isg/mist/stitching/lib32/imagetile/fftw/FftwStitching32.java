@@ -29,9 +29,6 @@
 package gov.nist.isg.mist.stitching.lib32.imagetile.fftw;
 
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.utilfns.UtilFnsStitching32;
@@ -92,9 +89,8 @@ public class FftwStitching32 {
 
     List<CorrelationTriple> peaks;
 
-    peaks =
-        UtilFnsStitching32.multiPeakCorrelationMatrix(pcm, Stitching32.NUM_PEAKS, t1.getWidth(),
-            t1.getHeight(), memory.getPeaks());
+    peaks = UtilFnsStitching32.multiPeakCorrelationMatrix(pcm, Stitching32.NUM_PEAKS,
+        t1.getWidth(), t1.getHeight(), memory.getPeaks());
 
     List<CorrelationTriple> multi_ccfs = new ArrayList<CorrelationTriple>();
     for (int i = 0; i < peaks.size(); i++) {

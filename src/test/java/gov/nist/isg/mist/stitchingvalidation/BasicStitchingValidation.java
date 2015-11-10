@@ -38,8 +38,8 @@ public class BasicStitchingValidation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-//    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
-  private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
+    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
+//  private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
 
@@ -62,7 +62,7 @@ public class BasicStitchingValidation {
 //        JFrame frame = new JFrame("Select CUDA Devices");
 //        JOptionPane.showMessageDialog(frame, cudaPanel);
 
-    Log.setLogLevel(LogType.NONE);
+    Log.setLogLevel(LogType.MANDATORY);
     StitchingAppParams params;
 
 
@@ -84,147 +84,120 @@ public class BasicStitchingValidation {
     params.getAdvancedParams().setNumCPUThreads(24);
     params.getAdvancedParams().setUseDoublePrecision(false);
 
-//        double elapsedTime = 0;
-//        for (StitchingType t : StitchingType.values()) {
-//            if (t == StitchingType.AUTO || t == StitchingType.CUDA || t == StitchingType.JAVA)
-//                continue;
-//
-//            if (t == StitchingType.CUDA) {
-//                if (!cudaPanel.isCudaAvailable())
-//                    continue;
-//            }
-//
-//            System.out.println("Stitching Type: " + t);
-//
-//
-//
-//            for(int i = 0; i < 5; i++) {
-//                File metaDataPath = new File(rootFolder, t.name().toLowerCase());
-//                params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//                params.getAdvancedParams().setProgramType(t);
-//
-//                Log.setLogLevel(LogType.NONE);
-//long startTime = System.currentTimeMillis();
-//                StitchingExecutor executor = new StitchingExecutor(params);
-//
-//                try {
-//                    executor.runStitching(false, false, false);
-//                } catch (StitchingException e) {
-//                    Log.msg(LogType.MANDATORY, e.getMessage());
-//                }
-//                elapsedTime = elapsedTime + (System.currentTimeMillis()-startTime);
-//
-//            }
-//        }
 
-
+    double elapsedTime;
     double nbIter = 1;
-    double elapsedTime = 0;
-//    for (int i = 0; i < nbIter; i++) {
-//      File metaDataPath = new File(rootFolder, StitchingType.JAVA.name().toLowerCase());
-//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//      params.getAdvancedParams().setProgramType(StitchingType.JAVA);
-//
-//      long startTime = System.currentTimeMillis();
-//      StitchingExecutor executor = new StitchingExecutor(params);
-//
-//      try {
-//        executor.runStitching(false, false, false);
-//      } catch (StitchingException e) {
-//        Log.msg(LogType.MANDATORY, e.getMessage());
-//      }
-//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-//
-//    }
-//    System.out.println("Java 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
-//
-//
-//    params.getAdvancedParams().setUseDoublePrecision(false);
-//    params.getOutputParams().setOutFilePrefix("img-f-");
-//    elapsedTime = 0;
-//    for (int i = 0; i < nbIter; i++) {
-//      File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
-//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//      params.getAdvancedParams().setProgramType(StitchingType.FFTW);
-//
-//      long startTime = System.currentTimeMillis();
-//      StitchingExecutor executor = new StitchingExecutor(params);
-//
-//      try {
-//        executor.runStitching(false, false, false);
-//      } catch (StitchingException e) {
-//        Log.msg(LogType.MANDATORY, e.getMessage());
-//      }
-//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-//
-//    }
-//    System.out.println("FFTW 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+    File metaDataPath = new File(rootFolder, "basic");
+    params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
 
 
+    // Run Java 32bit
+    params.getAdvancedParams().setProgramType(StitchingType.JAVA);
+    params.getOutputParams().setOutFilePrefix("java32-");
     params.getAdvancedParams().setUseDoublePrecision(false);
-    params.getOutputParams().setOutFilePrefix("img-f-");
     elapsedTime = 0;
     for (int i = 0; i < nbIter; i++) {
-      File metaDataPath = new File(rootFolder, StitchingType.CUDA.name().toLowerCase());
-      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-      params.getAdvancedParams().setProgramType(StitchingType.CUDA);
-
       long startTime = System.currentTimeMillis();
-      StitchingExecutor executor = new StitchingExecutor(params);
-
       try {
-        executor.runStitching(false, false, false);
+        (new StitchingExecutor(params)).runStitching(false, false, false);
       } catch (StitchingException e) {
         Log.msg(LogType.MANDATORY, e.getMessage());
       }
       elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+    }
+    System.out.println("Java 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
 
+
+    // Run Java 64bit
+    params.getAdvancedParams().setProgramType(StitchingType.JAVA);
+    params.getOutputParams().setOutFilePrefix("java64-");
+    params.getAdvancedParams().setUseDoublePrecision(true);
+    elapsedTime = 0;
+    for (int i = 0; i < nbIter; i++) {
+      long startTime = System.currentTimeMillis();
+      try {
+        (new StitchingExecutor(params)).runStitching(false, false, false);
+      } catch (StitchingException e) {
+        Log.msg(LogType.MANDATORY, e.getMessage());
+      }
+      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+    }
+    System.out.println("Java 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
+
+    // Run FFTW 32bit
+    params.getAdvancedParams().setProgramType(StitchingType.FFTW);
+    params.getOutputParams().setOutFilePrefix("fftw32-");
+    params.getAdvancedParams().setUseDoublePrecision(false);
+    elapsedTime = 0;
+    for (int i = 0; i < nbIter; i++) {
+      long startTime = System.currentTimeMillis();
+      try {
+        (new StitchingExecutor(params)).runStitching(false, false, false);
+      } catch (StitchingException e) {
+        Log.msg(LogType.MANDATORY, e.getMessage());
+      }
+      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+    }
+    System.out.println("FFTW 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
+
+    // Run FFTW 64bit
+    params.getAdvancedParams().setProgramType(StitchingType.FFTW);
+    params.getOutputParams().setOutFilePrefix("fftw64-");
+    params.getAdvancedParams().setUseDoublePrecision(true);
+    elapsedTime = 0;
+    for (int i = 0; i < nbIter; i++) {
+      long startTime = System.currentTimeMillis();
+      try {
+        (new StitchingExecutor(params)).runStitching(false, false, false);
+      } catch (StitchingException e) {
+        Log.msg(LogType.MANDATORY, e.getMessage());
+      }
+      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+    }
+    System.out.println("FFTW 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
+
+    // Run CUDA 32bit
+    params.getAdvancedParams().setProgramType(StitchingType.CUDA);
+    params.getOutputParams().setOutFilePrefix("cuda32-");
+    params.getAdvancedParams().setUseDoublePrecision(false);
+    elapsedTime = 0;
+    for (int i = 0; i < nbIter; i++) {
+      long startTime = System.currentTimeMillis();
+      try {
+        (new StitchingExecutor(params)).runStitching(false, false, false);
+      } catch (StitchingException e) {
+        Log.msg(LogType.MANDATORY, e.getMessage());
+      }
+      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
     }
     System.out.println("CUDA 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
 
 
-//    params.getAdvancedParams().setUseDoublePrecision(true);
-//    params.getOutputParams().setOutFilePrefix("img-d-");
-//    elapsedTime = 0;
-//    for (int i = 0; i < nbIter; i++) {
-//      File metaDataPath = new File(rootFolder, StitchingType.FFTW.name().toLowerCase());
-//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//      params.getAdvancedParams().setProgramType(StitchingType.FFTW);
-//
-//      long startTime = System.currentTimeMillis();
-//      StitchingExecutor executor = new StitchingExecutor(params);
-//
-//      try {
-//        executor.runStitching(false, false, false);
-//      } catch (StitchingException e) {
-//        Log.msg(LogType.MANDATORY, e.getMessage());
-//      }
-//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-//
-//    }
-//    System.out.println("FFTW 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
-//
-//
-//    params.getAdvancedParams().setUseDoublePrecision(true);
-//    params.getOutputParams().setOutFilePrefix("img-d-");
-//    elapsedTime = 0;
-//    for(int i = 0; i < nbIter; i++) {
-//      File metaDataPath = new File(rootFolder, StitchingType.CUDA.name().toLowerCase());
-//      params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-//      params.getAdvancedParams().setProgramType(StitchingType.CUDA);
-//
-//      long startTime = System.currentTimeMillis();
-//      StitchingExecutor executor = new StitchingExecutor(params);
-//
-//      try {
-//        executor.runStitching(false, false, false);
-//      } catch (StitchingException e) {
-//        Log.msg(LogType.MANDATORY, e.getMessage());
-//      }
-//      elapsedTime = elapsedTime + (System.currentTimeMillis()-startTime);
-//
-//    }
-//    System.out.println("CUDA 64bit Elapsed: " + (elapsedTime/nbIter) + " ms");
+
+    // Run CUDA 64bit
+    params.getAdvancedParams().setProgramType(StitchingType.CUDA);
+    params.getOutputParams().setOutFilePrefix("cuda64-");
+    params.getAdvancedParams().setUseDoublePrecision(true);
+    elapsedTime = 0;
+    for (int i = 0; i < nbIter; i++) {
+      long startTime = System.currentTimeMillis();
+      try {
+        (new StitchingExecutor(params)).runStitching(false, false, false);
+      } catch (StitchingException e) {
+        Log.msg(LogType.MANDATORY, e.getMessage());
+      }
+      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+    }
+    System.out.println("CUDA 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+
+
 
 
     System.exit(1);

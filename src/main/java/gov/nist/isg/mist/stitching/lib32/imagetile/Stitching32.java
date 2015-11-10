@@ -31,14 +31,18 @@ package gov.nist.isg.mist.stitching.lib32.imagetile;
 import gov.nist.isg.mist.stitching.lib.common.Array2DView;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwStitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
+
+//import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
+//import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwStitching;
+//import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
+//import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
+//import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
+//import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
+
 import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaStitching32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwStitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
@@ -50,8 +54,6 @@ import gov.nist.isg.mist.stitching.lib.memorypool.CudaAllocator;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
-import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
-import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwStitching32;
 import jcuda.Sizeof;
 import jcuda.driver.*;
 
@@ -132,21 +134,12 @@ public class Stitching32 {
   public static <T> CorrelationTriple phaseCorrelationImageAlignment(ImageTile<T> t1,
                                                                      ImageTile<T> t2, TileWorkerMemory memory) throws FileNotFoundException {
 
-    if (t1 instanceof JavaImageTile)
-      return JavaStitching.phaseCorrelationImageAlignment((JavaImageTile) t1, (JavaImageTile) t2,
-          memory);
-    else if (t1 instanceof JavaImageTile32)
+    if (t1 instanceof JavaImageTile32)
       return JavaStitching32.phaseCorrelationImageAlignment((JavaImageTile32) t1, (JavaImageTile32) t2,
-          memory);
-    else if (t1 instanceof FftwImageTile)
-      return FftwStitching.phaseCorrelationImageAlignment((FftwImageTile) t1, (FftwImageTile) t2,
           memory);
     else if (t1 instanceof FftwImageTile32)
       return FftwStitching32.phaseCorrelationImageAlignment((FftwImageTile32) t1, (FftwImageTile32) t2,
           memory);
-    else if (t1 instanceof CudaImageTile)
-      return CudaStitching.phaseCorrelationImageAlignment((CudaImageTile) t1, (CudaImageTile) t2,
-          memory, null);
     else if (t1 instanceof CudaImageTile32)
       return CudaStitching32.phaseCorrelationImageAlignment((CudaImageTile32) t1, (CudaImageTile32) t2,
           memory, null);
@@ -164,9 +157,9 @@ public class Stitching32 {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentJava(JavaImageTile32 t1,
-                                                                     JavaImageTile32 t2, TileWorkerMemory memory) throws FileNotFoundException {
-    return JavaStitching32.phaseCorrelationImageAlignment(t1, t2,
-        memory);
+                                                                     JavaImageTile32 t2,
+                                                                     TileWorkerMemory memory) throws FileNotFoundException {
+    return JavaStitching32.phaseCorrelationImageAlignment(t1, t2, memory);
   }
 
 
@@ -179,7 +172,8 @@ public class Stitching32 {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile32 t1,
-                                                                     FftwImageTile32 t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                     FftwImageTile32 t2,
+                                                                     TileWorkerMemory memory) throws FileNotFoundException {
     return FftwStitching32.phaseCorrelationImageAlignment(t1, t2, memory);
   }
 
@@ -193,7 +187,9 @@ public class Stitching32 {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile32 t1,
-                                                                     CudaImageTile32 t2, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
+                                                                     CudaImageTile32 t2,
+                                                                     TileWorkerMemory memory,
+                                                                     CUstream stream) throws FileNotFoundException {
     return CudaStitching32.phaseCorrelationImageAlignment(t1, t2, memory, stream);
   }
 
@@ -209,12 +205,11 @@ public class Stitching32 {
     TileWorkerMemory memory = null;
     for (ImageTile<?> t : traverser) {
       t.setThreadID(0);
-
       t.readTile();
 
-      if (memory == null) {
+      if (memory == null)
         memory = new FftwTileWorkerMemory32(t);
-      }
+
       int row = t.getRow();
       int col = t.getCol();
 
@@ -223,11 +218,9 @@ public class Stitching32 {
       if (col > grid.getStartCol()) {
         ImageTile<?> west = grid.getTile(row, col - 1);
         t.setWestTranslation(Stitching32.phaseCorrelationImageAlignmentFftw((FftwImageTile32) west,
-            (FftwImageTile32) t,
-            memory));
+            (FftwImageTile32) t, memory));
 
-        Log.msgNoTime(
-            LogType.HELPFUL,
+        Log.msgNoTime(LogType.HELPFUL,
             " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
                 + t.getWestTranslation());
 
@@ -246,11 +239,9 @@ public class Stitching32 {
         ImageTile<?> north = grid.getTile(row - 1, col);
 
         t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentFftw((FftwImageTile32) north,
-            (FftwImageTile32) t,
-            memory));
+            (FftwImageTile32) t, memory));
 
-        Log.msgNoTime(
-            LogType.HELPFUL,
+        Log.msgNoTime(LogType.HELPFUL,
             " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName() + "\"): "
                 + t.getNorthTranslation());
 
@@ -291,6 +282,7 @@ public class Stitching32 {
 
     double pWidth = grid.getExtentWidth();
     double pHeight = grid.getExtentHeight();
+    // TODO work out why there is a +20 at the end of this math
     int memoryPoolSize = (int) Math.ceil(Math.sqrt(pWidth * pWidth + pHeight * pHeight)) + 20;
 
     for (ImageTile<CUdeviceptr> t : traverser) {
@@ -330,15 +322,13 @@ public class Stitching32 {
         if (west.getFftReleaseCount() == 0) {
           west.releaseFftMemory(memoryPool);
         }
-
       }
 
       if (row > grid.getStartRow()) {
         ImageTile<CUdeviceptr> north = grid.getTile(row - 1, col);
 
         t.setNorthTranslation(Stitching32.phaseCorrelationImageAlignmentCuda((CudaImageTile32) north,
-            (CudaImageTile32) t,
-            memory, stream));
+            (CudaImageTile32) t, memory, stream));
 
         Log.msg(LogType.HELPFUL, " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName()
             + "\"): " + t.getNorthTranslation());
@@ -346,17 +336,12 @@ public class Stitching32 {
         t.decrementFftReleaseCount();
         north.decrementFftReleaseCount();
 
-        if (north.getFftReleaseCount() == 0) {
-
+        if (north.getFftReleaseCount() == 0)
           north.releaseFftMemory(memoryPool);
-
-        }
-
       }
 
-      if (t.getFftReleaseCount() == 0) {
+      if (t.getFftReleaseCount() == 0)
         t.releaseFftMemory(memoryPool);
-      }
     }
 
   }
@@ -829,7 +814,9 @@ public class Stitching32 {
    * @return the highest correlation triple within the bounding box using hill climbing
    */
   public static <T> CorrelationTriple computeCCF_HillClimbing_UD(int minBoundX, int maxBoundX,
-                                                                 int minBoundY, int maxBoundY, int startX, int startY, ImageTile<T> i1, ImageTile<T> i2) {
+                                                                 int minBoundY, int maxBoundY,
+                                                                 int startX, int startY,
+                                                                 ImageTile<T> i1, ImageTile<T> i2) {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
@@ -860,8 +847,7 @@ public class Stitching32 {
     boolean foundPeak = false;
 
     // Compute hill climbing
-    while (!foundPeak
-        && ((curX <= maxBoundX && curX >= minBoundX) || (curY <= maxBoundY && curY >= minBoundY))) {
+    while (!foundPeak && ((curX <= maxBoundX && curX >= minBoundX) || (curY <= maxBoundY && curY >= minBoundY))) {
 
       // translate to 0-based index coordinates
       int curYIndex = curY - minBoundY;
@@ -938,7 +924,9 @@ public class Stitching32 {
    * @return the highest correlation triple within the bounding box using hill climbing
    */
   public static <T> CorrelationTriple computeCCF_Exhaustive_UD(int minBoundX, int maxBoundX,
-                                                               int minBoundY, int maxBoundY, int startX, int startY, ImageTile<T> i1, ImageTile<T> i2) {
+                                                               int minBoundY, int maxBoundY,
+                                                               int startX, int startY,
+                                                               ImageTile<T> i1, ImageTile<T> i2) {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
@@ -1086,7 +1074,9 @@ public class Stitching32 {
    * @return the highest correlation triple within the bounding box using hill climbing
    */
   public static CorrelationTriple computeCCF_HillClimbing_LR(int minBoundX, int maxBoundX,
-                                                             int minBoundY, int maxBoundY, int startX, int startY, ImageTile<?> i1, ImageTile<?> i2) {
+                                                             int minBoundY, int maxBoundY,
+                                                             int startX, int startY,
+                                                             ImageTile<?> i1, ImageTile<?> i2) {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
@@ -1192,7 +1182,9 @@ public class Stitching32 {
    * @return the highest correlation triple within the bounding box using hill climbing
    */
   public static CorrelationTriple computeCCF_Exhaustive_LR(int minBoundX, int maxBoundX,
-                                                           int minBoundY, int maxBoundY, int startX, int startY, ImageTile<?> i1, ImageTile<?> i2) {
+                                                           int minBoundY, int maxBoundY,
+                                                           int startX, int startY,
+                                                           ImageTile<?> i1, ImageTile<?> i2) {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
