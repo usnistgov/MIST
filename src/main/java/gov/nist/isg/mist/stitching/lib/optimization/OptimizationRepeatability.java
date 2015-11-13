@@ -469,7 +469,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
   }
 
 
-  private double getOverlap(Direction dir, DisplacementValue dispValue) throws FileNotFoundException {
+  private double getOverlap(Direction dir, DisplacementValue dispValue, int numWorkers) throws FileNotFoundException {
 
     OptimizationUtils.OverlapType overlapComputationType = this.params.getAdvancedParams().getOverlapComputationType();
 
@@ -478,7 +478,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       case West:
         if (Double.isNaN(this.userDefinedHorizontalOverlap)) {
           overlap =
-              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
+              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, numWorkers);
         } else {
           overlap = this.userDefinedHorizontalOverlap;
         }
@@ -486,7 +486,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       case North:
         if (Double.isNaN(this.userDefinedVerticalOverlap)) {
           overlap =
-              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType);
+              OptimizationUtils.getOverlap(this.grid, dir, dispValue, overlapComputationType, numWorkers);
         } else {
           overlap = this.userDefinedVerticalOverlap;
         }
@@ -524,7 +524,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
 
     // get the overlap for the current direction
-    double overlap = getOverlap(dir, dispValue);
+    double overlap = getOverlap(dir, dispValue, params.getAdvancedParams().getNumCPUThreads());
     this.stitchingStatistics.setComputedOverlap(dir, overlap);
 
     // check that an overlap value has been computed

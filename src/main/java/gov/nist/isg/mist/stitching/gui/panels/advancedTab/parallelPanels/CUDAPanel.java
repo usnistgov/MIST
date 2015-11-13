@@ -112,6 +112,8 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
     return this.isCudaAvailable;
   }
 
+  public boolean isCudaExceptionsEnabled() { return this.enableCudaExceptions.isSelected(); }
+
   private void initControls() {
 
 

@@ -104,7 +104,7 @@ public class ImageStitchingValidationDatasets {
 
 
       for (StitchingType t : StitchingType.values()) {
-        if (t == StitchingType.AUTO || t == StitchingType.JAVA)
+        if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
           continue;
 
         if (t == StitchingType.CUDA) {
@@ -113,7 +113,8 @@ public class ImageStitchingValidationDatasets {
         }
 
 
-        File metaDataPath = new File(r, "PRECISION2");
+
+        File metaDataPath = new File(r, "PRECISION");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
 
 

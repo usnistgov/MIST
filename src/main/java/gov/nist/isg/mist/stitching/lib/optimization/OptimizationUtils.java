@@ -522,7 +522,7 @@ public class OptimizationUtils {
    * @return the overlap
    */
   public static <T> double getOverlap(TileGrid<ImageTile<T>> grid, Direction dir,
-                                      DisplacementValue dispValue, OverlapType overlapType)
+                                      DisplacementValue dispValue, OverlapType overlapType, int numWorkers)
       throws FileNotFoundException {
     Log.msg(LogType.VERBOSE,
         "Computing top " + NumTopCorrelations + " correlations for " + dir.name());
@@ -541,7 +541,7 @@ public class OptimizationUtils {
         break;
       case MLE:
         mu =
-            OptimizationMleUtils.getOverlapMle(grid, dir, dispValue);
+            OptimizationMleUtils.getOverlapMle(grid, dir, dispValue, numWorkers);
         break;
     }
 
