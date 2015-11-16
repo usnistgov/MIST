@@ -100,7 +100,7 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-      params.getAdvancedParams().setNumCPUThreads(24);
+      params.getAdvancedParams().setNumCPUThreads(20);
 
 
       for (StitchingType t : StitchingType.values()) {

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.*;
 
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
+import gov.nist.isg.mist.stitching.gui.params.AdvancedParameters;
 import gov.nist.isg.mist.stitching.gui.params.InputParameters;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
@@ -55,6 +56,12 @@ public class BenchmarkTiming {
   public static void main(String[] args) {
     if (args.length > 0) {
       validationRootFolder = args[0];
+      if(args.length > 1) {
+        fftwLibraryPath = args[1];
+        if(args.length > 2) {
+          fftwPlanPath = args[2];
+        }
+      }
     }
 
 
@@ -65,18 +72,24 @@ public class BenchmarkTiming {
       System.exit(1);
     }
 
+    System.out.println("root folder setup");
 
     CUDAPanel cudaPanel = new CUDAPanel();
+    System.out.println("Cuda Panel Created");
     JFrame frame = new JFrame("Select CUDA Devices");
     JOptionPane.showMessageDialog(frame, cudaPanel);
+    System.out.println("Cuda panel JFrame and JOptionPanel setup");
     IS_CUDA_EXCEPTIONS_ENABLED = cudaPanel.isCudaExceptionsEnabled();
     NUMBER_THREADS = cudaPanel.getNumCPUThreads();
+    System.out.println("CUDA options extracted");
 
     Log.setLogLevel(Log.LogType.NONE);
     StitchingAppParams params;
 
 
     params = new StitchingAppParams();
+    params.getAdvancedParams().setEnableCudaExceptions(true);
+
 
     File paramFile = new File(rootFolder, STITCHING_PARAMS_FILE);
     params.loadParams(paramFile);
