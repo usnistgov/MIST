@@ -282,4 +282,6 @@ public class TextFieldInputPanel<T> extends JPanel implements ActionListener, Fo
     this.input.setSelectionEnd(0);
   }
 
+  public String getInputText() { return this.input.getText(); }
+
 }

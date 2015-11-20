@@ -32,6 +32,7 @@ import gov.nist.isg.mist.stitching.gui.components.dropdown.DropDownPanel;
 import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
 import gov.nist.isg.mist.stitching.gui.params.OutputParameters;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 import ij.ImagePlus;
 import gov.nist.isg.mist.stitching.gui.components.filechooser.DirectoryChooserPanel;
 import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
@@ -649,6 +650,16 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
     } else {
       this.hasTimeSlices = false;
+
+      // if no timeslice iterator is found, clear the timslices field
+      if(!this.timeSlices.getInputText().isEmpty()) {
+        this.timeSlices.showError();
+        Log.msg(LogType.MANDATORY, "No time-slice iterator found. Conflict between filename pattern and Timeslices.");
+        return false;
+      }
+
+
+
 
       // check the current startTileNumber
       if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, this.startTileNumber,
