@@ -852,9 +852,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       }
     }
 
-    if (timeSliceParam.size() == 0) {
-      timeSliceParam.add(new RangeParam(this.startTimeSlice, this.endTimeSlice));
-    }
+//    if (timeSliceParam.size() == 0) {
+//      timeSliceParam.add(new RangeParam(this.startTimeSlice, this.endTimeSlice));
+//    }
 
 
     params.getInputParams().setGridWidth(plateWidth);
