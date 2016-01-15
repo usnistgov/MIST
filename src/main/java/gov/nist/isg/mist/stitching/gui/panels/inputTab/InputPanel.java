@@ -112,11 +112,16 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       + "columns. \n-The width of the image grid.";
   private static final String gridHeightHelp = "-The number of images in a column. \n-The number of"
       + " rows. \n-The height of the image grid.";
-  private static final String timeslicesHelp = "The number of timeslices to stitch. Leave this "
-      + "field blank to stitch all timeslices. \n\nTo stitch timeslices you must add the special "
-      + "format text \"{ttt}\" to the Filename Pattern. \n\nThis input supports a comma separated "
-      + "list and/or range using a '-'. Example: \"1-25, 35, 45\" stitches timeslices 1 through 25,"
-      + " 35, and 45.";
+  private static final String timeslicesHelp = "The number of timeslices to stitch. \n" +
+      "Leave this field blank to stitch all timeslices. \n\n" +
+      "To stitch timeslices you must add the special format text \"{ttt}\" to the Filename Pattern. \n\n"+
+      "If there is no special format text in the Filename Pattern then this field must be blank. \n\n" +
+      "This input supports a comma separated list and/or range using a '-'. \n" +
+      "Example: \n" +
+      "- \"1-25, 35, 45\" stitches timeslices 1 through 25, 35, and 45.\n" +
+      "- \"\" stitches all available timeslices\n" +
+      "- \"3\" stitches timeslice 3\n" +
+      "- \"0\" stitches timeslice 0";
   private static final String originHelp = "The starting point of the microscope scan. This "
       + "specifies the origin for the grid of images.";
   private static final String directionHelp = "The direction and pattern of the microscope stage "

@@ -79,8 +79,7 @@ public class BookKeeper<T> implements Runnable {
     int maxTileCount = this.grid.getExtentWidth() * this.grid.getExtentHeight();
 
     try {
-      while (!this.isCancelled
-          && (this.tile_count != maxTileCount)) {
+      while (!this.isCancelled && (this.tile_count != maxTileCount)) {
         OptimizationData<T> task = this.bkQueue.take();
 
         Debug.msg(Debug.DebugType.VERBOSE, "BK Task received: " + task.getType());

@@ -168,8 +168,7 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
     if (this.isUserDefinedRepeatability)
       computedRepeatability = this.userDefinedRepeatability;
 
-    if (this.isCancelled)
-      return;
+    if (this.isCancelled) return;
 
     computedRepeatability = 2 * computedRepeatability + 1;
 
@@ -183,6 +182,8 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
 
     // loop over the image tiles
     for (ImageTile<T> t : traverser) {
+      if(this.isCancelled) return;
+
       t.readTile();
 
       int row = t.getRow();
@@ -439,11 +440,9 @@ public class OptimizationRepeatability<T> implements Thread.UncaughtExceptionHan
       producer.join();
       bk.join();
 
-      for (Thread thread : this.executionThreads) {
-
+      for (Thread thread : this.executionThreads)
         thread.join();
 
-      }
     } catch (InterruptedException e) {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }

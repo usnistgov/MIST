@@ -140,8 +140,8 @@ public class StitchingExecutor implements Runnable {
   private StitchingAppParams params;
   private ExecutionType executionType;
 
-  private Thread optimizationThread;
-  private GlobalOptimization<?> globalOptimization;
+//  private Thread optimizationThread;
+  private OptimizationRepeatability globalOptimization;
   private LargeImageExporter<?> imageExporter;
 
   private volatile boolean isCancelled;
@@ -169,7 +169,7 @@ public class StitchingExecutor implements Runnable {
     this.params = params;
     this.stitchingGUI = stitchingGUI;
     this.executionType = type;
-    this.optimizationThread = null;
+//    this.optimizationThread = null;
     this.progressBar = null;
     this.progressLabel = null;
     this.isCancelled = false;
@@ -231,16 +231,13 @@ public class StitchingExecutor implements Runnable {
    * Cancels the optimization thread
    */
   public void cancelOptimization() {
-    if (this.optimizationThread != null && this.optimizationThread.isAlive()) {
+    if(this.globalOptimization != null)
       this.globalOptimization.cancelOptimization();
-      this.optimizationThread.interrupt();
-    }
   }
 
   public void cancelExport() {
-    if (this.imageExporter != null) {
+    if (this.imageExporter != null)
       this.imageExporter.cancel();
-    }
   }
 
 
@@ -627,6 +624,7 @@ public class StitchingExecutor implements Runnable {
     this.stitchingStatistics.stopEndToEndTimer();
     this.stitchingStatistics.writeStatistics(this.params.getOutputParams().getStatsFile());
     this.stitchingStatistics.writeLog(this.params.getOutputParams().getLogFile());
+    Log.msg(LogType.MANDATORY, "Done");
 
 
     if (displayGui) {
@@ -699,18 +697,19 @@ public class StitchingExecutor implements Runnable {
     OptimizationUtils.backupTranslations(grid);
 
 
-    OptimizationRepeatability optimizationRepeatability =
-        new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
+    this.globalOptimization = new OptimizationRepeatability<T>(grid, this.progressBar, this.params,
             this.stitchingStatistics);
 
     if (runSequential)
-      optimizationRepeatability.computeGlobalOptimizationRepeatablitySequential();
+      this.globalOptimization.computeGlobalOptimizationRepeatablitySequential();
     else
-      optimizationRepeatability.computeGlobalOptimizationRepeatablity();
+      this.globalOptimization.computeGlobalOptimizationRepeatablity();
 
 
-    if (optimizationRepeatability.isExceptionThrown())
-      throw optimizationRepeatability.getWorkerThrowable();
+    if (this.globalOptimization.isExceptionThrown())
+      throw this.globalOptimization.getWorkerThrowable();
+    if (this.isCancelled)
+      return false;
 
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalOptimizationTime);
@@ -722,6 +721,8 @@ public class StitchingExecutor implements Runnable {
 
     this.stitchingStatistics.startTimer(RunTimers.GlobalPositionTime);
     TileGridUtils.traverseMaximumSpanningTree(grid);
+    if (this.isCancelled)
+      return false;
 
     this.stitchingStatistics.stopTimer(RunTimers.GlobalPositionTime);
 

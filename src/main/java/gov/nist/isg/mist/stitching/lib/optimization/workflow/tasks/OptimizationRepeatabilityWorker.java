@@ -97,6 +97,7 @@ public class OptimizationRepeatabilityWorker<T> implements Runnable {
         task = this.tiles.take();
 
         if (task.getType() == OptimizationData.TaskType.CANCELLED) {
+          this.tiles.add(new OptimizationData<T>(null, null, OptimizationData.TaskType.CANCELLED));
           this.isCancelled = true;
         }
 
