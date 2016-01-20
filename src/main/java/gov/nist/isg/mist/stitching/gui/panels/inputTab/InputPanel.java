@@ -658,9 +658,12 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
       // if no timeslice iterator is found, clear the timslices field
       if(!this.timeSlices.getInputText().isEmpty()) {
-        this.timeSlices.showError();
-        Log.msg(LogType.MANDATORY, "No time-slice iterator found. Conflict between filename pattern and Timeslices.");
-        return false;
+        // if timeslices are not empty, but they contains just "0", then a timeslice iterator is not required
+        if(!this.timeSlices.getInputText().contentEquals("0")) {
+          this.timeSlices.showError();
+          Log.msg(LogType.MANDATORY, "No time-slice iterator found. Conflict between filename pattern and Timeslices.");
+          return false;
+        }
       }
 
 
