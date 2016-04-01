@@ -5,14 +5,13 @@ Microscopy Image Stitching Tool (MIST) is developed at the National Institute of
 
 [MATLAB Source Code](https://github.com/USNISTGOV/MIST/tree/mist-matlab)
 
-
 ## Quick Navigation
 
 ####- [About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)
-####- [Wiki](https://github.com/NIST-ISG/MIST/wiki)
-####- [Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Install-Guide)
-####- [User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)
-####- [Frequently Asked Questions](https://github.com/NIST-ISG/MIST/wiki/FAQ)
+####- [Wiki](https://github.com/USNISTGOV/MIST/wiki)
+####- [Installation Guide](https://github.com/USNISTGOV/MIST/wiki/Install-Guide)
+####- [User Guide](https://github.com/USNISTGOV/MIST/wiki/User-Guide)
+####- [Frequently Asked Questions](https://github.com/USNISTGOV/MIST/wiki/FAQ)
 ####- Technical Documentation (Coming Soon)
 
 ## Applicable Domain
