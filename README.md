@@ -1,19 +1,22 @@
 # MIST
-Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. This repository contains source code for the ImageJ/Fiji plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation. Note: the User Guide and Wiki are devoted to the ImageJ/Fiji plugin. The MATLAB source code contains its own help document in the 'doc' folder.
+Microscopy Image Stitching Tool (MIST) is developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. This repository contains source code for the plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation. Note: the User Guide and Wiki are devoted to the ImageJ/Fiji plugin. The MATLAB source code contains its own help document in the 'doc' folder.
 
-[Java Source Code](https://github.com/NIST-ISG/MIST/tree/master)
+[Java Source Code](https://github.com/USNISTGOV/MIST/tree/master)
 
-[MATLAB Source Code](https://github.com/NIST-ISG/MIST/tree/mist-matlab)
-
+[MATLAB Source Code](https://github.com/USNISTGOV/MIST/tree/mist-matlab)
 
 ## Quick Navigation
 
-|[About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)|[Wiki](https://github.com/NIST-ISG/MIST/wiki)|[Installation Guide](https://github.com/NIST-ISG/MIST/wiki/Install-Guide)|[User Guide](https://github.com/NIST-ISG/MIST/wiki/User-Guide)|Technical Documentation (Coming Soon)|
-|----------------------------|--------------------|----------------------------|----------------------------|----------------------------|
+####- [About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)
+####- [Wiki](https://github.com/USNISTGOV/MIST/wiki)
+####- [Installation Guide](https://github.com/USNISTGOV/MIST/wiki/Install-Guide)
+####- [User Guide](https://github.com/USNISTGOV/MIST/wiki/User-Guide)
+####- [Frequently Asked Questions](https://github.com/USNISTGOV/MIST/wiki/FAQ)
+####- Technical Documentation (Coming Soon)
 
 ## Applicable Domain
 
-MIST is designed to stitch 2D image datasets. It does not address volumetric or 3d stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
+MIST is designed to stitch 2D image datasets. It does not address volumetric or 3D stitching which requires a system to identify and correlate features across a third dimension (e.g., Z-axis). The tool has a facility for handling time-series data as a sequence of independent datasets.
 
 
 ## Sample Data Sets
