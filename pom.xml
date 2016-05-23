@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>gov.nist.isg</groupId>
+    <artifactId>MIST_</artifactId>
+    <version>1.0.SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>gov.nih.imagej</groupId>
+            <artifactId>imagej</artifactId>
+            <version>1.46</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nativelibs4java</groupId>
+            <artifactId>bridj</artifactId>
+            <version>0.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcuda</artifactId>
+            <version>6.5</version>
+            <!--<version>5.0</version>-->
+        </dependency>
+
+        <dependency>
+            <groupId>org.jcuda</groupId>
+            <artifactId>jcufft</artifactId>
+            <version>6.5</version>
+            <!--<version>5.0</version>-->
+        </dependency>
+
+        <dependency>
+            <groupId>edu.mines</groupId>
+            <artifactId>mines-jtk</artifactId>
+            <version>20100113</version>
+        </dependency>
+
+
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>mist.in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${project.basedir}/java_libs</url>
+        </repository>
+    </repositories>
+</project>
