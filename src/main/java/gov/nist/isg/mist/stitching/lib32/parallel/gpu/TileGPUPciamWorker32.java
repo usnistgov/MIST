@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -37,6 +34,7 @@ import javax.swing.*;
 
 import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
@@ -44,7 +42,6 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
-import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
 import jcuda.Sizeof;
@@ -214,7 +211,7 @@ public class TileGPUPciamWorker32<T> implements Runnable {
 
           int[] indices;
           indices =
-              CudaStitching32.multiPeakCorrelationMatrixIndices(pcm, Stitching32.NUM_PEAKS,
+              CudaStitching32.multiPeakCorrelationMatrixIndices(pcm, Stitching.NUM_PEAKS,
                   tile.getWidth(), tile.getHeight(), this.memory, this.stream, this.threadID);
 
           task.setTask(TaskType.BK_CHECK_MEM);

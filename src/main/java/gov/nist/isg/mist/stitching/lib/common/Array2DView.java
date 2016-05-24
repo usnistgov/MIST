@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,13 +25,12 @@
 
 package gov.nist.isg.mist.stitching.lib.common;
 
+import java.awt.image.WritableRaster;
+
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import ij.process.ImageProcessor;
-
-import java.awt.image.WritableRaster;
 
 /**
  * Utility for viewing an image tile two dimensionally, given a starting row, col, height, and
@@ -62,11 +58,11 @@ public class Array2DView {
   private ImageProcessor data;
 
   /**
-   * @param tile
-   * @param startCol
-   * @param startRow
-   * @param viewWidth
-   * @param viewHeight
+   * @param tile       the image tile backing the view
+   * @param startCol   the views starting pixel column
+   * @param startRow   the views starting pixel row
+   * @param viewWidth  the view width
+   * @param viewHeight the view height
    */
   public Array2DView(ImageTile<?> tile, int startRow, int viewHeight, int startCol, int viewWidth) {
     this.data = tile.getPixels();

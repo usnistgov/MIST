@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -27,20 +24,20 @@
 
 package gov.nist.isg.mist.stitching.lib.executor;
 
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
-import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
+import java.io.InvalidClassException;
 
 import javax.swing.*;
 
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
+import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 
 
 /**
@@ -61,21 +58,36 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void cancelExecution() {
+    Log.msg(Log.LogType.MANDATORY, "Canceling Stitching Java Executor");
     if (this.executor != null)
       this.executor.cancel();
   }
 
-
+  /**
+   * Checks for the required libraries.
+   *
+   * @param params     the stitching application params
+   * @param displayGui whether to display gui or not
+   * @return flag denoting whether the libraries required for this executor were found.
+   */
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
     return true;
   }
 
 
+  /**
+   * Launches the sequential Java stitching.
+   *
+   * @param grid        the image tile grid
+   * @param params      the stitching application parameters
+   * @param progressBar the GUI progress bar
+   * @param timeSlice   the timeslice to stitch
+   */
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws Throwable {
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     this.executor =
@@ -93,18 +105,23 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   }
 
-
+  /**
+   * Initialize the Java stitching executor tile grid.
+   *
+   * @param params    the stitching params.
+   * @param timeSlice the timeslice to stitch.
+   * @return the TileGrid to be stitched when launchStitching is called.
+   */
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
-      throws FileNotFoundException {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) throws EmptyGridException {
 
     TileGrid<ImageTile<T>> grid = null;
 
     if (params.getInputParams().isTimeSlicesEnabled()) {
       try {
-        if(params.getAdvancedParams().isUseDoublePrecision()) {
+        if (params.getAdvancedParams().isUseDoublePrecision()) {
           grid = new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile.class);
-        }else{
+        } else {
           grid = new TileGrid<ImageTile<T>>(params, timeSlice, JavaImageTile32.class);
         }
       } catch (InvalidClassException e) {
@@ -112,9 +129,9 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       }
     } else {
       try {
-        if(params.getAdvancedParams().isUseDoublePrecision()) {
+        if (params.getAdvancedParams().isUseDoublePrecision()) {
           grid = new TileGrid<ImageTile<T>>(params, JavaImageTile.class);
-        }else{
+        } else {
           grid = new TileGrid<ImageTile<T>>(params, JavaImageTile32.class);
         }
       } catch (InvalidClassException e) {
@@ -122,12 +139,15 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       }
     }
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
+    if (tile == null)
+      throw new EmptyGridException("Image Tile Grid contains no valid tiles. Check " +
+          "Stitching Parameters");
     tile.readTile();
 
-    if(params.getAdvancedParams().isUseDoublePrecision()) {
+    if (params.getAdvancedParams().isUseDoublePrecision()) {
       JavaImageTile.initJavaPlan(tile);
-    }else{
+    } else {
       JavaImageTile32.initJavaPlan(tile);
     }
 
@@ -141,13 +161,21 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   }
 
 
+  /**
+   * Determines if the system has the required memory to perform this stitching experiment as
+   * configured.
+   *
+   * @param grid       the image tile grid
+   * @param numWorkers the number of worker threads
+   * @param <T>        the Type of ImageTile in the TileGrid
+   * @return flag denoting whether the system has enough memory to stitch this experiment as is.
+   */
   @Override
-  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
-      throws FileNotFoundException {
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
 
     long requiredMemoryBytes = 0;
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     // Account for image pixel data
@@ -169,13 +197,13 @@ public class JavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
     // Account for Java FFT data
     long size = 1;
-    if(tile instanceof JavaImageTile) {
+    if (tile instanceof JavaImageTile) {
       int n[] = {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
           JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
 
       for (int val : n)
         size *= val;
-    }else{
+    } else {
       int n[] = {JavaImageTile32.fftPlan.getFrequencySampling2().getCount(),
           JavaImageTile32.fftPlan.getFrequencySampling1().getCount() * 2};
 

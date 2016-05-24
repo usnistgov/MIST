@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 package gov.nist.isg.mist.stitching.gui.components.dropdown;
 
@@ -27,7 +24,9 @@ import java.awt.event.FocusListener;
 import javax.swing.*;
 
 /**
- * Created by mmajursk on 7/29/2015.
+ * Drop down panel.
+ *
+ * @author Michael Majurski
  */
 public class DropDownPanel extends JPanel implements FocusListener, ActionListener {
 

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,28 +25,28 @@
 
 package gov.nist.isg.mist.stitching.lib.export;
 
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
-import gov.nist.isg.mist.stitching.lib.common.Array2DView;
-import gov.nist.isg.mist.stitching.lib.export.blend.Blender;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
-
-import javax.swing.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.swing.*;
+
+import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
+import gov.nist.isg.mist.stitching.lib.common.Array2DView;
+import gov.nist.isg.mist.stitching.lib.export.blend.Blender;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
+import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
+import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 
 /**
  * Class for exporting large images using a blending mode
@@ -313,15 +310,12 @@ public class LargeImageExporter<T> {
     if (ip != null) {
       if (file == null) {
         Log.msg(LogType.MANDATORY, "Generating display image");
-        ImagePlus img = new ImagePlus("", ip);
-        return img;
+        return new ImagePlus("", ip);
       }
 
       Log.msg(LogType.MANDATORY, "Saving tiles to file: " + file.getAbsolutePath());
       ImagePlus img = new ImagePlus(file.getName(), ip);
-
       IJ.saveAs(img, "tiff", file.getAbsolutePath());
-
       return img;
     }
 

@@ -53,8 +53,22 @@
             <version>20100113</version>
         </dependency>
 
+        <dependency>
+            <groupId>ome</groupId>
+            <artifactId>formats-gpl</artifactId>
+            <version>5.1.7</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ome</groupId>
+            <artifactId>bio-formats_plugins</artifactId>
+            <version>5.1.7</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
+
     <repositories>
         <repository>
             <id>imagej.public</id>
@@ -64,6 +78,10 @@
             <id>mist.in-project</id>
             <name>In Project Repo</name>
             <url>file://${project.basedir}/java_libs</url>
+        </repository>
+        <repository>
+            <id>ome.snapshots</id>
+            <url>http://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
         </repository>
     </repositories>
 </project>

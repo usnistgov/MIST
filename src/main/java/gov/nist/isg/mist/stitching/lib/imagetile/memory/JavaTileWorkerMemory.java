@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,13 +25,13 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.memory;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
-import jcuda.driver.CUdeviceptr;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-
 import org.bridj.Pointer;
 
 import java.nio.ByteBuffer;
+
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
+import jcuda.driver.CUdeviceptr;
 
 /**
  * Represents memory that a Java Tile will be working with

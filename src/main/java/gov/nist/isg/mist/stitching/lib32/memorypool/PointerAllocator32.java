@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -27,10 +24,10 @@
 
 package gov.nist.isg.mist.stitching.lib32.memorypool;
 
+import org.bridj.Pointer;
+
 import gov.nist.isg.mist.stitching.lib.memorypool.Allocator;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FFTW3Library32;
-
-import org.bridj.Pointer;
 
 /**
  * Allocator type that allocates Pointer memory for use with FFTW

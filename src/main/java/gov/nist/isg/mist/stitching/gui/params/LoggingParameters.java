@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,6 +23,13 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.prefs.Preferences;
+
 import gov.nist.isg.mist.stitching.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.PreferencesUtils;
@@ -33,9 +37,6 @@ import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import java.io.*;
-import java.util.prefs.Preferences;
 
 /**
  * OutputParameters are the output parameters for Stitching
@@ -46,6 +47,8 @@ public class LoggingParameters implements StitchingAppParamFunctions {
 
   private static final String LOG_LEVEL = "logLevel";
   private static final String DEBUG_LEVEL = "debugLevel";
+
+
 
   private LogType logLevel;
   private DebugType debugLevel;
@@ -77,14 +80,8 @@ public class LoggingParameters implements StitchingAppParamFunctions {
         String[] contents = line.split(":", 2);
 
         if (contents.length > 1) {
-          contents[0] = contents[0].trim();
-          contents[1] = contents[1].trim();
-
           try {
-            if (contents[0].equals(LOG_LEVEL))
-              this.logLevel = LogType.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(DEBUG_LEVEL))
-              this.debugLevel = DebugType.valueOf(contents[1].toUpperCase());
+            loadParameter(contents[0],contents[1]);
 
           } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
@@ -106,6 +103,20 @@ public class LoggingParameters implements StitchingAppParamFunctions {
     return false;
   }
 
+
+  /**
+   * Load the value into the parameter defined by key.
+   * @param key the parameter name to overwrite with value
+   * @param value the value to save into the parameter defined by key
+   */
+  public void loadParameter(String key, String value) {
+    key = key.trim();
+    value = value.trim();
+    if (key.equals(LOG_LEVEL))
+      this.logLevel = LogType.valueOf(value.toUpperCase());
+    else if (key.equals(DEBUG_LEVEL))
+      this.debugLevel = DebugType.valueOf(value.toUpperCase());
+  }
 
   @Override
   public boolean loadParams(Preferences pref) {
@@ -193,6 +204,16 @@ public class LoggingParameters implements StitchingAppParamFunctions {
    */
   public void setDebugLevel(DebugType debugLevel) {
     this.debugLevel = debugLevel;
+  }
+
+
+  public static String getParametersCommandLineHelp() {
+    String line = "\r\n";
+    String str = "********* Logging Parameters *********";
+    str += line;
+    str += LOG_LEVEL + "=" + line;
+    str += DEBUG_LEVEL + "=" + line;
+    return str;
   }
 
 

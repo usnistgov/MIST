@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +6,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,21 +25,24 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.fftw;
 
+import org.bridj.Pointer;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
+import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
-
-import org.bridj.Pointer;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Utility functions for doing image stitching using FFTWImageTiles.
@@ -62,36 +62,18 @@ public class FftwStitching {
    * images
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(FftwImageTile t1,
-                                                                 FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                 FftwImageTile t2, TileWorkerMemory memory) {
+
+    // If one of the two images does not exists, then a translation cannot exist
+    if (!t1.fileExists() || !t2.fileExists())
+      return new CorrelationTriple(-1.0, 0, 0);
+
     Pointer<Double> pcm = peakCorrelationMatrix(t1, t2, memory);
-
-//    int idx;
-//
-//    idx = UtilFnsStitching.getMaxIdx(pcm, t1.getWidth() * t1.getHeight());
-//
-//    int row = idx / t1.getWidth();
-//    int col = idx % t1.getWidth();
-
-//    Debug.msg(DebugType.INFO, "max idx: " + idx);
-//    Debug.msg(DebugType.INFO, "row: " + row + " col: " + col);
-//
-//    CorrelationTriple triple = null;
-//    if (t1.isSameRowAs(t2))
-//      triple = Stitching.peakCrossCorrelationLR(t1, t2, col, row);
-//    else if (t1.isSameColAs(t2))
-//      triple = Stitching.peakCrossCorrelationUD(t1, t2, col, row);
-//
-//    Debug.msg(DebugType.INFO, "peak Cross Correlation: " + triple);
-//
-//    if (triple.getCorrelation() > Stitching.CORR_THRESHOLD) {
-//      return triple;
-//    }
 
     List<CorrelationTriple> peaks;
 
-    peaks =
-        UtilFnsStitching.multiPeakCorrelationMatrix(pcm, Stitching.NUM_PEAKS, t1.getWidth(),
-            t1.getHeight(), memory.getPeaks());
+    peaks = UtilFnsStitching.multiPeakCorrelationMatrix(pcm, Stitching.NUM_PEAKS, t1.getWidth(),
+        t1.getHeight(), memory.getPeaks());
 
     List<CorrelationTriple> multi_ccfs = new ArrayList<CorrelationTriple>();
     for (int i = 0; i < peaks.size(); i++) {
@@ -117,7 +99,7 @@ public class FftwStitching {
    * @return the peak correlation matrix
    */
   public static Pointer<Double> peakCorrelationMatrix(FftwImageTile t1, FftwImageTile t2,
-                                                      TileWorkerMemory memory) throws FileNotFoundException {
+                                                      TileWorkerMemory memory) {
     if (!t1.hasFft())
       t1.computeFft();
 

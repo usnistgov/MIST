@@ -1,12 +1,27 @@
+// Disclaimer: IMPORTANT: This software was developed at the National
+// Institute of Standards and Technology by employees of the Federal
+// Government in the course of their official duties. Pursuant to
+// title 17 Section 105 of the United States Code this software is not
+// subject to copyright protection and is in the public domain. This
+// is an experimental system. NIST assumes no responsibility
+// whatsoever for its use by other parties, and makes no guarantees,
+// expressed or implied, about its quality, reliability, or any other
+// characteristic. We would appreciate acknowledgement if the software
+// is used. This software can be redistributed and/or modified freely
+// provided that any derivative works bear some notice that they are
+// derived from it, and any modified versions bear some notice that
+// they have been modified.
+
 package gov.nist.isg.mist.stitching.lib.executor;
 
-import java.io.FileNotFoundException;
 import java.io.InvalidClassException;
 
 import javax.swing.*;
 
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
@@ -18,16 +33,23 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
 
 /**
- * Created by mmajursk on 7/31/2015.
+ * Sequential Java Stitching executor.
+ *
+ * @author Michael Majurski
  */
 public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   private boolean isCanceled = false;
 
-
+  /**
+   * Initialize the sequential Java stitching executor tile grid.
+   *
+   * @param params    the stitching params.
+   * @param timeSlice the timeslice to stitch.
+   * @return the TileGrid to be stitched when launchStitching is called.
+   */
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
-      throws FileNotFoundException {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) throws EmptyGridException {
 
     TileGrid<ImageTile<T>> grid = null;
 
@@ -46,7 +68,10 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
       }
     }
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
+    if (tile == null)
+      throw new EmptyGridException("Image Tile Grid contains no valid tiles. Check " +
+          "Stitching Parameters");
     tile.readTile();
 
     JavaImageTile.initJavaPlan(tile);
@@ -54,11 +79,21 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
     return grid;
   }
 
+
   @Override
   public void cancelExecution() {
+    Log.msg(Log.LogType.MANDATORY, "Canceling Stitching Java Sequential Executor");
     this.isCanceled = true;
   }
 
+  /**
+   * Launches the sequential Java stitching.
+   *
+   * @param grid        the image tile grid
+   * @param params      the stitching application parameters
+   * @param progressBar the GUI progress bar
+   * @param timeSlice   the timeslice to stitch
+   */
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
                               JProgressBar progressBar, int timeSlice) throws Throwable {
@@ -89,10 +124,8 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
         ImageTile<T> west = grid.getTile(row, col - 1);
         t.setWestTranslation(Stitching.phaseCorrelationImageAlignment(west, t, memory));
 
-        Log.msgNoTime(
-            Log.LogType.HELPFUL,
-            " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-                + t.getWestTranslation());
+        Log.msgNoTime(Log.LogType.HELPFUL, " pciam_W(\"" + t.getFileName() + "\",\"" + west
+            .getFileName() + "\"): " + t.getWestTranslation());
 
 
         west.releaseFftMemory();
@@ -128,6 +161,13 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
 
   }
 
+  /**
+   * Checks for the required libraries.
+   *
+   * @param params     the stitching application params
+   * @param displayGui whether to display gui or not
+   * @return flag denoting whether the libraries required for this executor were found.
+   */
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
     return true;
@@ -135,15 +175,22 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
 
   @Override
   public void cleanup() {
-
   }
 
+  /**
+   * Determines if the system has the required memory to perform this stitching experiment as
+   * configured.
+   *
+   * @param grid       the image tile grid
+   * @param numWorkers the number of worker threads
+   * @param <T>        the Type of ImageTile in the TileGrid
+   * @return flag denoting whether the system has enough memory to stitch this experiment as is.
+   */
   @Override
-  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
-      throws FileNotFoundException {
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
     long requiredMemoryBytes = 0;
     long memoryPoolCount = 2;
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     // Account for image pixel data
@@ -157,9 +204,8 @@ public class SequentialJavaStitchingExecutor<T> implements StitchingExecutorInte
     }
 
     // Account for Java FFT data
-    int[] n =
-        {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
-            JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
+    int[] n = {JavaImageTile.fftPlan.getFrequencySampling2().getCount(),
+        JavaImageTile.fftPlan.getFrequencySampling1().getCount() * 2};
     long size = 1;
     for (int val : n)
       size *= val;

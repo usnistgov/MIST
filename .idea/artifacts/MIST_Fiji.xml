@@ -8,13 +8,7 @@
           <element id="module-output" name="MIST_" />
         </element>
       </element>
-      <element id="directory" name="jars">
-        <element id="library" level="project" name="Maven: com.nativelibs4java:bridj:0.6.2" />
-        <element id="library" level="project" name="Maven: edu.mines:mines-jtk:20100113" />
-        <element id="library" level="project" name="Maven: gov.nih.imagej:imagej:1.46" />
-        <element id="library" level="project" name="Maven: org.jcuda:jcuda:6.5" />
-        <element id="library" level="project" name="Maven: org.jcuda:jcufft:6.5" />
-      </element>
+      <element id="directory" name="jars" />
       <element id="directory" name="lib">
         <element id="directory" name="fftw">
           <element id="file-copy" path="$PROJECT_DIR$/lib/fftw/libfftw3.dll" />

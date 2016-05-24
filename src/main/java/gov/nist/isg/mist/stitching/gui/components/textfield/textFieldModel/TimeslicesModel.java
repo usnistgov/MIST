@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -27,9 +24,9 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel;
 
-import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
-
 import java.util.List;
+
+import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
 
 /**
  * Validator that checks timeslice format

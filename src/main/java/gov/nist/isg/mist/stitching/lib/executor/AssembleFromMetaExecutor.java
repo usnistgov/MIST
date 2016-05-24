@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,9 +23,15 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.lib.executor;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
-import jcuda.CudaException;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
@@ -36,12 +39,8 @@ import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGridUtils;
-
-import javax.swing.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
+import jcuda.CudaException;
 
 /**
  * Assemble from meta data executor updates a grid of tiles from a file
@@ -56,13 +55,30 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
   @Override
   public void cancelExecution() {
+    Log.msg(Log.LogType.MANDATORY, "Canceling Stitching Assemble Metadata Executor");
   }
 
+  /**
+   * Checks for the required libraries.
+   *
+   * @param params     the stitching application params
+   * @param displayGui whether to display gui or not
+   * @return flag denoting whether the libraries required for this executor were found.
+   */
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
     return true;
   }
 
+
+  /**
+   * Launches the stitching.
+   *
+   * @param grid        the image tile grid
+   * @param params      the stitching application parameters
+   * @param progressBar the GUI progress bar
+   * @param timeSlice   the timeslice to stitch
+   */
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params, JProgressBar progressBar, int timeSlice) throws OutOfMemoryError,
       CudaException, FileNotFoundException {
@@ -103,8 +119,15 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
 
   }
 
+  /**
+   * Initialize the sequential Java stitching executor tile grid.
+   *
+   * @param params    the stitching params.
+   * @param timeSlice the timeslice to stitch.
+   * @return the TileGrid to be stitched when launchStitching is called.
+   */
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) throws EmptyGridException {
 
     TileGrid<ImageTile<T>> grid = null;
 
@@ -123,6 +146,10 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
       }
     }
 
+    if (grid.getTileThatExists() == null)
+      throw new EmptyGridException("Image Tile Grid contains no valid tiles. Check " +
+          "Stitching Parameters");
+
     return grid;
   }
 
@@ -130,6 +157,15 @@ public class AssembleFromMetaExecutor<T> implements StitchingExecutorInterface<T
   public void cleanup() {
   }
 
+  /**
+   * Determines if the system has the required memory to perform this stitching experiment as
+   * configured.
+   *
+   * @param grid       the image tile grid
+   * @param numWorkers the number of worker threads
+   * @param <T>        the Type of ImageTile in the TileGrid
+   * @return flag denoting whether the system has enough memory to stitch this experiment as is.
+   */
   @Override
   public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
     return true;

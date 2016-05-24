@@ -1,30 +1,34 @@
+
+// Disclaimer: IMPORTANT: This software was developed at the National
+// Institute of Standards and Technology by employees of the Federal
+// Government in the course of their official duties. Pursuant to
+// title 17 Section 105 of the United States Code this software is not
+// subject to copyright protection and is in the public domain. This
+// is an experimental system. NIST assumes no responsibility
+// whatsoever for its use by other parties, and makes no guarantees,
+// expressed or implied, about its quality, reliability, or any other
+// characteristic. We would appreciate acknowledgement if the software
+// is used. This software can be redistributed and/or modified freely
+// provided that any derivative works bear some notice that they are
+// derived from it, and any modified versions bear some notice that
+// they have been modified.
+
 package gov.nist.isg.mist.fftw;
 
-
-
-import org.bridj.Pointer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import edu.mines.jtk.mosaic.Tile;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
-
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.FftwTileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
-import gov.nist.isg.mist.stitching.lib.memorypool.PointerAllocator;
-import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FFTW3Library32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
-import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
-import gov.nist.isg.mist.stitching.lib32.memorypool.PointerAllocator32;
 
 /**
- * Created by mmajursk on 10/28/2015.
+ * Test class
+ *
+ * @author Michael Majurski
  */
 public class TestFFTTiming {
 
@@ -45,15 +49,14 @@ public class TestFFTTiming {
     FftwImageTile32.savePlan(defaultPlanPath + defaultPlanNamef);
 
     long startTime32 = System.currentTimeMillis();
-    for(int i = 0; i < nbItr; i++) {
+    for (int i = 0; i < nbItr; i++) {
       tile32.computeFft();
       tile32.releaseFftMemory();
     }
-    System.out.println("32bit took: " + ((System.currentTimeMillis()-startTime32)/nbItr) + " ms");
+    System.out.println("32bit took: " + ((System.currentTimeMillis() - startTime32) / nbItr) + " ms");
 
     tile32.releaseFftMemory();
     FftwImageTile32.destroyPlans();
-
 
 
     FftwImageTile.initLibrary("C:\\majurski\\NISTGithub\\MIST\\lib\\fftw", "", "libfftw3");
@@ -63,11 +66,11 @@ public class TestFFTTiming {
     FftwImageTile.savePlan(defaultPlanPath + defaultPlanName);
 
     long startTime64 = System.currentTimeMillis();
-    for(int i = 0; i < nbItr; i++) {
+    for (int i = 0; i < nbItr; i++) {
       tile.computeFft();
       tile.releaseFftMemory();
     }
-    System.out.println("64bit took: " + ((System.currentTimeMillis()-startTime64)/nbItr) + " ms");
+    System.out.println("64bit took: " + ((System.currentTimeMillis() - startTime64) / nbItr) + " ms");
 
 
     tile.releaseFftMemory();

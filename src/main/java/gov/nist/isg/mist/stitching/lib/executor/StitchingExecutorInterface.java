@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,13 +23,15 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.lib.executor;
 
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import java.io.FileNotFoundException;
 
 import javax.swing.*;
 
-import java.io.FileNotFoundException;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 
 
 /**
@@ -50,7 +49,7 @@ public interface StitchingExecutorInterface<T> {
    * @return the grid initialized using the stitching app params
    */
   TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
-      throws FileNotFoundException;
+      throws FileNotFoundException, EmptyGridException;
 
   /**
    * Cancels the execution

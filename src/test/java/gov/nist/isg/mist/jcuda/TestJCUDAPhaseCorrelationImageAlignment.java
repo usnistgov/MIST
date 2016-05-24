@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +7,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +26,10 @@
 
 package gov.nist.isg.mist.jcuda;
 
-import gov.nist.isg.mist.timing.TimeUtil;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUstream;
-import jcuda.driver.CUstream_flags;
-import jcuda.driver.JCudaDriver;
-import jcuda.jcufft.JCufft;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
@@ -42,10 +38,12 @@ import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import gov.nist.isg.mist.timing.TimeUtil;
+import jcuda.driver.CUcontext;
+import jcuda.driver.CUstream;
+import jcuda.driver.CUstream_flags;
+import jcuda.driver.JCudaDriver;
+import jcuda.jcufft.JCufft;
 
 /**
  * Test case for computing the phase correlation between two images using FFTW.

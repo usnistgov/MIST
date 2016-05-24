@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +25,20 @@
 
 package gov.nist.isg.mist.stitching.lib.parallel.cpu;
 
+import org.bridj.Pointer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.PriorityBlockingQueue;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.memorypool.JavaAllocator;
 import gov.nist.isg.mist.stitching.lib.memorypool.PointerAllocator;
@@ -45,14 +50,6 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFacto
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.memorypool.PointerAllocator32;
-
-import org.bridj.Pointer;
-
-import javax.swing.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * Image stitching multi-threaded entry point that sets up multithreaded execution. Initializes task
@@ -139,7 +136,7 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
       this.memoryPool =
           (DynamicMemoryPool<T>) new DynamicMemoryPool<float[][]>(memoryPoolSize, false,
               new JavaAllocator(), size);
-    }else if (initTile instanceof JavaImageTile32) {
+    } else if (initTile instanceof JavaImageTile32) {
       int[] size =
           {JavaImageTile32.fftPlan.getFrequencySampling2().getCount(),
               JavaImageTile32.fftPlan.getFrequencySampling1().getCount() * 2};
@@ -194,10 +191,10 @@ public class CPUStitchingThreadExecutor<T> implements Thread.UncaughtExceptionHa
   }
 
   /**
-   * @param numProducers
-   * @param numWorkers
-   * @param initTile
-   * @param grid
+   * @param numProducers the number of producer threads
+   * @param numWorkers   the number of worker threads
+   * @param initTile     the initialization tile
+   * @param grid         the image grid
    */
   public CPUStitchingThreadExecutor(int numProducers, int numWorkers, ImageTile<T> initTile,
                                     TileGrid<ImageTile<T>> grid) {

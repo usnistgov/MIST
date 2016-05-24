@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +7,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,24 +26,22 @@
 
 package gov.nist.isg.mist.fftw;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.FftwTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FFTW3Library32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.timing.TimeUtil;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * Test case for computing the phase correlation between two images using FFTW.
@@ -87,7 +83,7 @@ public class TestFFTWPhaseCorrelationImageAlignment32 {
       TimeUtil.tick();
       TileWorkerMemory memory = new FftwTileWorkerMemory32(tile);
       CorrelationTriple result =
-          Stitching32.phaseCorrelationImageAlignmentFftw(neighbor, origin, memory);
+          Stitching.phaseCorrelationImageAlignmentFftw(neighbor, origin, memory);
 
       Log.msg(
           LogType.MANDATORY,

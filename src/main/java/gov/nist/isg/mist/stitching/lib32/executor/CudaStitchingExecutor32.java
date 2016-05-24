@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -35,6 +32,8 @@ import javax.swing.*;
 
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutorInterface;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
@@ -84,7 +83,7 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
                               JProgressBar progressBar, int timeSlice) throws Throwable {
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
 
@@ -146,7 +145,7 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
 
   @Override
   public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice)
-      throws FileNotFoundException {
+      throws FileNotFoundException, EmptyGridException {
 
     TileGrid<ImageTile<T>> grid = null;
 
@@ -165,7 +164,10 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
     }
 
     List<CudaDeviceParam> devices = params.getAdvancedParams().getCudaDevices();
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
+    if (tile == null)
+      throw new EmptyGridException("Image Tile Grid contains no valid tiles. Check " +
+          "Stitching Parameters");
     tile.readTile();
 
 
@@ -192,7 +194,8 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
 
   @Override
   public void cleanup() {
-    CudaUtils.destroyJCUDA(this.contexts.length);
+    if(this.init)
+      CudaUtils.destroyJCUDA(this.contexts.length);
   }
 
   @Override
@@ -204,7 +207,7 @@ public class CudaStitchingExecutor32<T> implements StitchingExecutorInterface<T>
     long requiredGPUMemoryBytes = 0;
 
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2L + numWorkers;
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     // Account for image pixel data

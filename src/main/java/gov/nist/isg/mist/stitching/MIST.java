@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,19 +25,24 @@
 
 package gov.nist.isg.mist.stitching;
 
+import java.awt.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+
 import gov.nist.isg.mist.stitching.gui.StitchingSwingWorker;
+import gov.nist.isg.mist.stitching.gui.params.AdvancedParameters;
+import gov.nist.isg.mist.stitching.gui.params.InputParameters;
+import gov.nist.isg.mist.stitching.gui.params.LoggingParameters;
+import gov.nist.isg.mist.stitching.gui.params.OutputParameters;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import ij.IJ;
 import ij.ImageJ;
 import ij.Macro;
+import ij.macro.Interpreter;
 import ij.plugin.PlugIn;
 import ij.plugin.frame.Recorder;
-
-import java.awt.*;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Creates the main NIST image sitching application. Run as a standalone application or a Fiji
@@ -106,6 +108,7 @@ public class MIST implements PlugIn {
   private static boolean macro;
   private static String macroOptions;
   private static boolean stitching;
+  public static boolean runHeadless = false;
 
 
   /**
@@ -140,6 +143,7 @@ public class MIST implements PlugIn {
     stitching = false;
     macroOptions = Macro.getOptions();
     macro = macroOptions != null;
+    runHeadless = true;
 
     if (macro) {
       executeStitchingWithMacro();
@@ -215,13 +219,37 @@ public class MIST implements PlugIn {
    * @param args not used
    */
   public static void main(String[] args) {
-    // Launch ImageJ window
-    ImageJ.main(args);
-    if (GraphicsEnvironment.isHeadless()) {
-      MIST.runAppHeadless();
-    } else {
-      StitchingGUIFrame gui = new StitchingGUIFrame();
-      MIST.runApp(gui);
+
+
+    // if this is being run from command line
+    if(args.length > 0) {
+      if(args[0].equals("-h") || args[0].equals("-help")) {
+        Log.msg(LogType.MANDATORY, MIST.getCommandLineHelp());
+        return;
+      }
+
+      Log.msg(LogType.MANDATORY,"MIST.main: parsing args");
+      for(int i = 0; i < args.length; i++) {
+        Log.msg(LogType.MANDATORY,args[i]);
+      }
+
+      MIST.macroOptions = "";
+      for(int i = 0; i < args.length; i++) {
+        MIST.macroOptions += args[i].trim() + " ";
+      }
+      MIST.macro = true;
+      MIST.runHeadless = true;
+      MIST.executeStitchingWithMacro();
+
+    }else {
+      // Launch ImageJ window
+      ImageJ.main(args);
+      if (GraphicsEnvironment.isHeadless()) {
+        MIST.runAppHeadless();
+      } else {
+        StitchingGUIFrame gui = new StitchingGUIFrame();
+        MIST.runApp(gui);
+      }
     }
 
 
@@ -243,6 +271,18 @@ public class MIST implements PlugIn {
       StitchingGUIFrame gui = new StitchingGUIFrame();
       MIST.runApp(gui);
     }
+  }
+
+
+  private static String getCommandLineHelp() {
+    String str = InputParameters.getParametersCommandLineHelp();
+    str += "\r\n";
+    str += OutputParameters.getParametersCommandLineHelp();
+    str += "\r\n";
+    str += LoggingParameters.getParametersCommandLineHelp();
+    str += "\r\n";
+    str += AdvancedParameters.getParametersCommandLineHelp();
+    return str;
   }
 
 }

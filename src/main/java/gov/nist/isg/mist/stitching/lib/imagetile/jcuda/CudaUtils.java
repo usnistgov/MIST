@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,7 +25,12 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.jcuda;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
@@ -36,14 +38,57 @@ import jcuda.CudaException;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static jcuda.driver.CUdevice_attribute.*;
-import static jcuda.driver.JCudaDriver.*;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_CAN_MAP_HOST_MEMORY;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_CLOCK_RATE;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_COMPUTE_MODE;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_CONCURRENT_KERNELS;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_ECC_ENABLED;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_INTEGRATED;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_LAYERS;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_HEIGHT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_HEIGHT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_LAYERS;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_DEPTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_HEIGHT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_WIDTH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_PITCH;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_MULTIPROCESSOR;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_PCI_BUS_ID;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_SURFACE_ALIGNMENT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_TCC_DRIVER;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_UNIFIED_ADDRESSING;
+import static jcuda.driver.CUdevice_attribute.CU_DEVICE_ATTRIBUTE_WARP_SIZE;
+import static jcuda.driver.JCudaDriver.cuCtxCreate;
+import static jcuda.driver.JCudaDriver.cuDeviceComputeCapability;
+import static jcuda.driver.JCudaDriver.cuDeviceGet;
+import static jcuda.driver.JCudaDriver.cuDeviceGetAttribute;
+import static jcuda.driver.JCudaDriver.cuDeviceGetName;
+import static jcuda.driver.JCudaDriver.cuInit;
+import static jcuda.driver.JCudaDriver.setExceptionsEnabled;
 
 /**
  * Utility class for initializing JCUDA.
@@ -170,19 +215,19 @@ public class CudaUtils {
     contexts = initGPUs(nGPUs, gpuIDs);
 
     Log.msg(LogType.INFO, "Initializing GPU functions");
-    if(initTile instanceof CudaImageTile)
+    if (initTile instanceof CudaImageTile)
       CudaImageTile.initFunc(nGPUs);
-    if(initTile instanceof CudaImageTile32)
+    if (initTile instanceof CudaImageTile32)
       CudaImageTile32.initFunc(nGPUs);
 
     for (int i = 0; i < nGPUs; i++) {
       Log.msg(LogType.INFO, "Initializing functions for GPU " + i);
       try {
-        if(initTile instanceof CudaImageTile) {
+        if (initTile instanceof CudaImageTile) {
           if (!CudaImageTile.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i, enableCudaExceptions))
             return null;
         }
-        if(initTile instanceof CudaImageTile32) {
+        if (initTile instanceof CudaImageTile32) {
           if (!CudaImageTile32.initPlans(initTile.getWidth(), initTile.getHeight(), contexts[i], i, enableCudaExceptions))
             return null;
         }

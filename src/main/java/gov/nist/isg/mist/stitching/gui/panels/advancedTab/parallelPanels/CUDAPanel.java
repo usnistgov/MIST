@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,7 +25,13 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels;
 
-import jcuda.CudaException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.IntModel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
@@ -37,13 +40,7 @@ import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
+import jcuda.CudaException;
 
 /**
  * Creates a panel to display CUDA parameters
@@ -112,7 +109,9 @@ public class CUDAPanel extends JPanel implements GUIParamFunctions, ActionListen
     return this.isCudaAvailable;
   }
 
-  public boolean isCudaExceptionsEnabled() { return this.enableCudaExceptions.isSelected(); }
+  public boolean isCudaExceptionsEnabled() {
+    return this.enableCudaExceptions.isSelected();
+  }
 
   private void initControls() {
 

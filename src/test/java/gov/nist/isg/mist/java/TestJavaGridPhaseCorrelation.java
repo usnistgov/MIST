@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +12,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,7 +26,10 @@
 
 package gov.nist.isg.mist.java;
 
-import gov.nist.isg.mist.timing.TimeUtil;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
+
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
@@ -42,10 +43,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
+import gov.nist.isg.mist.timing.TimeUtil;
 
 /**
  * Test case for stitching a grid of tiles using Java.

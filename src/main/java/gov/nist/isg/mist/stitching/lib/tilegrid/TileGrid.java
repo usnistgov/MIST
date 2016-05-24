@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,18 +25,18 @@
 
 package gov.nist.isg.mist.stitching.lib.tilegrid;
 
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-
 import java.io.File;
 import java.io.InvalidClassException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 
 /**
  * Class that generates a grid of tiles. Given an origin and numbering strategy. <p> The grid can be
@@ -158,6 +155,45 @@ public class TileGrid<T extends ImageTile<?>> {
     }
 
   }
+
+
+  /**
+   * The direction for optimization
+   *
+   * @author Tim Blattner
+   * @version 1.0
+   */
+  public enum Direction {
+    /**
+     * North
+     */
+    North,
+
+    /**
+     * West
+     */
+    West
+  }
+
+  /**
+   * The displacement value for optimization
+   *
+   * @author Tim Blattner
+   * @version 1.0
+   */
+  public enum DisplacementValue {
+
+    /**
+     * X
+     */
+    X,
+
+    /**
+     * Y
+     */
+    Y
+  }
+
 
   private TileGridLoader gridLoader;
   private File imageDir;
@@ -343,6 +379,16 @@ public class TileGrid<T extends ImageTile<?>> {
   }
 
   /**
+   * @return the full height of the image grid (not the subgrid)
+   */
+  public int getFullHeight() { return this.gridLoader.getGridHeight(); }
+
+  /**
+   * @return the full width of the image grid (not the subgrid)
+   */
+  public int getFullWidth() { return this.gridLoader.getGridWidth(); }
+
+  /**
    * @return the startRow
    */
   public int getStartRow() {
@@ -356,10 +402,9 @@ public class TileGrid<T extends ImageTile<?>> {
     return this.startCol;
   }
 
+
   /**
    * Initializes ImageTile Grid
-   *
-   * @param the type of object
    */
   @SuppressWarnings("unchecked")
   private void initImageTileGrid(Class<?> imageTileClass) throws InvalidClassException {
@@ -374,8 +419,7 @@ public class TileGrid<T extends ImageTile<?>> {
           int.class, // extentWidth
           int.class, // extentHeight
           int.class, // startRow
-          int.class, // startCol
-          boolean.class); // readImage
+          int.class); // startCol
     } catch (SecurityException e) {
       e.printStackTrace();
     } catch (NoSuchMethodException e) {
@@ -396,12 +440,31 @@ public class TileGrid<T extends ImageTile<?>> {
 
         try {
           this.tiles[r][c] = (T) constructor.newInstance(new File(this.imageDir, fileName), r, c, this.extentWidth, this.extentHeight,
-              this.startRow, this.startCol, false);
+              this.startRow, this.startCol);
         } catch (Exception e) {
           e.printStackTrace();
         }
       }
     }
+
+  }
+
+
+  public T getTileThatExists() {
+    boolean found = false;
+    T validTile = null;
+    for (int i = this.startRow; i < (this.startRow + this.extentHeight) && !found; i++) {
+      for (int j = this.startCol; j < (this.startCol + this.extentWidth) && !found; j++) {
+        T tile = this.getTile(i, j);
+        File file = new File(tile.getFilePath());
+        if (file.exists()) {
+          validTile = tile;
+          found = true;
+        }
+      }
+    }
+
+    return validTile;
   }
 
 
@@ -564,4 +627,6 @@ public class TileGrid<T extends ImageTile<?>> {
     return newGrids;
 
   }
+
+
 }

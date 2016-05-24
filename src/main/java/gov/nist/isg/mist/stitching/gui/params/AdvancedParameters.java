@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,22 +23,28 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
+
+import gov.nist.isg.mist.stitching.MIST;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.PreferencesUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.StitchingParamUtils;
 import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * AdvancedParameters are the advanced parameters for Stitching
@@ -60,15 +63,18 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private static final String FFTW_LIBRARY_NAME = "fftwLibraryName";
   private static final String FFTW_LIBRARY_FILENAME = "fftwLibraryFilename";
   private static final String CUDA_DEVICE = "cudaDevice";
-  private static final String GLOBAL_OPT = "globalOpt";
-  private static final String USE_HILL_CLIMBING = "useHillClimbing";
   private static final String STAGE_REPEATABILITY = "stageRepeatability";
   private static final String HORIZONTAL_OVERLAP = "horizontalOverlap";
   private static final String VERTICAL_OVERLAP = "verticalOverlap";
   private static final String NUM_FFT_PEAKS = "numFFTPeaks";
   private static final String OVERLAP_UNCERTAINTY = "overlapUncertainty";
   private static final String IS_USE_DOUBLE_PRECISION = "isUseDoublePrecision";
+  private static final String IS_USE_BIOFORMATS = "isUseBioFormats";
   private static final String IS_ENABLE_CUDA_EXCEPTIONS = "isEnableCudaExceptions";
+  private static final String TRANSLATION_REFINEMENT_TYPE = "translationRefinementMethod";
+  private static final String NUM_TRANS_REFINEMENT_START_POINTS =
+      "numTranslationRefinementStartPoints";
+  private static final String RUN_HEADLESS = "headless";
 
 
   private StitchingType programType;
@@ -87,10 +93,10 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private List<CudaDeviceParam> cudaDevices;
 
   // Global Optimization
+  private TranslationRefinementType translationRefinementType = TranslationRefinementType
+      .SINGLE_HILL_CLIMB;
+  private int numTranslationRefinementStartPoints = 16;
 
-  private boolean useHillClimbing;
-  private OptimizationUtils.OverlapType overlapComputationType;
-  private OptimizationUtils.TranslationFilterType translationFilterType;
 
   // Advanced options
   private int stageRepeatability;
@@ -99,6 +105,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private int numFFTPeaks;
   private double overlapUncertainty;
   private boolean useDoublePrecision;
+  private boolean useBioFormats;
   private boolean enableCudaExceptions;
 
   public AdvancedParameters() {
@@ -122,9 +129,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     // CUDA Options
     this.cudaDevices = new ArrayList<CudaDeviceParam>();
 
-    // Global Optimization
-    this.useHillClimbing = true;
-
 
     // Advanced options
     this.stageRepeatability = 0;
@@ -132,10 +136,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.verticalOverlap = Double.NaN;
     this.numFFTPeaks = 0;
     this.overlapUncertainty = Double.NaN;
-    // default overlap computation method is the MLE
-    this.overlapComputationType = OptimizationUtils.OverlapType.MLE;
-    // default translation filter type is Outlier
-    this.translationFilterType = OptimizationUtils.TranslationFilterType.Outlier;
+    this.translationRefinementType = Stitching.TranslationRefinementType.SINGLE_HILL_CLIMB;
   }
 
   @Override
@@ -218,9 +219,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   }
 
   private boolean checkJavaParams() {
-    if (this.numCPUThreads > 0)
-      return true;
-    return false;
+    return this.numCPUThreads > 0;
   }
 
 
@@ -241,64 +240,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
         String[] contents = line.split(":", 2);
 
         if (contents.length > 1) {
-          contents[0] = contents[0].trim();
-          contents[1] = contents[1].trim();
-
           try {
-            if (contents[0].equals(PROGRAM_TYPE))
-              this.programType = StitchingType.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(NUM_CPU_THREADS))
-              this.numCPUThreads = StitchingParamUtils.loadInteger(contents[1], this.numCPUThreads);
-            else if (contents[0].equals(LOAD_FFTW_PLAN))
-              this.loadFFTWPlan = StitchingParamUtils.loadBoolean(contents[1], this.loadFFTWPlan);
-            else if (contents[0].equals(FFTW_PLAN_TYPE))
-              this.fftwPlanType = FftwPlanType.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(FFTW_LIBRARY_NAME))
-              this.fftwLibraryName = contents[1];
-            else if (contents[0].equals(PLAN_PATH))
-              this.planPath = contents[1];
-            else if (contents[0].equals(FFTW_LIBRARY_PATH))
-              this.fftwLibraryPath = contents[1];
-            else if (contents[0].equals(FFTW_LIBRARY_FILENAME))
-              this.fftwLibraryFileName = contents[1];
-            else if (contents[0].equals(SAVE_FFTW_PLAN))
-              this.saveFFTWPlan = StitchingParamUtils.loadBoolean(contents[1], this.saveFFTWPlan);
-            else if (contents[0].equals(USE_HILL_CLIMBING))
-              this.useHillClimbing = StitchingParamUtils.loadBoolean(contents[1], this.useHillClimbing);
-            else if (contents[0].equals(STAGE_REPEATABILITY))
-              this.stageRepeatability = StitchingParamUtils.loadInteger(contents[1], this.stageRepeatability);
-            else if (contents[0].equals(HORIZONTAL_OVERLAP))
-              this.horizontalOverlap = StitchingParamUtils.loadDouble(contents[1], this.horizontalOverlap);
-            else if (contents[0].equals(VERTICAL_OVERLAP))
-              this.verticalOverlap = StitchingParamUtils.loadDouble(contents[1], this.verticalOverlap);
-            else if (contents[0].equals(NUM_FFT_PEAKS))
-              this.numFFTPeaks = StitchingParamUtils.loadInteger(contents[1], this.numFFTPeaks);
-            else if (contents[0].equals(OVERLAP_UNCERTAINTY))
-              this.overlapUncertainty = StitchingParamUtils.loadDouble(contents[1], this.overlapUncertainty);
-            else if (contents[0].equals(IS_USE_DOUBLE_PRECISION))
-              this.useDoublePrecision = StitchingParamUtils.loadBoolean(contents[1], this.useDoublePrecision);
-            else if (contents[0].equals(IS_ENABLE_CUDA_EXCEPTIONS))
-              this.enableCudaExceptions = StitchingParamUtils.loadBoolean(contents[1], this.enableCudaExceptions);
-            else if (contents[0].startsWith(CUDA_DEVICE)) {
-              if (this.cudaDevices == null)
-                this.cudaDevices = new ArrayList<CudaDeviceParam>();
-
-              String[] cudaDevice = contents[1].split(",");
-              if (cudaDevice.length == 4) {
-                try {
-                  int id = Integer.parseInt(cudaDevice[0].trim());
-                  String name = cudaDevice[1];
-                  int major = Integer.parseInt(cudaDevice[2].trim());
-                  int minor = Integer.parseInt(cudaDevice[3].trim());
-
-                  this.cudaDevices.add(new CudaDeviceParam(id, name, minor, major));
-                } catch (NumberFormatException e) {
-                  Log.msg(LogType.MANDATORY, "Error parsing config file line: " + line);
-                }
-              } else {
-                Log.msg(LogType.MANDATORY, "Error parsing config file line: " + line);
-              }
-            }
+            loadParameter(contents[0],contents[1]);
           } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
             Log.msg(LogType.MANDATORY, "Error parsing advanced option: " + e.getMessage());
@@ -319,6 +262,80 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     return false;
   }
 
+  /**
+   * Load the value into the parameter defined by key.
+   * @param key the parameter name to overwrite with value
+   * @param value the value to save into the parameter defined by key
+   */
+  public void loadParameter(String key, String value) {
+    key = key.trim();
+    value = value.trim();
+
+    if (key.equals(PROGRAM_TYPE))
+      this.programType = StitchingType.valueOf(value.toUpperCase());
+    else if (key.equals(NUM_CPU_THREADS))
+      this.numCPUThreads = StitchingParamUtils.loadInteger(value, this.numCPUThreads);
+    else if (key.equals(LOAD_FFTW_PLAN))
+      this.loadFFTWPlan = StitchingParamUtils.loadBoolean(value, this.loadFFTWPlan);
+    else if (key.equals(FFTW_PLAN_TYPE))
+      this.fftwPlanType = FftwPlanType.valueOf(value.toUpperCase());
+    else if (key.equals(FFTW_LIBRARY_NAME))
+      this.fftwLibraryName = value;
+    else if (key.equals(PLAN_PATH))
+      this.planPath = value;
+    else if (key.equals(FFTW_LIBRARY_PATH))
+      this.fftwLibraryPath = value;
+    else if (key.equals(FFTW_LIBRARY_FILENAME))
+      this.fftwLibraryFileName = value;
+    else if (key.equals(SAVE_FFTW_PLAN))
+      this.saveFFTWPlan = StitchingParamUtils.loadBoolean(value, this.saveFFTWPlan);
+    else if (key.equals(STAGE_REPEATABILITY))
+      this.stageRepeatability = StitchingParamUtils.loadInteger(value, this.stageRepeatability);
+    else if (key.equals(HORIZONTAL_OVERLAP))
+      this.horizontalOverlap = StitchingParamUtils.loadDouble(value, this.horizontalOverlap);
+    else if (key.equals(VERTICAL_OVERLAP))
+      this.verticalOverlap = StitchingParamUtils.loadDouble(value, this.verticalOverlap);
+    else if (key.equals(NUM_FFT_PEAKS))
+      this.numFFTPeaks = StitchingParamUtils.loadInteger(value, this.numFFTPeaks);
+    else if (key.equals(OVERLAP_UNCERTAINTY))
+      this.overlapUncertainty = StitchingParamUtils.loadDouble(value, this.overlapUncertainty);
+    else if (key.equals(IS_USE_DOUBLE_PRECISION))
+      this.useDoublePrecision = StitchingParamUtils.loadBoolean(value, this.useDoublePrecision);
+    else if (key.equals(IS_USE_BIOFORMATS))
+      this.useBioFormats = StitchingParamUtils.loadBoolean(value, this.useBioFormats);
+    else if (key.equals(IS_ENABLE_CUDA_EXCEPTIONS))
+      this.enableCudaExceptions = StitchingParamUtils.loadBoolean(value, this.enableCudaExceptions);
+    else if (key.equals(TRANSLATION_REFINEMENT_TYPE))
+      this.translationRefinementType = TranslationRefinementType.valueOf
+          (value.toUpperCase());
+    else if (key.equals(NUM_TRANS_REFINEMENT_START_POINTS))
+      this.numTranslationRefinementStartPoints = StitchingParamUtils.loadInteger
+          (value, this.numTranslationRefinementStartPoints);
+    else if (key.equals(RUN_HEADLESS))
+      MIST.runHeadless = true;
+    else if (key.startsWith(CUDA_DEVICE)) {
+      if (this.cudaDevices == null)
+        this.cudaDevices = new ArrayList<CudaDeviceParam>();
+
+      String[] cudaDevice = value.split(",");
+      if (cudaDevice.length == 4) {
+        try {
+          int id = Integer.parseInt(cudaDevice[0].trim());
+          String name = cudaDevice[1];
+          int major = Integer.parseInt(cudaDevice[2].trim());
+          int minor = Integer.parseInt(cudaDevice[3].trim());
+
+          this.cudaDevices.add(new CudaDeviceParam(id, name, minor, major));
+        } catch (NumberFormatException e) {
+          Log.msg(LogType.MANDATORY, "Error parsing config: " + key + " = " + value);
+        }
+      } else {
+        Log.msg(LogType.MANDATORY, "Error parsing config: " + key + " = " + value);
+      }
+    }
+
+  }
+
   @Override
   public boolean loadParams(Preferences pref) {
 
@@ -331,14 +348,19 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryPath = pref.get(FFTW_LIBRARY_PATH, this.fftwLibraryPath);
     this.fftwLibraryFileName = pref.get(FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = pref.getBoolean(SAVE_FFTW_PLAN, this.saveFFTWPlan);
-    this.useHillClimbing = pref.getBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = pref.getInt(STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = pref.getDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
     this.verticalOverlap = pref.getDouble(VERTICAL_OVERLAP, this.verticalOverlap);
     this.numFFTPeaks = pref.getInt(NUM_FFT_PEAKS, this.numFFTPeaks);
     this.overlapUncertainty = pref.getDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = pref.getBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    this.useBioFormats = pref.getBoolean(IS_USE_BIOFORMATS, this.useBioFormats);
     this.enableCudaExceptions = pref.getBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
+    this.translationRefinementType = PreferencesUtils.loadPrefTransRefineType(pref,
+        TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
+    MIST.runHeadless = pref.getBoolean(RUN_HEADLESS, MIST.runHeadless);
+    this.numTranslationRefinementStartPoints = pref.getInt(NUM_TRANS_REFINEMENT_START_POINTS,
+        this.numTranslationRefinementStartPoints);
 
     if (this.cudaDevices == null)
       this.cudaDevices = new ArrayList<CudaDeviceParam>();
@@ -368,7 +390,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, FFTW_LIBRARY_FILENAME + ": " + this.fftwLibraryFileName);
     Log.msg(logLevel, PLAN_PATH + ": " + this.planPath);
     Log.msg(logLevel, FFTW_LIBRARY_PATH + ": " + this.fftwLibraryPath);
-    Log.msg(logLevel, USE_HILL_CLIMBING + ": " + this.useHillClimbing);
 
     Log.msg(logLevel, STAGE_REPEATABILITY + ": " + this.stageRepeatability);
     Log.msg(logLevel, HORIZONTAL_OVERLAP + ": " + this.horizontalOverlap);
@@ -376,7 +397,11 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, NUM_FFT_PEAKS + ": " + this.numFFTPeaks);
     Log.msg(logLevel, OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty);
     Log.msg(logLevel, IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision);
+    Log.msg(logLevel, IS_USE_BIOFORMATS + ": " + this.useBioFormats);
     Log.msg(logLevel, IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions);
+    Log.msg(logLevel, TRANSLATION_REFINEMENT_TYPE + ": " + this.translationRefinementType);
+    Log.msg(logLevel, NUM_TRANS_REFINEMENT_START_POINTS + ": " + this.numTranslationRefinementStartPoints);
+    Log.msg(logLevel, RUN_HEADLESS + ": " + MIST.runHeadless);
 
 
     if (this.cudaDevices != null) {
@@ -397,14 +422,19 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.fftwLibraryPath = MacroUtils.loadMacroString(macroOptions, FFTW_LIBRARY_PATH, this.fftwLibraryPath);
     this.fftwLibraryFileName = MacroUtils.loadMacroString(macroOptions, FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     this.saveFFTWPlan = MacroUtils.loadMacroBoolean(macroOptions, SAVE_FFTW_PLAN, this.saveFFTWPlan);
-    this.useHillClimbing = MacroUtils.loadMacroBoolean(macroOptions, USE_HILL_CLIMBING, this.useHillClimbing);
     this.stageRepeatability = MacroUtils.loadMacroInteger(macroOptions, STAGE_REPEATABILITY, this.stageRepeatability);
     this.horizontalOverlap = MacroUtils.loadMacroDouble(macroOptions, HORIZONTAL_OVERLAP, this.horizontalOverlap);
     this.verticalOverlap = MacroUtils.loadMacroDouble(macroOptions, VERTICAL_OVERLAP, this.verticalOverlap);
     this.numFFTPeaks = MacroUtils.loadMacroInteger(macroOptions, NUM_FFT_PEAKS, this.numFFTPeaks);
     this.overlapUncertainty = MacroUtils.loadMacroDouble(macroOptions, OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = MacroUtils.loadMacroBoolean(macroOptions, IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    this.useBioFormats = MacroUtils.loadMacroBoolean(macroOptions, IS_USE_BIOFORMATS, this.useBioFormats);
     this.enableCudaExceptions = MacroUtils.loadMacroBoolean(macroOptions, IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
+    this.translationRefinementType = MacroUtils.loadTranslationRefinementType(macroOptions,
+        TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
+    MIST.runHeadless = MacroUtils.loadMacroBoolean(macroOptions, RUN_HEADLESS, MIST.runHeadless);
+    this.numTranslationRefinementStartPoints = MacroUtils.loadMacroInteger(macroOptions,
+        NUM_TRANS_REFINEMENT_START_POINTS, this.numTranslationRefinementStartPoints);
 
     if (this.cudaDevices == null)
       this.cudaDevices = new ArrayList<CudaDeviceParam>();
@@ -432,14 +462,17 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     MacroUtils.recordString(FFTW_LIBRARY_FILENAME + ": ", this.fftwLibraryFileName);
     MacroUtils.recordString(PLAN_PATH + ": ", this.planPath);
     MacroUtils.recordString(FFTW_LIBRARY_PATH + ": ", this.fftwLibraryPath);
-    MacroUtils.recordBoolean(USE_HILL_CLIMBING + ": ", this.useHillClimbing);
     MacroUtils.recordInteger(STAGE_REPEATABILITY + ": ", this.stageRepeatability);
     MacroUtils.recordDouble(HORIZONTAL_OVERLAP + ": ", this.horizontalOverlap);
     MacroUtils.recordDouble(VERTICAL_OVERLAP + ": ", this.verticalOverlap);
     MacroUtils.recordInteger(NUM_FFT_PEAKS + ": ", this.numFFTPeaks);
     MacroUtils.recordDouble(OVERLAP_UNCERTAINTY + ": ", this.overlapUncertainty);
     MacroUtils.recordBoolean(IS_USE_DOUBLE_PRECISION + ": ", this.useDoublePrecision);
+    MacroUtils.recordBoolean(IS_USE_BIOFORMATS + ": ", this.useBioFormats);
     MacroUtils.recordBoolean(IS_ENABLE_CUDA_EXCEPTIONS + ": ", this.enableCudaExceptions);
+    MacroUtils.recordString(TRANSLATION_REFINEMENT_TYPE + ": ", this.translationRefinementType.name());
+    MacroUtils.recordInteger(NUM_TRANS_REFINEMENT_START_POINTS + ": ", this.numTranslationRefinementStartPoints);
+    MacroUtils.recordBoolean(RUN_HEADLESS + ": ", MIST.runHeadless);
 
     MacroUtils.recordCUDADevices(this.cudaDevices);
   }
@@ -455,14 +488,17 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.put(FFTW_LIBRARY_FILENAME, this.fftwLibraryFileName);
     pref.put(PLAN_PATH, this.planPath);
     pref.put(FFTW_LIBRARY_PATH, this.fftwLibraryPath);
-    pref.putBoolean(USE_HILL_CLIMBING, this.useHillClimbing);
     pref.putInt(STAGE_REPEATABILITY, this.stageRepeatability);
     pref.putDouble(HORIZONTAL_OVERLAP, this.horizontalOverlap);
     pref.putDouble(VERTICAL_OVERLAP, this.verticalOverlap);
     pref.putInt(NUM_FFT_PEAKS, this.numFFTPeaks);
     pref.putDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     pref.putBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    pref.putBoolean(IS_USE_BIOFORMATS, this.useBioFormats);
     pref.putBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
+    pref.put(TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
+    pref.putInt(NUM_TRANS_REFINEMENT_START_POINTS, this.numTranslationRefinementStartPoints);
+    pref.putBoolean(RUN_HEADLESS, MIST.runHeadless);
     PreferencesUtils.recordPrefCUDADevices(pref, this.cudaDevices);
   }
 
@@ -479,7 +515,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(FFTW_LIBRARY_FILENAME + ": " + this.fftwLibraryFileName + newLine);
       fw.write(PLAN_PATH + ": " + this.planPath + newLine);
       fw.write(FFTW_LIBRARY_PATH + ": " + this.fftwLibraryPath + newLine);
-      fw.write(USE_HILL_CLIMBING + ": " + this.useHillClimbing + newLine);
 
       fw.write(STAGE_REPEATABILITY + ": " + this.stageRepeatability + newLine);
       fw.write(HORIZONTAL_OVERLAP + ": " + this.horizontalOverlap + newLine);
@@ -487,8 +522,12 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(NUM_FFT_PEAKS + ": " + this.numFFTPeaks + newLine);
       fw.write(OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty + newLine);
       fw.write(IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision + newLine);
-      fw.write(IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions+ newLine);
-
+      fw.write(IS_USE_BIOFORMATS + ": " + this.useBioFormats + newLine);
+      fw.write(IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions + newLine);
+      fw.write(TRANSLATION_REFINEMENT_TYPE + ": " + this.translationRefinementType.name() + newLine);
+      fw.write(NUM_TRANS_REFINEMENT_START_POINTS + ": " +
+          this.numTranslationRefinementStartPoints + newLine);
+      fw.write(RUN_HEADLESS + ": " + MIST.runHeadless + newLine);
 
       if (this.cudaDevices != null) {
         for (CudaDeviceParam dev : this.cudaDevices) {
@@ -645,38 +684,6 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.cudaDevices = cudaDevices;
   }
 
-  /**
-   * @param optType the overlap computation type to set
-   */
-  public void setOverlapComputationType(OptimizationUtils.OverlapType optType) {
-    this.overlapComputationType = optType;
-  }
-
-  public OptimizationUtils.OverlapType getOverlapComputationType() {
-    return this.overlapComputationType;
-  }
-
-  public OptimizationUtils.TranslationFilterType getTranslationFilterType() {
-    return this.translationFilterType;
-  }
-
-  public void setTranslationFilterType(OptimizationUtils.TranslationFilterType filterType) {
-    this.translationFilterType = filterType;
-  }
-
-  /**
-   * @return the useHillClimbing
-   */
-  public boolean isUseHillClimbing() {
-    return this.useHillClimbing;
-  }
-
-  /**
-   * @param useHillClimbing the useHillClimbing to set
-   */
-  public void setUseHillClimbing(boolean useHillClimbing) {
-    this.useHillClimbing = useHillClimbing;
-  }
 
   /**
    * @return the repeatability
@@ -742,9 +749,37 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.useDoublePrecision = val;
   }
 
-  public boolean isEnableCudaExceptions() { return this.enableCudaExceptions; }
+  public boolean isUseBioFormats() {
+    return this.useBioFormats;
+  }
 
-  public void setEnableCudaExceptions(boolean val) { this.enableCudaExceptions = val; }
+  public void setUseBioFormats(boolean val) {
+    this.useBioFormats = val;
+  }
+
+  public boolean isEnableCudaExceptions() {
+    return this.enableCudaExceptions;
+  }
+
+  public void setEnableCudaExceptions(boolean val) {
+    this.enableCudaExceptions = val;
+  }
+
+  public TranslationRefinementType getTranslationRefinementType() {
+    return this.translationRefinementType;
+  }
+
+  public void setTranslationRefinementType(TranslationRefinementType t) {
+    this.translationRefinementType = t;
+  }
+
+  public int getNumTranslationRefinementStartPoints() {
+    return this.numTranslationRefinementStartPoints;
+  }
+
+  public void setNumTranslationRefinementStartPoints(int val) {
+    this.numTranslationRefinementStartPoints = val;
+  }
 
   /**
    * @return the overlapUncertainty
@@ -760,5 +795,33 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.overlapUncertainty = overlapUncertainty;
   }
 
+
+  public static String getParametersCommandLineHelp() {
+    String line = "\r\n";
+    String str = "********* Advanced Parameters *********";
+    str += line;
+    str += PROGRAM_TYPE + "=" + line;
+    str += NUM_CPU_THREADS + "=" + line;
+    str += LOAD_FFTW_PLAN + "=" + line;
+    str += SAVE_FFTW_PLAN + "=" + line;
+    str += FFTW_PLAN_TYPE + "=" + line;
+    str += PLAN_PATH + "=" + line;
+    str += FFTW_LIBRARY_PATH + "=" + line;
+    str += FFTW_LIBRARY_NAME + "=" + line;
+    str += FFTW_LIBRARY_FILENAME + "=" + line;
+    str += CUDA_DEVICE + "=" + line;
+    str += STAGE_REPEATABILITY + "=" + line;
+    str += HORIZONTAL_OVERLAP + "=" + line;
+    str += VERTICAL_OVERLAP + "=" + line;
+    str += NUM_FFT_PEAKS + "=" + line;
+    str += OVERLAP_UNCERTAINTY + "=" + line;
+    str += IS_USE_DOUBLE_PRECISION + "=" + line;
+    str += IS_USE_BIOFORMATS + "=" + line;
+    str += IS_ENABLE_CUDA_EXCEPTIONS + "=" + line;
+    str += TRANSLATION_REFINEMENT_TYPE + "=" + line;
+    str += NUM_TRANS_REFINEMENT_START_POINTS + "=" + line;
+    str += RUN_HEADLESS + "=" + line;
+    return str;
+  }
 
 }

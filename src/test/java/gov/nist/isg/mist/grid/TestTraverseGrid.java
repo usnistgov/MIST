@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +12,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,6 +26,12 @@
 
 package gov.nist.isg.mist.grid;
 
+import org.bridj.Pointer;
+
+import java.io.File;
+import java.io.InvalidClassException;
+import java.util.Iterator;
+
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -40,12 +44,6 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser.Traversals;
 import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverserFactory;
-
-import org.bridj.Pointer;
-
-import java.io.File;
-import java.io.InvalidClassException;
-import java.util.Iterator;
 
 /**
  * Test case for traversing a grid of tiles in different styles.

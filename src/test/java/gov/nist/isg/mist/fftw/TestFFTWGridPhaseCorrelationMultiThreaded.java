@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +12,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +26,16 @@
 
 package gov.nist.isg.mist.fftw;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
-import gov.nist.isg.mist.timing.TimeUtil;
+import org.bridj.Pointer;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InvalidClassException;
+
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
@@ -42,12 +44,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.SequentialTileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
-
-import org.bridj.Pointer;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
+import gov.nist.isg.mist.timing.TimeUtil;
 
 /**
  * Test case for stitching a grid of tiles with multithreading using FFTW.

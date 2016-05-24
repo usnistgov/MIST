@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +6,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,19 +25,18 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.fftw;
 
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library.fftw_plan;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import jcuda.driver.CUstream;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
-
 import org.bridj.BridJ;
 import org.bridj.Pointer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FFTW3Library.fftw_plan;
+import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
+import jcuda.driver.CUstream;
 
 /**
  * Represents an image tile that uses native library bindings with FFTW. Must initialize the
@@ -82,6 +78,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
 
   private Pointer<Double> fftIn;
 
+
   /**
    * Creates an image tile in a grid
    *
@@ -95,24 +92,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    */
   public FftwImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
                        int startCol) {
-    this(file, row, col, gridWidth, gridHeight, startRow, startCol, true);
-  }
-
-  /**
-   * Creates an image tile in a grid
-   *
-   * @param file       the image tile file
-   * @param row        the row location in the grid
-   * @param col        the column location in the grid
-   * @param gridWidth  the width of the tile grid (subgrid)
-   * @param gridHeight the height of the tile grid (subgrid)
-   * @param startRow   the start row of the tile grid (subgrid)
-   * @param startCol   the start column of the tile grid (subgrid)
-   * @param read       whether or not to read the tile here
-   */
-  public FftwImageTile(File file, int row, int col, int gridWidth, int gridHeight, int startRow,
-                       int startCol, boolean read) {
-    super(file, row, col, gridWidth, gridHeight, startRow, startCol, read);
+    super(file, row, col, gridWidth, gridHeight, startRow, startCol);
   }
 
   /**
@@ -121,17 +101,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    * @param file the image tile file
    */
   public FftwImageTile(File file) {
-    this(file, 0, 0, 1, 1, 0, 0, true);
-  }
-
-  /**
-   * Initializes image tile and optionally does not read
-   *
-   * @param file the file assosiated with this tile
-   * @param read whether or not to read the tile here
-   */
-  public FftwImageTile(File file, boolean read) {
-    this(file, 0, 0, 1, 1, 0, 0, read);
+    this(file, 0, 0, 1, 1, 0, 0);
   }
 
 
@@ -147,7 +117,11 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft() throws FileNotFoundException {
+  public void computeFft() {
+
+    // if the file does not exists on disk, skip computing the fft
+    if (!this.fileExists())
+      return;
 
     if (hasFft())
       return;
@@ -172,7 +146,12 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
    * Computes this image's FFT
    */
   @Override
-  public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory) throws FileNotFoundException {
+  public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory) {
+
+    // if the file does not exists on disk, skip computing the fft
+    if (!this.fileExists())
+      return;
+
     readTile();
 
     if (super.isMemoryLoaded()) {
@@ -189,7 +168,7 @@ public class FftwImageTile extends ImageTile<Pointer<Double>> {
 
   @Override
   public void computeFft(DynamicMemoryPool<Pointer<Double>> pool, TileWorkerMemory memory,
-                         CUstream stream) throws FileNotFoundException {
+                         CUstream stream) {
     this.computeFft(pool, memory);
   }
 

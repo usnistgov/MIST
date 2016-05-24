@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +25,12 @@
 
 package gov.nist.isg.mist.stitching.lib.parallel.cpu;
 
+import java.util.concurrent.PriorityBlockingQueue;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
-import gov.nist.isg.mist.stitching.lib.log.Debug;
-import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
@@ -43,22 +40,19 @@ import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.FftwTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.JavaTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
+import gov.nist.isg.mist.stitching.lib.log.Debug;
+import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
-import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.FftwTileWorkerMemory32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.JavaTileWorkerMemory32;
-
-import javax.swing.*;
-
-import java.io.FileNotFoundException;
-import java.util.Random;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * A thread dedicated to computing FFTs and phase correlations for image tiles.
@@ -137,30 +131,14 @@ public class TileWorker<T> implements Runnable {
 
 
         if (task.getTask() == TaskType.FFT) {
-          try {
-            task.getTile().computeFft(this.memoryPool, this.memory);
-          } catch (FileNotFoundException e) {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-            continue;
-          }
+          task.getTile().computeFft(this.memoryPool, this.memory);
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
           this.bkQueue.put(task);
         } else if (task.getTask() == TaskType.PCIAM_NORTH) {
           ImageTile<T> tile = task.getTile();
           ImageTile<T> neighbor = task.getNeighbor();
 
-          CorrelationTriple corr;
-          try {
-            if (this.useDoublePrecision) {
-              corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            } else {
-              corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            }
-          } catch (FileNotFoundException e) {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-            continue;
-          }
-
+          CorrelationTriple corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
 
           tile.setNorthTranslation(corr);
           task.setTask(TaskType.BK_CHECK_MEM);
@@ -178,18 +156,7 @@ public class TileWorker<T> implements Runnable {
           ImageTile<T> tile = task.getTile();
           ImageTile<T> neighbor = task.getNeighbor();
 
-          CorrelationTriple corr;
-          try {
-            if (this.useDoublePrecision) {
-              corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            } else {
-              corr = Stitching32.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
-            }
-          } catch (FileNotFoundException e) {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping");
-            continue;
-          }
-
+          CorrelationTriple corr = Stitching.phaseCorrelationImageAlignment(neighbor, tile, this.memory);
 
           tile.setWestTranslation(corr);
           task.setTask(TaskType.BK_CHECK_MEM);
@@ -199,6 +166,7 @@ public class TileWorker<T> implements Runnable {
               + " x: " + tile.getWestTranslation().getMatlabFormatStrX() + " y: "
               + tile.getWestTranslation().getMatlabFormatStrY() + " ccf: "
               + tile.getWestTranslation().getMatlatFormatStrCorr());
+
 
           StitchingGuiUtils.incrementProgressBar(this.progressBar);
 

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,18 +25,18 @@
 
 package gov.nist.isg.mist.stitching.gui;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.MIST;
-import gov.nist.isg.mist.stitching.MIST.ExecutionType;
-import gov.nist.isg.mist.stitching.StitchingGUIFrame;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.*;
 
-import java.io.File;
-import java.io.IOException;
+import gov.nist.isg.mist.stitching.MIST;
+import gov.nist.isg.mist.stitching.MIST.ExecutionType;
+import gov.nist.isg.mist.stitching.StitchingGUIFrame;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 /**
  * Creates a separate thread for managing stitching execution. This thread is separate from the main

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,12 +23,13 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params.utils;
 
-import ij.Macro;
-import ij.plugin.frame.Recorder;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import java.util.List;
+
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -39,8 +37,8 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.LoaderType;
-
-import java.util.List;
+import ij.Macro;
+import ij.plugin.frame.Recorder;
 
 
 /**
@@ -208,6 +206,26 @@ public class MacroUtils {
     }
 
     return progType;
+  }
+
+  /**
+   * Loads a macro translation refinement type enum
+   *
+   * @param options the macro options
+   * @param key     the key value
+   * @param def     the default value
+   * @return the loaded program type enum
+   */
+  public static TranslationRefinementType loadTranslationRefinementType(String options, String key, String def) {
+    String res = Macro.getValue(options, key.toLowerCase(), def);
+
+    TranslationRefinementType type = TranslationRefinementType.valueOf(res.toUpperCase());
+
+    if (type == null) {
+      Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid TranslationRefinementType");
+    }
+
+    return type;
   }
 
   /**

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -25,6 +22,15 @@
 //
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 import gov.nist.isg.mist.stitching.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
@@ -40,11 +46,6 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirect
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.LoaderType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * InputParameters are the input parameters for Stitching
@@ -70,6 +71,9 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String IS_TIME_SLICES_ENABLED = "isTimeSlicesEnabled";
   private static final String GLOBAL_POSITIONS_FILE = "globalPositionsFile";
   private static final String IS_SUPPRESS_SUBGRID_WARNING_ENABLED = "isSuppressSubGridWarningEnabled";
+
+
+
 
 
   private int gridWidth;
@@ -99,10 +103,10 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.gridHeight = 1;
     this.startTile = 0;
     this.imageDir = System.getProperty("user.home");
-    this.filenamePattern = "tilename_{pppp}.tif";
-    this.filenamePatternType = LoaderType.SEQUENTIAL;
-    this.origin = GridOrigin.UR;
-    this.numberingPattern = GridDirection.VERTICALCOMBING;
+    this.filenamePattern = "img_r{rrr}_c{ccc}.tif";
+    this.filenamePatternType = LoaderType.ROWCOL;
+    this.origin = GridOrigin.UL;
+    this.numberingPattern = GridDirection.HORIZONTALCOMBING;
     this.assembleFromMetadata = false;
     this.isSuppressSubGridWarning = false;
     this.globalPositionsFile = "";
@@ -193,23 +197,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   @Override
   public boolean checkParams() {
     if (this.filenamePattern != null && this.imageDir != null && checkSubGrid()) {
+
       if (this.isTimeSlicesEnabled) {
         if (this.timeSlices.size() == 0)
           return false;
-
-        int startTimeSlice = this.timeSlices.get(0).getMin();
-
-        if (TileGridLoaderUtils.checkStartTile(this.imageDir, this.filenamePattern, this.startTile, startTimeSlice,
-            this.filenamePatternType, false))
-          return true;
-
-      } else if (TileGridLoaderUtils.checkStartTile(this.imageDir, this.filenamePattern, this.startTile,
-          this.filenamePatternType, false))
-        return true;
-      else
-        return false;
-
-
+      }
+      return true;
     }
     return false;
   }
@@ -269,44 +262,8 @@ public class InputParameters implements StitchingAppParamFunctions {
         String[] contents = line.split(":", 2);
 
         if (contents.length > 1) {
-          contents[0] = contents[0].trim();
-          contents[1] = contents[1].trim();
-
           try {
-            if (contents[0].equals(GRID_WIDTH))
-              this.gridWidth = StitchingParamUtils.loadInteger(contents[1], this.gridWidth);
-            else if (contents[0].equals(GRID_HEIGHT))
-              this.gridHeight = StitchingParamUtils.loadInteger(contents[1], this.gridHeight);
-            else if (contents[0].equals(START_TILE))
-              this.startTile = StitchingParamUtils.loadInteger(contents[1], this.startTile);
-            else if (contents[0].equals(IMAGE_DIR))
-              this.imageDir = contents[1];
-            else if (contents[0].equals(FILENAME_PATTERN))
-              this.filenamePattern = contents[1];
-            else if (contents[0].equals(FILENAME_PATTERN_TYPE))
-              this.filenamePatternType = LoaderType.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(GRID_ORIGIN))
-              this.origin = GridOrigin.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(NUMBERING_PATTERN))
-              this.numberingPattern = GridDirection.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(ASSEMBLE_FROM_META))
-              this.assembleFromMetadata = StitchingParamUtils.loadBoolean(contents[1], this.assembleFromMetadata);
-            else if (contents[0].equals(GLOBAL_POSITIONS_FILE))
-              this.globalPositionsFile = contents[1];
-            else if (contents[0].equals(START_ROW))
-              this.startRow = StitchingParamUtils.loadInteger(contents[1], this.startRow);
-            else if (contents[0].equals(START_COL))
-              this.startCol = StitchingParamUtils.loadInteger(contents[1], this.startCol);
-            else if (contents[0].equals(EXTENT_WIDTH))
-              this.extentWidth = StitchingParamUtils.loadInteger(contents[1], this.gridWidth);
-            else if (contents[0].equals(EXTENT_HEIGHT))
-              this.extentHeight = StitchingParamUtils.loadInteger(contents[1], this.gridHeight);
-            else if (contents[0].equals(TIME_SLICES))
-              this.timeSlices = RangeParam.parseTimeSlices(contents[1]);
-            else if (contents[0].equals(IS_TIME_SLICES_ENABLED))
-              this.isTimeSlicesEnabled = StitchingParamUtils.loadBoolean(contents[1], this.isTimeSlicesEnabled);
-            else if (contents[0].equals(IS_SUPPRESS_SUBGRID_WARNING_ENABLED))
-              this.isSuppressSubGridWarning = StitchingParamUtils.loadBoolean(contents[1], this.isSuppressSubGridWarning);
+            loadParameter(contents[0],contents[1]);
           } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
             Log.msg(LogType.MANDATORY, "Error parsing input option: " + e.getMessage());
@@ -326,6 +283,50 @@ public class InputParameters implements StitchingAppParamFunctions {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
     return false;
+  }
+
+  /**
+   * Load the value into the parameter defined by key.
+   * @param key the parameter name to overwrite with value
+   * @param value the value to save into the parameter defined by key
+   */
+  public void loadParameter(String key, String value) {
+    key = key.trim();
+    value = value.trim();
+    if (key.equals(GRID_WIDTH))
+      this.gridWidth = StitchingParamUtils.loadInteger(value, this.gridWidth);
+    else if (key.equals(GRID_HEIGHT))
+      this.gridHeight = StitchingParamUtils.loadInteger(value, this.gridHeight);
+    else if (key.equals(START_TILE))
+      this.startTile = StitchingParamUtils.loadInteger(value, this.startTile);
+    else if (key.equals(IMAGE_DIR))
+      this.imageDir = value;
+    else if (key.equals(FILENAME_PATTERN))
+      this.filenamePattern = value;
+    else if (key.equals(FILENAME_PATTERN_TYPE))
+      this.filenamePatternType = LoaderType.valueOf(value.toUpperCase());
+    else if (key.equals(GRID_ORIGIN))
+      this.origin = GridOrigin.valueOf(value.toUpperCase());
+    else if (key.equals(NUMBERING_PATTERN))
+      this.numberingPattern = GridDirection.valueOf(value.toUpperCase());
+    else if (key.equals(ASSEMBLE_FROM_META))
+      this.assembleFromMetadata = StitchingParamUtils.loadBoolean(value, this.assembleFromMetadata);
+    else if (key.equals(GLOBAL_POSITIONS_FILE))
+      this.globalPositionsFile = value;
+    else if (key.equals(START_ROW))
+      this.startRow = StitchingParamUtils.loadInteger(value, this.startRow);
+    else if (key.equals(START_COL))
+      this.startCol = StitchingParamUtils.loadInteger(value, this.startCol);
+    else if (key.equals(EXTENT_WIDTH))
+      this.extentWidth = StitchingParamUtils.loadInteger(value, this.gridWidth);
+    else if (key.equals(EXTENT_HEIGHT))
+      this.extentHeight = StitchingParamUtils.loadInteger(value, this.gridHeight);
+    else if (key.equals(TIME_SLICES))
+      this.timeSlices = RangeParam.parseTimeSlices(value);
+    else if (key.equals(IS_TIME_SLICES_ENABLED))
+      this.isTimeSlicesEnabled = StitchingParamUtils.loadBoolean(value, this.isTimeSlicesEnabled);
+    else if (key.equals(IS_SUPPRESS_SUBGRID_WARNING_ENABLED))
+      this.isSuppressSubGridWarning = StitchingParamUtils.loadBoolean(value, this.isSuppressSubGridWarning);
   }
 
 
@@ -410,8 +411,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.isTimeSlicesEnabled = MacroUtils.loadMacroBoolean(macroOptions, IS_TIME_SLICES_ENABLED,
         this.isTimeSlicesEnabled);
     this.isSuppressSubGridWarning = MacroUtils.loadMacroBoolean(macroOptions,
-        IS_SUPPRESS_SUBGRID_WARNING_ENABLED,
-        this.isSuppressSubGridWarning);
+        IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
   }
 
 
@@ -753,6 +753,29 @@ public class InputParameters implements StitchingAppParamFunctions {
    */
   public void setGlobalPositionsFile(String globalPositionsFile) {
     this.globalPositionsFile = globalPositionsFile;
+  }
+
+  public static String getParametersCommandLineHelp() {
+    String line = "\r\n";
+    String str = "********* Input Parameters *********";
+    str += line;
+    str += GRID_WIDTH + "=" + line;
+    str += GRID_HEIGHT + "=" + line;
+    str += START_TILE + "=" + line;
+    str += IMAGE_DIR + "=" + line;
+    str += FILENAME_PATTERN + "=" + line;
+    str += FILENAME_PATTERN_TYPE + "=" + line;
+    str += NUMBERING_PATTERN + "=" + line;
+    str += ASSEMBLE_FROM_META + "=" + line;
+    str += START_ROW + "=" + line;
+    str += START_COL + "=" + line;
+    str += EXTENT_WIDTH + "=" + line;
+    str += EXTENT_HEIGHT + "=" + line;
+    str += TIME_SLICES + "=" + line;
+    str += IS_TIME_SLICES_ENABLED + "=" + line;
+    str += GLOBAL_POSITIONS_FILE + "=" + line;
+    str += IS_SUPPRESS_SUBGRID_WARNING_ENABLED + "=" + line;
+    return str;
   }
 
 }

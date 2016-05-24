@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,22 +25,23 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.advancedTab;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
 import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
 import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.DblModel;
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.IntModel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Log;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * Creates the advanced options panel
@@ -85,6 +83,12 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
       + " computing the phase correlation image alignment method. Modifying this value can yield "
       + "more accurate pre-optimization displacements. \n\nTIP: Value should not exceed 10.0, default is 2.0";
 
+  private static final String numHCHelp = "Specifies the type of translation refinement " +
+      "optimization. A single hill climb starting at the computed/estimated translation. " +
+      "Multiple hill climbs starting at the computed/estimated translation and <i>n</i> " +
+      "additional points. Exhaustive search of all valid translations within the stage " +
+      "repeatability bounds.";
+
 
   private static final long serialVersionUID = 1L;
 
@@ -98,8 +102,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
   private ParallelOptPane parallelOptions;
   private JComboBox loggingLevel;
   private JComboBox debugLevel;
-  private JCheckBox useDoublePrecision = new JCheckBox("Use Double Precision?");
+  private JCheckBox useDoublePrecision = new JCheckBox("Use Double Precision Math?");
+  private JCheckBox useBioFormats = new JCheckBox("Use BioFormats Image Reader?");
 
+  private JComboBox translationRefinementType;
+  private TextFieldInputPanel<Integer> numTransRefineHillClimbs;
 
   /**
    * Initializes the advanced options panel
@@ -108,9 +115,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
 
     this.loggingLevel = new JComboBox(Log.LogType.values());
     this.debugLevel = new JComboBox(Debug.DebugType.values());
+    this.translationRefinementType = new JComboBox(Stitching.TranslationRefinementType.values());
 
     this.loggingLevel.setSelectedItem(Log.getLogLevel());
     this.debugLevel.setSelectedItem(Debug.getDebugLevel());
+    this.translationRefinementType.setSelectedItem(Stitching.TranslationRefinementType.SINGLE_HILL_CLIMB);
 
     this.numFFTPeaks =
         new TextFieldInputPanel<Integer>("Number of FFT Peaks", "",
@@ -131,6 +140,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
         new TextFieldInputPanel<Double>("Overlap uncertainty", "", new DblModel(0.0, 100.0, true),
             overlapUncertaintyHelp);
 
+
+    this.numTransRefineHillClimbs = new TextFieldInputPanel<Integer>("Number", "", new IntModel(1,
+        Integer.MAX_VALUE, true), numHCHelp);
+    this.numTransRefineHillClimbs.setEnabled(false);
+
     this.parallelOptions = new ParallelOptPane();
 
 
@@ -144,6 +158,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
   private void initListeners() {
     this.loggingLevel.addActionListener(this);
     this.debugLevel.addActionListener(this);
+    this.translationRefinementType.addActionListener(this);
   }
 
   private void initControls() {
@@ -179,13 +194,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
 
     // setup the logging panel
     JPanel logPanel = new JPanel();
-    this.loggingLevel = new JComboBox(Log.LogType.values());
     c.gridy = 0;
     logPanel.add(new JLabel("Log Level"), c);
     c.gridy = 1;
     logPanel.add(this.loggingLevel, c);
 
-    this.debugLevel = new JComboBox(Debug.DebugType.values());
     c.gridy = 0;
 
     c.insets = new Insets(0, 10, 0, 0);
@@ -194,6 +207,16 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     logPanel.add(this.debugLevel, c);
     c.insets = new Insets(0, 0, 0, 0);
 
+    // setup translation refinement options panel
+    JPanel transRefinePanel = new JPanel(new GridBagLayout());
+    c.gridy = 0;
+    c.gridx = 0;
+    transRefinePanel.add(new JLabel("Translation Refinement Method"), c);
+    c.gridy = 1;
+    transRefinePanel.add(this.translationRefinementType, c);
+    c.gridy = 1;
+    c.gridx = 1;
+    transRefinePanel.add(this.numTransRefineHillClimbs, c);
 
     // setup the other advanced params
     JPanel otherAdvancedPanel = new JPanel(new GridBagLayout());
@@ -203,10 +226,14 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     c.gridx = 0;
     c.gridwidth = 1;
     c.anchor = GridBagConstraints.LINE_START;
-    otherAdvancedPanel.add(this.numFFTPeaks, c);
-    c.gridy = 1;
+    otherAdvancedPanel.add(this.useBioFormats, c);
+    c.gridy++;
     otherAdvancedPanel.add(this.useDoublePrecision, c);
-    c.gridy = 2;
+    c.gridy++;
+    otherAdvancedPanel.add(transRefinePanel, c);
+    c.gridy++;
+    otherAdvancedPanel.add(this.numFFTPeaks, c);
+    c.gridy++;
     otherAdvancedPanel.add(logPanel, c);
 
 
@@ -241,6 +268,11 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.overlapUncertainty.setValue(params.getAdvancedParams().getOverlapUncertainty());
     this.parallelOptions.loadParamsIntoGUI(params);
     this.useDoublePrecision.setSelected(params.getAdvancedParams().isUseDoublePrecision());
+    this.useBioFormats.setSelected(params.getAdvancedParams().isUseBioFormats());
+    this.translationRefinementType.setSelectedItem(params.getAdvancedParams()
+        .getTranslationRefinementType());
+    this.numTransRefineHillClimbs.setValue(params.getAdvancedParams().getNumTranslationRefinementStartPoints());
+
 
     Log.LogType logType = params.getLogParams().getLogLevel();
 
@@ -311,6 +343,13 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     params.getAdvancedParams().setNumFFTPeaks(this.numFFTPeaks.getValue());
     params.getAdvancedParams().setOverlapUncertainty(this.overlapUncertainty.getValue());
     params.getAdvancedParams().setUseDoublePrecision(this.useDoublePrecision.isSelected());
+    params.getAdvancedParams().setUseBioFormats(this.useBioFormats.isSelected());
+    params.getAdvancedParams().setTranslationRefinementType(this.getTransRefinementType());
+
+    int val = this.numTransRefineHillClimbs.getValue();
+    if (val > 0) // if empty, leave as the default value
+      params.getAdvancedParams().setNumTranslationRefinementStartPoints(val);
+
 
     Log.LogType logLevel = this.getLogLevel();
     Debug.DebugType debugLevel = this.getDebugLevel();
@@ -339,6 +378,10 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     return (Debug.DebugType) this.debugLevel.getSelectedItem();
   }
 
+  public Stitching.TranslationRefinementType getTransRefinementType() {
+    return (Stitching.TranslationRefinementType) this.translationRefinementType.getSelectedItem();
+  }
+
 
   @Override
   public void actionPerformed(ActionEvent arg0) {
@@ -350,6 +393,14 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
         Log.setLogLevel((Log.LogType) action.getSelectedItem());
       } else if (action.equals(this.debugLevel)) {
         Debug.setDebugLevel((Debug.DebugType) action.getSelectedItem());
+      } else if (action.equals(this.translationRefinementType)) {
+
+        if (action.getSelectedItem().equals(Stitching.TranslationRefinementType
+            .MULTI_POINT_HILL_CLIMB)) {
+          this.numTransRefineHillClimbs.setEnabled(true);
+        } else {
+          this.numTransRefineHillClimbs.setEnabled(false);
+        }
       }
     }
   }

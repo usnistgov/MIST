@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -216,7 +213,7 @@ public class GPUStitchingThreadExecutor32<T> implements Thread.UncaughtException
 
     for (int i = 0; i < numWorkers; i++) {
       TileCpuCcfWorker32<T> ccfWorker;
-      ccfWorker =  new TileCpuCcfWorker32<T>(this.ccfQueue, numNeighbors, progressBar);
+      ccfWorker = new TileCpuCcfWorker32<T>(this.ccfQueue, numNeighbors, progressBar);
 
       this.ccfWorkers.add(ccfWorker);
 

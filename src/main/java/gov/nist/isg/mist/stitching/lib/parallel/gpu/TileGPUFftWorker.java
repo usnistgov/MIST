@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,23 +25,21 @@
 
 package gov.nist.isg.mist.stitching.lib.parallel.gpu;
 
+import java.util.concurrent.PriorityBlockingQueue;
+
+import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
+import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
+import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUstream;
 import jcuda.driver.CUstream_flags;
 import jcuda.driver.JCudaDriver;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
-import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
-import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
-
-import java.io.FileNotFoundException;
-import java.util.Random;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * Class that computes the FFT of a tile on the GPU. One thread per GPU is used.
@@ -113,13 +108,7 @@ public class TileGPUFftWorker<T> implements Runnable {
         if (task.getTask() == TaskType.FFT) {
           task.getTile().setDev(this.devID);
           task.getTile().setThreadID(this.threadID);
-
-          try {
-            task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
-          } catch (FileNotFoundException e) {
-            Log.msg(LogType.MANDATORY, "Unable to find file: " + e.getMessage() + ". Skipping file");
-            continue;
-          }
+          task.getTile().computeFft(this.memoryPool, this.memory, this.stream);
 
           task.setTask(TaskType.BK_CHECK_NEIGHBORS);
 

@@ -1,16 +1,33 @@
+
+// Disclaimer: IMPORTANT: This software was developed at the National
+// Institute of Standards and Technology by employees of the Federal
+// Government in the course of their official duties. Pursuant to
+// title 17 Section 105 of the United States Code this software is not
+// subject to copyright protection and is in the public domain. This
+// is an experimental system. NIST assumes no responsibility
+// whatsoever for its use by other parties, and makes no guarantees,
+// expressed or implied, about its quality, reliability, or any other
+// characteristic. We would appreciate acknowledgement if the software
+// is used. This software can be redistributed and/or modified freely
+// provided that any derivative works bear some notice that they are
+// derived from it, and any modified versions bear some notice that
+// they have been modified.
+
 package gov.nist.isg.mist.mle;
 
 import java.io.File;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 
 /**
- * Created by mmajurski on 7/9/15.
+ * Test class for MLE overlap estimation.
+ *
+ * @author Michael Majurski
  */
 public class MLEOverlapEstimation {
 
@@ -87,7 +104,6 @@ public class MLEOverlapEstimation {
       // Run the MLE stitching version
       System.out.println("Stitching Type: " + t);
       File metaDataPath = new File(r, "mleTest");
-//      params.getAdvancedParams().setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
 
       params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
       params.getAdvancedParams().setProgramType(t);

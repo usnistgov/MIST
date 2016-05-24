@@ -1,15 +1,3 @@
-/****************************************************************************
- * Copyright (c) 2009, Colorado School of Mines and others. All rights reserved. This program and
- * accompanying materials are made available under the terms of the Common Public License - v1.0,
- * which accompanies this distribution, and is available at http://www.eclipse.org/legal/cpl-v10.html
- *
- * Original source code repository found: https://github.com/dhale/jtk
- *
- * Any license provisions that differ from above are offered by the license below.
- ****************************************************************************/
-
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -23,8 +11,17 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
+/****************************************************************************
+ * Copyright (c) 2009, Colorado School of Mines and others. All rights reserved. This program and
+ * accompanying materials are made available under the terms of the Common Public License - v1.0,
+ * which accompanies this distribution, and is available at http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Original source code repository found: https://github.com/dhale/jtk
+ *
+ * Any license provisions that differ from above are offered by the license below.
+ ****************************************************************************/
+
 
 // ================================================================
 //
@@ -48,7 +45,6 @@ import edu.mines.jtk.util.Check;
  *
  * @author Tim Blattner
  * @version 1.0
- *
  */
 public class Fft {
   /**

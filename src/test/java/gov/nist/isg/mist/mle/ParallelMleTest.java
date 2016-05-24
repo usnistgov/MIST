@@ -1,32 +1,36 @@
+
+// Disclaimer: IMPORTANT: This software was developed at the National
+// Institute of Standards and Technology by employees of the Federal
+// Government in the course of their official duties. Pursuant to
+// title 17 Section 105 of the United States Code this software is not
+// subject to copyright protection and is in the public domain. This
+// is an experimental system. NIST assumes no responsibility
+// whatsoever for its use by other parties, and makes no guarantees,
+// expressed or implied, about its quality, reliability, or any other
+// characteristic. We would appreciate acknowledgement if the software
+// is used. This software can be redistributed and/or modified freely
+// provided that any derivative works bear some notice that they are
+// derived from it, and any modified versions bear some notice that
+// they have been modified.
+
 package gov.nist.isg.mist.mle;
 
 import java.io.File;
-import java.util.List;
 
 import javax.swing.*;
 
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
-import gov.nist.isg.mist.stitching.gui.params.InputParameters;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.parallel.gpu.GPUStitchingThreadExecutor;
-import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.SequentialTileGridLoader;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
-import jcuda.driver.CUcontext;
-import jcuda.driver.CUdeviceptr;
 
 /**
- * Created by mmajursk on 11/13/2015.
+ * Test class for parallel MLE overlap estimation.
+ *
+ * @author Michael Majurski
  */
 public class ParallelMleTest {
 
@@ -36,8 +40,8 @@ public class ParallelMleTest {
 
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
-    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
-//  private static String validationRootFolder = "C:\\majurski\\image-data\\70Perc_Overlap_24h_Dry_Dataset";
+  private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
+  //  private static String validationRootFolder = "C:\\majurski\\image-data\\70Perc_Overlap_24h_Dry_Dataset";
   //  private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
@@ -92,10 +96,9 @@ public class ParallelMleTest {
 
     // Setup output folder
     File metaDataPath = new File(rootFolder, "mleParallel");
-    if(!metaDataPath.exists())
+    if (!metaDataPath.exists())
       metaDataPath.mkdir();
     params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
-
 
 
     // Stitch subgrid for now
@@ -108,19 +111,15 @@ public class ParallelMleTest {
     params.getOutputParams().setOutFilePrefix("cuda32-");
     params.getAdvancedParams().setUseDoublePrecision(false);
 
-      try {
-        (new StitchingExecutor(params)).runStitching(false, false, false);
-      } catch (StitchingException e) {
-        Log.msg(Log.LogType.MANDATORY, e.getMessage());
-      }
-
-
-
+    try {
+      (new StitchingExecutor(params)).runStitching(false, false, false);
+    } catch (StitchingException e) {
+      Log.msg(Log.LogType.MANDATORY, e.getMessage());
+    }
 
 
     System.exit(1);
   }
-
 
 
 }

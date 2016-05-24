@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,6 +23,13 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.prefs.Preferences;
+
 import gov.nist.isg.mist.stitching.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.stitching.gui.params.utils.PreferencesUtils;
@@ -33,9 +37,6 @@ import gov.nist.isg.mist.stitching.gui.params.utils.StitchingParamUtils;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import java.io.*;
-import java.util.prefs.Preferences;
 
 /**
  * OutputParameters are the output parameters for Stitching
@@ -52,6 +53,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String OUT_FILE_PREFIX = "outFilePrefix";
   private static final String BLENDING_MODE = "blendingMode";
   private static final String BLENDING_ALPHA = "blendingAlpha";
+
+
 
   public static final String metadataSuffix = ".txt";
   public static final String absPosFilename = "global-positions";
@@ -75,10 +78,10 @@ public class OutputParameters implements StitchingAppParamFunctions {
   public OutputParameters() {
     this.outputPath = System.getProperty("user.home");
     this.displayStitching = false;
-    this.outputFullImage = true;
+    this.outputFullImage = false;
     this.outputImgPyramid = false;
     this.outputMeta = true;
-    this.outFilePrefix = "out-file-";
+    this.outFilePrefix = "img-";
     this.blendingMode = BlendingMode.OVERLAY;
     this.blendingAlpha = Double.NaN;
   }
@@ -246,26 +249,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
         String[] contents = line.split(":", 2);
 
         if (contents.length > 1) {
-          contents[0] = contents[0].trim();
-          contents[1] = contents[1].trim();
-
           try {
-            if (contents[0].equals(OUTPUT_PATH))
-              this.outputPath = contents[1];
-            else if (contents[0].equals(DISPLAY_STITCHING))
-              this.displayStitching = StitchingParamUtils.loadBoolean(contents[1], this.displayStitching);
-            else if (contents[0].equals(OUTPUT_FULL_IMAGE))
-              this.outputFullImage = StitchingParamUtils.loadBoolean(contents[1], this.outputFullImage);
-            else if (contents[0].equals(OUTPUT_META))
-              this.outputMeta = StitchingParamUtils.loadBoolean(contents[1], this.outputMeta);
-            else if (contents[0].equals(OUTPUT_IMG_PYRAMID))
-              this.outputImgPyramid = StitchingParamUtils.loadBoolean(contents[1], this.outputImgPyramid);
-            else if (contents[0].equals(BLENDING_MODE))
-              this.blendingMode = BlendingMode.valueOf(contents[1].toUpperCase());
-            else if (contents[0].equals(BLENDING_ALPHA))
-              this.blendingAlpha = StitchingParamUtils.loadDouble(contents[1], this.blendingAlpha);
-            else if (contents[0].equals(OUT_FILE_PREFIX))
-              this.outFilePrefix = contents[1];
+            loadParameter(contents[0],contents[1]);
           } catch (IllegalArgumentException e) {
             Log.msg(LogType.MANDATORY, "Unable to parse line: " + line);
             Log.msg(LogType.MANDATORY, "Error parsing output option: " + e.getMessage());
@@ -284,6 +269,32 @@ public class OutputParameters implements StitchingAppParamFunctions {
       Log.msg(LogType.MANDATORY, e.getMessage());
     }
     return false;
+  }
+
+  /**
+   * Load the value into the parameter defined by key.
+   * @param key the parameter name to overwrite with value
+   * @param value the value to save into the parameter defined by key
+   */
+  public void loadParameter(String key, String value) {
+    key = key.trim();
+    value = value.trim();
+    if (key.equals(OUTPUT_PATH))
+      this.outputPath = value;
+    else if (key.equals(DISPLAY_STITCHING))
+      this.displayStitching = StitchingParamUtils.loadBoolean(value, this.displayStitching);
+    else if (key.equals(OUTPUT_FULL_IMAGE))
+      this.outputFullImage = StitchingParamUtils.loadBoolean(value, this.outputFullImage);
+    else if (key.equals(OUTPUT_META))
+      this.outputMeta = StitchingParamUtils.loadBoolean(value, this.outputMeta);
+    else if (key.equals(OUTPUT_IMG_PYRAMID))
+      this.outputImgPyramid = StitchingParamUtils.loadBoolean(value, this.outputImgPyramid);
+    else if (key.equals(BLENDING_MODE))
+      this.blendingMode = BlendingMode.valueOf(value.toUpperCase());
+    else if (key.equals(BLENDING_ALPHA))
+      this.blendingAlpha = StitchingParamUtils.loadDouble(value, this.blendingAlpha);
+    else if (key.equals(OUT_FILE_PREFIX))
+      this.outFilePrefix = value;
   }
 
 
@@ -504,6 +515,22 @@ public class OutputParameters implements StitchingAppParamFunctions {
    */
   public void setBlendingAlpha(double blendingAlpha) {
     this.blendingAlpha = blendingAlpha;
+  }
+
+
+  public static String getParametersCommandLineHelp() {
+    String line = "\r\n";
+    String str = "********* Output Parameters *********";
+    str += line;
+    str += OUTPUT_PATH + "=" + line;
+    str += DISPLAY_STITCHING + "=" + line;
+    str += OUTPUT_FULL_IMAGE + "=" + line;
+    str += OUTPUT_META + "=" + line;
+    str += OUTPUT_IMG_PYRAMID + "=" + line;
+    str += OUT_FILE_PREFIX + "=" + line;
+    str += BLENDING_MODE + "=" + line;
+    str += BLENDING_ALPHA + "=" + line;
+    return str;
   }
 
 

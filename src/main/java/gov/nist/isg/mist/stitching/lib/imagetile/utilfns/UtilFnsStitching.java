@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,17 +25,17 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.utilfns;
 
-import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
-import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
-import gov.nist.isg.mist.stitching.lib.log.Debug;
-import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
-
 import org.bridj.Pointer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
+import gov.nist.isg.mist.stitching.lib.log.Debug;
+import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 
 /**
  * Utility functions for hooking into utility function native library bindings.

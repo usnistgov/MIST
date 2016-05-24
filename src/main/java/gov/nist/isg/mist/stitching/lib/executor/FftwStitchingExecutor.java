@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,22 +23,23 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.lib.executor;
 
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import java.io.File;
+import java.io.InvalidClassException;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.lib.exceptions.EmptyGridException;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.parallel.cpu.CPUStitchingThreadExecutor;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
-
-import javax.swing.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InvalidClassException;
 
 
 /**
@@ -65,15 +63,24 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   @Override
   public void cancelExecution() {
+    Log.msg(Log.LogType.MANDATORY, "Canceling Stitching FFTW Executor");
     if (this.fftwExecutor != null)
       this.fftwExecutor.cancel();
   }
 
+  /**
+   * Launches the stitching.
+   *
+   * @param grid        the image tile grid
+   * @param params      the stitching application parameters
+   * @param progressBar the GUI progress bar
+   * @param timeSlice   the timeslice to stitch
+   */
   @Override
   public void launchStitching(TileGrid<ImageTile<T>> grid, StitchingAppParams params,
                               JProgressBar progressBar, int timeSlice) throws Throwable {
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     if (!this.init) {
@@ -129,6 +136,13 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
 
   }
 
+  /**
+   * Checks for the required libraries.
+   *
+   * @param params     the stitching application params
+   * @param displayGui whether to display gui or not
+   * @return flag denoting whether the libraries required for this executor were found.
+   */
   @Override
   public boolean checkForLibs(StitchingAppParams params, boolean displayGui) {
     if (this.librariesInitialized) {
@@ -150,8 +164,15 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
     return this.librariesInitialized;
   }
 
+  /**
+   * Initialize the FFTW stitching executor tile grid.
+   *
+   * @param params    the stitching params.
+   * @param timeSlice the timeslice to stitch.
+   * @return the TileGrid to be stitched when launchStitching is called.
+   */
   @Override
-  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) {
+  public TileGrid<ImageTile<T>> initGrid(StitchingAppParams params, int timeSlice) throws EmptyGridException {
 
     TileGrid<ImageTile<T>> grid = null;
 
@@ -185,6 +206,10 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
       }
     }
 
+    if (grid.getTileThatExists() == null)
+      throw new EmptyGridException("Image Tile Grid contains no valid tiles. Check " +
+          "Stitching Parameters");
+
     return grid;
   }
 
@@ -192,15 +217,22 @@ public class FftwStitchingExecutor<T> implements StitchingExecutorInterface<T> {
   public void cleanup() {
   }
 
-
+  /**
+   * Determines if the system has the required memory to perform this stitching experiment as
+   * configured.
+   *
+   * @param grid       the image tile grid
+   * @param numWorkers the number of worker threads
+   * @param <T>        the Type of ImageTile in the TileGrid
+   * @return flag denoting whether the system has enough memory to stitch this experiment as is.
+   */
   @Override
-  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers)
-      throws FileNotFoundException {
+  public <T> boolean checkMemory(TileGrid<ImageTile<T>> grid, int numWorkers) {
 
     long requiredMemoryBytes = 0;
     long memoryPoolCount = Math.min(grid.getExtentHeight(), grid.getExtentWidth()) + 2 + numWorkers;
 
-    ImageTile<T> tile = grid.getSubGridTile(0, 0);
+    ImageTile<T> tile = grid.getTileThatExists();
     tile.readTile();
 
     // Account for image pixel data

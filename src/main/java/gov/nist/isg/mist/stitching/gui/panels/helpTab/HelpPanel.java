@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,24 +25,18 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.helpTab;
 
-import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
-import gov.nist.isg.mist.stitching.lib.log.Debug;
-import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import javax.swing.*;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.swing.*;
+
+import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 
 /**
  * Creates the help panel

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +6,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,7 +25,14 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile.jcuda;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import jcuda.Pointer;
@@ -37,13 +41,6 @@ import jcuda.driver.CUdeviceptr;
 import jcuda.driver.CUstream;
 import jcuda.driver.JCudaDriver;
 import jcuda.jcufft.JCufft;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
-
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Utility functions for doing image stitching using JCUDAImageTiles.
@@ -68,31 +65,14 @@ public class CudaStitching {
    */
   public static CorrelationTriple phaseCorrelationImageAlignment(CudaImageTile t1,
                                                                  CudaImageTile t2, TileWorkerMemory memory, CUstream stream) {
+
+    // If one of the two images does not exists, then a translation cannot exist
+    if (!t1.fileExists() || !t2.fileExists())
+      return new CorrelationTriple(-1.0, 0, 0);
+
     CUdeviceptr pcm = memory.getPcm();
 
     peakCorrelationMatrix(t1, t2, pcm, memory, stream, t1.getDev());
-
-//    int idx;
-//
-//    idx = getMaxIdx(pcm, t1.getWidth() * t1.getHeight(), memory, stream, t1.getDev());
-//
-//    int row = idx / t1.getWidth();
-//    int col = idx % t1.getWidth();
-//
-//    Debug.msg(DebugType.INFO, "max idx: " + idx);
-//    Debug.msg(DebugType.INFO, "row: " + row + " col: " + col);
-
-//    CorrelationTriple triple = null;
-//    if (t1.isSameRowAs(t2))
-//      triple = Stitching.peakCrossCorrelationLR(t1, t2, col, row);
-//    else if (t1.isSameColAs(t2))
-//      triple = Stitching.peakCrossCorrelationUD(t1, t2, col, row);
-//
-//    Debug.msg(DebugType.INFO, "peak Cross Correlation: " + triple);
-
-//    if (triple.getCorrelation() > Stitching.CORR_THRESHOLD) {
-//      return triple;
-//    }
 
     List<CorrelationTriple> peaks =
         multiPeakCorrelationMatrix(pcm, Stitching.NUM_PEAKS, t1.getWidth(), t1.getHeight(), memory,

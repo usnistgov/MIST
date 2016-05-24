@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,16 +25,16 @@
 
 package gov.nist.isg.mist.stitching.gui.params;
 
-import ij.plugin.frame.Recorder;
-import gov.nist.isg.mist.stitching.MIST;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
+import gov.nist.isg.mist.stitching.MIST;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import ij.plugin.frame.Recorder;
 
 /**
  * StitchingAppParams is an object that holds parameters for the stitching application. This object

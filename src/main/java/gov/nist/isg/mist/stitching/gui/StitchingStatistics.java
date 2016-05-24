@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,26 +25,26 @@
 
 package gov.nist.isg.mist.stitching.gui;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
-import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
-import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationRepeatability;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils.Direction;
-import ij.IJ;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import gov.nist.isg.mist.optimization.model.StageModel;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.imagetile.utilfns.UtilFnsStitching;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
+import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid.Direction;
+import ij.IJ;
 
 /**
  * Creates an object that manages statistics for a stitching execution. Execution times, parameters
@@ -64,11 +61,6 @@ public class StitchingStatistics {
    * The version number for the stitching statistics
    */
   public static final double VERSION = 1.0;
-//  private int currentTimeslice;
-
-//  public int getCurrentTimeslice() {
-//    return currentTimeslice;
-//  }
 
   /**
    * Enum representing what error report status
@@ -101,6 +93,11 @@ public class StitchingStatistics {
      * The global optimization timer
      */
     GlobalOptimizationTime("Global Optimization Time"),
+
+    /**
+     * The stage model construction timer
+     */
+    StageModel("Stage Model Build Time"),
 
     /**
      * The global position timer
@@ -145,9 +142,11 @@ public class StitchingStatistics {
 
   // Variables across each time-slice
   private List<Boolean> isRunSequential;
+  private List<Boolean> isEnableFreeingPixelData;
+
   private List<HashMap<String, Long>> startTimers;
   private List<HashMap<String, Long>> endTimers;
-  private List<HashMap<Direction, Integer>> repeatabilities;
+  private List<HashMap<Direction, Integer>> repeatability;
   private List<HashMap<Direction, Double>> overlaps;
   private List<HashMap<Direction, Integer>> numValidTilesAfterFilters;
   private List<HashMap<Direction, Double>> minFilterThresholds;
@@ -185,9 +184,10 @@ public class StitchingStatistics {
     this.runParams = runParams;
 
     this.isRunSequential = new ArrayList<Boolean>();
+    this.isEnableFreeingPixelData = new ArrayList<Boolean>();
     this.startTimers = new ArrayList<HashMap<String, Long>>();
     this.endTimers = new ArrayList<HashMap<String, Long>>();
-    this.repeatabilities = new ArrayList<HashMap<Direction, Integer>>();
+    this.repeatability = new ArrayList<HashMap<Direction, Integer>>();
     this.overlaps = new ArrayList<HashMap<Direction, Double>>();
     this.numValidTilesAfterFilters = new ArrayList<HashMap<Direction, Integer>>();
     this.minFilterThresholds = new ArrayList<HashMap<Direction, Double>>();
@@ -238,10 +238,11 @@ public class StitchingStatistics {
       HashMap<Direction, Boolean> highPercMissRowCol = new HashMap<Direction, Boolean>();
 
       this.isRunSequential.add(false);
+      this.isEnableFreeingPixelData.add(false);
       this.errorReportStatus.add(ErrorReportStatus.PASSED);
       this.startTimers.add(startTimer);
       this.endTimers.add(endTimer);
-      this.repeatabilities.add(repeatability);
+      this.repeatability.add(repeatability);
       this.overlaps.add(overlap);
       this.numValidTilesAfterFilters.add(numValidTilesAfterFilter);
       this.minFilterThresholds.add(minFilterThreshold);
@@ -267,9 +268,10 @@ public class StitchingStatistics {
 
   /**
    * Gets the current time slice during execution
-   *
    */
-  public int getCurrentTimeSlice() { return this.currentTimeSlice; }
+  public int getCurrentTimeSlice() {
+    return this.currentTimeSlice;
+  }
 
 
   /**
@@ -338,7 +340,7 @@ public class StitchingStatistics {
    * @param repeatability the repeatability
    */
   public void setRepeatability(Direction dir, int repeatability) {
-    HashMap<Direction, Integer> repeatabilityMap = this.repeatabilities.get(currentTimeSlice);
+    HashMap<Direction, Integer> repeatabilityMap = this.repeatability.get(currentTimeSlice);
     repeatabilityMap.put(dir, repeatability);
   }
 
@@ -362,6 +364,18 @@ public class StitchingStatistics {
   public void setIsRunSequential(boolean val) {
     this.isRunSequential.set(currentTimeSlice, val);
   }
+
+  /**
+   * Sets whether the stitching experiment is has enabled the freeing of image pixel data  or not
+   * for the current timeslice
+   *
+   * @param val true if freeing pixel data is enabled, otherwise false
+   */
+  public void setIsEnableFreeingPixelData(boolean val) {
+    this.isEnableFreeingPixelData.set(currentTimeSlice, val);
+  }
+
+
 
   /**
    * Sets the computed overlap for a direction
@@ -405,17 +419,6 @@ public class StitchingStatistics {
    */
   public void setMaxFilterThreshold(Direction dir, double threshold) {
     HashMap<Direction, Double> thresholdMap = this.maxFilterThresholds.get(currentTimeSlice);
-    thresholdMap.put(dir, threshold);
-  }
-
-  /**
-   * Sets the standard deviation filter threshold for a direction
-   *
-   * @param dir       the direction
-   * @param threshold the threshold
-   */
-  public void setStdDevThreshold(Direction dir, double threshold) {
-    HashMap<Direction, Double> thresholdMap = this.stdDevThresholds.get(currentTimeSlice);
     thresholdMap.put(dir, threshold);
   }
 
@@ -521,7 +524,7 @@ public class StitchingStatistics {
    * @return the repeatability
    */
   public int getRepeatability(Direction dir, int timeSlice) {
-    HashMap<Direction, Integer> repeatabilityMap = this.repeatabilities.get(timeSlice);
+    HashMap<Direction, Integer> repeatabilityMap = this.repeatability.get(timeSlice);
 
     if (repeatabilityMap.containsKey(dir))
       return repeatabilityMap.get(dir);
@@ -536,7 +539,7 @@ public class StitchingStatistics {
    * @return the repeatability
    */
   public boolean hasRepeatability(Direction dir, int timeSlice) {
-    HashMap<Direction, Integer> repeatabilityMap = this.repeatabilities.get(timeSlice);
+    HashMap<Direction, Integer> repeatabilityMap = this.repeatability.get(timeSlice);
     return repeatabilityMap.containsKey(dir);
   }
 
@@ -560,6 +563,17 @@ public class StitchingStatistics {
   public boolean isRunSequential(int timeslice) {
     return this.isRunSequential.get(timeslice);
   }
+
+  /**
+   * Gets whether a timeslice is has enabled freeing of pixel data or not
+   *
+   * @param timeslice the timeslice
+   * @return true if freeing pixel data is enabled, otherwise false
+   */
+  public boolean isEnableFreeingPixelData(int timeslice) {
+    return this.isEnableFreeingPixelData.get(timeslice);
+  }
+
 
   /**
    * Checks if a direction has an overlap
@@ -755,26 +769,6 @@ public class StitchingStatistics {
   }
 
   /**
-   * Gets the standard deviation threshold for a direction
-   *
-   * @param dir the direction
-   * @return the standard deviation threshold
-   */
-  public double getStdDevThreshold(Direction dir) {
-    return getStdDevThreshold(dir, currentTimeSlice);
-  }
-
-  /**
-   * Checks if the standard deviation threshold for a direction exists
-   *
-   * @param dir the direction
-   * @return true if the standard deviation threshold exists
-   */
-  public boolean hasStdDevThreshold(Direction dir) {
-    return hasStdDevThreshold(dir, currentTimeSlice);
-  }
-
-  /**
    * Gets the standard deviation threshold for a direction at a time slice
    *
    * @param dir       the direction
@@ -895,7 +889,7 @@ public class StitchingStatistics {
     String errorMessage = "";
 
     // Check no valid translations
-    for (Direction dir : Direction.values()) {
+    for (Direction dir : TileGrid.Direction.values()) {
 
       int numValid = getNumValidTilesAfterFilter(dir, timeSlice);
       if (numValid == 0) {
@@ -917,7 +911,7 @@ public class StitchingStatistics {
 
       double repeatability = getRepeatability(dir, timeSlice);
 
-      if (repeatability > OptimizationRepeatability.MaxRepeatability) {
+      if (repeatability > StageModel.MaxRepeatability) {
         updateErrorStatus(timeSlice, ErrorReportStatus.WARNING);
         errorMessage += "- Computed " + dir + " repeatability is high." + newLine;
       }
@@ -1008,10 +1002,8 @@ public class StitchingStatistics {
       writer.write("Java Version: " + System.getProperty("java.version") + newLine);
       writer.write("Operating System: " + System.getProperty("os.name") + " "
           + System.getProperty("os.arch") + " v" + System.getProperty("os.version") + newLine);
-      writer.write("CPU threads used for relative displacements: "
+      writer.write("CPU threads used: "
           + this.runParams.getAdvancedParams().getNumCPUThreads() + newLine);
-      writer.write("CPU threads used for global optimization: "
-          + Runtime.getRuntime().availableProcessors() + newLine);
       writer.write("Free memory available to JVM (GB): "
           + (Runtime.getRuntime().freeMemory() / 1024 / 1024 / 1024) + newLine);
       writer.write("Total memory available to JVM (GB): "
@@ -1032,7 +1024,6 @@ public class StitchingStatistics {
             for (CudaDeviceParam dev : cudaDevices) {
               writer.write(dev + newLine);
             }
-
             break;
           case FFTW:
             writer.write("FFTW Planning mode: " + this.runParams.getAdvancedParams().getFftwPlanType() + newLine);
@@ -1046,6 +1037,7 @@ public class StitchingStatistics {
         }
       }
 
+
       writer.write(newLine + "Execution timing and general information:" + newLine);
       writer.write("Statistics Output Version: " + VERSION + newLine);
       writer.write(newLine);
@@ -1056,17 +1048,18 @@ public class StitchingStatistics {
         if (this.runParams.getInputParams().isTimeSlicesEnabled())
           writer.write("Time slice: " + timeSlice + newLine);
 
-        if (this.isRunSequential(timeSlice))
-          writer.write("Running sequential version (LOW MEMORY)" + newLine);
-
         for (RunTimers timer : RunTimers.values()) {
           if (this.hasDuration(timer, timeSlice)) {
             writer.write(timer.toString() + " (ms): " + this.getDuration(timer, timeSlice) + newLine);
           }
         }
 
+        writer.write("Running sequential version (LOW MEMORY): " + this.isRunSequential(timeSlice) + newLine);
+        writer.write("Keep all pixel data in memory: " +
+            !this.isEnableFreeingPixelData(timeSlice) + newLine);
+
         writer.write(newLine);
-        for (Direction dir : Direction.values()) {
+        for (Direction dir : TileGrid.Direction.values()) {
           if (hasRepeatability(dir, timeSlice))
             writer.write(dir + " repeatability: " + getRepeatability(dir, timeSlice) + newLine);
 

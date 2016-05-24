@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -102,17 +99,12 @@ public class DblModel implements TextFieldModel<Double> {
 
   @Override
   public boolean validateText(String val) {
-    if (val.equals("")) {
-      if (this.allowEmpty)
-        return true;
-      return false;
-    }
+    if (val.equals(""))
+      return this.allowEmpty;
+
     try {
       double test = Double.parseDouble(val);
-
-      if (test < this.min || test > this.max)
-        return false;
-      return true;
+      return !(test < this.min || test > this.max);
     } catch (NumberFormatException e) {
       return false;
     }

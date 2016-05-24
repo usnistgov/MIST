@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,17 +25,29 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.inputTab;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
 import gov.nist.isg.mist.stitching.gui.components.dropdown.DropDownPanel;
-import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
-import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
-import gov.nist.isg.mist.stitching.gui.params.OutputParameters;
-import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader;
-import ij.ImagePlus;
 import gov.nist.isg.mist.stitching.gui.components.filechooser.DirectoryChooserPanel;
+import gov.nist.isg.mist.stitching.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
 import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.*;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.DualRegexResetImageSizeModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.RegexResetImageSizeModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TextFieldModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TimeslicesModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.UpdateSubGridModel;
 import gov.nist.isg.mist.stitching.gui.panels.outputTab.OutputPanel;
+import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
+import gov.nist.isg.mist.stitching.gui.params.OutputParameters;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
@@ -50,16 +59,7 @@ import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirect
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.LoaderType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoaderUtils;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.List;
+import ij.ImagePlus;
 
 /**
  * Creates the input panel
@@ -114,7 +114,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       + " rows. \n-The height of the image grid.";
   private static final String timeslicesHelp = "The number of timeslices to stitch. \n" +
       "Leave this field blank to stitch all timeslices. \n\n" +
-      "To stitch timeslices you must add the special format text \"{ttt}\" to the Filename Pattern. \n\n"+
+      "To stitch timeslices you must add the special format text \"{ttt}\" to the Filename Pattern. \n\n" +
       "If there is no special format text in the Filename Pattern then this field must be blank. \n\n" +
       "This input supports a comma separated list and/or range using a '-'. \n" +
       "Example: \n" +
@@ -640,12 +640,6 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
             queryStartTileNumber();
             queryStartTimeslice();
           }
-
-          if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, this.startTileNumber,
-              this.startTimeSlice, this.getLoaderType(), isClosing)) {
-            this.filenamePattern.showError();
-            return false;
-          }
         }
       }
 
@@ -657,16 +651,14 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       this.hasTimeSlices = false;
 
       // if no timeslice iterator is found, clear the timslices field
-      if(!this.timeSlices.getInputText().isEmpty()) {
+      if (!this.timeSlices.getInputText().isEmpty()) {
         // if timeslices are not empty, but they contains just "0", then a timeslice iterator is not required
-        if(!this.timeSlices.getInputText().contentEquals("0")) {
+        if (!this.timeSlices.getInputText().contentEquals("0")) {
           this.timeSlices.showError();
           Log.msg(LogType.MANDATORY, "No time-slice iterator found. Conflict between filename pattern and Timeslices.");
           return false;
         }
       }
-
-
 
 
       // check the current startTileNumber
@@ -677,12 +669,6 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
         if (!checkPosition(imageDirectory, positionPattern)) {
           if (!isClosing)
             queryStartTileNumber();
-        }
-
-        if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, this.startTileNumber,
-            this.getLoaderType(), isClosing)) {
-          this.filenamePattern.showError();
-          return false;
         }
       }
 

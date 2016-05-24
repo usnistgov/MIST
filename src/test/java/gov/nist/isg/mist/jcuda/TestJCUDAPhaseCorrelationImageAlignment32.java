@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +7,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -33,11 +31,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.memory.CudaTileWorkerMemory32;
 import gov.nist.isg.mist.timing.TimeUtil;
@@ -103,7 +101,7 @@ public class TestJCUDAPhaseCorrelationImageAlignment32 {
     neighbor.computeFft();
     origin.computeFft();
     CorrelationTriple result =
-        Stitching32.phaseCorrelationImageAlignmentCuda(neighbor,
+        Stitching.phaseCorrelationImageAlignmentCuda(neighbor,
             origin, memory, stream);
 
     Log.msg(LogType.MANDATORY, "Completed image alignment between " + neighbor.getFileName()

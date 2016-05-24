@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,13 +25,13 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels;
 
-import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
-import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import java.util.ArrayList;
-import java.util.List;
+import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaUtils;
 
 /**
  * Creates a table that shows all the available CUDA enabled GPUs.
@@ -85,10 +82,7 @@ public class CudaDeviceTableModel extends AbstractTableModel {
           }
         }
 
-        if (devFound)
-          this.selected[row] = true;
-        else
-          this.selected[row] = false;
+        this.selected[row] = devFound;
       }
 
     }

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,17 +25,10 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.outputTab;
 
-import gov.nist.isg.mist.stitching.gui.panels.inputTab.InputPanel;
-import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
-import gov.nist.isg.mist.stitching.StitchingGUIFrame;
-import gov.nist.isg.mist.stitching.gui.components.filechooser.DirectoryChooserPanel;
-import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
-import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.DblModel;
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.FilenameModel;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
-import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -46,10 +36,16 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
+import gov.nist.isg.mist.stitching.gui.components.filechooser.DirectoryChooserPanel;
+import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
+import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.DblModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.FilenameModel;
+import gov.nist.isg.mist.stitching.gui.panels.inputTab.InputPanel;
+import gov.nist.isg.mist.stitching.gui.panels.subgrid.SubgridPanel;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
+import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
 
 /**
  * Creates the output panel

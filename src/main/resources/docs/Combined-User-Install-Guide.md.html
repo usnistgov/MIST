@@ -62,7 +62,7 @@
 .markdown-preview[data-use-github-style] blockquote { padding: 0px 15px; color: rgb(119, 119, 119); border-left-width: 4px; border-left-style: solid; border-left-color: rgb(221, 221, 221); }
 .markdown-preview[data-use-github-style] blockquote > :first-child { margin-top: 0px; }
 .markdown-preview[data-use-github-style] blockquote > :last-child { margin-bottom: 0px; }
-.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: normal; }
+.markdown-preview[data-use-github-style] table { display: block; width: 100%; overflow: auto; word-break: keep-all; }
 .markdown-preview[data-use-github-style] table th { font-weight: bold; }
 .markdown-preview[data-use-github-style] table th, .markdown-preview[data-use-github-style] table td { padding: 6px 13px; border: 1px solid rgb(221, 221, 221); }
 .markdown-preview[data-use-github-style] table tr { border-top-width: 1px; border-top-style: solid; border-top-color: rgb(204, 204, 204); background-color: rgb(255, 255, 255); }
@@ -84,7 +84,7 @@
 .markdown-preview[data-use-github-style] span.float-right { display: block; float: right; margin-left: 13px; overflow: hidden; }
 .markdown-preview[data-use-github-style] span.float-right > span { display: block; margin: 13px auto 0px; overflow: hidden; text-align: right; }
 .markdown-preview[data-use-github-style] code, .markdown-preview[data-use-github-style] tt { padding: 0.2em 0px; margin: 0px; font-size: 85%; border-radius: 3px; background-color: rgba(0, 0, 0, 0.0392157); }
-.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: ' '; }
+.markdown-preview[data-use-github-style] code::before, .markdown-preview[data-use-github-style] tt::before, .markdown-preview[data-use-github-style] code::after, .markdown-preview[data-use-github-style] tt::after { letter-spacing: -0.2em; content: " "; }
 .markdown-preview[data-use-github-style] code br, .markdown-preview[data-use-github-style] tt br { display: none; }
 .markdown-preview[data-use-github-style] del code { text-decoration: inherit; }
 .markdown-preview[data-use-github-style] pre > code { padding: 0px; margin: 0px; font-size: 100%; word-break: normal; white-space: pre; border: 0px; background: transparent; }
@@ -100,7 +100,6 @@
 .markdown-preview[data-use-github-style] pre.editor-colors { padding: 0.8em 1em; margin-bottom: 1em; font-size: 0.85em; border-radius: 4px; overflow: auto; }
 .scrollbars-visible-always .markdown-preview pre.editor-colors::shadow .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors::shadow .horizontal-scrollbar { visibility: hidden; }
 .scrollbars-visible-always .markdown-preview pre.editor-colors:hover::shadow .vertical-scrollbar, .scrollbars-visible-always .markdown-preview pre.editor-colors:hover::shadow .horizontal-scrollbar { visibility: visible; }
-.markdown-preview code { text-shadow: none; }
 .bracket-matcher .region {
   border-bottom: 1px dotted lime;
   position: absolute;
@@ -321,7 +320,7 @@ pre.editor-colors .markdown .link .string,
 }
 </style>
   </head>
-  <body class='markdown-preview'><h1 id="mist-user-guide">MIST User Guide</h1>
+  <body class='markdown-preview' data-use-github-style><h1 id="mist-user-guide">MIST User Guide</h1>
 <h2 id="contents">Contents</h2>
 <h4 id="-user-guide-mist-user-guide-"><a href="#mist-user-guide">User Guide</a></h4>
 <ol>
@@ -450,7 +449,7 @@ pre.editor-colors .markdown .link .string,
 <p>The MIST plugin consists of five tabs. Below, we outline each tab and discuss all of the parameters. All options labeled with an * are required in order to start stitching. Each tab contains a <strong>?</strong> button that, when clicked, generates a local copy of this documentation.</p>
 <hr>
 <h4 id="input-parameters">Input Parameters</h4>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\InputWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/InputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Save Params</strong> Button - Saves all parameters in MIST to a file.</p>
 <p><strong>Preview (0% overlap)</strong> Button - Opens the image mosaic into Fiji assuming 0% overlap.</p>
@@ -479,7 +478,7 @@ pre.editor-colors .markdown .link .string,
 </blockquote>
 <hr>
 <h4 id="output-parameters">Output Parameters</h4>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\OutputWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/OutputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use Image Directory as Output Directory</strong> - Sets the output directory to be the same as the input directory.</p>
 <p><strong>Output Directory</strong> - Specifies the location to save images and run statistics.</p>
@@ -508,7 +507,7 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="subgrid-parameters">Subgrid Parameters</h4>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\SubgridWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/SubgridWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use full grid</strong> - Updates the subgrid to use the full grid of images.</p>
 <p><strong>Start Col</strong> - The start column for the subgrid.</p>
@@ -519,14 +518,16 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="advanced-parameters">Advanced Parameters</h4>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\AdvancedWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/AdvancedWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm. This value is specified in pixels.</p>
 <p><strong>Horizontal overlap</strong> - Sets the horizontal overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
 <p><strong>Vertical overlap</strong> - Sets the vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
 <p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables. This value is specified in percent. The value must be between 0 and 100. This value should generally not exceed 10. (Default: 5)</p>
+<p><strong>Use BioFormats Image Reader?</strong> - Specifies whether to use the BioFormats image reader as opposed to the ImageJ image reader. The ImageJ reader supports most common image file types and is faster than BioFormats. If the ImageJ reader cannot read an image being stitched, try using BioFormats as it supports more image types.</p>
+<p><strong>Use Double Precision Math?</strong> - Specifies whether the FFTs and other stitching computation is done using 32bit floats of 64bit doubles. The default is 32bit, but if you are not getting a satisfactory stitching try using double precision.</p>
+<p><strong>Translation Refinement Method</strong> - Specifies the type of translation refinement that is performed. Once the translations between images have been computed, the stage model is built to constrain the translations to reasonable values. Within the search space defined by the stage model an optimization of the pairwise translations takes place. The method of translation optimization/refinement is selected here. The default is a single hill climbing starting at the computed/estimated translation. This is the fastest option. If this proves ineffective for your dataset, multipoint hill climbing is available where, in addition to performing a hill climbing starting at the computed/estimated translation, <em>n</em> starting points are randomly selected within the search bounds and allowed to converge to local maxima. The number of starting points is user selected (default of 16). This is more robust than the single hill climb, but more computationally intensive. The final option, Exhaustive, checks every possible translation within the stage model bounds. This is extremely slow.</p>
 <p><strong>Number of FFT Peaks</strong> - Specifies the number of peaks to check when computing the phase correlation image alignment method. We have determined that modifying this value can yield more accurate pre-optimization displacements. This value should not exceed 10. (Default: 2)</p>
-<p><strong>Use Double Precision?</strong> - Specifies whether the FFTs and other stitching computation is done using 32bit floats of 64bit doubles. The default is 32bit, but if you are not getting a satisfactory stitching try using double precision.</p>
 <p><strong>Log Level</strong> - Sets the log level for the user interface and the stitching execution.
 Possible Options:</p>
 <ul>
@@ -557,13 +558,13 @@ Possible Options:</p>
 <hr>
 </blockquote>
 <h5 id="java-execution">Java Execution</h5>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\JavaWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/JavaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 </blockquote>
 <hr>
 <h5 id="fftw-execution">FFTW Execution</h5>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\FftwWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/FftwWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>FFTW Plan Type</strong> - The type of FFTW plan to generate</p>
@@ -583,28 +584,28 @@ Example Files:</p>
 <li>Mac OSX: libfftw3.dylib (default installation location &quot;/usr/local/lib&quot;)</li>
 </ul>
 <p><strong>Plan Location (or file)</strong> - The location to load FFTW plans. If a file is specified, the file will be used when loading the plan. This path is also used for saving plans.</p>
-<p><em>Note: <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide#fftw-installation">FFTW installation instructions</a></em></p>
+<p><em>Note: <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide#fftw-installation">FFTW installation instructions</a></em></p>
 </blockquote>
 <hr>
 <h5 id="cuda-execution">CUDA Execution</h5>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\CudaWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/CudaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>Execute Device Query</strong> - Queries for all GPUs installed on the system and prints the information to the log.</p>
 <p><strong>Refresh Device Table</strong> - Forces the table to re-query all GPUs and repopulate the table.</p>
 <p><strong>GPU Table</strong> - Displays all available GPUs found on the machine. To use one (or more) GPUs, click the check box in the <strong>Selected?</strong> column.
 <em>Note: GPUs have limited memories, it is recommended to use GPUs with at least 1 GB of graphics memory depending on the size of the image grid.</em></p>
-<p><em>Note: <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide#cuda-installation">CUDA Installation instructions</a></em></p>
+<p><em>Note: <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide#cuda-installation">CUDA Installation instructions</a></em></p>
 </blockquote>
 <hr>
 <h4 id="help">Help</h4>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\HelpWindow.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/HelpWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Open Local Help Documentation</strong> - Opens this document without an Internet connection.</p>
 </blockquote>
 <hr>
 <h3 id="mist-status-frame">MIST Status Frame</h3>
-<p><img src="C:\majurski\NISTGithub\MIST.wiki\images\MISTStatus.png" alt=""></p>
+<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/MISTStatus.png" alt=""></p>
 <blockquote>
 <p><strong>Progress</strong> - If timeslices are used, shows the current timeslice, total timeslices, and number of groups (if entered as a comma separated list in the input parameters).</p>
 <p><strong>Progress bar</strong> - Shows the % progress made for the current experiment.</p>
@@ -680,7 +681,7 @@ Possible Options:</p>
 <p> (If configure fails, additional compilers and/or libraries may be needed)</p>
 <ol>
 <li>Launch the Fiji MIST plugin</li>
-<li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="https://github.com/NIST-ISG/MIST/wiki/User-Guide#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
+<li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="https://github.com/USNISTGOV/MIST/wiki/User-Guide#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
 <li>Linux library name example: <em>libfftw3.so</em> (or similar)</li>
 <li>MacOSX library name example: <em>libfftw3.dylib</em> (or similar)</li>
 </ol>
@@ -691,7 +692,7 @@ Possible Options:</p>
 <ol>
 <li>From the command-line: <code>sudo port install fftw-3</code></li>
 <li>Launch the Fiji MIST plugin</li>
-<li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="https://github.com/NIST-ISG/MIST/wiki/User-Guide#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
+<li>Specify the FFTW library file in the <em>Advanced FFTW Options</em> <a href="https://github.com/USNISTGOV/MIST/wiki/User-Guide#fftw-execution">FFTW options user guide</a>  (default FFTW installation location is in /usr/local/lib)<ol>
 <li>Linux library name example: <em>libfftw3.so</em> (or similar)</li>
 <li>MacOSX library name example: <em>libfftw3.dylib</em> (or similar)</li>
 </ol>
@@ -864,7 +865,7 @@ Possible Options:</p>
 </li>
 </ol>
 <p>If pre-filtering is used it is possible to generate a stitched image from the original images using the global positions computed from the filtered images. This is done by first stitching the filtered images (to generate the global positions metadata file) and then assembling together the stitched image from the original images and the global positions from the filtered images. See the question on <a href="#how-to-stitch-from-metadata">how to stitch from metadata</a> for details on how to perform stitching from metadata.</p>
-<p>The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or <a href="https://github.com/NIST-ISG/MIST/issues">MIST Github Issues Page</a>.</p>
+<p>The developers are interested in problematic data sets. Issues with stitching can be submitted to nist-mist@nist.gov or <a href="https://github.com/USNISTGOV/MIST/issues">MIST Github Issues Page</a>.</p>
 <hr>
 <h2 id="what-if-the-output-stitched-image-is-too-big-to-be-saved">What if the output stitched image is too big to be saved</h2>
 <p>MIST is written in Java which has a maximum size for any array. The ImageJ image writer that MIST relies on uses a Java array to store the pixel data imposing a limit on the size of images that can be saved.</p>
@@ -874,7 +875,7 @@ Possible Options:</p>
 <hr>
 <h2 id="i-installed-the-cuda-toolkit-but-i-am-getting-a-cuda-exception">I installed the CUDA toolkit, but I am getting a CUDA Exception</h2>
 <p>Installing the CUDA toolkit might require a restart after the installation completes. If you attempt to run the MIST CUDA stitching before performing the restart you might get a CUDA Initialization error. If this happens restart your machine to allow the CUDA device to be initialized when MIST starts.</p>
-<p>Alternatively, ensure that you have the correct version of the CUDA toolkit installed. See the <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">Install Guide</a> for details.</p>
+<p>Alternatively, ensure that you have the correct version of the CUDA toolkit installed. See the <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide">Install Guide</a> for details.</p>
 <hr>
 <h2 id="the-fftw-version-does-not-work">The FFTW version does not work</h2>
 <p>If the FFTW <strong>Stitching Program</strong> type does not work the most likely reason is MIST cannot find the required library file.</p>
@@ -888,10 +889,10 @@ Possible Options:</p>
 <h4 id="windows">Windows</h4>
 <p>For Windows the correct FFTW library file should have been included with the plugin installation. To confirm this navigate to the folder where Fiji is installed. Then confirm the file &quot;libfftw3.dll&quot; exists in the path &quot;lib&quot; &gt;&gt; &quot;fftw&quot; in the directory Fiji is installed. The file might not be named exactly &quot;libfftw3.dll&quot;, however it will always end in &quot;.dll&quot;. If that file exists then confirm that MIST is pointing at that location in the advanced parameters tab. Open MIST, select the Advanced tab, select the FFTW <strong>Stitching Program</strong> type. Verify that <strong>FFTW Library File</strong> contains the path to the &quot;libfftw3.dll&quot; file you confirmed exists. Ensure the path does not just point to the correct folder, make sure that it points right at the library file. For example, &quot;C:\Fiji.app\lib\fftw\libfftw3.dll&quot;.</p>
 <h4 id="osx">OSX</h4>
-<p>For OSX (Mac) you must install FFTW before you are able to use the FFTW <strong>Stitching Program</strong> type. See the FFTW <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
+<p>For OSX (Mac) you must install FFTW before you are able to use the FFTW <strong>Stitching Program</strong> type. See the FFTW <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
 <p>Once FFTW in installed ensure that the <strong>FFTW Library File</strong> parameter under the MIST Advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.dylib&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;.</p>
 <h4 id="linux">Linux</h4>
-<p>For Linux you must install FFTW before you are able to use the FFTW Stitching Program type. See the FFTW <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
+<p>For Linux you must install FFTW before you are able to use the FFTW Stitching Program type. See the FFTW <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide">installation guide</a> for instructions on how to install FFTW.</p>
 <p>Once FFTW in installed ensure that the &quot;FFTW Library File&quot; parameter under the MIST advanced parameters tab points to the location where FFTW was installed. The library file should end with &quot;.so&quot;. The default location for the FFTW library is in &quot;/usr/local/lib&quot;.</p>
 <hr>
 <h2 id="my-stitching-performance-is-not-good">My stitching performance is not good</h2>
@@ -924,7 +925,7 @@ Possible Options:</p>
 <p>One of the MIST <strong>Stitching Program</strong> types is CUDA, which utilizes an NVidia GPU to accelerate the computation. The GPU needs to be CUDA compute capable 2.0 or greater. Also only NVidia GPUs will work as MIST relies on the CUDA toolkit which only works with NVidia GPUs. It is recommended that any GPUs have at least 1GB of graphics memory, but the actual required memory depends on the size of the image grid. For larger grids, 2GB or 4GB of graphics memory might be required. See the question <a href="#mist-encountered-an-out-of-memory-problem">MIST encountered an Out of Memory problem</a>, specifically the <a href="#cuda-mode">CUDA Mode</a> subsection for details on the GPU memory required.</p>
 <hr>
 <h2 id="i-have-a-gpu-in-my-machine-but-it-is-not-showing-up">I have a GPU in my machine but it is not showing up</h2>
-<p>Under the MIST Advanced parameters tab select the CUDA <strong>Stitching Program</strong> type. Press the button labeled <strong>Execute Device Query</strong> to call the CUDA device query and find which GPUs the CUDA system can find connected. If you expect to see a GPU which does not show up, check that you have the proper version of the CUDA toolkit is installed. See <a href="https://github.com/NIST-ISG/MIST/wiki/Install-Guide">CUDA Install Guide</a> for directions on how to install the CUDA toolkit version that is required. If the proper toolkit is installed and the GPU does not show up, the GPU might not have the required compute capability (compute capability of 3.0, Kepler architecture or newer), or it might not operate with CUDA in the manner MIST is expecting. Debugging GPU compatibility is beyond the scope of this FAQ.</p>
+<p>Under the MIST Advanced parameters tab select the CUDA <strong>Stitching Program</strong> type. Press the button labeled <strong>Execute Device Query</strong> to call the CUDA device query and find which GPUs the CUDA system can find connected. If you expect to see a GPU which does not show up, check that you have the proper version of the CUDA toolkit is installed. See <a href="https://github.com/USNISTGOV/MIST/wiki/Install-Guide">CUDA Install Guide</a> for directions on how to install the CUDA toolkit version that is required. If the proper toolkit is installed and the GPU does not show up, the GPU might not have the required compute capability (compute capability of 3.0, Kepler architecture or newer), or it might not operate with CUDA in the manner MIST is expecting. Debugging GPU compatibility is beyond the scope of this FAQ.</p>
 <hr>
 <h2 id="how-to-stitch-from-metadata">How to stitch from metadata</h2>
 <p>To stitch from metadata there must be a previous execution of MIST that generated the metadata the current stitching will use. In the previous run, MIST output several metadata files into the directory indicated by the <strong>Metadata Directory</strong> specified in the Output tab. To setup the new stitching from metadata, enter the new image grid information into the Input tab. Turn the <strong>Assemble From Metadata</strong> checkbox on. This will enable the <strong>Global Positions File</strong> box. Enter into <strong>Global Positions File</strong> the filepath to the global positions metadata file from which you want to stitch. The global positions file file contains the final positions of each individual image tile in the output stitched image and those positions are used to assemble the new images into a mosaic.</p>
@@ -959,7 +960,7 @@ Possible Options:</p>
 <p>The <strong>Stage Repeatability</strong> value can be entered into MIST under the advanced parameters tab of the GUI. MIST expects a <strong>Stage Repeatability</strong> values in pixels.</p>
 <hr>
 <h2 id="submitting-issue-or-bug-report">Submitting issue or bug report</h2>
-<p>The code for MIST is being stored and managed on Github which has the functionality to report and track issues. To report a bug go to the <a href="https://github.com/NIST-ISG/MIST">MIST Github page</a> and select &quot;Issues&quot; on the right hand side of the page. Or go directly to the <a href="https://github.com/NIST-ISG/MIST/issues">Issues page</a>. To create a new issue select the green &quot;New Issue&quot; button on the top right side of the page.</p>
+<p>The code for MIST is being stored and managed on Github which has the functionality to report and track issues. To report a bug go to the <a href="https://github.com/USNISTGOV/MIST">MIST Github page</a> and select &quot;Issues&quot; on the right hand side of the page. Or go directly to the <a href="https://github.com/USNISTGOV/MIST/issues">Issues page</a>. To create a new issue select the green &quot;New Issue&quot; button on the top right side of the page.</p>
 <p>When posting in issue please be as specific as you can and if possible include the following data generated by MIST from the stitching experiment that encountered the error.</p>
 <ol>
 <li>The contents of the Log window in Fiji.<ul>

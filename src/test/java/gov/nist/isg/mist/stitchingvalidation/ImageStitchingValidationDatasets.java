@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +7,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,19 +26,16 @@
 
 package gov.nist.isg.mist.stitchingvalidation;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import java.io.File;
+
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import javax.swing.*;
-
-import java.io.File;
 
 public class ImageStitchingValidationDatasets {
 
@@ -76,12 +71,11 @@ public class ImageStitchingValidationDatasets {
 //    JFrame frame = new JFrame("Select CUDA Devices");
 //    JOptionPane.showMessageDialog(frame, cudaPanel);
 
-    Log.setLogLevel(LogType.NONE);
+    Log.setLogLevel(LogType.MANDATORY);
 
     StitchingAppParams params;
 
     for (File r : roots) {
-
 
       if (!r.isDirectory())
         continue;
@@ -100,7 +94,7 @@ public class ImageStitchingValidationDatasets {
       params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
-      params.getAdvancedParams().setNumCPUThreads(20);
+      params.getAdvancedParams().setNumCPUThreads(12);
 
 
       for (StitchingType t : StitchingType.values()) {
@@ -113,22 +107,21 @@ public class ImageStitchingValidationDatasets {
         }
 
 
-
-        File metaDataPath = new File(r, "PRECISION");
+        File metaDataPath = new File(r, "VALID");
         params.getOutputParams().setOutputPath(metaDataPath.getAbsolutePath());
 
 
-        // Run the single precision version
-        System.out.println("Stitching Type: " + t + "32");
-        params.getAdvancedParams().setUseDoublePrecision(false);
-        params.getOutputParams().setOutFilePrefix(t.name().toLowerCase() + "32-");
-        params.getAdvancedParams().setProgramType(t);
-
-        try {
-          (new StitchingExecutor(params)).runStitching(false, false, false);
-        } catch (StitchingException e) {
-          Log.msg(LogType.MANDATORY, e.getMessage());
-        }
+//        // Run the single precision version
+//        System.out.println("Stitching Type: " + t + "32");
+//        params.getAdvancedParams().setUseDoublePrecision(false);
+//        params.getOutputParams().setOutFilePrefix(t.name().toLowerCase() + "32-");
+//        params.getAdvancedParams().setProgramType(t);
+//
+//        try {
+//          (new StitchingExecutor(params)).runStitching(false, false, false);
+//        } catch (StitchingException e) {
+//          Log.msg(LogType.MANDATORY, e.getMessage());
+//        }
 
 
         // Run the double precision version

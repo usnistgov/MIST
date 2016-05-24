@@ -2,9 +2,6 @@
   <artifact type="jar" build-on-make="true" name="BenchmarkTiming">
     <output-path>$PROJECT_DIR$/out/artifacts/BenchmarkTiming</output-path>
     <root id="archive" name="MIST_.jar">
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
-      </element>
       <element id="module-output" name="MIST_" />
       <element id="module-test-output" name="MIST_" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/nativelibs4java/bridj/0.6.2/bridj-0.6.2.jar" path-in-jar="/" />

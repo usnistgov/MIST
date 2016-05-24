@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: gov.nist.isg.mist.stitchingvalidation.BenchmarkTiming
+Main-Class: gov.nist.isg.mist.stitchingruntime.LowMemoryStitchingEvalu
+ ation
 

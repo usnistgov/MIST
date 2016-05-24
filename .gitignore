@@ -1,14 +1,19 @@
-/bin/
-/out/
-\bin\
-\out\
-.classpath
 *.dat
 *.class
+
+# LaTex generated files
+doc/*.aux
+doc/*.bbl
+doc/*.blg
+doc/*.log
+doc/*.out
+doc/*.pdf
+doc/*.synctex.gz
+doc/*.toc
+
+# Intellij Folders
+out
 target
 
-
-target/classes/docs/Combined-User-Install-Guide.md.html
+# User-specific IntlliJ workspace:
 .idea/workspace.xml
-.idea\workspace.xml
-.idea/codeStyleSettings.xml

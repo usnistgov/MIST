@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,11 +25,11 @@
 
 package gov.nist.isg.mist.stitching.gui.components.buttongroup;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.*;
 import java.util.Enumeration;
+
+import javax.swing.*;
+import javax.swing.border.Border;
 
 /**
  * ButtonGroupPanel is used as a wrapper to contain a button group of radio buttons into a single

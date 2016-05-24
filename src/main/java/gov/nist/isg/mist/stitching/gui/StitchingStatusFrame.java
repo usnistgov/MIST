@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,16 +25,6 @@
 
 package gov.nist.isg.mist.stitching.gui;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.gui.images.AppImageHelper;
-import ij.gui.GUI;
-import gov.nist.isg.mist.stitching.lib.log.Debug;
-import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +33,16 @@ import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
+
+import javax.swing.*;
+
+import gov.nist.isg.mist.stitching.gui.images.AppImageHelper;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.log.Debug;
+import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
+import ij.gui.GUI;
 
 /**
  * Creates a windows to display the status of the stitching application

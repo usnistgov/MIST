@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -34,8 +31,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib32.imagetile.Stitching32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
@@ -88,11 +85,11 @@ public class CudaTileWorkerMemory32 extends TileWorkerMemory {
     JCudaDriver.cuMemAlloc(this.multiMaxOut, super.getWidth() * super.getHeight() * Sizeof.FLOAT);
     JCudaDriver.cuMemAllocHost(this.idxOut, super.getWidth() * super.getHeight() * Sizeof.INT);
     JCudaDriver.cuMemAllocHost(this.multiIdxOut, super.getWidth() * super.getHeight() * Sizeof.INT);
-    JCudaDriver.cuMemAllocHost(this.idxFilter, Stitching32.NUM_PEAKS * Sizeof.INT);
+    JCudaDriver.cuMemAllocHost(this.idxFilter, Stitching.NUM_PEAKS * Sizeof.INT);
 
     this.imageBuffer = ByteBuffer.allocateDirect(super.getWidth() * super.getHeight() * Sizeof.FLOAT);
     this.indexBuffer = ByteBuffer.allocateDirect(super.getWidth() * super.getHeight() * Sizeof.INT);
-    this.filterBuffer = ByteBuffer.allocateDirect(Stitching32.NUM_PEAKS * Sizeof.INT);
+    this.filterBuffer = ByteBuffer.allocateDirect(Stitching.NUM_PEAKS * Sizeof.INT);
 
     this.imageBuffer.order(ByteOrder.LITTLE_ENDIAN);
     this.indexBuffer.order(ByteOrder.LITTLE_ENDIAN);

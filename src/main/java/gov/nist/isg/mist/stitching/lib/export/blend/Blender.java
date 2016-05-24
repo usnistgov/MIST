@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,9 +25,9 @@
 package gov.nist.isg.mist.stitching.lib.export.blend;
 
 import gov.nist.isg.mist.stitching.lib.common.Array2DView;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
 
 /**
  * Blending interface

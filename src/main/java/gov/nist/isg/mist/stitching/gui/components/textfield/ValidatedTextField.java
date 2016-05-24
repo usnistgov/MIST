@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +25,16 @@
 
 package gov.nist.isg.mist.stitching.gui.components.textfield;
 
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TextFieldModel;
+import java.awt.*;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 
-import java.awt.*;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.TextFieldModel;
 
 /**
  * Creates a text field that is validated by a validator.

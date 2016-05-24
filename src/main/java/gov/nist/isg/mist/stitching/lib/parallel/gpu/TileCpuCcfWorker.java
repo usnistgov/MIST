@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,24 +25,23 @@
 
 package gov.nist.isg.mist.stitching.lib.parallel.gpu;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.PriorityBlockingQueue;
+
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
+import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.log.Debug;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.imagetile.ImageTile;
-import gov.nist.isg.mist.stitching.lib.imagetile.Stitching;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask;
 import gov.nist.isg.mist.stitching.lib.parallel.common.StitchingTask.TaskType;
-
-import javax.swing.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.PriorityBlockingQueue;
 
 /**
  * Class that represents a CCF (cross correlation function) worker, which are CPU threads that
@@ -109,27 +105,34 @@ public class TileCpuCcfWorker<T> implements Runnable {
           else
             north = true;
 
-          for (int index : indices) {
-            int x = index % tile.getWidth();
-            int y = index / tile.getWidth();
 
-            if (west)
-              multi_ccfs.add(Stitching.peakCrossCorrelationLR(neighbor, tile, x, y));
-            else if (north)
-              multi_ccfs.add(Stitching.peakCrossCorrelationUD(neighbor, tile, x, y));
+          CorrelationTriple corr = new CorrelationTriple(-1.0, 0, 0);
+          // If both image tiles exist on disk
+          if (tile.fileExists() && neighbor.fileExists()) {
+
+            for (int index : indices) {
+              int x = index % tile.getWidth();
+              int y = index / tile.getWidth();
+
+              if (west)
+                multi_ccfs.add(Stitching.peakCrossCorrelationLR(neighbor, tile, x, y));
+              else if (north)
+                multi_ccfs.add(Stitching.peakCrossCorrelationUD(neighbor, tile, x, y));
+            }
+
+            corr = Collections.max(multi_ccfs);
           }
 
-          CorrelationTriple corr = Collections.max(multi_ccfs);
           if (north) {
             tile.setNorthTranslation(corr);
             Log.msg(LogType.HELPFUL, "N: " + tile.getFileName() + " -> " + neighbor.getFileName()
                 + " x: " + tile.getNorthTranslation().getMatlabFormatStrX() + " y: "
                 + tile.getNorthTranslation().getMatlabFormatStrY() + " ccf: "
                 + tile.getNorthTranslation().getMatlatFormatStrCorr());
+
+
             incProgressBar();
-
             incCount();
-
             decrementAndReleasePixels(tile);
             decrementAndReleasePixels(neighbor);
           } else if (west) {
@@ -141,7 +144,6 @@ public class TileCpuCcfWorker<T> implements Runnable {
 
             incProgressBar();
             incCount();
-
             decrementAndReleasePixels(tile);
             decrementAndReleasePixels(neighbor);
           }

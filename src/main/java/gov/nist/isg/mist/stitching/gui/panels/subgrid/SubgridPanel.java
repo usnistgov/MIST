@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,23 +25,23 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.subgrid;
 
-import gov.nist.isg.mist.stitching.gui.images.AppImageHelper;
-import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
-import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.CheckSubGridAndFileSizeModel;
-import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.CheckSubGridOneBasedModel;
-import gov.nist.isg.mist.stitching.gui.panels.inputTab.InputPanel;
-import gov.nist.isg.mist.stitching.gui.panels.outputTab.OutputPanel;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
-
-import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import javax.swing.*;
+
+import gov.nist.isg.mist.stitching.gui.components.helpDialog.HelpDocumentationViewer;
+import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.CheckSubGridAndFileSizeModel;
+import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.CheckSubGridOneBasedModel;
+import gov.nist.isg.mist.stitching.gui.images.AppImageHelper;
+import gov.nist.isg.mist.stitching.gui.panels.inputTab.InputPanel;
+import gov.nist.isg.mist.stitching.gui.panels.outputTab.OutputPanel;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
 
 /**
  * Creates the advanced options panel
@@ -401,9 +398,7 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
   @Override
   public boolean checkGUIArgs() {
-    if (isValidSubGrid())
-      return true;
-    return false;
+    return isValidSubGrid();
   }
 
   private boolean loadingParams = false;

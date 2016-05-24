@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,13 +7,12 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,23 +26,22 @@
 
 package gov.nist.isg.mist.stitchingruntime;
 
-import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
-import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
-import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
-import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
-import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
-import gov.nist.isg.mist.stitching.lib.log.Log;
-import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-import gov.nist.isg.mist.stitching.lib.optimization.OptimizationUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+
+import gov.nist.isg.mist.stitching.gui.StitchingStatistics;
+import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
+import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
+import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
+import gov.nist.isg.mist.stitching.lib.log.Log;
+import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 
 public class ImageStitchingRunTime {
 
@@ -109,14 +106,13 @@ public class ImageStitchingRunTime {
     System.out.println("fftwPlanPath: \"" + fftwPlanPath + "\"");
     System.out.println("fftwLibPath: \"" + fftwLibraryPath + "\"");
 
-    useMLE = true;
-    runFolder(useMLE);
+    runFolder();
 
 
     System.exit(1);
   }
 
-  private static void runFolder(boolean useMLE) {
+  private static void runFolder() {
     // get all folders in root folder
     File rootFolder = new File(validationRootFolder);
     if (!rootFolder.exists() && !rootFolder.isDirectory()) {
@@ -137,11 +133,7 @@ public class ImageStitchingRunTime {
     StitchingAppParams params;
 
     File runtimeResults;
-    if (useMLE) {
-      runtimeResults = new File(validationRootFolder + File.separator + "mle-runtimes.txt");
-    } else {
-      runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
-    }
+    runtimeResults = new File(validationRootFolder + File.separator + "runtimes.txt");
     try {
       FileWriter writer = new FileWriter(runtimeResults);
       writer.write("testCase, totalTime" + "\n");
@@ -180,18 +172,6 @@ public class ImageStitchingRunTime {
         params.getOutputParams().setOutputFullImage(true);
         params.getOutputParams().setDisplayStitching(false);
 //      params.getAdvancedParams().setNumCPUThreads(8);
-
-        if (useMLE) {
-          params.getAdvancedParams()
-              .setOverlapComputationType(OptimizationUtils.OverlapType.MLE);
-          params.getAdvancedParams()
-              .setTranslationFilterType(OptimizationUtils.TranslationFilterType.Outlier);
-        } else {
-          params.getAdvancedParams()
-              .setOverlapComputationType(OptimizationUtils.OverlapType.Heuristic);
-          params.getAdvancedParams()
-              .setTranslationFilterType(OptimizationUtils.TranslationFilterType.StandardDeviation);
-        }
 
 
         for (StitchingType t : StitchingType.values()) {

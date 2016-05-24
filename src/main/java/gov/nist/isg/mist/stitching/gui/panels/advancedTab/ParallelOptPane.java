@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,24 +25,24 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.advancedTab;
 
-import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
-import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.FFTWPanel;
-import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.JavaPanel;
-import jcuda.LibUtils.ARCHType;
-import gov.nist.isg.mist.stitching.gui.components.buttongroup.ButtonGroupPanel;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
-import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
-import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
-import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Enumeration;
+import gov.nist.isg.mist.stitching.gui.components.buttongroup.ButtonGroupPanel;
+import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
+import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.FFTWPanel;
+import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.JavaPanel;
+import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
+import jcuda.LibUtils.ARCHType;
 
 /**
  * Creates the parallel options panel

@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -26,10 +23,14 @@
 // ================================================================
 package gov.nist.isg.mist.stitching.gui.params.utils;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import java.util.List;
+import java.util.prefs.Preferences;
+
 import gov.nist.isg.mist.stitching.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.stitching.gui.params.objects.RangeParam;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.stitching.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.stitching.lib.log.Debug.DebugType;
 import gov.nist.isg.mist.stitching.lib.log.Log;
@@ -37,9 +38,6 @@ import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridDirection;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.stitching.lib.tilegrid.loader.TileGridLoader.LoaderType;
-
-import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * Preferences utility functions
@@ -132,6 +130,26 @@ public class PreferencesUtils {
     }
 
     return progType;
+  }
+
+  /**
+   * Loads the translation refinement type from preferences
+   *
+   * @param pref the preferences
+   * @param key  the key value
+   * @param def  the default value
+   * @return the program type
+   */
+  public static TranslationRefinementType loadPrefTransRefineType(Preferences pref,
+                                                                  String key, String def) {
+    String res = pref.get(key, def);
+
+    TranslationRefinementType type = TranslationRefinementType.valueOf(res.toUpperCase());
+
+    if (type == null)
+      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid TranslationRefinementType");
+
+    return type;
   }
 
   /**

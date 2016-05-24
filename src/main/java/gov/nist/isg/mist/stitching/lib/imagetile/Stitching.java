@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,8 +25,19 @@
 
 package gov.nist.isg.mist.stitching.lib.imagetile;
 
-import gov.nist.isg.mist.stitching.gui.StitchingGuiUtils;
-import gov.nist.isg.mist.stitching.lib.common.Array2DView;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import gov.nist.isg.mist.correlation.CorrelationUtils;
 import gov.nist.isg.mist.stitching.lib.common.CorrelationTriple;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.fftw.FftwStitching;
@@ -37,29 +45,17 @@ import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.java.JavaStitching;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaImageTile;
 import gov.nist.isg.mist.stitching.lib.imagetile.jcuda.CudaStitching;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.CudaTileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.FftwTileWorkerMemory;
-import gov.nist.isg.mist.stitching.lib.imagetile.memory.JavaTileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.imagetile.memory.TileWorkerMemory;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
 import gov.nist.isg.mist.stitching.lib.tilegrid.TileGrid;
-import gov.nist.isg.mist.stitching.lib.tilegrid.traverser.TileGridTraverser;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwImageTile32;
 import gov.nist.isg.mist.stitching.lib32.imagetile.fftw.FftwStitching32;
-import jcuda.Sizeof;
-import jcuda.driver.*;
-import gov.nist.isg.mist.stitching.lib.memorypool.CudaAllocator;
-import gov.nist.isg.mist.stitching.lib.memorypool.DynamicMemoryPool;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.*;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.java.JavaStitching32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaImageTile32;
+import gov.nist.isg.mist.stitching.lib32.imagetile.jcuda.CudaStitching32;
+import jcuda.driver.CUstream;
 
 /**
  * Utility functions for stitching image tiles.
@@ -69,29 +65,59 @@ import javax.swing.*;
  */
 public class Stitching {
 
+
   /**
-   * Whether to use hillclimbing or not
+   * Whether to use BioFormats to read the images
    */
-  public static boolean USE_HILLCLIMBING = true;
-
-  // use an exhaustive search of +-(2r+1) instead of hill climbing
-  // This is a debugging tool, it is computationally very expensive
-  public static boolean USE_EXHAUSTIVE_INSTEAD_OF_HILLCLIMB_SEARCH = false;
-
-
+  public static boolean USE_BIOFORMATS = false;
   /**
    * The number of FFT peaks to check
    */
   public static int NUM_PEAKS = 2;
 
-  /**
-   * The correlation threshold for checking the number of peaks
-   */
-  @Deprecated
-  public static final double CORR_THRESHOLD = 0.9;
 
   /**
-   * Defintes hill climbing direction using cartesian coordinates when observering a two dimensional
+   * Defines the Normalized Cross Correlation search mechanism. Within the stage model repeatability
+   * bound the normalized cross correlation is optimized. The optimization mechanism is defined
+   * here.
+   *
+   * @author Michael Majurski
+   */
+  public static enum TranslationRefinementType {
+    /**
+     * Performs a single hill climb starting at the computed or estimated translation.
+     */
+    SINGLE_HILL_CLIMB("Single Hill Climb"),
+
+    /**
+     * Performs multiple hill climbs. The first starts from the computed or estimated translation .
+     * The next n (defined by parameter) hill climbs start at randomly selected points within the
+     * search bounds.
+     */
+    MULTI_POINT_HILL_CLIMB("Multipoint Hill Climb"),
+
+    /**
+     * Performs an exhaustive search of the stage model repeatability bounds to find the optimal
+     * cross correlation offset.
+     */
+    EXHAUSTIVE("Exhaustive");
+
+    private TranslationRefinementType(final String text) {
+      this.text = text;
+    }
+
+    private final String text;
+
+
+    @Override
+    public String toString() {
+      return this.text;
+    }
+  }
+
+
+  /**
+   * Defintes hill climbing direction using cartesian coordinates when observing a two dimensional
    * grid where the upper left corner is 0,0. Moving north -1 in the y-direction, south +1 in the
    * y-direction, west -1 in the x-direction, and east +1 in the x-direction.
    *
@@ -99,13 +125,12 @@ public class Stitching {
    * @version 1.0
    */
   enum HillClimbDirection {
-    North(0, -1), South(0, 1), East(1, 0), West(-1, 0), NorthEast(1, -1), NorthWest(-1, -1), SouthEast(
-        1, 1), SouthWest(-1, 1), NoMove(0, 0);
+    North(0, -1), South(0, 1), East(1, 0), West(-1, 0), NoMove(0, 0);
 
     private int xDir;
     private int yDir;
 
-    private HillClimbDirection(int x, int y) {
+    HillClimbDirection(int x, int y) {
       this.xDir = x;
       this.yDir = y;
     }
@@ -130,7 +155,7 @@ public class Stitching {
    */
   public static <T> CorrelationTriple phaseCorrelationImageAlignment(ImageTile<T> t1,
                                                                      ImageTile<T> t2,
-                                                                     TileWorkerMemory memory) throws FileNotFoundException {
+                                                                     TileWorkerMemory memory) {
 
     if (t1 instanceof JavaImageTile)
       return JavaStitching.phaseCorrelationImageAlignment((JavaImageTile) t1, (JavaImageTile) t2,
@@ -140,6 +165,15 @@ public class Stitching {
           memory);
     else if (t1 instanceof CudaImageTile)
       return CudaStitching.phaseCorrelationImageAlignment((CudaImageTile) t1, (CudaImageTile) t2,
+          memory, null);
+    else if (t1 instanceof JavaImageTile32)
+      return JavaStitching32.phaseCorrelationImageAlignment((JavaImageTile32) t1, (JavaImageTile32) t2,
+          memory);
+    else if (t1 instanceof FftwImageTile32)
+      return FftwStitching32.phaseCorrelationImageAlignment((FftwImageTile32) t1, (FftwImageTile32) t2,
+          memory);
+    else if (t1 instanceof CudaImageTile32)
+      return CudaStitching32.phaseCorrelationImageAlignment((CudaImageTile32) t1, (CudaImageTile32) t2,
           memory, null);
     else
       return null;
@@ -155,10 +189,10 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentJava(JavaImageTile t1,
-                                                                     JavaImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
-    return JavaStitching.phaseCorrelationImageAlignment(t1, t2,
-        memory);
+                                                                     JavaImageTile t2, TileWorkerMemory memory) {
+    return JavaStitching.phaseCorrelationImageAlignment(t1, t2, memory);
   }
+
 
   /**
    * Computes the phase correlation between two images using FFTW
@@ -169,8 +203,23 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile t1,
-                                                                     FftwImageTile t2, TileWorkerMemory memory) throws FileNotFoundException {
+                                                                     FftwImageTile t2, TileWorkerMemory memory) {
     return FftwStitching.phaseCorrelationImageAlignment(t1, t2, memory);
+  }
+
+
+  /**
+   * Computes the phase correlation between two images using FFTW32
+   *
+   * @param t1     the neighboring tile
+   * @param t2     the current tile
+   * @param memory the tile worker memory
+   * @return the correlation triple between these two tiles
+   */
+  public static CorrelationTriple phaseCorrelationImageAlignmentFftw(FftwImageTile32 t1,
+                                                                     FftwImageTile32 t2,
+                                                                     TileWorkerMemory memory) {
+    return FftwStitching32.phaseCorrelationImageAlignment(t1, t2, memory);
   }
 
 
@@ -184,174 +233,26 @@ public class Stitching {
    * @return the correlation triple between these two tiles
    */
   public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile t1,
-                                                                     CudaImageTile t2, TileWorkerMemory memory, CUstream stream) throws FileNotFoundException {
+                                                                     CudaImageTile t2, TileWorkerMemory memory, CUstream stream) {
     return CudaStitching.phaseCorrelationImageAlignment(t1, t2, memory, stream);
   }
 
-
   /**
-   * Stitching a grid of tiles using a traverser
+   * Computes the phase correlation between images using CUDA
    *
-   * @param traverser the traverser on how to traverse the grid
-   * @param grid      the grid of tiles to stitch
+   * @param t1     the neighboring tile
+   * @param t2     the current tile
+   * @param memory the tile worker memory
+   * @param stream the CUDA stream
+   * @return the correlation triple between these two tiles
    */
-  public static <T> void stitchGridFftw(TileGridTraverser<ImageTile<T>> traverser,
-                                        TileGrid<ImageTile<T>> grid) throws FileNotFoundException {
-    TileWorkerMemory memory = null;
-    for (ImageTile<?> t : traverser) {
-      t.setThreadID(0);
-
-      t.readTile();
-
-      if (memory == null) {
-        memory = new FftwTileWorkerMemory(t);
-      }
-      int row = t.getRow();
-      int col = t.getCol();
-
-      t.computeFft();
-
-      if (col > grid.getStartCol()) {
-        ImageTile<?> west = grid.getTile(row, col - 1);
-        t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) west,
-            (FftwImageTile) t,
-            memory));
-
-        Log.msgNoTime(
-            LogType.HELPFUL,
-            " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName() + "\"): "
-                + t.getWestTranslation());
-
-        t.decrementFftReleaseCount();
-        west.decrementFftReleaseCount();
-
-        if (t.getFftReleaseCount() == 0)
-          t.releaseFftMemory();
-
-        if (west.getFftReleaseCount() == 0)
-          west.releaseFftMemory();
-
-      }
-
-      if (row > grid.getStartRow()) {
-        ImageTile<?> north = grid.getTile(row - 1, col);
-
-        t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentFftw((FftwImageTile) north,
-            (FftwImageTile) t,
-            memory));
-
-        Log.msgNoTime(
-            LogType.HELPFUL,
-            " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName() + "\"): "
-                + t.getNorthTranslation());
-
-        t.decrementFftReleaseCount();
-        north.decrementFftReleaseCount();
-
-        if (t.getFftReleaseCount() == 0)
-          t.releaseFftMemory();
-
-        if (north.getFftReleaseCount() == 0)
-          north.releaseFftMemory();
-
-      }
-    }
-
+  public static CorrelationTriple phaseCorrelationImageAlignmentCuda(CudaImageTile32 t1,
+                                                                     CudaImageTile32 t2,
+                                                                     TileWorkerMemory memory,
+                                                                     CUstream stream) {
+    return CudaStitching32.phaseCorrelationImageAlignment(t1, t2, memory, stream);
   }
 
-  /**
-   * Stitching a grid of tiles using a traverser
-   *
-   * @param traverser the traverser on how to traverse the grid
-   * @param grid      the grid of tiles to stitch
-   * @param context   the GPU context
-   */
-  public static void stitchGridCuda(TileGridTraverser<ImageTile<CUdeviceptr>> traverser,
-                                    TileGrid<ImageTile<CUdeviceptr>> grid, CUcontext context) throws FileNotFoundException {
-    TileWorkerMemory memory = null;
-    DynamicMemoryPool<CUdeviceptr> memoryPool = null;
-
-    JCudaDriver.cuCtxSetCurrent(context);
-
-    int dev = 0;
-    CUstream stream = new CUstream();
-    JCudaDriver.cuStreamCreate(stream, CUstream_flags.CU_STREAM_DEFAULT);
-
-    CudaImageTile.bindBwdPlanToStream(stream, dev);
-    CudaImageTile.bindFwdPlanToStream(stream, dev);
-
-    double pWidth = grid.getExtentWidth();
-    double pHeight = grid.getExtentHeight();
-    // TODO work out why there is a +20 at the end of this math
-    int memoryPoolSize = (int) Math.ceil(Math.sqrt(pWidth * pWidth + pHeight * pHeight)) + 20;
-
-    for (ImageTile<CUdeviceptr> t : traverser) {
-      t.setDev(dev);
-      t.setThreadID(0);
-
-      t.readTile();
-
-      if (memoryPool == null) {
-        int[] size = {CudaImageTile.fftSize * Sizeof.DOUBLE * 2};
-
-        memoryPool =
-            new DynamicMemoryPool<CUdeviceptr>(memoryPoolSize, false, new CudaAllocator(), size);
-      }
-
-      if (memory == null)
-        memory = new CudaTileWorkerMemory(t);
-
-      int row = t.getRow();
-      int col = t.getCol();
-
-      t.allocateFftMemory(memoryPool);
-
-      t.computeFft(memoryPool, memory, stream);
-
-      if (col > grid.getStartCol()) {
-        ImageTile<CUdeviceptr> west = grid.getTile(row, col - 1);
-        t.setWestTranslation(Stitching.phaseCorrelationImageAlignmentCuda((CudaImageTile) west,
-            (CudaImageTile) t, memory, stream));
-
-        Log.msg(LogType.HELPFUL, " pciam_W(\"" + t.getFileName() + "\",\"" + west.getFileName()
-            + "\"): " + t.getWestTranslation());
-
-        t.decrementFftReleaseCount();
-        west.decrementFftReleaseCount();
-
-        if (west.getFftReleaseCount() == 0) {
-          west.releaseFftMemory(memoryPool);
-        }
-
-      }
-
-      if (row > grid.getStartRow()) {
-        ImageTile<CUdeviceptr> north = grid.getTile(row - 1, col);
-
-        t.setNorthTranslation(Stitching.phaseCorrelationImageAlignmentCuda((CudaImageTile) north,
-            (CudaImageTile) t,
-            memory, stream));
-
-        Log.msg(LogType.HELPFUL, " pciam_N(\"" + north.getFileName() + "\",\"" + t.getFileName()
-            + "\"): " + t.getNorthTranslation());
-
-        t.decrementFftReleaseCount();
-        north.decrementFftReleaseCount();
-
-        if (north.getFftReleaseCount() == 0) {
-
-          north.releaseFftMemory(memoryPool);
-
-        }
-
-      }
-
-      if (t.getFftReleaseCount() == 0) {
-        t.releaseFftMemory(memoryPool);
-      }
-    }
-
-  }
 
   /**
    * Prints the absolute positions of all tiles in a grid. Requires logging level of helpful.
@@ -415,10 +316,11 @@ public class Stitching {
       for (int r = 0; r < grid.getExtentHeight(); r++) {
         for (int c = 0; c < grid.getExtentWidth(); c++) {
           ImageTile<T> t = grid.getSubGridTile(r, c);
-
-          writer.write("file: " + t.getFileName() + "; corr: " + t.getTileCorrelationStr()
-              + "; position: (" + t.getAbsXPos() + ", " + t.getAbsYPos() + "); grid: ("
-              + t.getCol() + ", " + t.getRow() + ");" + newLine);
+          if (t.fileExists()) {
+            writer.write("file: " + t.getFileName() + "; corr: " + t.getTileCorrelationStr()
+                + "; position: (" + t.getAbsXPos() + ", " + t.getAbsYPos() + "); grid: ("
+                + t.getCol() + ", " + t.getRow() + ");" + newLine);
+          }
         }
       }
 
@@ -620,7 +522,7 @@ public class Stitching {
 
   /**
    * Complex the peak cross correlation (up/down) between two images. Given an x,y position, we
-   * analyze the 4 possible positions relative to eachother: { {y, x}, {y, w - x}, {h - y, x}, {h -
+   * analyze the 4 possible positions relative to each other: { {y, x}, {y, w - x}, {h - y, x}, {h -
    * y, w - x}};
    *
    * @param t1 image 1 (neighbor)
@@ -635,17 +537,25 @@ public class Stitching {
     int h = t1.getHeight();
     List<CorrelationTriple> corrList = new ArrayList<CorrelationTriple>();
 
-    int[][] dims = {{y, x}, {y, w - x}, {h - y, x}, {h - y, w - x}};
+    // a given correlation triple between two images can have multiple interpretations
+    // In the general case the translation from t1 to t2 can be any (x,y) so long as the two
+    // images overlap. Therefore, given an input (x,y) where x and y are positive by definition
+    // of the translation, we need to check 16 possible translations to find the correct
+    // interpretation of the translation offset magnitude (x,y). The general case of 16
+    // translations arise from the four Fourier transform possibilities, [(x, y); (x, H-y); (W-x,
+    // y); (W-x,H-y)] and the four direction possibilities (+-x, +-y) = [(x,y); (x,-y); (-x,y);
+    // (-x,-y)].
+    // Because we know t1 and t2 form an up down pair, we can limit this search to the 8
+    // possible combinations by only considering (+-x,y).
+    int[][] dims = {{y, x}, {y, w - x}, {h - y, x}, {h - y, w - x},
+        {y, (-x)}, {y, -(w - x)}, {h - y, (-x)}, {h - y, -(w - x)}};
 
-    for (int i = 0; i < 4; i++) {
+
+    for (int i = 0; i < dims.length; i++) {
       int nr = dims[i][0];
       int nc = dims[i][1];
 
-      Array2DView a1 = new Array2DView(t1, nr, h - nr, nc, w - nc);
-      Array2DView a2 = new Array2DView(t2, 0, h - nr, 0, w - nc);
-
-      double peak = crossCorrelation(a1, a2);
-
+      double peak = CorrelationUtils.computeCrossCorrelation(t1, t2, nc, nr);
       if (Double.isNaN(peak) || Double.isInfinite(peak)) {
         peak = -1.0;
       }
@@ -653,22 +563,6 @@ public class Stitching {
       corrList.add(new CorrelationTriple(peak, nc, nr));
     }
 
-    for (int i = 0; i < 4; i++) {
-      int nr = dims[i][0];
-      int nc = dims[i][1];
-
-      Array2DView a1 = new Array2DView(t1, nr, h - nr, 0, w - nc);
-      Array2DView a2 = new Array2DView(t2, 0, h - nr, nc, w - nc);
-
-      double peak = crossCorrelation(a1, a2);
-
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
-      }
-
-      corrList.add(new CorrelationTriple(peak, -nc, nr));
-
-    }
 
     if (corrList.size() == 0)
       return new CorrelationTriple(Double.NEGATIVE_INFINITY, 0, 0);
@@ -676,338 +570,9 @@ public class Stitching {
     return Collections.max(corrList);
   }
 
-  /**
-   * Wrapper that computes the up/down CCF at a given x and y location between two image tile's
-   *
-   * @param x  the x location
-   * @param y  the y location
-   * @param i1 the first image tile (north/west neighbor)
-   * @param i2 the second image tile (current)
-   * @return the CorrelationTriple from position x,y
-   */
-  public static CorrelationTriple computeCCF_UD(int x, int y, ImageTile<?> i1, ImageTile<?> i2) {
-    return computeCCF_UD(x, x, y, y, i1, i2);
-  }
 
   /**
-   * Computes the up/down CCF values inside a bounding box, returning the best CCF value (one with
-   * the highest correlation)
-   *
-   * @param minBoundX the minimum x value of the bounding box
-   * @param maxBoundX the maximum x value of the bounding box
-   * @param minBoundY the minimum y value of the bounding box
-   * @param maxBoundY the maximum y value of the bounding box
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @return the highest CorrelationTriple within the bounding box
-   */
-  public static CorrelationTriple computeCCF_UD(int minBoundX, int maxBoundX, int minBoundY,
-                                                int maxBoundY, ImageTile<?> i1, ImageTile<?> i2) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    double maxPeak = Double.NEGATIVE_INFINITY;
-    int x = minBoundX;
-    int y = minBoundY;
-
-    for (int i = minBoundY; i <= maxBoundY; i++) {
-      for (int j = minBoundX; j <= maxBoundX; j++) {
-        Array2DView a1, a2;
-        double peak;
-
-        if (j >= 0) {
-          a1 = new Array2DView(i1, i, height - i, j, width - j);
-          a2 = new Array2DView(i2, 0, height - i, 0, width - j);
-        } else {
-          a1 = new Array2DView(i1, i, height - i, 0, width + j);
-          a2 = new Array2DView(i2, 0, height - i, -j, width + j);
-        }
-
-        peak = Stitching.crossCorrelation(a1, a2);
-        if (peak > maxPeak) {
-          x = j;
-          y = i;
-          maxPeak = peak;
-        }
-      }
-    }
-
-    if (Double.isInfinite(maxPeak)) {
-      x = minBoundX;
-      y = minBoundY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, x, y);
-  }
-
-  /**
-   * Computes the up/down CCF values inside a bounding box, returning the best CCF value (one with
-   * the highest correlation)
-   *
-   * @param minBoundX the minimum x value of the bounding box
-   * @param maxBoundX the maximum x value of the bounding box
-   * @param minBoundY the minimum y value of the bounding box
-   * @param maxBoundY the maximum y value of the bounding box
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @param fileStr   the file string to save the CCF
-   * @return the highest correlation triple within the bounding box
-   */
-  public static CorrelationTriple computeCCF_UDAndSave(int minBoundX, int maxBoundX, int minBoundY,
-                                                       int maxBoundY, ImageTile<?> i1, ImageTile<?> i2, String fileStr) {
-
-    File file = new File(fileStr);
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    double maxPeak = Double.NEGATIVE_INFINITY;
-    int x = minBoundX;
-    int y = minBoundY;
-
-    try {
-      FileWriter writer = new FileWriter(file);
-
-      for (int i = minBoundY; i <= maxBoundY; i++) {
-        for (int j = minBoundX; j <= maxBoundX; j++) {
-          Array2DView a1, a2;
-          double peak;
-
-          if (j >= 0) {
-            a1 = new Array2DView(i1, i, height - i, j, width - j);
-            a2 = new Array2DView(i2, 0, height - i, 0, width - j);
-          } else {
-            a1 = new Array2DView(i1, i, height - i, 0, width + j);
-            a2 = new Array2DView(i2, 0, height - i, -j, width + j);
-          }
-
-          peak = Stitching.crossCorrelation(a1, a2);
-          writer.write(peak + ",");
-          if (peak > maxPeak) {
-            x = j;
-            y = i;
-            maxPeak = peak;
-          }
-
-        }
-        writer.write("\n");
-      }
-
-      writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    if (Double.isInfinite(maxPeak)) {
-      x = minBoundX;
-      y = minBoundY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, x, y);
-  }
-
-  /**
-   * Computes cross correlation search with hill climbing (up-down)
-   *
-   * @param minBoundX min x boundary
-   * @param maxBoundX max x boundary
-   * @param minBoundY min y boundary
-   * @param maxBoundY max y bounadary
-   * @param startX    start x position for hill climb
-   * @param startY    start y position for hill climb
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @return the highest correlation triple within the bounding box using hill climbing
-   */
-  public static <T> CorrelationTriple computeCCF_HillClimbing_UD(int minBoundX, int maxBoundX,
-                                                                 int minBoundY, int maxBoundY, int startX, int startY, ImageTile<T> i1, ImageTile<T> i2) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    int curX = startX;
-    int curY = startY;
-    double curPeak = Double.NaN;
-
-
-    minBoundY = Math.max(minBoundY, 0);
-    minBoundY = Math.min(minBoundY, height);
-
-    maxBoundY = Math.max(maxBoundY, 0);
-    maxBoundY = Math.min(maxBoundY, height);
-
-    minBoundX = Math.max(minBoundX, -width);
-    minBoundX = Math.min(minBoundX, width);
-
-    maxBoundX = Math.max(maxBoundX, -width);
-    maxBoundX = Math.min(maxBoundX, width);
-
-
-    // create array of peaks +1 for inclusive, +2 for each end
-    int yLength = maxBoundY - minBoundY + 1 + 2;
-    int xLength = maxBoundX - minBoundX + 1 + 2;
-
-    double[][] peaks = new double[yLength][xLength];
-
-    boolean foundPeak = false;
-
-    // Compute hill climbing
-    while (!foundPeak
-        && ((curX <= maxBoundX && curX >= minBoundX) || (curY <= maxBoundY && curY >= minBoundY))) {
-
-      // translate to 0-based index coordinates
-      int curYIndex = curY - minBoundY;
-      int curXIndex = curX - minBoundX;
-
-      // check current
-      if (Double.isNaN(curPeak)) {
-        curPeak = getCCFUD(i1, i2, curX, curY, height, width);
-        peaks[curYIndex][curXIndex] = curPeak;
-      }
-
-      HillClimbDirection direction = HillClimbDirection.NoMove;
-
-      // Check each direction and move based on highest correlation
-      for (HillClimbDirection dir : HillClimbDirection.values()) {
-        // Skip NoMove direction
-        if (dir == HillClimbDirection.NoMove)
-          continue;
-
-        double peak = Double.NEGATIVE_INFINITY;
-
-        // Check if moving dir is in bounds
-        if (curY + dir.getYDir() >= minBoundY && curY + dir.getYDir() <= maxBoundY
-            && curX + dir.getXDir() >= minBoundX && curX + dir.getXDir() <= maxBoundX) {
-
-          // Check if we have already computed the peak at dir
-          if (peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] == 0.0) {
-            peak = getCCFUD(i1, i2, curX + dir.getXDir(), curY + dir.getYDir(), height, width);
-
-
-            peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] = peak;
-          } else {
-            peak = peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()];
-          }
-
-          // check if dir gives us the best peak
-          if (peak > curPeak) {
-            curPeak = peak;
-            direction = dir;
-          }
-        }
-      }
-
-      // if the direction did not move, then we are done
-      if (direction == HillClimbDirection.NoMove) {
-        foundPeak = true;
-      } else {
-        curX += direction.getXDir();
-        curY += direction.getYDir();
-      }
-    }
-
-    if (Double.isInfinite(curPeak)) {
-      curX = minBoundX;
-      curY = minBoundY;
-      curPeak = -1.0;
-    }
-
-    return new CorrelationTriple(curPeak, curX, curY);
-  }
-
-
-  /**
-   * Computes cross correlation search with hill climbing (up-down)
-   *
-   * @param minBoundX min x boundary
-   * @param maxBoundX max x boundary
-   * @param minBoundY min y boundary
-   * @param maxBoundY max y bounadary
-   * @param startX    start x position for hill climb
-   * @param startY    start y position for hill climb
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @return the highest correlation triple within the bounding box using hill climbing
-   */
-  public static <T> CorrelationTriple computeCCF_Exhaustive_UD(int minBoundX, int maxBoundX,
-                                                               int minBoundY, int maxBoundY, int startX, int startY, ImageTile<T> i1, ImageTile<T> i2) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    int maxX = startX;
-    int maxY = startY;
-    double curPeak = Double.NaN;
-    double maxPeak = Double.NEGATIVE_INFINITY;
-
-    minBoundY = Math.max(minBoundY, 0);
-    minBoundY = Math.min(minBoundY, height);
-
-    maxBoundY = Math.max(maxBoundY, 0);
-    maxBoundY = Math.min(maxBoundY, height);
-
-    minBoundX = Math.max(minBoundX, -width);
-    minBoundX = Math.min(minBoundX, width);
-
-    maxBoundX = Math.max(maxBoundX, -width);
-    maxBoundX = Math.min(maxBoundX, width);
-
-
-    for (int curX = minBoundX; curX <= maxBoundX; curX++) {
-      for (int curY = minBoundY; curY <= maxBoundY; curY++) {
-
-        curPeak = getCCFUD(i1, i2, curX, curY, height, width);
-        if (curPeak >= maxPeak) {
-          maxPeak = curPeak;
-          maxX = curX;
-          maxY = curY;
-        }
-
-      }
-    }
-
-    if (Double.isNaN(maxPeak) || Double.isInfinite(curPeak)) {
-      maxX = startX;
-      maxY = startY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, maxX, maxY);
-  }
-
-
-  /**
-   * Computes the cross correlation function (up-down)
-   *
-   * @param i1     the first image for CCF computation (north/west neighbor)
-   * @param i2     the second image for CCF computation (current)
-   * @param x      the x position
-   * @param y      the y position
-   * @param height the height of the image
-   * @param width  the width of the image
-   * @return the correlation
-   */
-  public static double getCCFUD(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
-                                int width) {
-    Array2DView a1, a2;
-
-    if (y < 0)
-      y = 0;
-
-    if (x >= 0) {
-      a1 = new Array2DView(i1, y, height - y, x, width - x);
-      a2 = new Array2DView(i2, 0, height - y, 0, width - x);
-
-    } else {
-      a1 = new Array2DView(i1, y, height - y, 0, width + x);
-      a2 = new Array2DView(i2, 0, height - y, -x, width + x);
-    }
-
-    return Stitching.crossCorrelation(a1, a2);
-  }
-
-
-  /**
-   * Complex the peak cross correlation (left/right) between two images
+   * Compute the peak cross correlation (left/right) between two images
    *
    * @param t1 image 1 (neighbor)
    * @param t2 image 2 (current)
@@ -1021,41 +586,28 @@ public class Stitching {
     int h = t1.getHeight();
     List<CorrelationTriple> corrList = new ArrayList<CorrelationTriple>();
 
-    int[][] dims = {{y, x}, {y, w - x}, {h - y, x}, {h - y, w - x}};
+    // a given correlation triple between two images can have multiple interpretations
+    // In the general case the translation from t1 to t2 can be any (x,y) so long as the two
+    // images overlap. Therefore, given an input (x,y) where x and y are positive by definition
+    // of the translation, we need to check 16 possible translations to find the correct
+    // interpretation of the translation offset magnitude (x,y). The general case of 16
+    // translations arise from the four Fourier transform possibilities, [(x, y); (x, H-y); (W-x,
+    // y); (W-x,H-y)] and the four direction possibilities (+-x, +-y) = [(x,y); (x,-y); (-x,y);
+    // (-x,-y)].
+    // Because we know t1 and t2 form a left right pair, we can limit this search to the 8
+    // possible combinations by only considering (x,+-y).
+    int[][] dims = {{y, x}, {y, w - x}, {h - y, x}, {h - y, w - x},
+        {(-y), x}, {(-y), w - x}, {-(h - y), x}, {-(h - y), w - x}};
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < dims.length; i++) {
       int nr = dims[i][0];
       int nc = dims[i][1];
 
-      Array2DView a1 = new Array2DView(t1, nr, h - nr, nc, w - nc);
-      Array2DView a2 = new Array2DView(t2, 0, h - nr, 0, w - nc);
-
-      double peak = crossCorrelation(a1, a2);
-
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
+      double peak = CorrelationUtils.computeCrossCorrelation(t1, t2, nc, nr);
+      if (Double.isNaN(peak) || Double.isInfinite(peak))
         peak = -1.0;
-      }
-
 
       corrList.add(new CorrelationTriple(peak, nc, nr));
-
-    }
-
-    for (int i = 0; i < 4; i++) {
-      int nr = dims[i][0];
-      int nc = dims[i][1];
-
-      Array2DView a1 = new Array2DView(t1, 0, h - nr, nc, w - nc);
-      Array2DView a2 = new Array2DView(t2, nr, h - nr, 0, w - nc);
-
-      double peak = crossCorrelation(a1, a2);
-
-      if (Double.isNaN(peak) || Double.isInfinite(peak)) {
-        peak = -1.0;
-      }
-
-      corrList.add(new CorrelationTriple(peak, nc, -nr));
-
     }
 
     if (corrList.size() == 0)
@@ -1064,8 +616,9 @@ public class Stitching {
     return Collections.max(corrList);
   }
 
+
   /**
-   * Computes cross correlation search with hill climbing (left-right)
+   * Computes cross correlation search with hill climbing
    *
    * @param minBoundX min x boundary
    * @param maxBoundX max x boundary
@@ -1075,40 +628,29 @@ public class Stitching {
    * @param startY    start y position for hill climb
    * @param i1        the first image for CCF computation (north/west neighbor)
    * @param i2        the second image for CCF computation (current)
+   * @param cache     2D array of doubles holding computed ncc values
    * @return the highest correlation triple within the bounding box using hill climbing
    */
-  public static CorrelationTriple computeCCF_HillClimbing_LR(int minBoundX, int maxBoundX,
-                                                             int minBoundY, int maxBoundY, int startX, int startY, ImageTile<?> i1, ImageTile<?> i2) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
+  private static CorrelationTriple computeCCF_HillClimbingWorker(int minBoundX, int maxBoundX,
+                                                                 int minBoundY, int maxBoundY,
+                                                                 int startX, int startY,
+                                                                 ImageTile<?> i1, ImageTile<?> i2,
+                                                                 double[][] cache) {
 
     int curX = startX;
     int curY = startY;
     double curPeak = Double.NaN;
 
-    minBoundY = Math.max(minBoundY, -height);
-    minBoundY = Math.min(minBoundY, height);
+    // create array of peaks +1 for inclusive
+    int yLength = maxBoundY - minBoundY + 1;
+    int xLength = maxBoundX - minBoundX + 1;
 
-    maxBoundY = Math.max(maxBoundY, -height);
-    maxBoundY = Math.min(maxBoundY, height);
-
-    minBoundX = Math.max(minBoundX, 0);
-    minBoundX = Math.min(minBoundX, width);
-
-    maxBoundX = Math.max(maxBoundX, 0);
-    maxBoundX = Math.min(maxBoundX, width);
-
-    // create array of peaks +1 for inclusive, +2 for each end
-    int yLength = maxBoundY - minBoundY + 1 + 2;
-    int xLength = maxBoundX - minBoundX + 1 + 2;
-
-    double[][] peaks = new double[yLength][xLength];
-
-    boolean foundPeak = false;
+    if (cache == null)
+      cache = new double[yLength][xLength];
 
     // Compute hill climbing
-    while (!foundPeak
-        && ((curX <= maxBoundX && curX >= minBoundX) || (curY <= maxBoundY && curY >= minBoundY))) {
+    boolean foundPeak = false;
+    while (!foundPeak) {
 
       // translate to 0-based index coordinates
       int curYIndex = curY - minBoundY;
@@ -1116,8 +658,8 @@ public class Stitching {
 
       // check current
       if (Double.isNaN(curPeak)) {
-        curPeak = getCCFLR(i1, i2, curX, curY, height, width);
-        peaks[curYIndex][curXIndex] = curPeak;
+        curPeak = CorrelationUtils.computeCrossCorrelation(i1, i2, curX, curY);
+        cache[curYIndex][curXIndex] = curPeak;
       }
 
       HillClimbDirection direction = HillClimbDirection.NoMove;
@@ -1128,18 +670,18 @@ public class Stitching {
         if (dir == HillClimbDirection.NoMove)
           continue;
 
-        double peak = Double.NEGATIVE_INFINITY;
+        double peak;
 
         // Check if moving dir is in bounds
         if (curY + dir.getYDir() >= minBoundY && curY + dir.getYDir() <= maxBoundY
             && curX + dir.getXDir() >= minBoundX && curX + dir.getXDir() <= maxBoundX) {
 
           // Check if we have already computed the peak at dir
-          if (peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] == 0.0) {
-            peak = getCCFLR(i1, i2, curX + dir.getXDir(), curY + dir.getYDir(), height, width);
-            peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] = peak;
+          if (cache[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] == 0.0) {
+            peak = CorrelationUtils.computeCrossCorrelation(i1, i2, curX + dir.getXDir(), curY + dir.getYDir());
+            cache[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()] = peak;
           } else {
-            peak = peaks[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()];
+            peak = cache[curYIndex + dir.getYDir()][curXIndex + dir.getXDir()];
           }
 
           // check if dir gives us the best peak
@@ -1157,7 +699,6 @@ public class Stitching {
         curX += direction.getXDir();
         curY += direction.getYDir();
       }
-
     }
 
     if (Double.isInfinite(curPeak)) {
@@ -1171,7 +712,7 @@ public class Stitching {
 
 
   /**
-   * Computes cross correlation search with hill climbing (left-right)
+   * Computes cross correlation search with hill climbing
    *
    * @param minBoundX min x boundary
    * @param maxBoundX max x boundary
@@ -1183,8 +724,120 @@ public class Stitching {
    * @param i2        the second image for CCF computation (current)
    * @return the highest correlation triple within the bounding box using hill climbing
    */
-  public static CorrelationTriple computeCCF_Exhaustive_LR(int minBoundX, int maxBoundX,
-                                                           int minBoundY, int maxBoundY, int startX, int startY, ImageTile<?> i1, ImageTile<?> i2) {
+  public static CorrelationTriple computeCCF_HillClimbing(int minBoundX, int maxBoundX,
+                                                          int minBoundY, int maxBoundY,
+                                                          int startX, int startY,
+                                                          ImageTile<?> i1, ImageTile<?> i2) {
+    int width = i1.getWidth();
+    int height = i1.getHeight();
+    minBoundY = clampToValidBounds(minBoundY, height);
+    maxBoundY = clampToValidBounds(maxBoundY, height);
+    minBoundX = clampToValidBounds(minBoundX, width);
+    maxBoundX = clampToValidBounds(maxBoundX, width);
+
+    // create array of peaks +1 for inclusive
+    int yLength = maxBoundY - minBoundY + 1;
+    int xLength = maxBoundX - minBoundX + 1;
+
+    double[][] cache = new double[yLength][xLength];
+
+    CorrelationTriple triple = Stitching.computeCCF_HillClimbingWorker(minBoundX, maxBoundX,
+        minBoundY, maxBoundY, startX, startY, i1, i2, cache);
+
+    return triple;
+  }
+
+
+  /**
+   * Computes cross correlation search with hill climbing
+   *
+   * @param minBoundX      min x boundary
+   * @param maxBoundX      max x boundary
+   * @param minBoundY      min y boundary
+   * @param maxBoundY      max y bounadary
+   * @param startX         start x position for hill climb
+   * @param startY         start y position for hill climb
+   * @param numStartPoints the number of random starting points to check
+   * @param i1             the first image for CCF computation (north/west neighbor)
+   * @param i2             the second image for CCF computation (current)
+   * @return the highest correlation triple within the bounding box using hill climbing
+   */
+  public static CorrelationTriple computeCCF_MultiPoint_HillClimbing(int minBoundX, int maxBoundX,
+                                                                     int minBoundY, int maxBoundY,
+                                                                     int startX, int startY,
+                                                                     int numStartPoints,
+                                                                     ImageTile<?> i1, ImageTile<?> i2) {
+    int width = i1.getWidth();
+    int height = i1.getHeight();
+    minBoundY = clampToValidBounds(minBoundY, height);
+    maxBoundY = clampToValidBounds(maxBoundY, height);
+    minBoundX = clampToValidBounds(minBoundX, width);
+    maxBoundX = clampToValidBounds(maxBoundX, width);
+
+    // create array of peaks +1 for inclusive
+    int yLength = maxBoundY - minBoundY + 1;
+    int xLength = maxBoundX - minBoundX + 1;
+    double[][] cache = new double[yLength][xLength];
+
+    int rangeX = Math.abs(maxBoundX - minBoundX);
+    int rangeY = Math.abs(maxBoundY - minBoundY);
+    List<CorrelationTriple> results = new ArrayList<CorrelationTriple>();
+
+    // evaluate the starting point hill climb
+    CorrelationTriple triple = Stitching.computeCCF_HillClimbingWorker(minBoundX, maxBoundX,
+        minBoundY, maxBoundY, startX, startY, i1, i2, cache);
+    results.add(triple);
+
+    // perform the random starting point multipoint hill climbing
+    for (int i = 0; i < numStartPoints; i++) {
+      int curStartX = (int) Math.round(Math.random() * rangeX + Math.min(minBoundX, maxBoundX));
+      int curStartY = (int) Math.round(Math.random() * rangeY + Math.min(minBoundY, maxBoundY));
+
+      triple = Stitching.computeCCF_HillClimbingWorker(minBoundX, maxBoundX,
+          minBoundY, maxBoundY, curStartX, curStartY, i1, i2, cache);
+      results.add(triple);
+    }
+
+
+    // find the best correlation and translation from the hill climb ending points
+    CorrelationTriple bestTriple = new CorrelationTriple(-1.0, startX, startY);
+    for (CorrelationTriple t : results) {
+      if (t.getCorrelation() > bestTriple.getCorrelation())
+        bestTriple = t;
+    }
+
+    // determine how many converged
+    int numConverged = 0;
+    for (CorrelationTriple t : results) {
+      if (t.getX() == bestTriple.getX() && t.getY() == bestTriple.getY())
+        numConverged++;
+    }
+
+    Log.msg(LogType.INFO, "Translation HIll Climb (" + i1.getFileName() + "," + i2.getFileName() +
+        ") had " + numConverged + "/" + results.size() +
+        " hill climbs converge with best corr: " + bestTriple.getCorrelation());
+
+    return bestTriple;
+  }
+
+
+  /**
+   * Computes cross correlation search with hill climbing
+   *
+   * @param minBoundX min x boundary
+   * @param maxBoundX max x boundary
+   * @param minBoundY min y boundary
+   * @param maxBoundY max y boundary
+   * @param startX    start x position for hill climb
+   * @param startY    start y position for hill climb
+   * @param i1        the first image for CCF computation (north/west neighbor)
+   * @param i2        the second image for CCF computation (current)
+   * @return the highest correlation triple within the bounding box using hill climbing
+   */
+  public static CorrelationTriple computeCCF_Exhaustive(int minBoundX, int maxBoundX,
+                                                        int minBoundY, int maxBoundY,
+                                                        int startX, int startY,
+                                                        ImageTile<?> i1, ImageTile<?> i2) {
     int width = i1.getWidth();
     int height = i1.getHeight();
 
@@ -1193,28 +846,20 @@ public class Stitching {
     double curPeak = Double.NaN;
     double maxPeak = Double.NEGATIVE_INFINITY;
 
-    minBoundY = Math.max(minBoundY, -height);
-    minBoundY = Math.min(minBoundY, height);
-
-    maxBoundY = Math.max(maxBoundY, -height);
-    maxBoundY = Math.min(maxBoundY, height);
-
-    minBoundX = Math.max(minBoundX, 0);
-    minBoundX = Math.min(minBoundX, width);
-
-    maxBoundX = Math.max(maxBoundX, 0);
-    maxBoundX = Math.min(maxBoundX, width);
+    minBoundY = clampToValidBounds(minBoundY, height);
+    maxBoundY = clampToValidBounds(maxBoundY, height);
+    minBoundX = clampToValidBounds(minBoundX, width);
+    maxBoundX = clampToValidBounds(maxBoundX, width);
 
     for (int curX = minBoundX; curX <= maxBoundX; curX++) {
       for (int curY = minBoundY; curY <= maxBoundY; curY++) {
 
-        curPeak = getCCFLR(i1, i2, curX, curY, height, width);
+        curPeak = CorrelationUtils.computeCrossCorrelation(i1, i2, curX, curY);
         if (curPeak >= maxPeak) {
           maxPeak = curPeak;
           maxX = curX;
           maxY = curY;
         }
-
       }
     }
 
@@ -1228,211 +873,11 @@ public class Stitching {
   }
 
 
-  /**
-   * Wrapper that computes the left/right CCF at a given x and y location between two image tile's
-   *
-   * @param x  the x location
-   * @param y  the y location
-   * @param i1 the first image tile (north/west neighbor)
-   * @param i2 the second image tile (current)
-   * @return the correlation triple at x, y
-   */
-  public static CorrelationTriple computeCCF_LR(int x, int y, ImageTile<?> i1, ImageTile<?> i2) {
-    return computeCCF_LR(x, x, y, y, i1, i2);
-  }
-
-  /**
-   * Computes the left/right CCF values inside a bounding box, returning the best CCF value (one
-   * with the highest correlation)
-   *
-   * @param minBoundX the minimum x value of the bounding box
-   * @param maxBoundX the maximum x value of the bounding box
-   * @param minBoundY the minimum y value of the bounding box
-   * @param maxBoundY the maximum y value of the bounding box
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @return the highest correlation triple within the bounding box
-   */
-  public static CorrelationTriple computeCCF_LR(int minBoundX, int maxBoundX, int minBoundY,
-                                                int maxBoundY, ImageTile<?> i1, ImageTile<?> i2) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    double maxPeak = Double.NEGATIVE_INFINITY;
-    int x = minBoundX;
-    int y = minBoundY;
-
-    for (int j = minBoundX; j <= maxBoundX; j++) {
-      for (int i = minBoundY; i <= maxBoundY; i++) {
-        Array2DView a1, a2;
-        double peak;
-
-        if (i >= 0) {
-          a1 = new Array2DView(i1, i, height - i, j, width - j);
-          a2 = new Array2DView(i2, 0, height - i, 0, width - j);
-
-        } else {
-          a1 = new Array2DView(i1, 0, height + i, j, width - j);
-          a2 = new Array2DView(i2, -i, height + i, 0, width - j);
-        }
-
-        peak = Stitching.crossCorrelation(a1, a2);
-        if (peak > maxPeak) {
-          x = j;
-          y = i;
-          maxPeak = peak;
-        }
-      }
-    }
-
-    if (Double.isInfinite(maxPeak)) {
-      x = minBoundX;
-      y = minBoundY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, x, y);
-  }
-
-  /**
-   * Computes the left/right CCF values inside a bounding box, returning the best CCF value (one
-   * with the highest correlation)
-   *
-   * @param minBoundX the minimum x value of the bounding box
-   * @param maxBoundX the maximum x value of the bounding box
-   * @param minBoundY the minimum y value of the bounding box
-   * @param maxBoundY the maximum y value of the bounding box
-   * @param i1        the first image for CCF computation (north/west neighbor)
-   * @param i2        the second image for CCF computation (current)
-   * @param fileName  the file name to save the CCF
-   * @return the highest correlation triple within the bounding box
-   */
-  public static CorrelationTriple computeCCF_LRAndSave(int minBoundX, int maxBoundX, int minBoundY,
-                                                       int maxBoundY, ImageTile<?> i1, ImageTile<?> i2, String fileName) {
-    int width = i1.getWidth();
-    int height = i1.getHeight();
-
-    double maxPeak = Double.NEGATIVE_INFINITY;
-    int x = minBoundX;
-    int y = minBoundY;
-
-    try {
-      FileWriter writer = new FileWriter(fileName);
-
-      for (int j = minBoundX; j <= maxBoundX; j++) {
-        for (int i = minBoundY; i <= maxBoundY; i++) {
-          Array2DView a1, a2;
-          double peak;
-
-          if (i >= 0) {
-            a1 = new Array2DView(i1, i, height - i, j, width - j);
-            a2 = new Array2DView(i2, 0, height - i, 0, width - j);
-
-          } else {
-            a1 = new Array2DView(i1, 0, height + i, j, width - j);
-            a2 = new Array2DView(i2, -i, height + i, 0, width - j);
-          }
-
-          peak = Stitching.crossCorrelation(a1, a2);
-
-          writer.write(peak + ",");
-
-          if (peak > maxPeak) {
-            x = j;
-            y = i;
-            maxPeak = peak;
-          }
-        }
-
-        writer.write("\n");
-      }
-
-      writer.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    if (Double.isInfinite(maxPeak)) {
-      x = minBoundX;
-      y = minBoundY;
-      maxPeak = -1.0;
-    }
-
-    return new CorrelationTriple(maxPeak, x, y);
-  }
-
-  /**
-   * Compute the cross correlation function (left-right)
-   *
-   * @param i1     the first image for CCF computation (north/west neighbor)
-   * @param i2     the second image for CCF computation (current)
-   * @param x      the x position
-   * @param y      the y position
-   * @param height the height of the image
-   * @param width  the width of the image
-   * @return the correlation
-   */
-  public static double getCCFLR(ImageTile<?> i1, ImageTile<?> i2, int x, int y, int height,
-                                int width) {
-    Array2DView a1, a2;
-
-    if (x < 0)
-      x = 0;
-
-    if (y >= 0) {
-      a1 = new Array2DView(i1, y, height - y, x, width - x);
-      a2 = new Array2DView(i2, 0, height - y, 0, width - x);
-
-    } else {
-      a1 = new Array2DView(i1, 0, height + y, x, width - x);
-      a2 = new Array2DView(i2, -y, height + y, 0, width - x);
-    }
-
-    return Stitching.crossCorrelation(a1, a2);
-  }
-
-  /**
-   * Computes the cross correlation between two arrays
-   *
-   * @param a1 double array 1
-   * @param a2 double array 2
-   * @return the cross correlation
-   */
-  public static double crossCorrelation(Array2DView a1, Array2DView a2) {
-    double sum_prod = 0.0;
-    double sum1 = 0.0;
-    double sum2 = 0.0;
-    double norm1 = 0.0;
-    double norm2 = 0.0;
-    double a1_ij;
-    double a2_ij;
-
-    int n_rows = a1.getViewHeight();
-    int n_cols = a2.getViewWidth();
-
-    int sz = n_rows * n_cols;
-
-    for (int i = 0; i < n_rows; i++)
-      for (int j = 0; j < n_cols; j++) {
-        a1_ij = a1.get(i, j);
-        a2_ij = a2.get(i, j);
-        sum_prod += a1_ij * a2_ij;
-        sum1 += a1_ij;
-        sum2 += a2_ij;
-        norm1 += a1_ij * a1_ij;
-        norm2 += a2_ij * a2_ij;
-      }
-
-    double numer = sum_prod - sum1 * sum2 / sz;
-    double denom = Math.sqrt((norm1 - sum1 * sum1 / sz) * (norm2 - sum2 * sum2 / sz));
-
-    double val = numer / denom;
-
-    if (Double.isNaN(val) || Double.isInfinite(val)) {
-      val = -1.0;
-    }
-
+  private static int clampToValidBounds(int val, int dimSize) {
+    val = Math.max(val, -(dimSize - 1));
+    val = Math.min(val, dimSize - 1);
     return val;
   }
+
 
 }

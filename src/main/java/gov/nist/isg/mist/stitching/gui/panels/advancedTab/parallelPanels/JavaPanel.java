@@ -1,5 +1,3 @@
-// ================================================================
-//
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -13,8 +11,7 @@
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 // ================================================================
 //
@@ -28,12 +25,12 @@
 
 package gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels;
 
+import javax.swing.*;
+
 import gov.nist.isg.mist.stitching.gui.components.textfield.TextFieldInputPanel;
 import gov.nist.isg.mist.stitching.gui.components.textfield.textFieldModel.IntModel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.gui.params.interfaces.GUIParamFunctions;
-
-import javax.swing.*;
 
 /**
  * Cretes a panel to select Java options
@@ -93,12 +90,7 @@ public class JavaPanel extends JPanel implements GUIParamFunctions {
 
   @Override
   public boolean checkGUIArgs() {
-    int val = getNumCPUThreads();
-
-    if (val < 1)
-      return false;
-
-    return true;
+    return getNumCPUThreads() >= 1;
   }
 
   private boolean loadingParams = false;

@@ -1,5 +1,4 @@
-// ================================================================
-//
+
 // Disclaimer: IMPORTANT: This software was developed at the National
 // Institute of Standards and Technology by employees of the Federal
 // Government in the course of their official duties. Pursuant to
@@ -8,26 +7,25 @@
 // is an experimental system. NIST assumes no responsibility
 // whatsoever for its use by other parties, and makes no guarantees,
 // expressed or implied, about its quality, reliability, or any other
-// characteristic. We would appreciate acknowledgment if the software
+// characteristic. We would appreciate acknowledgement if the software
 // is used. This software can be redistributed and/or modified freely
 // provided that any derivative works bear some notice that they are
 // derived from it, and any modified versions bear some notice that
 // they have been modified.
-//
-// ================================================================
+
 
 package gov.nist.isg.mist.stitchingvalidation;
 
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
-import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
+import java.io.File;
+
 import gov.nist.isg.mist.stitching.gui.panels.advancedTab.parallelPanels.CUDAPanel;
 import gov.nist.isg.mist.stitching.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.stitching.lib.exceptions.StitchingException;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor;
+import gov.nist.isg.mist.stitching.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.stitching.lib.libraryloader.LibraryUtils;
 import gov.nist.isg.mist.stitching.lib.log.Log;
 import gov.nist.isg.mist.stitching.lib.log.Log.LogType;
-
-import java.io.File;
 
 public class BasicStitchingValidation {
 
@@ -38,7 +36,7 @@ public class BasicStitchingValidation {
   private static final String STITCHING_PARAMS_FILE = "stitching-params.txt";
 
 
-//    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
+  //    private static String validationRootFolder = "C:\\majurski\\image-data\\1h_Wet_10Perc";
   private static String validationRootFolder = "C:\\majurski\\image-data\\John_Elliot\\uncompressed_synthetic_grid";
   private static String fftwPlanPath = "C:\\Fiji.app\\lib\\fftw\\fftPlans";
   private static String fftwLibraryPath = "C:\\Fiji.app\\lib\\fftw";
@@ -162,7 +160,6 @@ public class BasicStitchingValidation {
 //    System.out.println("FFTW 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
 
 
-
     // Run CUDA 32bit
     params.getAdvancedParams().setProgramType(StitchingType.CUDA);
     params.getOutputParams().setOutFilePrefix("cuda32-");
@@ -180,7 +177,6 @@ public class BasicStitchingValidation {
     System.out.println("CUDA 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
 
 
-
 //    // Run CUDA 64bit
 //    params.getAdvancedParams().setProgramType(StitchingType.CUDA);
 //    params.getOutputParams().setOutFilePrefix("cuda64-");
@@ -196,8 +192,6 @@ public class BasicStitchingValidation {
 //      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
 //    }
 //    System.out.println("CUDA 64bit Elapsed: " + (elapsedTime / nbIter) + " ms");
-
-
 
 
     System.exit(1);
