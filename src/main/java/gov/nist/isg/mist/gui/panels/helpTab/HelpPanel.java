@@ -48,17 +48,17 @@ import gov.nist.isg.mist.gui.params.interfaces.GUIParamFunctions;
 public class HelpPanel extends JPanel implements GUIParamFunctions {
 
   private static final String documentationURL =
-      "https://github.com/NIST-ISG/MISTMain/wiki";
+      "https://github.com/USNISTGOV/MIST/wiki";
 
   private static final String sourceURL =
-      "https://github.com/NIST-ISG/MISTMain";
+      "https://github.com/USNISTGOV/MIST";
 
 
   private static final String aboutUsURL =
       "https://isg.nist.gov";
 
   private static final String testDatasetURL =
-      "https://github.com/NIST-ISG/MISTMain#sample-data-sets";
+      "https://github.com/NIST-ISG/MIST#sample-data-sets";
 
   private static final String license =
       "<html>This software was developed at the National Institute of Standards and<br>" +
@@ -70,6 +70,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
           "makes no guarantees, expressed or implied, about its quality, reliability,<br>" +
           "or any other characteristic. We would appreciate acknowledgement if the<br>" +
           "software is used.</html>";
+
 
   private static final long serialVersionUID = 1L;
 
@@ -117,7 +118,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
 
 
     c.gridy = 1;
-    JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MISTMain" + "</a></html>");
+    JLabel aboutUsLink = new JLabel("<html><a href=\"" + aboutUsURL + "\">" + "About MIST" + "</a></html>");
     aboutUsLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
     vertPanel.add(aboutUsLink, c);
 

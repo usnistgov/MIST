@@ -888,7 +888,7 @@ public class StitchingStatistics {
       if (numValid == 0) {
         updateErrorStatus(timeSlice, ErrorReportStatus.FAILED);
         errorMessage += "- No reliable " + dir + " translations found" + newLine;
-        errorMessage += "Due to the content of the image data, MISTMain is not able to compute any "
+        errorMessage += "Due to the content of the image data, MIST is not able to compute any "
             + dir + " translations with high confidence." + newLine;
       }
 
@@ -934,13 +934,14 @@ public class StitchingStatistics {
           + "- Using \"Assemble From Metadata\" you can stitch the pre-processed images "
           + "and assemble the original images. " + newLine;
 
-      output += "- For now MISTMain can only display a naively stitched image. " + newLine;
+      output += "- For now MIST can only display a naively stitched image. " + newLine;
     }
 
     if (this.errorReportStatus.get(timeSlice) != ErrorReportStatus.PASSED) {
       output += "- The developers are interested in problematic data sets. " + newLine
           + "Issues with stitching can be submitted to: " + newLine
-          + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github.com/NIST-ISG/MISTMain/issues";
+          + "nist-mist@nist.gov" + newLine + "or" + newLine + "http://github" +
+          ".com/USNISTGOV/MIST/issues";
       output += newLine;
     }
 
