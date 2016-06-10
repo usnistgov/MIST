@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- 
+This document contains a project description
+-->
+<project id="MIST">
+	<description>Microscopy Image Stitching Tool (MIST). This repository contains the java source code for the Fiji/ImageJ plugin in one branch and the source code for the MATLAB prototype in another.
+	</description>
+	<documentation>
+      ./doc
+			https://github.com/USNISTGOV/MIST/wiki
+	</documentation>
+	<installation>
+		<prerequisites>
+			<prerequisite name="Java">
+				<website>http://www.oracle.com/technetwork/java/javase/downloads</website>
+				<version>6 or later</version>
+			</prerequisite>
+			<prerequisite name="Maven">
+				<website>http://maven.apache.org</website>
+				<version>4.0.0 or later</version>
+			</prerequisite>
+			<prerequisite name="IntelliJ IDE">
+				<website>https://www.jetbrains.com/idea/download/</website>
+				<version>15.0 or later</version>
+			</prerequisite>
+		</prerequisites>
+	</installation>
+	<miscellaneous>
+		<software_test>
+			None
+		</software_test>
+		<development_OSplatform>
+			Windows 7 (64 bit)
+		</development_OSplatform>
+	</miscellaneous>
+	<compilation>
+		<compilation_instructions>
+			None             	
+		</compilation_instructions>
+		<compilation_configuration>
+			pom.xml
+		</compilation_configuration>
+		<compilation_engine>
+			Java programming language compiler 1.6
+			apache maven 4.0.x
+		</compilation_engine>
+		<dependencies>
+			./libs
+			./java_libs
+		</dependencies>	 
+		<instructions>
+			With the IntelliJ project loaded it will compile using the pom.xml on run.
+		</instructions>
+	</compilation>
+	<execution>
+		<run_time_engine>
+			Java Runtime Engine (JRE) 1.6	
+		</run_time_engine>
+		<main_test_class>
+			<name>
+				./src/main/java/gov.nist.isg.mist.MISTMain.java
+			</name>
+			<arguments>
+				None
+			</arguments>             	
+			<test_files>
+				None
+			</test_files>  
+			<dependencies>
+				./libs
+				./java_libs
+			<dependencies>	 
+		</main_test_class>
+	</execution>
+  </project>

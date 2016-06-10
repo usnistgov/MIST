@@ -61,7 +61,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
   private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
 
   private static final String filenamePrefixHelpText = "The prefix prepended to each file saved in "
-      + "the output directory. \n\nMISTMain will query for confirmation before overwriting any files.";
+      + "the output directory. \n\nMIST will query for confirmation before overwriting any files.";
 
 
   private static final long serialVersionUID = 1L;

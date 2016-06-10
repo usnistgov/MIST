@@ -252,7 +252,7 @@ public class MISTMain implements PlugIn {
 
     IJ.log("\\Clear");
 
-    Log.msg(LogType.MANDATORY, "Launching MISTMain");
+    Log.msg(LogType.MANDATORY, "Launching MIST");
 
     recorderCommand = Recorder.getCommand();
     Recorder.setCommand(null);
