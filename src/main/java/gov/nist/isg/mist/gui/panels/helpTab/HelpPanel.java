@@ -58,7 +58,7 @@ public class HelpPanel extends JPanel implements GUIParamFunctions {
       "https://isg.nist.gov";
 
   private static final String testDatasetURL =
-      "https://github.com/NIST-ISG/MIST#sample-data-sets";
+      "https://github.com/USNISTGOV/MIST#sample-data-sets";
 
   private static final String license =
       "<html>This software was developed at the National Institute of Standards and<br>" +
