@@ -63,7 +63,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
 
   private static final long serialVersionUID = 1L;
 
-  private static final String PreferenceName = "nist_stitching";
+  private static final String PreferenceName = "nist_mist";
 
   private JPanel mainFrame;
 
@@ -81,7 +81,7 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
    * Initializes the stitching for headless mode
    */
   public StitchingGUIFrame() {
-    this("MISTMain", IJ.getInstance() != null ? IJ.getInstance() : new Frame());
+    this("MIST", IJ.getInstance() != null ? IJ.getInstance() : new Frame());
   }
 
   /**

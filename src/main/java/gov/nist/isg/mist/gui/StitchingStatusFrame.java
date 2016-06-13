@@ -86,7 +86,7 @@ public class StitchingStatusFrame extends JFrame implements ActionListener, Prop
    * @param executor the stitching executor
    */
   public StitchingStatusFrame(StitchingExecutor executor) {
-    this("MISTMain Status", executor);
+    this("MIST Status", executor);
   }
 
   /**

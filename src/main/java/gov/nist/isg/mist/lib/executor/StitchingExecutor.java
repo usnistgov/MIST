@@ -403,12 +403,12 @@ public class StitchingExecutor implements Runnable {
       int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
       int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
       if (dH != 0 || dW != 0) {
-        Log.msg(LogType.MANDATORY, "MISTMain is stitching a Sub Grid.");
+        Log.msg(LogType.MANDATORY, "MIST is stitching a Sub Grid.");
         if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
           String[] options = {"Ok",
               "Cancel"};
           int n = JOptionPane.showOptionDialog(stitchingGUI,
-              "MISTMain is stitching a Sub Grid.",
+              "MIST is stitching a Sub Grid.",
               "Warning: SubGrid",
               JOptionPane.YES_NO_OPTION,
               JOptionPane.WARNING_MESSAGE,

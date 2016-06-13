@@ -449,7 +449,7 @@ pre.editor-colors .markdown .link .string,
 <p>The MIST plugin consists of five tabs. Below, we outline each tab and discuss all of the parameters. All options labeled with an * are required in order to start stitching. Each tab contains a <strong>?</strong> button that, when clicked, generates a local copy of this documentation.</p>
 <hr>
 <h4 id="input-parameters">Input Parameters</h4>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/InputWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/InputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Save Params</strong> Button - Saves all parameters in MIST to a file.</p>
 <p><strong>Preview (0% overlap)</strong> Button - Opens the image mosaic into Fiji assuming 0% overlap.</p>
@@ -478,7 +478,7 @@ pre.editor-colors .markdown .link .string,
 </blockquote>
 <hr>
 <h4 id="output-parameters">Output Parameters</h4>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/OutputWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/OutputWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use Image Directory as Output Directory</strong> - Sets the output directory to be the same as the input directory.</p>
 <p><strong>Output Directory</strong> - Specifies the location to save images and run statistics.</p>
@@ -507,7 +507,7 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="subgrid-parameters">Subgrid Parameters</h4>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/SubgridWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/SubgridWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Use full grid</strong> - Updates the subgrid to use the full grid of images.</p>
 <p><strong>Start Col</strong> - The start column for the subgrid.</p>
@@ -518,12 +518,12 @@ Blending Types:</p>
 </blockquote>
 <hr>
 <h4 id="advanced-parameters">Advanced Parameters</h4>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/AdvancedWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/AdvancedWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Stage Repeatability</strong> - Sets the stage repeatability variable when computing the global optimization. This value is used to represent the repeatability of the microscope stage movement. It is used for determining the search space of the hill climbing algorithm. This value is specified in pixels.</p>
 <p><strong>Horizontal overlap</strong> - Sets the horizontal overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
 <p><strong>Vertical overlap</strong> - Sets the vertical overlap variable when computing the global optimization. This value is used to filter translations as good or bad. Good translations are used to identify the optimal starting position for the hill climbing algorithm. Setting this value can improve the accuracy of the image mosaic. This value is specified in percent. The value must be between 0 and 100.</p>
-<p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables. This value is specified in percent. The value must be between 0 and 100. This value should generally not exceed 10. (Default: 5)</p>
+<p><strong>Overlap uncertainty</strong> - Sets the overlap uncertainty variable when computing the global optimization. This value is used to specify the range when filtering translations as good or bad. It is used in conjunction with the horizontal and vertical overlap variables. This value is specified in percent. The value must be between 0 and 100. This value should generally not exceed 10. (Default: 3)</p>
 <p><strong>Use BioFormats Image Reader?</strong> - Specifies whether to use the BioFormats image reader as opposed to the ImageJ image reader. The ImageJ reader supports most common image file types and is faster than BioFormats. If the ImageJ reader cannot read an image being stitched, try using BioFormats as it supports more image types.</p>
 <p><strong>Use Double Precision Math?</strong> - Specifies whether the FFTs and other stitching computation is done using 32bit floats of 64bit doubles. The default is 32bit, but if you are not getting a satisfactory stitching try using double precision.</p>
 <p><strong>Translation Refinement Method</strong> - Specifies the type of translation refinement that is performed. Once the translations between images have been computed, the stage model is built to constrain the translations to reasonable values. Within the search space defined by the stage model an optimization of the pairwise translations takes place. The method of translation optimization/refinement is selected here. The default is a single hill climbing starting at the computed/estimated translation. This is the fastest option. If this proves ineffective for your dataset, multipoint hill climbing is available where, in addition to performing a hill climbing starting at the computed/estimated translation, <em>n</em> starting points are randomly selected within the search bounds and allowed to converge to local maxima. The number of starting points is user selected (default of 16). This is more robust than the single hill climb, but more computationally intensive. The final option, Exhaustive, checks every possible translation within the stage model bounds. This is extremely slow.</p>
@@ -558,13 +558,13 @@ Possible Options:</p>
 <hr>
 </blockquote>
 <h5 id="java-execution">Java Execution</h5>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/JavaWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/JavaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 </blockquote>
 <hr>
 <h5 id="fftw-execution">FFTW Execution</h5>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/FftwWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/FftwWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>FFTW Plan Type</strong> - The type of FFTW plan to generate</p>
@@ -588,7 +588,7 @@ Example Files:</p>
 </blockquote>
 <hr>
 <h5 id="cuda-execution">CUDA Execution</h5>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/CudaWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/CudaWindow.png" alt=""></p>
 <blockquote>
 <p><strong>CPU worker threads</strong> - Number of parallel workers to spawn (should not exceed number of CPU cores)</p>
 <p><strong>Execute Device Query</strong> - Queries for all GPUs installed on the system and prints the information to the log.</p>
@@ -599,13 +599,13 @@ Example Files:</p>
 </blockquote>
 <hr>
 <h4 id="help">Help</h4>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/HelpWindow.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/HelpWindow.png" alt=""></p>
 <blockquote>
 <p><strong>Open Local Help Documentation</strong> - Opens this document without an Internet connection.</p>
 </blockquote>
 <hr>
 <h3 id="mist-status-frame">MIST Status Frame</h3>
-<p><img src="https://github.com/USNISTGOV/MIST/wiki/images/MISTStatus.png" alt=""></p>
+<p><img src="https://github.com/usnistgov/MIST.wiki/images/MISTStatus.png" alt=""></p>
 <blockquote>
 <p><strong>Progress</strong> - If timeslices are used, shows the current timeslice, total timeslices, and number of groups (if entered as a comma separated list in the input parameters).</p>
 <p><strong>Progress bar</strong> - Shows the % progress made for the current experiment.</p>
@@ -846,7 +846,7 @@ Possible Options:</p>
 <p>To preview a zero percent overlap mosaic go to the Output tab in the GUI and select <strong>Preview Mosaic With No Overlap</strong>. Visually ensure that the image grid looks properly organized. Check for corresponding image features between regions that should overlap. Common errors include an incorrect <strong>Starting Point</strong>, <strong>Direction</strong>, <strong>Grid Width</strong>, or <strong>Grid Height</strong>.</p>
 <p>If the zero percent overlap is taking too long to generate you can define a sub-grid using the Subgrid tab and the preview will only be generated for the subgrid.</p>
 <h4 id="unexpected-image-overlap-variability">Unexpected Image Overlap Variability</h4>
-<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The advanced parameter percent <strong>Overlap Uncertainty</strong> (default: 5%) reflects the uncertainty in the overlap between image tiles.</p>
+<p>The image tiles must be arranged in a rectangular grid and overlap with each other. The advanced parameter percent <strong>Overlap Uncertainty</strong> (default: 3%) reflects the uncertainty in the overlap between image tiles.</p>
 <p>Set the <strong>Overlap Uncertainty</strong> to reflect the variability in the overlaps between images in your dataset.</p>
 <h4 id="bad-stage-repeatability-estimate">Bad Stage Repeatability Estimate</h4>
 <p>MIST estimates the <strong>Stage Repeatability</strong> of the mechanical XY-Stage used to acquire the image grid.</p>
