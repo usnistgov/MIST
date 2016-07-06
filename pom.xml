@@ -12,6 +12,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -22,9 +23,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>gov.nih.imagej</groupId>
-            <artifactId>imagej</artifactId>
-            <version>1.46</version>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>1.51d</version>
         </dependency>
 
         <dependency>

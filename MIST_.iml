@@ -11,7 +11,16 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: gov.nih.imagej:imagej:1.46" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij:1.51d" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sun:tools:1.4.2">
+        <CLASSES>
+          <root url="jar://C:/Program Files/Java/jdk1.8.0_45/lib/tools.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
     <orderEntry type="library" name="Maven: org.jcuda:jcuda:6.5" level="project" />
@@ -49,16 +58,6 @@
     <orderEntry type="library" name="Maven: ome:bio-formats_plugins:5.1.7" level="project" />
     <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-forms:1.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-common:1.7.0" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:ij:1.48s" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: com.sun:tools:1.4.2">
-        <CLASSES>
-          <root url="jar://C:/Program Files/Java/jdk1.8.0_45/lib/tools.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.1" level="project" />
   </component>
