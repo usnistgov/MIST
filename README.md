@@ -13,7 +13,7 @@ Microscopy Image Stitching Tool (MIST) is being developed at the National Instit
 ####- [Installation Guide](https://github.com/USNISTGOV/MIST/wiki/Install-Guide)
 ####- [User Guide](https://github.com/USNISTGOV/MIST/wiki/User-Guide)
 ####- [Frequently Asked Questions](https://github.com/USNISTGOV/MIST/wiki/FAQ)
-####- Technical Documentation (Coming Soon)
+####- [Technical Documentation](https://github.com/USNISTGOV/MIST/wiki/assets/mist-algorithm-documentation.pdf)
 
 ## Applicable Domain
 
