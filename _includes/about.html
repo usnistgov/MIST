@@ -6,7 +6,7 @@
 					<div class="col-md-8">
 						<h2 class="title text-center">What is MIST?</h2>
 
-						<p>Microscopy Image Stitching Tool (MIST), is a stitching method for 2D grids of images. It has a novel algorithm for optimizing the pairwise translations computed using the (Fourier transform based) phase-correlation image alignment method. This new optimization estimates the microscope's mechanical stage repeatability from the computed translations of a grid of image tiles. It then optimizes all computed translations using a Hill Climbing algorithm bounded to four times the stage repeatability. This minimizes the maximum uncertainty related to the translation computation for any pair of images.<br/>
+						<p>Microscopy Image Stitching Tool (MIST), is a stitching tool for 2D grids of images. MIST estimates the stage mechanical model (actuator backlash, stage repeatability ‘r’, etc.) from computed pairwise translations and then minimizes stitching errors by optimizing the translations within a (4r)^2 square area. This minimizes the maximum uncertainty related to the translation computation for any pair of images.<br/>
 						</p>
 
 						<figure>
