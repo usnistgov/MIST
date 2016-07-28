@@ -1,6 +1,9 @@
 *.dat
 *.class
 
+# jekyll files
+_site/
+
 # LaTex generated files
 doc/*.aux
 doc/*.bbl
