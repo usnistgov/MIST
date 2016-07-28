@@ -1,0 +1,93 @@
+<!-- ******ABOUT****** -->
+<section id="about" class="about section">
+		<div class="container">
+					<div class="row">
+
+					<div class="col-md-8">
+						<h2 class="title text-center">What is MIST?</h2>
+
+						<p>Microscopy Image Stitching Tool (MIST), is a stitching method for 2D image grids. It has a novel algorithm for optimizing the pairwise translations computed using the (Fourier transform based) phase-correlation image alignment method. This new optimization estimates the microscope's mechanical stage repeatability from the computed translations of a grid of image tiles. It then optimizes all computed translations using a Hill Climbing algorithm bounded to four times the stage repeatability. This minimizes the maximum uncertainty related to the translation computation for any pair of images.<br/>
+						</p>
+
+						<figure>
+							<img src="assets/MIST_alg_summary.png"
+									 class="img-responsive"
+									 alt="MIST Algorithm Summary"
+											/>
+							<figcaption class="text-center">
+								MIST algorithm description and novelties: Method and Scalability.
+							</figcaption>
+						</figure>
+
+						<h4>Summary</h4>
+						<p>With new microscope technologies, scientists are acquiring terabyte-sized datasets to cover large area of their experiments. An automated optical microscope acquires images of a cell cultures specimen. The microscope acquires a grid of partially overlapping images because the microscope field of view is much smaller than the dimensions of the specimen being imaged. This process generates hundreds of thousands of images that need to be stitched into a large mosaic to derive meaningful information. Some of these large mosaics are sparse, mainly at the beginning of an experiment before cells grow and cover more areas. This creates overlapping areas with no foreground pixel intensities to compute the translations between tiles, which increases the translation computation uncertainty for the entire mosaic. Moreover, stitching such large image mosaic is computationally taxing; this becomes overwhelming for live cell experiments.</p>
+
+					</div> <!-- end col-->
+
+						<div class="col-md-4 well">
+							<h4>Staff:</h4>
+
+							<dl>
+								<dt><a href="http://www.nist.gov/itl/">ITL</a> - <a href="http://www.nist.gov/itl/ssd/index.cfm">Software and Systems Division</a></dt>
+								<dd>
+									<a href="http://www.nist.gov/itl/ssd/is/index.cfm">Information Systems Group</a>
+									<ul>
+										<li><a href="mailto:timothy.blattner@nist.gov">Tim Blattner</a></li>
+										<li><a href="mailto:mary.brady@nist.gov">Mary Brady</a></li>
+										<li><a href="mailto:joe.chalfoun@nist.gov">Joe Chalfoun</a></li>
+										<li><a href="mailto:walid.keyrouz@nist.gov">Walid Keyrouz</a></li>
+										<li><a href="mailto:michael.majurski@nist.gov">Michael Majurski</a></li>
+									</ul>
+								</dd>
+
+								<dt><a href="http://www.umd.edu/">University of Maryland, College Park</a></dt>
+								<dd><a href="http://www.bioe.umd.edu/">Fischell Department of Bioengineering</a>
+									<ul>
+										<li><a href="mailto:kiranb@umd.edu">Kiran Bhadriraju</a></li>
+									</ul>
+								</dd>
+							</dl>
+
+						</div> <!-- end col-->
+
+						<div class="col-md-4 well">
+							<h4>Publications:</h4>
+							<p>
+									J.Chalfoun, "A power stitching tool", SPIE Newsroom, 2014, DOI: 10.1117/2.1201402.005365
+									<br/><a href="assets/SPIE_A power stitching tool.pdf">(download pdf)</a>
+									<a href="http://spie.org/newsroom/5365-a-power-stitching-tool">(view article)</a>
+							</p>
+							<p>
+								T. Blattner et. al., "A Hybrid CPU-GPU System for Stitching of Large Scale Optical Microscopy Images", 2014 International Conference on Parallel Processing, 2014
+									<br/><a href="assets/Blattner et al. - A Hybrid CPU-GPU System for Stitching of Large Scale Optical Microscopy Images.pdf">(download pdf)</a>
+									<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6957209&tag=1">(view article)</a>
+							</p>
+
+
+						</div> <!-- end col -->
+
+						<div class="col-md-4 well">
+							<h4>Collaborators:</h4>
+							<dl>
+								<dt><a href="http://www.nist.gov/mml/">MML</a>-<a
+												href="http://www.nist.gov/mml/bbd/">Biosystems and Biomaterials
+									Division</a></dt>
+								<dd>
+									<ul>
+										<li><a href="mailto:anne.plant@nist.gov">Anne Plant</a></li>
+									</ul>
+								</dd>
+								<dd><a href="http://www.nist.gov/mml/bbd/cell_systems/index.cfm">Cell System
+									Science Group</a></dd>
+								<dd>
+									<ul>
+										<li><a href="mailto:john.elliott@nist.gov">John Elliott</a></li>
+									</ul>
+								</dd>
+							</dl>
+						</div> <!-- end col -->
+				</div> <!-- end row-->
+
+
+		</div><!--//container-->
+</section><!--//about-->
