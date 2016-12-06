@@ -951,8 +951,12 @@ public class StitchingExecutor implements Runnable {
     }
 
     ImagePlus img = null;
-
     ImageTile<T> initImg = grid.getTileThatExists();
+    if(initImg == null) {
+      Log.msg(LogType.MANDATORY, "Grid Preview Canceled.");
+      Log.msg(LogType.MANDATORY, "Cannot find any images within the grid, check parameters.");
+      return;
+    }
     initImg.readTile();
 
     int width = grid.getExtentWidth() * initImg.getWidth();
