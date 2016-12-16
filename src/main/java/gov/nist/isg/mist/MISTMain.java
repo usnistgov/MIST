@@ -229,8 +229,8 @@ public class MISTMain implements PlugIn {
       for(int i = 0; i < args.length; i++) {
         MISTMain.macroOptions += args[i].trim() + " ";
       }
-      MISTMain.macro = true;
-      MISTMain.runHeadless = true;
+      MISTMain.macro = false;
+      MISTMain.runHeadless = false;
       MISTMain.executeStitchingWithMacro();
 
     }else {

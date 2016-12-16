@@ -351,7 +351,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.enableCudaExceptions = pref.getBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     this.translationRefinementType = PreferencesUtils.loadPrefTransRefineType(pref,
         TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
-    MISTMain.runHeadless = pref.getBoolean(RUN_HEADLESS, MISTMain.runHeadless);
+//    MISTMain.runHeadless = pref.getBoolean(RUN_HEADLESS, MISTMain.runHeadless);
     this.numTranslationRefinementStartPoints = pref.getInt(NUM_TRANS_REFINEMENT_START_POINTS,
         this.numTranslationRefinementStartPoints);
 
@@ -491,7 +491,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.putBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     pref.put(TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
     pref.putInt(NUM_TRANS_REFINEMENT_START_POINTS, this.numTranslationRefinementStartPoints);
-    pref.putBoolean(RUN_HEADLESS, MISTMain.runHeadless);
+//    pref.putBoolean(RUN_HEADLESS, MISTMain.runHeadless);
     PreferencesUtils.recordPrefCUDADevices(pref, this.cudaDevices);
   }
 
