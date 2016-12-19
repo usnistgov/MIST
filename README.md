@@ -29,9 +29,13 @@ These datasets can be downloaded from the following links:
 
 #### 5x5 Image Tile Dataset
 
-[Cy5_ImageTiles.zip ~ 54 MB](../../wiki/testdata/Small_Fluorescent_Test_Dataset.zip)
+[Cy5_ImageTiles.zip ~ 32 MB](../../wiki/testdata/Small_Fluorescent_Test_Dataset.zip)
 
-[Phase_Image_Tiles.zip ~ 83 MB](../../wiki/testdata/Small_Phase_Test_Dataset.zip)
+[Example Results: Cy5_ImageTiles.zip ~ 5 KB](../../wiki/testdata/Small_Fluorescent_Test_Dataset_Example_Results.zip)
+
+[Phase_Image_Tiles.zip ~ 49 MB](../../wiki/testdata/Small_Phase_Test_Dataset.zip)
+
+[Example Results: Phase_Image_Tiles.zip ~ 5 KB](../../wiki/testdata/Small_Phase_Test_Dataset_Example_Results.zip)
 
 #### 10x10 Image Tile Dataset
 
