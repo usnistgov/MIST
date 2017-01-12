@@ -20,15 +20,25 @@ package gov.nist.isg.mist.lib.executor;
 
 import org.bridj.Pointer;
 
+
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InvalidClassException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import gov.nist.isg.mist.MISTMain;
 import gov.nist.isg.mist.MISTMain.ExecutionType;
@@ -659,13 +669,51 @@ public class StitchingExecutor implements Runnable {
 
       if (displayWarningDialog > 0) {
         File statsFile = params.getOutputParams().getStatsFile();
-        String warnStr = "Stitching experiment(s) generated warnings:\n \n";
+        String warnStr = "Stitching experiment(s) generated warnings:<br/><br/>";
         if (displayWarningDialog == 1) {
-          warnStr = warnStr + accumulatedWarningString + "\n \n";
+          warnStr = warnStr + accumulatedWarningString;
         }
-        warnStr = warnStr + "For more details check the log or the statistics file:\n" + statsFile
-            .getAbsolutePath();
-        new MessageDialog(IJ.getInstance(), "Stitching Warning", warnStr);
+        warnStr = warnStr + "For more details check the log or the statistics file:<br/>" +
+            statsFile.getAbsolutePath();
+
+        warnStr = warnStr + "<br/><br/>" + "If the stitching results do not look correct,<br>" +
+            "try setting the following <a href=\"https://github" +
+            ".com/USNISTGOV/MIST/wiki/User-Guide#advanced-parameters\">advanced parameters</a>: " +
+            "<br/>1) Vertical image overlap" +
+            "<br/>2) Horizontal image overlap" +
+            "<br/>3) Stage repeatability";
+//            "<a href=\"https://github.com/usnistgov/MIST/wiki\">MIST Wiki</a> contains additional help and usage details.";
+//        new MessageDialog(IJ.getInstance(), "Stitching Warning", warnStr);
+
+        warnStr = warnStr.replaceAll("\n","<br/>");
+        warnStr = warnStr.replace("nist-mist@nist.gov",
+            "<a href=\"mailto:nist-mist@nist.gov\">nist-mist@nist.gov</a>");
+        warnStr = warnStr.replace("http://github.com/USNISTGOV/MIST/issues",
+            "<a href=\"http://github.com/USNISTGOV/MIST/issues\">MIST-Github-Issues</a>");
+
+        JEditorPane ep = new JEditorPane("text/html", "<html>" + warnStr +
+            "</html>");
+
+        ep.addHyperlinkListener(new HyperlinkListener() {
+          @Override
+          public void hyperlinkUpdate(HyperlinkEvent e) {
+            if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+              try {
+                Desktop.getDesktop().browse(new URI(e.getURL().toString()));
+              } catch (IOException e1) {
+//                e1.printStackTrace();
+              } catch (URISyntaxException e1) {
+//                e1.printStackTrace();
+              }
+          }
+        });
+
+        ep.setEditable(false);
+        ep.setBackground(new Color(0,0,0,0));
+//        ep.setSize(new Dimension(300,Integer.MAX_VALUE));
+
+        JOptionPane.showMessageDialog(null, ep, "Stitching Warning", JOptionPane.ERROR_MESSAGE);
+
       }
     }
 

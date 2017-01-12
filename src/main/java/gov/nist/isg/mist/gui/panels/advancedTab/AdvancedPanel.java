@@ -57,7 +57,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
       + "This value represents the uncertainty that the microscope stage has "
       + "related to the mechanics that move the stage. Setting this value may "
       + "increase the search space that is used to find the correct translation "
-      + "between neighboring images.";
+      + "between neighboring images. This value is specified in pixels.";
 
 
   private static final String horizontalOverlapHelp = "During translation optimization, uses the "
@@ -65,19 +65,20 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
       + "the stage. Leave this field blank to use the default. Modifying this "
       + "field will aid in correcting translations that have low correlation in "
       + "the horizontal direction. By default we compute the horizontal overlap "
-      + "based on the translations.";
+      + "based on the translations. This value is specified in percent.";
 
   private static final String verticalOverlapHelp = "During translation optimization, uses the "
       + "user-specified vertical overlap for computing the repeatability of the "
       + "stage. Leave this field blank to use the default. Modifying this field "
       + "will aid in correcting translations that have low correlation in the "
       + "vertical direction. By default we compute the vertical overlap based on "
-      + "the translations.";
+      + "the translations. This value is specified in percent.";
 
   private static final String overlapUncertaintyHelp = "During translation optimization, uses the "
       + "user-specified overlap uncertainty for computing the repeatability of the "
       + "stage. Leave this field blank to use the default. Modifying this field "
-      + "will aid in correcting translations where the overlap uncertainty should be increased."
+      + "will aid in correcting translations where the overlap uncertainty should be increased. "
+      + "This value is specified in percent."
       + "\n\nTIP: Value should not exceed 20.0, default is 5.0";
 
   private static final String numFftPeaksHelp = "Specifies the number of peaks to check when"
