@@ -124,7 +124,8 @@ public class ImageStitchingValidationDatasets {
         params.getAdvancedParams().setProgramType(t);
 
         try {
-          (new StitchingExecutor(params)).runStitching(false, false, false);
+          params.getInputParams().setAssembleFromMetadata(false);
+          (new StitchingExecutor(params)).runStitching(false, false);
         } catch (StitchingException e) {
           Log.msg(LogType.MANDATORY, e.getMessage());
         }

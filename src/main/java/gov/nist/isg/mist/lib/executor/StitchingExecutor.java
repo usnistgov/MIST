@@ -108,7 +108,12 @@ public class StitchingExecutor implements Runnable {
     /**
      * Selects CUDA version
      */
-    CUDA("CUDA");
+    CUDA("CUDA"),
+
+    /**
+     * Selects the No Overlap version
+     */
+    NOOVERLAP("NoOverlap");
 
     StitchingType(final String text) {
       this.text = text;
@@ -250,7 +255,8 @@ public class StitchingExecutor implements Runnable {
         params.recordMacro();
       }
 
-      runStitching(false, true, false);
+      params.getInputParams().setAssembleFromMetadata(false);
+      runStitching(true, false);
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
           + "Invalid values are highlighted in red");
@@ -261,10 +267,13 @@ public class StitchingExecutor implements Runnable {
     params.loadMacro();
 
     if (params.checkParams()) {
-      if (params.getInputParams().isAssembleFromMetadata())
+      if (params.getInputParams().isAssembleFromMetadata()) {
+        params.getInputParams().setAssembleFromMetadata(true);
         runStitchingFromMeta();
-      else
-        runStitching(false, true, false);
+      }else {
+        params.getInputParams().setAssembleFromMetadata(false);
+        runStitching(true, false);
+      }
     } else {
       Log.msg(LogType.MANDATORY, "Stitching parameter check failed. "
           + "Check the console for information. (increase logging " + "level for more details)");
@@ -293,28 +302,28 @@ public class StitchingExecutor implements Runnable {
   private void assembleFromMeta() throws StitchingException {
 
     params.getOutputParams().setOutputMeta(false);
+    params.getInputParams().setAssembleFromMetadata(true);
 
-    runStitching(true, true, false);
+    runStitching(true, false);
   }
 
   /**
    * Executes stitching
    *
-   * @param assembleFromMeta            whether to assemble from meta data or not
    * @param displayGui                  whether to display any gui or not
    * @param stopExecutionIfFileNotFound sets whether to throws a stitching exception if a file not
    *                                    found exception is found
    */
   @SuppressWarnings("unchecked")
-  public <T> void runStitching(boolean assembleFromMeta, boolean displayGui,
-                               boolean stopExecutionIfFileNotFound) throws StitchingException {
+  public <T> void runStitching(boolean displayGui, boolean stopExecutionIfFileNotFound) throws
+      StitchingException {
     stitchingStatistics = new StitchingStatistics(params);
     if (GraphicsEnvironment.isHeadless() || Interpreter.isBatchMode() || MISTMain.runHeadless)
       displayGui = false;
 
     StitchingExecutorInterface<T> stitchingExecutorInf = null;
 
-    if (assembleFromMeta) {
+    if (params.getInputParams().isAssembleFromMetadata()) {
       stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
       params.getOutputParams().setOutputMeta(false); // if assembling from meta, don't also output meta
     } else {
@@ -390,6 +399,8 @@ public class StitchingExecutor implements Runnable {
         case JAVA:
           stitchingExecutorInf = (StitchingExecutorInterface<T>) new JavaStitchingExecutor<float[][]>();
           break;
+        case NOOVERLAP:
+          stitchingExecutorInf = (StitchingExecutorInterface<T>) new NoOverlapStitchingExecutor<float[][]>();
         default:
           break;
 
@@ -556,7 +567,7 @@ public class StitchingExecutor implements Runnable {
 
           if (!isCancelled) {
             globalOptimization = new GlobalOptimization<T>(grid, progressBar,
-                params, stitchingStatistics, runSequential, assembleFromMeta);
+                params, stitchingStatistics, runSequential);
             optimizationSuccessful = globalOptimization.optimize();
           }
 

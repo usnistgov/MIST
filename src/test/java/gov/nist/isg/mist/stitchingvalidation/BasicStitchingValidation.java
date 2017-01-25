@@ -161,7 +161,8 @@ public class BasicStitchingValidation {
     for (int i = 0; i < nbIter; i++) {
       long startTime = System.currentTimeMillis();
       try {
-        (new StitchingExecutor(params)).runStitching(false, false, false);
+        params.getInputParams().setAssembleFromMetadata(false);
+        (new StitchingExecutor(params)).runStitching(false, false);
       } catch (StitchingException e) {
         Log.msg(LogType.MANDATORY, e.getMessage());
       }

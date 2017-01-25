@@ -154,6 +154,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       case FFTW:
         check = checkFFTWParams();
         break;
+      case NOOVERLAP:
+        check = true;
       default:
         break;
 

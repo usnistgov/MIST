@@ -23,7 +23,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.AbstractButton;
 import javax.swing.JPanel;
@@ -66,8 +70,15 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
     this.programPanel.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Per Program Options"));
     this.c = new GridBagConstraints();
 
+    // remove the program type NoOverlap from the list of advanced options so the GUI does not
+    // display it
+    List<StitchingType> stitchingTypes = new ArrayList<StitchingType>(Arrays.asList(StitchingType
+        .values()));
+    stitchingTypes.remove(StitchingType.NOOVERLAP);
+
+
     this.stitchingExecutionType =
-        new ButtonGroupPanel(StitchingType.values(), "Stitching Program");
+        new ButtonGroupPanel(stitchingTypes.toArray(), "Stitching Program");
     this.stitchingExecutionType.setBorder(new TitledBorder(new LineBorder(Color.BLACK), "Stitching Program"));
 
 

@@ -105,7 +105,8 @@ public class ParallelMleTest {
     params.getAdvancedParams().setUseDoublePrecision(false);
 
     try {
-      (new StitchingExecutor(params)).runStitching(false, false, false);
+      params.getInputParams().setAssembleFromMetadata(false);
+      (new StitchingExecutor(params)).runStitching(false, false);
     } catch (StitchingException e) {
       Log.msg(Log.LogType.MANDATORY, e.getMessage());
     }

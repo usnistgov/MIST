@@ -113,7 +113,8 @@ public class ParamsValidation {
           System.out.println("Nb Peaks: " + nbPeaks);
           StitchingExecutor executor = new StitchingExecutor(params);
           try {
-            executor.runStitching(false, false, false);
+            params.getInputParams().setAssembleFromMetadata(false);
+            executor.runStitching(false, false);
           } catch (StitchingException e) {
             Log.msg(LogType.MANDATORY, e.getMessage());
           }

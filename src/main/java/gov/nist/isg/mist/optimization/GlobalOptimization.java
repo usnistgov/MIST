@@ -53,11 +53,10 @@ public class GlobalOptimization<T> {
    * @param stitchingStatistics the statistics file
    * @param isSequential        whether to use sequential or parallel execution when performing
    *                            the global  optimization.
-   * @param assembleFromMeta    whether to assemble from metadata.
    */
   public GlobalOptimization(TileGrid<ImageTile<T>> grid, JProgressBar progressBar,
                             StitchingAppParams params, StitchingStatistics stitchingStatistics,
-                            boolean isSequential, boolean assembleFromMeta) {
+                            boolean isSequential) {
     this.grid = grid;
     this.progressBar = progressBar;
     this.params = params;
@@ -66,7 +65,7 @@ public class GlobalOptimization<T> {
     this.stitchingStatistics = stitchingStatistics;
     this.isCancelled = false;
 
-    this.assembleFromMeta = assembleFromMeta;
+    this.assembleFromMeta = params.getInputParams().isAssembleFromMetadata();
   }
 
 
