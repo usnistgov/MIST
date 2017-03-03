@@ -60,7 +60,7 @@ public class LoggingParameters implements StitchingAppParamFunctions {
   @Override
   public boolean loadParams(File file) throws IllegalArgumentException {
     try {
-      Log.msg(LogType.MANDATORY, "Loading output parameters");
+      //Log.msg(LogType.MANDATORY, "Loading output parameters");
       boolean noErrors = true;
 
       FileReader fr = new FileReader(file.getAbsolutePath());

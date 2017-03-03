@@ -118,7 +118,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
 
 
   private void runSaveParams() {
-    Log.msg(LogType.MANDATORY, "Checking Parameters for save");
+    //Log.msg(LogType.MANDATORY, "Checking Parameters for save");
 
 
     if (this.stitchingGUI.checkAndParseGUI(this.params)) {
@@ -138,7 +138,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
           }
         }
 
-        Log.msg(LogType.MANDATORY, "Saving Parameters");
+        //Log.msg(LogType.MANDATORY, "Saving Parameters");
         this.params.saveParams(file);
       }
     } else {
@@ -150,7 +150,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
   }
 
   private void runLoadParams() {
-    Log.msg(LogType.MANDATORY, "Loading Parameters from file");
+    //Log.msg(LogType.MANDATORY, "Loading Parameters from file");
 
     JFileChooser chooser = new JFileChooser(this.stitchingGUI.getInputPanel().getImageDirectory());
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -160,7 +160,7 @@ public class StitchingSwingWorker extends SwingWorker<Void, Void> {
     if (val == JFileChooser.APPROVE_OPTION) {
       File file = chooser.getSelectedFile();
 
-      Log.msg(LogType.MANDATORY, "Loading Parameters");
+      //Log.msg(LogType.MANDATORY, "Loading Parameters");
       if (this.params.loadParams(file)) {
         this.params.printParams();
 

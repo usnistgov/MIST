@@ -186,7 +186,7 @@ public class MISTMain implements PlugIn {
   }
 
   private static void executeStitchingWithMacro() {
-    Log.msg(LogType.MANDATORY, "Executing stitching using macro");
+    //Log.msg(LogType.MANDATORY, "Executing stitching using macro");
     ExecutionType type = ExecutionType.RunStitchingMacro;
     StitchingSwingWorker executor = new StitchingSwingWorker(null, type);
     executor.execute();
@@ -220,7 +220,7 @@ public class MISTMain implements PlugIn {
         return;
       }
 
-      Log.msg(LogType.MANDATORY,"MISTMain.main: parsing args");
+      Log.msg(LogType.VERBOSE,"MISTMain.main: parsing args");
       for(int i = 0; i < args.length; i++) {
         Log.msg(LogType.MANDATORY,args[i]);
       }
@@ -250,9 +250,7 @@ public class MISTMain implements PlugIn {
   @Override
   public void run(String arg) {
 
-    IJ.log("\\Clear");
-
-    Log.msg(LogType.MANDATORY, "Launching MIST");
+    //Log.msg(LogType.MANDATORY, "Launching MIST");
 
     recorderCommand = Recorder.getCommand();
     Recorder.setCommand(null);

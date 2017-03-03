@@ -194,7 +194,7 @@ public class StitchingAppParams {
    */
   public void loadMacro() {
 
-    Log.msg(LogType.MANDATORY, "Loading macro parameters");
+    //Log.msg(LogType.MANDATORY, "Loading macro parameters");
 
     String options = MISTMain.getMacroOptions();
 
@@ -206,7 +206,7 @@ public class StitchingAppParams {
     this.advancedParams.loadMacro(options);
     this.logParams.loadMacro(options);
 
-    Log.msg(LogType.MANDATORY, "Finished loading macro");
+    //Log.msg(LogType.MANDATORY, "Finished loading macro");
 
   }
 
@@ -215,7 +215,7 @@ public class StitchingAppParams {
    */
   public void recordMacro() {
     Recorder.setCommand(MISTMain.recorderCommand);
-    Log.msg(LogType.MANDATORY, "Recording macro");
+    //Log.msg(LogType.MANDATORY, "Recording macro");
 
     this.inputParams.recordMacro();
     this.outputParams.recordMacro();

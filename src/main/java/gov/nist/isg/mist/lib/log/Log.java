@@ -249,4 +249,11 @@ public class Log {
     return logLevel;
   }
 
+
+  public static void clearLog(LogType level) {
+    if (level.ordinal() <= Log.logLevel.ordinal()) {
+      IJ.log("\\Clear");
+    }
+  }
+
 }

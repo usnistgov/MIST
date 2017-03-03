@@ -244,7 +244,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     try {
       boolean noErrors = true;
 
-      Log.msg(LogType.MANDATORY, "Loading input parameters");
+      //Log.msg(LogType.MANDATORY, "Loading input parameters");
       FileReader fr = new FileReader(file.getAbsolutePath());
 
       BufferedReader br = new BufferedReader(fr);

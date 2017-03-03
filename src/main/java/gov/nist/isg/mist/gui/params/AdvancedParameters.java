@@ -223,7 +223,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     try {
       boolean noErrors = true;
 
-      Log.msg(LogType.MANDATORY, "Loading advanced parameters");
+      //Log.msg(LogType.MANDATORY, "Loading advanced parameters");
 
       FileReader fr = new FileReader(file.getAbsolutePath());
 
