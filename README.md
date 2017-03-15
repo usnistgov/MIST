@@ -7,12 +7,12 @@ Microscopy Image Stitching Tool (MIST) is developed at the National Institute of
 
 ## Quick Navigation
 
-####- [About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)
-####- [Wiki](https://github.com/USNISTGOV/MIST/wiki)
-####- [Installation Guide](https://github.com/USNISTGOV/MIST/wiki/Install-Guide)
-####- [User Guide](https://github.com/USNISTGOV/MIST/wiki/User-Guide)
-####- [Frequently Asked Questions](https://github.com/USNISTGOV/MIST/wiki/FAQ)
-####- [Technical Documentation](https://github.com/USNISTGOV/MIST/wiki/assets/mist-algorithm-documentation.pdf)
+#### - [About MIST](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html)
+#### - [Wiki](https://github.com/USNISTGOV/MIST/wiki)
+#### - [Installation Guide](https://github.com/USNISTGOV/MIST/wiki/Install-Guide)
+#### - [User Guide](https://github.com/USNISTGOV/MIST/wiki/User-Guide)
+#### - [Frequently Asked Questions](https://github.com/USNISTGOV/MIST/wiki/FAQ)
+#### - [Technical Documentation](https://github.com/USNISTGOV/MIST/wiki/assets/mist-algorithm-documentation.pdf)
 
 ## Applicable Domain
 
