@@ -781,19 +781,17 @@ public class StitchingExecutor implements Runnable {
 
     StitchingGuiUtils.updateProgressBar(progress, true, "Outputting metadata");
 
-    int nDigits = params.getInputParams().getNumberTimeSliceDigits();
-
     // abs positions
-    Stitching.outputAbsolutePositions(grid, params.getOutputParams().getAbsPosFile(timeSlice, nDigits));
+    Stitching.outputAbsolutePositions(grid, params.getOutputParams().getAbsPosFile(timeSlice));
 
     // relative positions
     Stitching.outputRelativeDisplacements(grid,
-        params.getOutputParams().getRelPosFile(timeSlice, nDigits));
+        params.getOutputParams().getRelPosFile(timeSlice));
 
     // relative positions no optimization
     if (params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, params.getOutputParams()
-          .getRelPosNoOptFile(timeSlice, nDigits));
+          .getRelPosNoOptFile(timeSlice));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
@@ -801,9 +799,7 @@ public class StitchingExecutor implements Runnable {
     ImagePlus img = null;
     StitchingGuiUtils.updateProgressBar(progress, true, "Writing Full Image");
 
-    int nDigits = params.getInputParams().getNumberTimeSliceDigits();
-
-    File imageFile = params.getOutputParams().getOutputImageFile(timeSlice, nDigits);
+    File imageFile = params.getOutputParams().getOutputImageFile(timeSlice);
 
     ImageTile<T> initImg = grid.getTileThatExists();
     initImg.readTile();

@@ -164,11 +164,9 @@ public class ExistingFilesChecker implements Comparator<String> {
         int minTimeSlice = timeSliceParam.getMin();
         int maxTimeSlice = timeSliceParam.getMax();
 
-        int nDigits = this.params.getInputParams().getNumberTimeSliceDigits();
-
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           if (checkOutputImage) {
-            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice, nDigits);
+            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice);
 
             if (imgFile.exists())
               fileList.add(imgFile.getAbsolutePath());
@@ -177,15 +175,15 @@ public class ExistingFilesChecker implements Comparator<String> {
           if (checkOutputMeta) {
 
 
-            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice, nDigits);
+            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice);
             if (absFile.exists())
               fileList.add(absFile.getAbsolutePath());
 
-            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice, nDigits);
+            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice);
             if (relPosFile.exists())
               fileList.add(relPosFile.getAbsolutePath());
 
-            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice, nDigits);
+            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice);
             if (relPosNoOptFile.exists())
               fileList.add(relPosNoOptFile.getAbsolutePath());
 

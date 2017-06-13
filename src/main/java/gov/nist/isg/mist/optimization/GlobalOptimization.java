@@ -163,8 +163,7 @@ public class GlobalOptimization<T> {
     if (params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
-    File preOptPosFile = params.getOutputParams().getRelPosNoOptFile(stitchingStatistics.getCurrentTimeSlice(),
-        params.getInputParams().getNumberTimeSliceDigits());
+    File preOptPosFile = params.getOutputParams().getRelPosNoOptFile(stitchingStatistics.getCurrentTimeSlice());
     if (params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, preOptPosFile);
 

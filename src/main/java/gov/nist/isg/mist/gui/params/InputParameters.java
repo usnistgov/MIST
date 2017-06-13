@@ -166,11 +166,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     return null;
   }
 
-  public int getNumberTimeSliceDigits() {
-    int nDigits = TileGridLoaderUtils.getNumberMatchElements(this.filenamePattern, TileGridLoaderUtils.timePattern, true);
-    nDigits = Math.max(nDigits, 1);
-    return nDigits;
-  }
 
   /**
    * Gets the list of time slice range parameters, this will return a single time slice if no time
