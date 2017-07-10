@@ -9,6 +9,8 @@
 						<p>Microscopy Image Stitching Tool (MIST), is a stitching tool for 2D grids of images. MIST estimates the stage mechanical model (actuator backlash, stage repeatability ‘r’, etc.) from computed pairwise translations and then minimizes stitching errors by optimizing the translations within a (4r)^2 square area. This minimizes the maximum uncertainty related to the translation computation for any pair of images.<br/>
 						</p>
 
+						<br/>
+
 						<figure>
 							<img src="assets/MIST_alg_summary.png"
 									 class="img-responsive"
@@ -18,6 +20,8 @@
 								MIST algorithm description and novelties: Method and Scalability.
 							</figcaption>
 						</figure>
+
+						<br/>
 
 						<h4>Summary</h4>
 						<p>With new microscope technologies, scientists are acquiring terabyte-sized datasets to cover large area of their experiments. An automated optical microscope acquires images of a cell cultures specimen. The microscope acquires a grid of partially overlapping images because the microscope field of view is much smaller than the dimensions of the specimen being imaged. This process generates hundreds of thousands of images that need to be stitched into a large mosaic to derive meaningful information. Some of these large mosaics are sparse, mainly at the beginning of an experiment before cells grow and cover more areas. This creates overlapping areas with no foreground pixel intensities to compute the translations between tiles, which increases the translation computation uncertainty for the entire mosaic. Moreover, stitching such large image mosaic is computationally taxing; this becomes overwhelming for live cell experiments.</p>
