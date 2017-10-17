@@ -22,7 +22,7 @@ nb_cols = size_I(2);
 
 % compute the estimated overlap
 if isnan(overlap)
-  overlap = compute_image_overlap(X, Y, CC, source_directory, img_name_grid, direction);
+  overlap = compute_image_overlap(X, Y, source_directory, img_name_grid, direction);
 end
 
 % bound the computed image overlap (0,100)
@@ -32,7 +32,7 @@ end
 if overlap <= percent_overlap_error
   overlap = percent_overlap_error;
 end
-print_to_command(sprintf('Overlap estimate: %f', overlap), log_file_path);
+print_to_command(sprintf('Overlap estimate: %g', overlap), log_file_path);
 
 
 % compute range bounds
@@ -47,7 +47,7 @@ if direction == StitchingConstants.NORTH
   s.north_min_range_filter = ty_min;
   s.north_max_range_filter = ty_max;
   
-  print_to_command(sprintf('Translation range filer: min=%f, max=%f', ty_min, ty_max), log_file_path);
+  print_to_command(sprintf('Translation range filer: min=%g, max=%g', ty_min, ty_max), log_file_path);
   
 else
   tx_min = nb_cols - (overlap + percent_overlap_error)*nb_cols/100;
@@ -60,7 +60,7 @@ else
   s.west_min_range_filter = tx_min;
   s.west_max_range_filter = tx_max;
   
-  print_to_command(sprintf('Translation range filer: min=%f, max=%f', tx_min, tx_max), log_file_path);
+  print_to_command(sprintf('Translation range filer: min=%g, max=%g', tx_min, tx_max), log_file_path);
 end
 
 
@@ -86,113 +86,69 @@ if nnz(valid_translations_index) == 0
   if ~isnan(max_repeatability)
     repeatability = max_repeatability;
   end
+  s = StitchingStatistics.getInstance;
+  s.north_repeatability = repeatability;
   return;
 end
 
 
-if StitchingConstants.USE_OUTLIER_FILTER_IN_PLACE_OF_STD
-  w = 1.5; % default outlier threshold is w = 1.5
-  
-  % filter translations using outlier
-  if direction == StitchingConstants.NORTH
-    s = StitchingStatistics.getInstance;
-    s.north_std_filter_threshold = NaN; 
-    
-    % filter Y components of the translations
-    T = Y(valid_translations_index);
-    % only filter if there are more than 3 translations
-    if numel(T) > 3
-      q1 = median(T(T<median(T(:))));
-      q3 = median(T(T>median(T(:))));
-      iqd = abs(q3-q1);
+% filter out translation outliers
+w = 1.5; % default outlier threshold is w = 1.5
 
-      valid_translations_index(Y < (q1 - w*iqd)) = 0;
-      valid_translations_index((q3 + w*iqd) < Y) = 0;
-    end
+% filter translations using outlier
+if direction == StitchingConstants.NORTH
+  
+  % filter Y components of the translations
+  T = Y(valid_translations_index);
+  % only filter if there are more than 3 translations
+  if numel(T) > 3
+    q1 = median(T(T<median(T(:))));
+    q3 = median(T(T>median(T(:))));
+    iqd = abs(q3-q1);
     
-    % filter X components of the translations
-    T = X(valid_translations_index);
-    % only filter if there are more than 3 translations
-    if numel(T) > 3
-      q1 = median(T(T<median(T(:))));
-      q3 = median(T(T>median(T(:))));
-      iqd = abs(q3-q1);
-      
-      valid_translations_index(X < (q1 - w*iqd)) = 0;
-      valid_translations_index((q3 + w*iqd) < X) = 0;
-    end
-  else
-    s = StitchingStatistics.getInstance;
-    s.west_std_filter_threshold = NaN;
-    
-    % filter X components of the translations
-    T = X(valid_translations_index);
-    % only filter if there are more than 3 translations
-    if numel(T) > 3
-      q1 = median(T(T<median(T(:))));
-      q3 = median(T(T>median(T(:))));
-      iqd = abs(q3-q1);
-      
-      valid_translations_index(X < (q1 - w*iqd)) = 0;
-      valid_translations_index((q3 + w*iqd) < X) = 0;
-    end
-    
-    % filter Y components of the translations
-    T = Y(valid_translations_index);
-    % only filter if there are more than 3 translations
-    if numel(T) > 3
-      q1 = median(T(T<median(T(:))));
-      q3 = median(T(T>median(T(:))));
-      iqd = abs(q3-q1);
-      
-      valid_translations_index(Y < (q1 - w*iqd)) = 0;
-      valid_translations_index((q3 + w*iqd) < Y) = 0;
-    end
+    valid_translations_index(Y < (q1 - w*iqd)) = 0;
+    valid_translations_index((q3 + w*iqd) < Y) = 0;
   end
   
+  % filter X components of the translations
+  T = X(valid_translations_index);
+  % only filter if there are more than 3 translations
+  if numel(T) > 3
+    q1 = median(T(T<median(T(:))));
+    q3 = median(T(T>median(T(:))));
+    iqd = abs(q3-q1);
+    
+    valid_translations_index(X < (q1 - w*iqd)) = 0;
+    valid_translations_index((q3 + w*iqd) < X) = 0;
+  end
 else
-  % Valid translations must have a std above the computed threshold
-  std_1 = NaN(size(img_name_grid));
-  std_2 = NaN(size(img_name_grid));
-  for j = 1:size(img_name_grid,2)
-    for i = 1:size(img_name_grid,1)
-      if valid_translations_index(i,j)
-        if direction == StitchingConstants.NORTH
-          img_file_path = [source_directory img_name_grid{i,j}];
-          img_sub_region = {[1;round((overlap+percent_overlap_error)*nb_rows/100)],[1;nb_cols]};
-          std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-
-          img_file_path = [source_directory img_name_grid{i-1,j}];
-          img_sub_region = {[nb_rows-round((overlap+percent_overlap_error)*nb_rows/100)+1; nb_rows],[1;nb_cols]};
-          std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-        else
-          img_file_path = [source_directory img_name_grid{i,j}];
-          img_sub_region = {[1;nb_rows],[1;round((overlap+percent_overlap_error)*nb_cols/100)]};
-          std_2(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-
-          img_file_path = [source_directory img_name_grid{i,j-1}];
-          img_sub_region = {[1;nb_rows],[nb_cols-round((overlap+percent_overlap_error)*nb_cols/100)+1;nb_cols]};
-          std_1(i,j) = std2(double(imread(img_file_path, 'PixelRegion', img_sub_region)));
-        end
-      end
-    end
-  end
-
-  % std threshold is the median of all computed std values
-  std_threshold = median([std_1(valid_translations_index); std_2(valid_translations_index)]);
-  print_to_command(sprintf('Std threshold: %f', std_threshold), log_file_path);
-
-  % filter the valid translations to remove the ones that have a std of less than the threshold
-  valid_translations_index( std_1<std_threshold | std_2<std_threshold ) = 0;
   
-  if direction == StitchingConstants.NORTH
-    s = StitchingStatistics.getInstance;
-    s.north_std_filter_threshold = std_threshold;
-  else
-    s = StitchingStatistics.getInstance;
-    s.west_std_filter_threshold = std_threshold;
+  % filter X components of the translations
+  T = X(valid_translations_index);
+  % only filter if there are more than 3 translations
+  if numel(T) > 3
+    q1 = median(T(T<median(T(:))));
+    q3 = median(T(T>median(T(:))));
+    iqd = abs(q3-q1);
+    
+    valid_translations_index(X < (q1 - w*iqd)) = 0;
+    valid_translations_index((q3 + w*iqd) < X) = 0;
+  end
+  
+  % filter Y components of the translations
+  T = Y(valid_translations_index);
+  % only filter if there are more than 3 translations
+  if numel(T) > 3
+    q1 = median(T(T<median(T(:))));
+    q3 = median(T(T>median(T(:))));
+    iqd = abs(q3-q1);
+    
+    valid_translations_index(Y < (q1 - w*iqd)) = 0;
+    valid_translations_index((q3 + w*iqd) < Y) = 0;
   end
 end
+
+
 
 % test for existance of valid translations
 if nnz(valid_translations_index) == 0
@@ -236,7 +192,7 @@ else
   s = StitchingStatistics.getInstance;
   s.west_repeatability = repeatability;
 end
-print_to_command(sprintf('Computed repeatability: %f', repeatability), log_file_path);
+print_to_command(sprintf('Computed repeatability: %g', repeatability), log_file_path);
 
 % if the user defined a repeatabilty, use that one
 if ~isnan(max_repeatability)

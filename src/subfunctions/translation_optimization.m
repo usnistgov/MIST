@@ -21,7 +21,7 @@ startTime = tic;
 [nb_vertical_tiles, nb_horizontal_tiles] = size(img_name_grid);
 stats = [];
 for i = 1:numel(img_name_grid)
-  if ~isempty(img_name_grid{i})
+  if ~isempty(img_name_grid{i}) && exist([source_directory img_name_grid{i}],'file')
     stats = imfinfo([source_directory img_name_grid{i}]);
     break;
   end
@@ -77,34 +77,35 @@ print_to_command(['Valid Horizontal translation found: ' num2str(nnz(ConfidenceI
 print_to_command(['Vertical translation Repeatability: ' num2str(repeatability1)], log_file_path);
 print_to_command(['Horizontal translation Repeatability: ' num2str(repeatability2)], log_file_path);
 
+
+
 % repeatability search range is 2r +1 (to encompase +-r)
 r = max(repeatability1, repeatability2);
 r = 2*max(r, 1) + 1;
 print_to_command(['Overall translation Repeatability: ' num2str(r)], log_file_path);
-
-fh = fopen(log_file_path,'a');
+	
 % build the cross correlation search bounds and perform the search
 for j = 1:nb_horizontal_tiles
-  print_to_command(['  ' num2str(j) '/' num2str(nb_horizontal_tiles)], log_file_path);
-  % loop over the rows correcting invalid correlation values
-  for i = 1:nb_vertical_tiles
-    
-    % if not the first column, and both images exist
-    if j ~= 1 && ~isempty(img_name_grid{i,j-1}) && ~isempty(img_name_grid{i,j})
-      bounds = [Y2(i,j)-r, Y2(i,j)+r, X2(i,j)-r, X2(i,j)+r];
-      fprintf(fh,'W: %s -> %s hill climb range: [%d,%d,%d,%d]\n',img_name_grid{i,j},img_name_grid{i,j-1},bounds(1),bounds(2),bounds(3),bounds(4));
-      [Y2(i,j), X2(i,j), CC2(i,j)] = cross_correlation_hill_climb(source_directory, img_name_grid{i,j-1}, img_name_grid{i,j}, bounds, X2(i,j), Y2(i,j));
-    end
-    
-    % if not the first row, and both images exist
-    if i ~= 1 && ~isempty(img_name_grid{i-1,j}) && ~isempty(img_name_grid{i,j})
-      bounds = [Y1(i,j)-r, Y1(i,j)+r, X1(i,j)-r, X1(i,j)+r];
-      fprintf(fh,'N: %s -> %s hill climb range: [%d,%d,%d,%d]\n',img_name_grid{i,j},img_name_grid{i-1,j},bounds(1),bounds(2),bounds(3),bounds(4));
-      [Y1(i,j), X1(i,j), CC1(i,j)] = cross_correlation_hill_climb(source_directory, img_name_grid{i-1,j}, img_name_grid{i,j}, bounds, X1(i,j), Y1(i,j));
-    end
-  end
+	print_to_command(['  ' num2str(j) '/' num2str(nb_horizontal_tiles)], log_file_path);
+	% loop over the rows correcting invalid correlation values
+	parfor i = 1:nb_vertical_tiles
+		
+		% if not the first column, and both images exist
+		if j ~= 1 && ~isempty(img_name_grid{i,j-1}) && ~isempty(img_name_grid{i,j})
+			bounds = [Y2(i,j)-r, Y2(i,j)+r, X2(i,j)-r, X2(i,j)+r];
+			[Y2(i,j), X2(i,j), CC2(i,j)] = cross_correlation_hill_climb(source_directory, img_name_grid{i,j-1}, img_name_grid{i,j}, bounds, X2(i,j), Y2(i,j));
+		end
+		
+		% if not the first row, and both images exist
+		if i ~= 1 && ~isempty(img_name_grid{i-1,j}) && ~isempty(img_name_grid{i,j})
+			bounds = [Y1(i,j)-r, Y1(i,j)+r, X1(i,j)-r, X1(i,j)+r];
+			[Y1(i,j), X1(i,j), CC1(i,j)] = cross_correlation_hill_climb(source_directory, img_name_grid{i-1,j}, img_name_grid{i,j}, bounds, X1(i,j), Y1(i,j));
+		end
+	end
+  
 end
-fclose(fh);
+
+
 
 % % adjust the correlation value to reflect the confidence index, if it was a valid t (CI >= 4), give it a
 % higher weight than the other ts that had a cross correlation search performed

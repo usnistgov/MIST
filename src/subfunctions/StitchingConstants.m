@@ -16,10 +16,13 @@
 
 classdef StitchingConstants
   properties (Constant)
+    % Control options
+    USE_GPU = false;
+    NUM_NCC_HILL_CLIMB_SEARCH_POINTS = 0; % for performing random search with hill climbing on ncc optimization
+    USE_EXHAUSTIVE_CORRELAION_SEARCH = false;
+    
     VALID_TRANSLATION_CC_OFFSET = 3;
     NB_FFT_PEAKS = 2;
-		MIN_DIST_BETWEEN_PEAKS = 1;
-    MIN_NB_TRANSLATION_FOR_OVERLAP_COMPUTATION = 10;
     VALID_TRANSLATION_HEURISIC_CC_THRESHOLD = 0.5;
     
     % Minimum Spanning Tree Constants
@@ -35,10 +38,7 @@ classdef StitchingConstants
     MST_EAST = 21;
     
     % Overlap Computation Constants
-    USE_MLE_TO_COMPUTE_OVERLAP = true;
-    MLE_GRID_SEARCH_SIZE_PER_SIDE = 4;
-    % Translation Filtering Constants
-    USE_OUTLIER_FILTER_IN_PLACE_OF_STD = true;
+    MLE_OPTIMIZATION_STALL_COUNT = 20;
   end
   
   % direction constants

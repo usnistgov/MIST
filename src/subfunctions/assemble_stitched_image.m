@@ -29,7 +29,7 @@ end
 % get the size of a single image
 tempI = [];
 for i = 1:numel(img_name_grid)
-    if ~isempty(img_name_grid{i})
+    if ~isempty(img_name_grid{i}) && exist([source_directory img_name_grid{i}],'file')
         tempI = imread([source_directory img_name_grid{i}]);
         break;
     end
@@ -76,13 +76,15 @@ switch fusion_method
             img_idx = assemble_ordering(k);
             if ~isempty(img_name_grid{img_idx})
                 % Read the current image
-                current_image = imread([source_directory img_name_grid{img_idx}]);
-                % Assemble the image to the global one
-                x_st = global_x_img_pos(img_idx);
-                x_end = global_x_img_pos(img_idx)+img_width-1;
-                y_st = global_y_img_pos(img_idx);
-                y_end = global_y_img_pos(img_idx)+img_height-1;
-                I(y_st:y_end,x_st:x_end) = current_image;
+                current_image = read_img(source_directory, img_name_grid{img_idx});
+                if ~isempty(current_image)
+                  % Assemble the image to the global one
+                  x_st = global_x_img_pos(img_idx);
+                  x_end = global_x_img_pos(img_idx)+img_width-1;
+                  y_st = global_y_img_pos(img_idx);
+                  y_end = global_y_img_pos(img_idx)+img_height-1;
+                  I(y_st:y_end,x_st:x_end) = current_image;
+                end
             end
         end
         
@@ -94,14 +96,16 @@ switch fusion_method
             % Read the current image
             img_idx = assemble_ordering(k);
             if ~isempty(img_name_grid{img_idx})
-                current_image = single(imread([source_directory img_name_grid{img_idx}]));
-                % Assemble the image to the global one
-                x_st = global_x_img_pos(img_idx);
-                x_end = global_x_img_pos(img_idx)+img_width-1;
-                y_st = global_y_img_pos(img_idx);
-                y_end = global_y_img_pos(img_idx)+img_height-1;
-                I(y_st:y_end,x_st:x_end) = I(y_st:y_end,x_st:x_end) + current_image;
-                countsI(y_st:y_end,x_st:x_end) = countsI(y_st:y_end,x_st:x_end) + 1;
+                current_image = single(read_img(source_directory, img_name_grid{img_idx}));
+                if ~isempty(current_image)
+                  % Assemble the image to the global one
+                  x_st = global_x_img_pos(img_idx);
+                  x_end = global_x_img_pos(img_idx)+img_width-1;
+                  y_st = global_y_img_pos(img_idx);
+                  y_end = global_y_img_pos(img_idx)+img_height-1;
+                  I(y_st:y_end,x_st:x_end) = I(y_st:y_end,x_st:x_end) + current_image;
+                  countsI(y_st:y_end,x_st:x_end) = countsI(y_st:y_end,x_st:x_end) + 1;
+                end
             end
         end
         I = I./countsI;
@@ -117,14 +121,17 @@ switch fusion_method
             % Read the current image
             img_idx = assemble_ordering(k);
             if ~isempty(img_name_grid{img_idx})
-                current_image = single(imread([source_directory img_name_grid{img_idx}])) .* w_mat;
-                % Assemble the image to the global one
-                x_st = global_x_img_pos(img_idx);
-                x_end = global_x_img_pos(img_idx)+img_width-1;
-                y_st = global_y_img_pos(img_idx);
-                y_end = global_y_img_pos(img_idx)+img_height-1;
-                I(y_st:y_end,x_st:x_end) = I(y_st:y_end,x_st:x_end) + current_image;
-                countsI(y_st:y_end,x_st:x_end) = countsI(y_st:y_end,x_st:x_end) + w_mat;
+                current_image = single(read_img(source_directory, img_name_grid{img_idx}));
+                if ~isempty(current_image)
+                  current_image = current_image.*w_mat;
+                  % Assemble the image to the global one
+                  x_st = global_x_img_pos(img_idx);
+                  x_end = global_x_img_pos(img_idx)+img_width-1;
+                  y_st = global_y_img_pos(img_idx);
+                  y_end = global_y_img_pos(img_idx)+img_height-1;
+                  I(y_st:y_end,x_st:x_end) = I(y_st:y_end,x_st:x_end) + current_image;
+                  countsI(y_st:y_end,x_st:x_end) = countsI(y_st:y_end,x_st:x_end) + w_mat;
+                end
             end
         end
         I = I./countsI;
@@ -143,15 +150,17 @@ switch fusion_method
             img_idx = assemble_ordering(k);
             if ~isempty(img_name_grid{img_idx})
                 % Read the current image
-                current_image = imread([source_directory img_name_grid{img_idx}]);
-                % Assemble the image to the global one
-                x_st = global_x_img_pos(img_idx);
-                x_end = global_x_img_pos(img_idx)+img_width-1;
-                y_st = global_y_img_pos(img_idx);
-                y_end = global_y_img_pos(img_idx)+img_height-1;
-                temp = I(y_st:y_end,x_st:x_end);
-                temp(temp == 0) = maxval; % set the zeros to max value to avoid those being used
-                I(y_st:y_end,x_st:x_end) = min(current_image, temp);
+                current_image = read_img(source_directory, img_name_grid{img_idx});
+                if ~isempty(current_image)
+                  % Assemble the image to the global one
+                  x_st = global_x_img_pos(img_idx);
+                  x_end = global_x_img_pos(img_idx)+img_width-1;
+                  y_st = global_y_img_pos(img_idx);
+                  y_end = global_y_img_pos(img_idx)+img_height-1;
+                  temp = I(y_st:y_end,x_st:x_end);
+                  temp(temp == 0) = maxval; % set the zeros to max value to avoid those being used
+                  I(y_st:y_end,x_st:x_end) = min(current_image, temp);
+                end
             end
         end
         
@@ -163,13 +172,15 @@ switch fusion_method
             img_idx = assemble_ordering(k);
             if ~isempty(img_name_grid{img_idx})
                 % Read the current image
-                current_image = imread([source_directory img_name_grid{img_idx}]);
-                % Assemble the image to the global one
-                x_st = global_x_img_pos(img_idx);
-                x_end = global_x_img_pos(img_idx)+img_width-1;
-                y_st = global_y_img_pos(img_idx);
-                y_end = global_y_img_pos(img_idx)+img_height-1;
-                I(y_st:y_end,x_st:x_end) = max(current_image, I(y_st:y_end,x_st:x_end));
+                current_image = read_img(source_directory, img_name_grid{img_idx});
+                if ~isempty(current_image)
+                  % Assemble the image to the global one
+                  x_st = global_x_img_pos(img_idx);
+                  x_end = global_x_img_pos(img_idx)+img_width-1;
+                  y_st = global_y_img_pos(img_idx);
+                  y_end = global_y_img_pos(img_idx)+img_height-1;
+                  I(y_st:y_end,x_st:x_end) = max(current_image, I(y_st:y_end,x_st:x_end));
+                end
             end
         end
         
@@ -182,3 +193,5 @@ end
 
 
 end
+
+

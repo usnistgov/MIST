@@ -15,7 +15,7 @@
 
 
 
-function write_global_positions_to_csv(img_name_grid, global_y_img_pos, global_x_img_pos,CC1,CC2, output_file)
+function write_global_positions_to_csv(input_directory, img_name_grid, global_y_img_pos, global_x_img_pos,CC1,CC2, output_file)
 
 fh = fopen(output_file, 'w');
 
@@ -23,7 +23,7 @@ fh = fopen(output_file, 'w');
 
 for i = 1:r
   for j = 1:c
-    if ~isempty(img_name_grid{i,j})
+    if ~isempty(img_name_grid{i,j}) && exist([input_directory img_name_grid{i,j}],'file')
       cc = max(CC1(i,j), CC2(i,j));
       if isnan(cc)
         cc = -1;

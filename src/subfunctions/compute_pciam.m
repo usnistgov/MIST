@@ -31,17 +31,6 @@ for i = 1:numel(img_name_grid)
   end
 end
 
-% check to make sure all of the images exist on disk
-missing_img = false;
-for i = 1:numel(img_name_grid)
-  if ~isempty(img_name_grid{i}) && ~exist([source_directory img_name_grid{i}], 'file')
-    missing_img = true;
-    break;
-  end
-end
-assert(~missing_img, 'Images(s) from the image name grid could not be found on disk');
-
-
 [nb_vertical_tiles, nb_horizontal_tiles] = size(img_name_grid);
 
 % initialize the translation matricies
@@ -57,39 +46,30 @@ else
   debug_fh = 0;
 end
 
-% init the cell arrays to hold a single column of image and FFT data
-image_col = cell(nb_vertical_tiles, 1);
-fft_col = cell(nb_vertical_tiles, 1);
 
-% loop over the image tiles computing translations
 for j = 1:nb_horizontal_tiles
   print_to_command(['  col: ' num2str(j) '/' num2str(nb_horizontal_tiles)]);
-  for i = 1:nb_vertical_tiles
+  parfor i = 1:nb_vertical_tiles
     % read image from disk
     I1 = read_img(source_directory, img_name_grid{i,j});
-    % compute FFT
-    FFT1 = fft2(I1);
-    
+
     if i > 1
       % compute pciam north
-      if debug_fh > 0
-        fprintf(debug_fh, 'N: %s -> %s ', img_name_grid{i,j}, img_name_grid{i-1,j});
-      end
-      [t_Y1(i,j), t_X1(i,j), CC1(i,j)] = pciam(image_col{i-1}, fft_col{i-1}, I1, FFT1, StitchingConstants.NORTH, StitchingConstants.NB_FFT_PEAKS, StitchingConstants.MIN_DIST_BETWEEN_PEAKS, debug_fh);
+      I2 = read_img(source_directory, img_name_grid{i-1,j});
+      [t_Y1(i,j), t_X1(i,j), CC1(i,j)] = pciam(I2, I1, StitchingConstants.NORTH, StitchingConstants.NB_FFT_PEAKS, 0);
+
     end
     if j > 1
       % perform pciam west
-      if debug_fh > 0
-        fprintf(debug_fh, 'W: %s -> %s ', img_name_grid{i,j}, img_name_grid{i,j-1});
-      end
-      [t_Y2(i,j), t_X2(i,j), CC2(i,j)] = pciam(image_col{i}, fft_col{i}, I1, FFT1, StitchingConstants.WEST, StitchingConstants.NB_FFT_PEAKS, StitchingConstants.MIN_DIST_BETWEEN_PEAKS, debug_fh);
+      I2 = read_img(source_directory, img_name_grid{i,j-1});
+      [t_Y2(i,j), t_X2(i,j), CC2(i,j)] = pciam(I2, I1, StitchingConstants.WEST, StitchingConstants.NB_FFT_PEAKS, 0);
     end
-    
-    % overwrite the image and fft data in cell array
-    image_col{i} = I1;
-    fft_col{i} = FFT1;
   end
 end
+  
+
+
+
 if ~isempty(log_file_path)
   fclose(debug_fh);
 end
@@ -99,12 +79,4 @@ s.relative_displacement_time = toc(startTime);
 
 end
 
-function img = read_img(srcDir, imgName)
-if ~isempty(imgName)
-  img = double(imread([srcDir imgName]));
-  assert(numel(size(img)) == 2, sprintf('Input images must contain a 2D raster of pixels, RGB images not allows.\nInvalid image: %s', [srcDir imgName]));
-else
-  img = [];
-end
-end
 

@@ -17,27 +17,51 @@
 % The phase correlation image alignment method from image I1 to image I2
 % (I1, I2) <==> (left, right) if left right pair I1 should be left of I2
 % (I1, I2) <==> (up, down) if up down pair, I1 should be above I2
-function [y, x, v] = pciam(I1, F1, I2, F2, direction, nb_FFT_peaks, min_Dist_Between_Peaks, fh)
-if isempty(I1) || isempty(I2) || isempty(F1) || isempty(F2)
+function [y, x, v] = pciam(I1, I2, direction, nb_FFT_peaks, fh)
+if isempty(I1) || isempty(I2)
   y = NaN;
   x = NaN;
   v = NaN;
   return;
 end
 
+
 % Compute peak correlation matrix between I1 and I2 in the frequency domain. The max
 % will be the actual vertical (y) and horizontal (x) translation between I1 and I2
 start_time = tic;
-pcm = peak_correlation_matrix(F1, F2);
+
+% Perform phase correlation (amplitude is normalized)
+if StitchingConstants.USE_GPU
+  fc = fft2(gpuArray(I1)) .* conj(fft2(gpuArray(I2)));
+else
+  fc = fft2(I1) .* conj(fft2(I2));
+end
+fc(fc == 0) = eps('double');
+fcn = fc ./(abs(fc));
+pcm = real(ifft2(fcn)); % ignore the non real component of the inverse fft
+
 
 % Get nb_FFT_peaks peaks and compute their respective normalized cross correlation values
-peak_matrix = multi_peak_correlation_matrix(pcm, nb_FFT_peaks, min_Dist_Between_Peaks);
+% Sort values in descending order
+[~,idx] = sort(pcm(:), 'descend');
+% limit to nb_FFT_peaks
+idx = idx(1:nb_FFT_peaks);
+idx = gather(idx);
+
+[r,c] = size(I1);
+
+% Compute locations of each peak
+[y, x] = ind2sub([r,c], idx);
+% Take care of the fact that Matlab starts at 1
+y = y - 1; 
+x = x - 1;
 
 PCC = zeros(nb_FFT_peaks,3);
 for i = 1:nb_FFT_peaks
-  [PCC(i,1), PCC(i,2), PCC(i,3)] = get_peak_cross_correlation(I1, I2, peak_matrix(i,3), peak_matrix(i,2), direction);
+  [PCC(i,1), PCC(i,2), PCC(i,3)] = get_peak_cross_correlation(I1, I2, x(i), y(i), direction);
 end
 
+PCC = gather(PCC);
 [~,ind] = max(PCC(:,3));
 y = PCC(ind,1);
 x = PCC(ind,2);
@@ -45,7 +69,7 @@ v = PCC(ind,3);
 
 if fh > 0 % print debug info
   fprintf(fh, '(%.2fms)\n', toc(start_time)*1000);
-  for i = 1:size(peak_matrix,1)
+  for i = 1:size(PCC,1)
     if i == ind
       fprintf(fh, '  peak %d: x: %f y: %f, ncc: %f  <--\n', i, PCC(i,2), PCC(i,1), PCC(i,3));
     else
@@ -57,55 +81,7 @@ end
 end
 
 
-% Compute correlation matrix between I1 and I2 in the frequency domain
-function pcm = peak_correlation_matrix(f1, f2)
-% Perform phase correlation (amplitude is normalized)
-fc = f1 .* conj(f2);
-fc(fc == 0) = eps;
-fcn = fc ./(abs(fc));
 
-% Inverse fourier of peak correlation matrix
-pcm = ifft2(fcn);
-end
-
-
-% Compute correlation matrix between I1 and I2 in the frequency domain
-function peak_matrix = multi_peak_correlation_matrix(pcm, nb_FFT_peaks, min_Dist_Between_Peaks)
-
-% precompute the squared distance to prevent needing a sqrt later
-dist = min_Dist_Between_Peaks*min_Dist_Between_Peaks;
-
-% Sort values in descending order
-[r,c] = size(pcm);
-[pcm,Ind] = sort(pcm(:), 'descend');
-
-% Compute locations of each peak
-[y, x] = ind2sub([r,c], Ind);
-
-% Initialize first 5 peak matrix
-peak_matrix = -Inf(nb_FFT_peaks,3);
-n = 1;
-m = 1;
-max_ind = length(y);
-while n <= nb_FFT_peaks && m <= max_ind
-  % Compute distance between existing peaks and the current one
-  D = (peak_matrix(:,2)-y(m)).^2 + (peak_matrix(:,3)-x(m)).^2;
-  
-  % if current peak is within the surrounding neighborhood of existing peaks, skip it
-  indx = find(D<dist,1);
-  if ~isempty(indx), m = m+1; continue, end
-  
-  % Otherwise memorise value and location
-  peak_matrix(n,1) = pcm(m);
-  peak_matrix(n,2) = y(m);
-  peak_matrix(n,3) = x(m);
-  n = n+1;
-  m = m+1;
-end
-
-% Take care of the fact that Matlab starts at 1
-peak_matrix(:,2:3) = peak_matrix(:,2:3) - 1;
-end
 
 
 function [y,x,v] = get_peak_cross_correlation(I1, I2, x, y, direction)

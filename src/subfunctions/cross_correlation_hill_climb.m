@@ -18,12 +18,64 @@
 function [y, x, max_peak] = cross_correlation_hill_climb(images_path, I1_name, I2_name, bounds, x, y)
 % bounds = [y_min, y_max, x_min, x_max];
 
-I1 = double(imread([images_path I1_name]));
-I2 = double(imread([images_path I2_name]));
+I1 = read_img(images_path, I1_name);
+I2 = read_img(images_path, I2_name);
+I1 = double(I1); I2 = double(I2);
 
-% the starting point of the hill climb search is (x,y)
+max_peak = -1;
+if isempty(I1) || isempty(I2)
+  return;
+end
 
-% starting point is the center, halfway between the bounds
+if StitchingConstants.USE_EXHAUSTIVE_CORRELAION_SEARCH
+  
+  for i = bounds(1):bounds(2)
+    for j = bounds(3):bounds(4)
+      val = find_ncc(I1, I2, bounds, j, i);
+      if val > max_peak
+        x = j;
+        y = i;
+        max_peak = val;
+      end
+    end
+  end
+  
+  
+else
+  if StitchingConstants.NUM_NCC_HILL_CLIMB_SEARCH_POINTS > 1
+		% perform the hill climbing from the computed translation
+    % the starting point of the hill climb search is (x,y)
+    [x,y,max_peak] = perform_hill_climb(I1, I2, bounds, x, y);
+		
+		
+		% perform NUM_NCC_HILL_CLIMB_SEARCH_POINTS hill climbings with random starting points
+		for k = 1:StitchingConstants.NUM_NCC_HILL_CLIMB_SEARCH_POINTS
+			% create a new random starting point within bounds
+			x1 = (bounds(4) - bounds(3))*rand() + bounds(3);
+			y1 = (bounds(2) - bounds(1))*rand() + bounds(1);
+			
+			[x1,y1,max_peak1] = perform_hill_climb(I1, I2, bounds, x1, y1);
+			if max_peak1 > max_peak
+				x = x1;
+				y = y1;
+				max_peak = max_peak1;
+			end
+		end
+		
+  else
+    % the starting point of the hill climb search is (x,y)
+    [x,y,max_peak] = perform_hill_climb(I1, I2, bounds, x, y);
+  end
+
+end
+
+% to avoid propagating an inf value back as NCC
+if isinf(max_peak), max_peak = -1; end
+end
+
+
+function [x,y,max_peak] = perform_hill_climb(I1, I2, bounds, x, y)
+
 max_peak = -Inf;
 
 % start the search at the middle point in bounds
@@ -31,8 +83,12 @@ done = false;
 % init the matrix to hold computed ncc values to avoid recomputing
 ncc_values = NaN(3,3);
 
-dx_vals = [-1;0;1;0];
-dy_vals = [0;-1;0;1];
+% north, south, east, west
+dx_vals = [0;0;1;-1];
+dy_vals = [-1;1;0;0];
+
+% comptue the current peak
+ncc_values(2,2) = find_ncc(I1, I2, bounds, x, y);
 
 while ~done
   
@@ -44,15 +100,6 @@ while ~done
       ncc_values(2+delta_y,2+delta_x) = find_ncc(I1, I2, bounds, x+delta_x, y+delta_y);
     end
   end
-  
-%   compute the 8 connected peaks to the current location
-%   for delta_x = -1:1
-%     for delta_y = -1:1
-%       if isnan(ncc_values(2+delta_y,2+delta_x)) % compute the NCC value if not already computed
-%         ncc_values(2+delta_y,2+delta_x) = find_ncc(I1, I2, bounds, x+delta_x, y+delta_y);
-%       end
-%     end
-%   end
   
   
   [local_max_peak,idx] = max(ncc_values(:));
@@ -83,10 +130,7 @@ while ~done
   end
 end
 
-% to avoid propagating an inf value back as NCC
-if isinf(max_peak), max_peak = 0; end
 end
-
 
 
 

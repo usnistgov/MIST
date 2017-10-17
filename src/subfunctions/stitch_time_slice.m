@@ -13,21 +13,6 @@
 % they have been modified.
 
 
-
-% so vairable stands for "stitching options"
-% so = struct('source_directory', source_directory,...
-%             'img_name_grid'
-%             'target_directory'
-%             'output_prefix'
-%             'nb_FFT_peaks'
-%             'repeatability'
-%             'valid_correlation_threshold'
-%             'blending_method'
-%             'alpha'
-%             'assemble_stitched_image_flag'
-%             'log_file_path'
-
-
 function stitch_time_slice(input_directory, img_name_grid, output_directory, output_prefix, time_slice, repeatability, ...
 percent_overlap_error, blend_method, alpha, save_stitched_image, assemble_from_metadata, log_file_path, estimated_overlap_x,...
 estimated_overlap_y)
@@ -108,12 +93,12 @@ end
 if compute_translations
   print_to_command('Computing PCIAM', log_file_path);
   [Y1, X1, Y2, X2, CC1, CC2] = compute_pciam(input_directory, img_name_grid, log_file_path);
-  write_translations_to_csv(img_name_grid, X1,Y1,CC1,X2,Y2,CC2, [output_directory sprintf('relative-positions-no-optimization-%d.txt',time_slice)]);
-  save([output_directory sprintf('relative-positions-no-optimization-%d.mat',time_slice)], 'img_name_grid','X1','Y1','CC1','X2','Y2','CC2');
+  write_translations_to_csv(img_name_grid, X1,Y1,CC1,X2,Y2,CC2, [output_directory output_prefix sprintf('relative-positions-no-optimization-%d.txt',time_slice)]);
+  save([output_directory output_prefix sprintf('relative-positions-no-optimization-%d.mat',time_slice)], 'img_name_grid','X1','Y1','CC1','X2','Y2','CC2');
   
-  print_to_command('Correcting Translations using stage heuristic model', log_file_path);
+  print_to_command('Correcting Translations', log_file_path);
   [Y1, X1, Y2, X2, CC1, CC2] = translation_optimization(input_directory, img_name_grid, Y1, X1, Y2, X2, CC1, CC2, repeatability, percent_overlap_error, estimated_overlap_x, estimated_overlap_y, log_file_path);
-  write_translations_to_csv(img_name_grid, X1,Y1,CC1,X2,Y2,CC2, [output_directory sprintf('relative-positions-%d.txt',time_slice)]);
+  write_translations_to_csv(img_name_grid, X1,Y1,CC1,X2,Y2,CC2, [output_directory output_prefix sprintf('relative-positions-%d.txt',time_slice)]);
 end
 
 
@@ -123,7 +108,7 @@ if compute_global_positions
   print_to_command('Creating global image tile locations using Minimum Spanning Tree', log_file_path);
   % assemble global positions using minimum spanning tree
   [tiling_indicator, tile_weights, global_y_img_pos, global_x_img_pos] = minimum_spanning_tree(Y1, X1, Y2, X2, CC1, CC2);
-  write_global_positions_to_csv(img_name_grid, global_y_img_pos, global_x_img_pos,CC1,CC2, [output_directory sprintf('global-positions-%d.txt',time_slice)]);
+  write_global_positions_to_csv(input_directory, img_name_grid, global_y_img_pos, global_x_img_pos,CC1,CC2, [output_directory output_prefix sprintf('global-positions-%d.txt',time_slice)]);
   s = StitchingStatistics.getInstance;
   s.total_stitching_time = toc(startTime) + s.relative_displacement_time + s.global_optimization_time;
 end

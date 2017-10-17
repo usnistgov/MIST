@@ -37,6 +37,7 @@ p.addParamValue('first_direction', 'vertical', @(x) any(validatestring(x,validFD
 p.parse(source_img_dir, source_img_name_pattern, nb_horz_tiles, nb_vert_tiles, varargin{:});
 inputs = p.Results;
 
+% append file seperator to filepath
 if inputs.source_img_dir(end) ~= filesep
   inputs.source_img_dir = [inputs.source_img_dir filesep];
 end
@@ -44,6 +45,28 @@ end
 if strcmpi(inputs.time_slices_to_stitch, 'all')
   inputs.time_slices_to_stitch = '';
 end
+if any(inputs.time_slices_to_stitch==',' | inputs.time_slices_to_stitch=='-')
+  groups = strsplit(inputs.time_slices_to_stitch,',');
+  timeslice_numbers = [];
+  for g = 1:numel(groups)
+    if ~isnan(str2double(groups{g}))
+      timeslice_numbers = [timeslice_numbers, str2double(groups{g})];
+    else
+      if any(groups{g}=='-')
+        toks = strsplit(groups{g},'-');
+        if numel(toks) > 1
+          lower = str2double(toks{1});
+          upper = str2double(toks{2});
+          vals = lower:upper;
+          vals(isnan(vals)) = [];
+          timeslice_numbers = [timeslice_numbers, vals];
+        end
+      end
+    end
+  end
+  inputs.time_slices_to_stitch = num2str(timeslice_numbers);
+end
+
 inputs.time_slices_to_stitch = str2num(inputs.time_slices_to_stitch);  %#ok<ST2NM>
 
 row_col_img_name_pattern_flag = validateIterators(inputs.source_img_name_pattern, 'r') && validateIterators(inputs.source_img_name_pattern, 'c');
@@ -80,22 +103,6 @@ if filepatern_has_timeslices
       inputs.time_slices_to_stitch = fnd_timeslices;
     else
       % the user selected time slices to stitch so loop over those time slices
-      % the user defined the time slices to stitch
-      valid_timeslices = zeros(numel(inputs.time_slices_to_stitch),1);
-      for i = 1:numel(inputs.time_slices_to_stitch)
-        t = inputs.time_slices_to_stitch(i);
-        if row_col_img_name_pattern_flag
-          img_path_str = [inputs.source_img_dir generate_image_name_rc(inputs.source_img_name_pattern, t, 1, 1)];
-        else
-          img_path_str = [inputs.source_img_dir generate_image_name(inputs.source_img_name_pattern, t, 1)];
-        end
-        
-        if validate_image_exists(img_path_str)
-          valid_timeslices(i) = 1;
-        end
-      end
-      % remove the non valid time slices
-      inputs.time_slices_to_stitch(~valid_timeslices) = [];
     end
   else
     % there was no timeslice iterator, so there is only one time slice and it is not numbered

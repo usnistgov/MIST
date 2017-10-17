@@ -30,7 +30,7 @@ fh = fopen(filepath, 'r');
 i = 1;
 while ~feof(fh)
   line = fgetl(fh);
-  vals = strsplit(line, ',');
+  vals = strsplit(line, ',','CollapseDelimiters',false);
   for j = 1:numel(vals)
     cell_array{i,j} = vals{j};
   end

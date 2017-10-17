@@ -21,9 +21,8 @@ function MIST(varargin)
 % functions placed in that subfolder
 if ~isdeployed
   addpath([pwd filesep 'subfunctions']);
-  fp = fileparts(pwd);
-  addpath([fp filesep 'doc']);
-  addpath([fp filesep 'imgs']);
+  addpath([pwd filesep 'doc']);
+  addpath([pwd filesep 'imgs']);
 end
 
 % ----------------------------------------------------------------------
@@ -119,6 +118,14 @@ h_tabpanel(1) = uipanel('Position', [0,0,1,1], 'Parent', hctfig,...
   'Units', 'normalized', 'Visible', 'off', ...
   'Backgroundcolor', background_color, 'BorderWidth',1);
 
+% the NIST logo into the bottom right corner
+try
+  axes('Parent', h_tabpanel(1), 'Units', 'normalized', 'position', [0.8125 -0.035 0.16 0.2]);
+  imshow(imread('NIST_Logo.png'), []);
+catch err
+  warning('NIST logo failed to load and display on the GUI');
+  % logo failed to load
+end
 
 %---------------------------------------------------------------------------------------------
 %  Aquisition Technique
@@ -265,9 +272,11 @@ uicontrol('style','push',...
     img_name_grid = build_img_name_grid_from_csv(filename);
     
     % build the common name regex
-    cn = double(img_name_grid{1,1,1});
-    for i = 1:numel(img_name_grid)
-      invalid = cn ~= double(img_name_grid{i});
+    idx = ~cellfun(@isempty, img_name_grid);
+    tmp = img_name_grid(idx);
+    cn = double(tmp{1});
+    for i = 1:numel(tmp)
+      invalid = cn ~= double(tmp{i});
       cn(invalid) = NaN;
     end
     cn(isnan(cn)) = double('*');
@@ -512,30 +521,25 @@ component_height = 0.07;
 gap = 0.01;
 y_val = 0.9;
 
-% Stage Model Parameters
-label(advanced_panel, [.01 y_val .3 component_height], 'Stage Model Parameters', 'right', 'k', background_color, .6, 'sans serif', 'bold');
-y_val = y_val - component_height - gap;
-
 % Max Repeatability
 label(advanced_panel, [0.01 y_val .3 component_height], 'Stage Repeatability', 'right', 'k', background_color, .6, 'sans serif', 'normal');
 repeatability_edit = editbox(advanced_panel, [.32 y_val .15 component_height], repeatability, 'center', 'k', 'w', .6, 'normal');
 label(advanced_panel, [0.5 y_val .1 component_height], 'pixels', 'left', 'k', background_color, .6, 'sans serif', 'normal');
 
-% Estimated Overlap
-y_val = y_val - component_height - gap;
-label(advanced_panel, [.01 y_val .3 component_height], 'Horizontal Overlap', 'right', 'k', background_color, .6, 'sans serif', 'normal');
-estimated_overlap_x_edit = editbox(advanced_panel, [.32 y_val .15 component_height], estimated_overlap_x, 'center', 'k', 'w', .6, 'normal');
-label(advanced_panel, [0.5 y_val .1 component_height], 'percent', 'left', 'k', background_color, .6, 'sans serif', 'normal');
-y_val = y_val - component_height - gap;
-label(advanced_panel, [.01 y_val .3 component_height], 'Vertical Overlap', 'right', 'k', background_color, .6, 'sans serif', 'normal');
-estimated_overlap_y_edit = editbox(advanced_panel, [.32 y_val .15 component_height], estimated_overlap_y, 'center', 'k', 'w', .6, 'normal');
-label(advanced_panel, [0.5 y_val .1 component_height], 'percent', 'left', 'k', background_color, .6, 'sans serif', 'normal');
-
 % Percent Overlap Error
 y_val = y_val - component_height - gap;
-label(advanced_panel, [0.01 y_val .3 component_height], 'Overlap Uncertainty', 'right', 'k', background_color, .6, 'sans serif', 'normal');
+label(advanced_panel, [0.01 y_val .3 component_height], 'Image Overlap Uncertainty', 'right', 'k', background_color, .6, 'sans serif', 'normal');
 overlap_error_edit = editbox(advanced_panel, [.32 y_val .15 component_height], overlap_error, 'center', 'k', 'w', .6, 'normal');
 label(advanced_panel, [0.5 y_val .1 component_height], 'percent', 'left', 'k', background_color, .6, 'sans serif', 'normal');
+
+% Estimated Overlap
+y_val = y_val - component_height - gap;
+label(advanced_panel, [.01 y_val .3 component_height], 'Estimated Overlap (Horz,Vert)', 'right', 'k', background_color, .6, 'sans serif', 'normal');
+
+estimated_overlap_x_edit = editbox(advanced_panel, [.32 y_val .15 component_height], estimated_overlap_x, 'center', 'k', 'w', .6, 'normal');
+label(advanced_panel, [.478 y_val-.01 .03 component_height], ',', 'center', 'k', background_color, .8, 'sans serif', 'normal');
+estimated_overlap_y_edit = editbox(advanced_panel, [.52 y_val .15 component_height], estimated_overlap_y, 'center', 'k', 'w', .6, 'normal');
+
 
 
 y_val = y_val - 8*gap;
@@ -787,7 +791,7 @@ uicontrol('style','push',...
       for t = 1:size(img_name_grid,3)
         time_slice = to_stitch_time_slice_nbs(t);
         
-        log_file_path = [target_directory 'debug.log'];
+        log_file_path = [target_directory output_prefix 'debug.log'];
         temp_img_name_grid = img_name_grid(:,:,t);
         if assemble_zero_percent_overlap_flag
           create_zero_percent_overlap_mosaic(source_directory, temp_img_name_grid, target_directory, output_prefix, blend_method, alpha, time_slice);
@@ -798,6 +802,7 @@ uicontrol('style','push',...
         end
 
       end
+      print_to_command('Done stitching');
       
       reset_img_name_grid_callback();
       if isdeployed

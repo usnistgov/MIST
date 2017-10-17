@@ -40,20 +40,18 @@ classdef (Sealed) StitchingStatistics < handle
       
       fprintf(fh, '\n');
       fprintf(fh, 'North repeatability: %d\n', obj.north_repeatability);
-      fprintf(fh, 'North overlap: %d\n', obj.north_overlap);
+      fprintf(fh, 'North overlap: %g\n', obj.north_overlap);
       fprintf(fh, 'North valid tiles after filter: %d out of %d\n', obj.north_nb_valid_tiles, obj.north_nb_tiles);
-      fprintf(fh, 'North min filter threshold: %f\n', obj.north_min_range_filter);
-      fprintf(fh, 'North max filter threshold: %f\n', obj.north_max_range_filter);
-      fprintf(fh, 'North standard deviation threshold: %f\n', obj.north_std_filter_threshold);
+      fprintf(fh, 'North min filter threshold: %g\n', obj.north_min_range_filter);
+      fprintf(fh, 'North max filter threshold: %g\n', obj.north_max_range_filter);
       fprintf(fh, 'North missing row/col: [%s]\n', obj.north_missing_row_col);
       
       fprintf(fh, '\n');
       fprintf(fh, 'West repeatability: %d\n', obj.west_repeatability);
-      fprintf(fh, 'West overlap: %d\n', obj.west_overlap);
+      fprintf(fh, 'West overlap: %g\n', obj.west_overlap);
       fprintf(fh, 'West valid tiles after filter: %d out of %d\n', obj.west_nb_valid_tiles, obj.west_nb_tiles);
-      fprintf(fh, 'West min filter threshold: %f\n', obj.west_min_range_filter);
-      fprintf(fh, 'West max filter threshold: %f\n', obj.west_max_range_filter);
-      fprintf(fh, 'West standard deviation threshold: %f\n', obj.west_std_filter_threshold);
+      fprintf(fh, 'West min filter threshold: %g\n', obj.west_min_range_filter);
+      fprintf(fh, 'West max filter threshold: %g\n', obj.west_max_range_filter);
       fprintf(fh, 'West missing row/col: [%s]\n', obj.west_missing_row_col);
       fprintf(fh,'\n');
       fclose(fh);
@@ -70,7 +68,6 @@ classdef (Sealed) StitchingStatistics < handle
       obj.north_nb_valid_tiles = [];
       obj.north_min_range_filter = [];
       obj.north_max_range_filter = [];
-      obj.north_std_filter_threshold = [];
       obj.north_missing_row_col = [];
 
       obj.west_repeatability = [];
@@ -79,7 +76,6 @@ classdef (Sealed) StitchingStatistics < handle
       obj.west_nb_valid_tiles = [];
       obj.west_min_range_filter = [];
       obj.west_max_range_filter = [];
-      obj.west_std_filter_threshold = [];
       obj.west_missing_row_col = [];
     end
   end
@@ -96,7 +92,6 @@ classdef (Sealed) StitchingStatistics < handle
     north_nb_valid_tiles;
     north_min_range_filter;
     north_max_range_filter;
-    north_std_filter_threshold;
     north_missing_row_col;
     
     west_repeatability;
@@ -105,7 +100,6 @@ classdef (Sealed) StitchingStatistics < handle
     west_nb_valid_tiles;
     west_min_range_filter;
     west_max_range_filter;
-    west_std_filter_threshold;
     west_missing_row_col;
   end
 end
