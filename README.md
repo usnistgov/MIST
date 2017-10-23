@@ -1,3 +1,6 @@
+For Modeled Integrated Scatter Tool see: [ScatterMIST](https://github.com/usnistgov/ScatterMIST)
+
+
 # MIST
 Microscopy Image Stitching Tool (MIST) is being developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. This repository contains source code for the plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
