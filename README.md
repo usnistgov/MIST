@@ -55,7 +55,7 @@ Figure 1: Example Phase Contrast and Cy5 stitched images with auto adjusted cont
 ## How to cite our work
 If you are using MIST in your research, please use the following references to cite us.
 
-T. Blattner et. al., "A Hybrid CPU-GPU System for Stitching of Large Scale Optical Microscopy Images", 2014 International Conference on Parallel Processing, 2014 [download pdf](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/downloads/Blattner%20et%20al.%20-%20A%20Hybrid%20CPU-GPU%20System%20for%20Stitching%20of%20Large%20Scale%20Optical%20Microscopy%20Images.pdf) [view article](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6957209&tag=1)
+T. Blattner et. al., "A Hybrid CPU-GPU System for Stitching of Large Scale Optical Microscopy Images", 2014 International Conference on Parallel Processing, 2014 [download pdf](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/downloads/Blattner%20et%20al.%20-%20A%20Hybrid%20CPU-GPU%20System%20for%20Stitching%20of%20Large%20Scale%20Optical%20Microscopy%20Images.pdf), [view article](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6957209&tag=1)
 
-J. Chalfoun, et al. "MIST: Accurate and Scalable Microscopy Image Stitching Tool with Stage Modeling and Error Minimization". Scientific Reports. 2017;7:4988. doi:10.1038/s41598-017-04567-y [download pdf](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/downloads/41598_2017_Article_4567.pdf) [view article](https://www.nature.com/articles/s41598-017-04567-y)
+J. Chalfoun, et al. "MIST: Accurate and Scalable Microscopy Image Stitching Tool with Stage Modeling and Error Minimization". Scientific Reports. 2017;7:4988. doi:10.1038/s41598-017-04567-y [download pdf](https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/downloads/41598_2017_Article_4567.pdf), [view article](https://www.nature.com/articles/s41598-017-04567-y)
 
