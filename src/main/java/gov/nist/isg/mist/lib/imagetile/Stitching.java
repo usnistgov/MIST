@@ -24,9 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -369,8 +372,13 @@ public class Stitching {
               tileName = value;
             } else if (key.equals("corr")) {
               try {
-                corr = Double.parseDouble(value);
+//                corr = Double.parseDouble(value); // does not handle locales correctly.
+                NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+                corr = numberFormat.parse(value).doubleValue();
               } catch (NumberFormatException e) {
+                Log.msg(LogType.MANDATORY, "Unable to parse correlation for " + tileName);
+                parseError = true;
+              } catch (ParseException e) {
                 Log.msg(LogType.MANDATORY, "Unable to parse correlation for " + tileName);
                 parseError = true;
               }
