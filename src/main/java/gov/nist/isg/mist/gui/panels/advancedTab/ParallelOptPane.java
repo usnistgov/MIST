@@ -42,7 +42,7 @@ import gov.nist.isg.mist.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.lib.libraryloader.LibraryUtils;
-import jcuda.LibUtils.ARCHType;
+import jcuda.LibUtils;
 
 /**
  * Creates the parallel options panel
@@ -120,8 +120,8 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
   private void initParallelOptions() {
 
     this.stitchingExecutionType.enableAllButtons();
-
-    if (LibraryUtils.arch != ARCHType.X86_64) {
+    
+    if (LibraryUtils.arch != LibUtils.ArchType.X86_64) {
       this.stitchingExecutionType.disableAllButtonsExcept(StitchingType.JAVA.toString());
     } else if (!this.cudaPanel.isCudaAvailable()) {
       this.stitchingExecutionType.disableButton(StitchingType.CUDA.toString());

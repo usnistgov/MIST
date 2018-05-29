@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -15,7 +15,7 @@
     <orderEntry type="module-library">
       <library name="Maven: com.sun:tools:1.4.2">
         <CLASSES>
-          <root url="jar://C:/Program Files/Java/jdk1.8.0_111/jre/../lib/tools.jar!/" />
+          <root url="jar:///usr/lib/jvm/java-8-openjdk-amd64/lib/tools.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -23,8 +23,10 @@
     </orderEntry>
     <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcuda:6.5" level="project" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcufft:6.5" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcuda:0.9.0d" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcuda-natives:linux-x86_64:0.9.0d" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcufft:0.9.0d" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcufft-natives:linux-x86_64:0.9.0d" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20100113" level="project" />
     <orderEntry type="library" name="Maven: ome:formats-gpl:5.1.7" level="project" />
     <orderEntry type="library" name="Maven: ome:formats-api:5.1.7" level="project" />

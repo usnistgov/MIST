@@ -26,7 +26,6 @@ import java.lang.reflect.Field;
 import javax.swing.JOptionPane;
 
 import jcuda.LibUtils;
-import jcuda.LibUtils.ARCHType;
 import jcuda.LibUtils.OSType;
 
 /**
@@ -48,7 +47,7 @@ public class LibraryUtils {
   /**
    * The architecture type
    */
-  public static ARCHType arch;
+  public static LibUtils.ArchType arch;
 
   /**
    * Initializes the libraries
@@ -60,7 +59,7 @@ public class LibraryUtils {
       os = LibUtils.calculateOS();
       arch = LibUtils.calculateArch();
 
-      if (arch != ARCHType.X86_64) {
+      if (arch != LibUtils.ArchType.X86_64) {
         if (!GraphicsEnvironment.isHeadless())
           JOptionPane.showMessageDialog(null, "Warning: 32-bit architecture detected.\n"
                   + "Unable to use FFTW or CUDA, " + "please upgrade to 64-bit if possible.\n"
