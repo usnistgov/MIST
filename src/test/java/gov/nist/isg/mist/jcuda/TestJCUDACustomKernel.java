@@ -50,7 +50,7 @@ public class TestJCUDACustomKernel {
       checkError(JCudaDriver.cuCtxCreate(context, 0, device));
 
       CUmodule module = new CUmodule();
-      checkError(JCudaDriver.cuModuleLoad(module, "/home/tjb3/work/MIST/lib/jcuda-6.5/stitching-util-cuda-bin.ptx"));
+      checkError(JCudaDriver.cuModuleLoad(module, "/home/tjb3/work/MIST/lib/jcuda/stitching-util-cuda-bin.ptx"));
 
       CUfunction function = new CUfunction();
       checkError(JCudaDriver.cuModuleGetFunction(function, module, "elt_prod_conj"));

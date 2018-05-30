@@ -58,7 +58,7 @@ import jcuda.runtime.cudaStream_t;
  */
 public class CudaImageTile32 extends ImageTile<CUdeviceptr> {
 
-  private static final String CUDA_MODULE_NAME = "lib/jcuda-" + LibraryUtils.JCUDA_VERSION + "/stitching-util-cuda-bin.ptx";
+  private static final String CUDA_MODULE_NAME = "lib/jcuda/stitching-util-cuda-bin.ptx";
   private static final String FUNC_ELT_PROD = "elt_prod_conj_v2f";
   private static final String FUNC_MAX = "reduce_max_mainf";
   private static final String FUNC_MAX_FIN = "reduce_max_finalf";

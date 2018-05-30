@@ -59,7 +59,7 @@ import jcuda.runtime.cudaStream_t;
 public class CudaImageTile extends ImageTile<CUdeviceptr> {
 
 
-  private static final String CUDA_MODULE_NAME = "lib/jcuda-" + LibraryUtils.JCUDA_VERSION + "/stitching-util-cuda-bin.ptx";
+  private static final String CUDA_MODULE_NAME = "lib/jcuda/stitching-util-cuda-bin.ptx";
   private static final String FUNC_ELT_PROD = "elt_prod_conj_v2";
   private static final String FUNC_MAX = "reduce_max_main";
   private static final String FUNC_MAX_FIN = "reduce_max_final";
@@ -256,6 +256,8 @@ public class CudaImageTile extends ImageTile<CUdeviceptr> {
     if(fijiDir == null)
       fijiDir = "";
 
+    System.out.println("Hello world");
+    Log.msg(LogType.MANDATORY, CUDA_MODULE_NAME);
     File testFile = new File(fijiDir + CUDA_MODULE_NAME);
 
     if (!testFile.canRead()) {

@@ -5,10 +5,10 @@
       <element id="module-output" name="MIST_" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/imagej/ij/1.48s/ij-1.48s.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/nativelibs4java/bridj/0.6.2/bridj-0.6.2.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcuda/6.5/jcuda-6.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/edu/mines/mines-jtk/20100113/mines-jtk-20100113.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcufft/6.5/jcufft-6.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcuda/0.9.0d/jcuda-0.9.0d.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcufft/0.9.0d/jcufft-0.9.0d.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
