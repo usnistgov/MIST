@@ -9,6 +9,10 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/gov/nih/imagej/imagej/1.46/imagej-1.46.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcuda/0.9.0d/jcuda-0.9.0d.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcuda/jcufft/0.9.0d/jcufft-0.9.0d.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcuda/jcuda-natives-0.9.0d-linux-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcuda/jcuda-natives-0.9.0d-windows-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcuda/jcufft-natives-0.9.0d-linux-x86_64.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcuda/jcufft-natives-0.9.0d-windows-x86_64.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
