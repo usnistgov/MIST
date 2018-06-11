@@ -19,10 +19,14 @@
         <element id="directory" name="jcuda">
           <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/stitching-util-cuda-bin.ptx" />
           <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/util-cuda-bin.cu" />
-          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/jcuda-natives-0.9.0d-linux-x86_64.jar" />
-          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/jcuda-natives-0.9.0d-windows-x86_64.jar" />
-          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/jcufft-natives-0.9.0d-linux-x86_64.jar" />
-          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/jcufft-natives-0.9.0d-windows-x86_64.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/JCudaDriver-0.9.0d-windows-x86_64.dll" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/JCudaRuntime-0.9.0d-windows-x86_64.dll" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/JCufft-0.9.0d-windows-x86_64.dll" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/JNvrtc-0.9.0d-windows-x86_64.dll" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/libJCudaDriver-0.9.0d-linux-x86_64.so" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/libJCudaRuntime-0.9.0d-linux-x86_64.so" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/libJCufft-0.9.0d-linux-x86_64.so" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jcuda/libJNvrtc-0.9.0d-linux-x86_64.so" />
         </element>
       </element>
     </root>

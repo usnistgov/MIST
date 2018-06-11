@@ -2,6 +2,9 @@ For Modeled Integrated Scatter Tool see: [ScatterMIST](https://github.com/usnist
 
 
 # MIST
+
+Now using CUDA 9.0, refer to [Installation Instructions](https://github.com/usnistgov/MIST/wiki/Install-Guide#cuda-installation) for details on how to install CUDA toolkit 9.0. All users that were using the older CUDA 6.5 will need to update to CUDA 9.0. The update should result in higher performance execution, especially on more modern GPUs.
+
 Microscopy Image Stitching Tool (MIST) is being developed at the National Institute of Standards and Technology. The first release is an ImageJ/Fiji plugin-in. The next release will add a standalone tool. This repository contains source code for the plugin in one branch and the source code for the MATLAB prototype in another. Please use the quick navigation for installation instructions and the user guide. For more information about the tool please refer to the About MIST in the quick navigation.
 
 [Java Source Code](https://github.com/USNISTGOV/MIST/tree/master)
