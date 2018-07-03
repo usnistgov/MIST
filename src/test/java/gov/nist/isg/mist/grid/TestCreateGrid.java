@@ -43,7 +43,7 @@ public class TestCreateGrid {
       for (GridDirection dir : GridDirection.values()) {
         System.out.println("Origin: " + origin + " Direction: " + dir);
         SequentialTileGridLoader loader =
-            new SequentialTileGridLoader(4, 4, 1, "F_{ppp}.tif", origin, dir);
+            new SequentialTileGridLoader(4, 4, 1, 0,0,"F_{ppp}.tif", origin, dir);
         loader.printNumberGrid();
         System.out.println();
       }

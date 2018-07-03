@@ -40,11 +40,7 @@ import gov.nist.isg.mist.gui.components.filechooser.DirectoryChooserPanel;
 import gov.nist.isg.mist.gui.components.filechooser.FileChooserPanel;
 import gov.nist.isg.mist.gui.components.helpDialog.HelpDocumentationViewer;
 import gov.nist.isg.mist.gui.components.textfield.TextFieldInputPanel;
-import gov.nist.isg.mist.gui.components.textfield.textFieldModel.DualRegexResetImageSizeModel;
-import gov.nist.isg.mist.gui.components.textfield.textFieldModel.RegexResetImageSizeModel;
-import gov.nist.isg.mist.gui.components.textfield.textFieldModel.TextFieldModel;
-import gov.nist.isg.mist.gui.components.textfield.textFieldModel.TimeslicesModel;
-import gov.nist.isg.mist.gui.components.textfield.textFieldModel.UpdateSubGridModel;
+import gov.nist.isg.mist.gui.components.textfield.textFieldModel.*;
 import gov.nist.isg.mist.gui.panels.outputTab.OutputPanel;
 import gov.nist.isg.mist.gui.panels.subgrid.SubgridPanel;
 import gov.nist.isg.mist.gui.params.OutputParameters;
@@ -112,6 +108,18 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       + "columns. \n-The width of the image grid.";
   private static final String gridHeightHelp = "-The number of images in a column. \n-The number of"
       + " rows. \n-The height of the image grid.";
+  private static final String gridStartColHelp = "The number used to identify the first image in a column within the grid. " +
+          "Column numbering usually starts at 0 or 1, but any positive integer is possible.\n - Numbering must be sequential." + "\n" +
+          "- Example: img_r{rr}_c{cc}.tif can have the column numbering start at 5 and go to 10. So the range of image names would be 'img_r{rr}_c05.tif' to 'img_r{rr}_c10.tif'\n" +
+          "- The value being specified in this GUI field is the start of the number range.";
+  private static final String gridStartRowHelp = "The number used to identify the first image in a row within the grid. " +
+          "Row numbering usually starts at 0 or 1, but any positive integer is possible.\n - Numbering must be sequential." + "\n" +
+          "- Example: img_r{rr}_c{cc}.tif can have the row numbering start at 2 and go to 5. So the range of image names would be 'img_r02_c{cc}.tif' to 'img_r05_c{cc}.tif'\n" +
+          "- The value being specified in this GUI field is the start of the number range.";
+  private static final String gridTileStartHelp = "The number used to identify the first image in the grid. Image numbering usually starts at 0 or 1, " +
+          "but any positive integer is possible. \n- Numbering must be sequential.\n" +
+          "- Example: img_pos0{ppp}_c01.tif numbering can range from 0 to 4. So the range of image names would be 'img_pos0000_c01.tif' to 'img_pos0004_c01.tif'\n" +
+          "- The value being specified in this GUI field is the start of the number range.";
   private static final String timeslicesHelp = "The number of timeslices to stitch. \n" +
       "Leave this field blank to stitch all timeslices. \n\n" +
       "To stitch timeslices you must add the special format text \"{ttt}\" to the Filename Pattern. \n\n" +
@@ -151,6 +159,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
   private TextFieldInputPanel<Integer> plateWidth;
   private TextFieldInputPanel<Integer> plateHeight;
+  private TextFieldInputPanel<Integer> plateStartCol;
+  private TextFieldInputPanel<Integer> plateStartRow;
+  private TextFieldInputPanel<Integer> plateStartTile;
   private JButton discoverGridButton;
   private TextFieldInputPanel<String> filenamePattern;
   private DirectoryChooserPanel fileChooser;
@@ -168,6 +179,8 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   private int startTimeSlice;
   private int endTimeSlice;
   private int startTileNumber;
+  private int startTileNumberRow;
+  private int startTileNumberCol;
   private boolean hasTimeSlices;
 
   private boolean positionLoaded;
@@ -209,12 +222,24 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.plateWidth =
         new TextFieldInputPanel<Integer>("Grid Width", "4", new UpdateSubGridModel(1,
             Integer.MAX_VALUE, subgridPanel), gridWidthHelp);
+
+
+    this.plateStartCol =
+            new TextFieldInputPanel<Integer>("Column Start Tile", "0", new IntModel(0, Integer.MAX_VALUE), gridStartColHelp);
+
     this.plateHeight =
         new TextFieldInputPanel<Integer>("Grid Height", "4", new UpdateSubGridModel(1,
             Integer.MAX_VALUE, subgridPanel), gridHeightHelp);
-    this.discoverGridButton = new JButton("Discover Width/Height");
-    this.discoverGridButton.addActionListener(this);
-    this.discoverGridButton.setToolTipText("<html>Attempt to automatically discover the width and height<br>of a row-column acquisition given a valid filename<br>pattern and image directory.</html>");
+
+    this.plateStartRow =
+            new TextFieldInputPanel<Integer>("Row Start Tile", "0", new IntModel(0, Integer.MAX_VALUE), gridStartRowHelp);
+
+    this.plateStartTile =
+            new TextFieldInputPanel<Integer>("Grid Start Tile", "0", new IntModel(0, Integer.MAX_VALUE), gridTileStartHelp);
+
+//    this.discoverGridButton = new JButton("Discover Width/Height");
+//    this.discoverGridButton.addActionListener(this);
+//    this.discoverGridButton.setToolTipText("<html>Attempt to automatically discover the width and height<br>of a row-column acquisition given a valid filename<br>pattern and image directory.</html>");
 
     this.fileChooser = new DirectoryChooserPanel("Image Directory");
 
@@ -279,12 +304,17 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     c.gridy = 3;
     acquisitionPanel.add(this.plateHeight, c);
     c.gridy = 4;
-    acquisitionPanel.add(this.timeSlices, c);
+    acquisitionPanel.add(this.plateStartCol, c);
+    acquisitionPanel.add(this.plateStartTile, c);
     c.gridy = 5;
-    acquisitionPanel.add(this.discoverGridButton, c);
+    acquisitionPanel.add(this.plateStartRow, c);
+    c.gridy = 6;
+    acquisitionPanel.add(this.timeSlices, c);
+    c.gridy = 7;
+//    acquisitionPanel.add(this.discoverGridButton, c);
     c.gridx = 1;
     c.gridy = 2;
-    c.gridheight = 4;
+    c.gridheight = 6;
     OrientationPanel orientationPanel = new OrientationPanel(this);
     acquisitionPanel.add(orientationPanel, c);
     c.gridheight = 1;
@@ -408,6 +438,33 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
 
   /**
+   * Gets the row-col start column number that the user specified
+   *
+   * @return the start tile number for the columns
+   */
+  public int getPlateStartCol() {
+    return this.plateStartCol.getValue();
+  }
+
+  /**
+   * Gets the row-col start row number that the user specified
+   *
+   * @return the start tile number for the rows
+   */
+  public int getPlateStartRow() {
+    return this.plateStartRow.getValue();
+  }
+
+  /**
+   * Gets the sequential start tile that the user specified
+   *
+   * @return the start tile number
+   */
+  public int getPlateStartTile() {
+    return this.plateStartTile.getValue();
+  }
+
+  /**
    * Gets the image directory that the user specified
    *
    * @return the image directory
@@ -466,27 +523,6 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       return (GridDirection) val;
   }
 
-  private boolean queryStartTileNumber() {
-    boolean done = false;
-    while (!done) {
-      String msg =
-          JOptionPane.showInputDialog(this, "Unable to determine "
-                  + "starting tile index. Please input starting tile index.", "Starting tile index",
-              JOptionPane.QUESTION_MESSAGE);
-
-      if (msg == null)
-        return false;
-
-      try {
-        this.startTileNumber = Integer.parseInt(msg);
-        return true;
-      } catch (NumberFormatException e) {
-        Log.msg(LogType.MANDATORY, "Please enter integer value into text field.");
-      }
-    }
-
-    return false;
-  }
 
   private boolean queryStartTimeslice() {
     boolean done = false;
@@ -513,7 +549,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   private void findEndTimeslice(String imageDir, String filePattern) {
     String timeFilePattern =
         TileGridLoaderUtils.parsePositionPattern(filePattern, this.getLoaderType(),
-            this.startTileNumber, false);
+            this.startTileNumber, this.startTileNumberRow, this.startTileNumberCol, false);
 
     int stride = 100;
 
@@ -543,19 +579,6 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
   }
 
-  private boolean checkPosition(String imageDir, String filePattern) {
-    // check 0 and 1 position
-    if (TileGridLoaderUtils.checkStartTile(imageDir, filePattern, 0, this.getLoaderType(), true)) {
-      this.startTileNumber = 0;
-      return true;
-    } else if (TileGridLoaderUtils.checkStartTile(imageDir, filePattern, 1, this.getLoaderType(),
-        true)) {
-      this.startTileNumber = 1;
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   /**
    * Gets the initial image's file size
@@ -578,7 +601,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
       fPath =
           TileGridLoaderUtils.parsePositionPattern(fPath, this.getLoaderType(), this.startTileNumber,
-              false);
+              this.startTileNumberRow, this.startTileNumberCol, false);
 
       if (fPath != null) {
         fPath = this.getImageDirectory() + File.separator + fPath;
@@ -598,6 +621,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   private boolean updateStartPositionAndTimeslice(boolean isClosing) {
     int plateWidth = this.getPlateWidth();
     int plateHeight = this.getPlateHeight();
+    int startTile = this.getPlateStartTile();
+    int startTileRow = this.getPlateStartRow();
+    int startTileCol = this.getPlateStartCol();
     String filePattern = this.getFilePattern();
     String imageDirectory = this.getImageDirectory();
     GridOrigin origin = this.getOrigin();
@@ -622,14 +648,16 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
       // check if the current startTimeSlice and startTileNumber are valid
       positionPattern =
-          TileGridLoaderUtils.parseTimeSlicePattern(filePattern, this.startTimeSlice, isClosing);
-      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, positionPattern, this.startTileNumber, this.getLoaderType(), true)) {
+          TileGridLoaderUtils.parseTimeSlicePattern(filePattern, startTile, isClosing);
+      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, positionPattern, startTile, startTileRow, startTileCol, this.getLoaderType(), true)) {
         // Check start time position
         for (int timeSlice = 0; timeSlice < 2; timeSlice++) {
-          positionPattern =
-              TileGridLoaderUtils.parseTimeSlicePattern(filePattern, timeSlice, isClosing);
-          if (checkPosition(imageDirectory, positionPattern)) {
+
+          if (TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, startTile, startTileRow, startTileCol, this.getLoaderType(), true)) {
             this.startTimeSlice = timeSlice;
+            this.startTileNumber = startTile;
+            this.startTileNumberRow = startTileRow;
+            this.startTileNumberCol = startTileCol;
             foundTimeSlice = true;
             break;
           }
@@ -637,7 +665,6 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
         if (!foundTimeSlice) {
           if (!isClosing) {
-            queryStartTileNumber();
             queryStartTimeslice();
           }
         }
@@ -660,16 +687,32 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
         }
       }
 
-
-      // check the current startTileNumber
-      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, this.startTileNumber,
-          this.getLoaderType(), isClosing)) {
-
-        // check 0,1 based tile numbering
-        if (!checkPosition(imageDirectory, positionPattern)) {
-          if (!isClosing)
-            queryStartTileNumber();
+      // Test that the first element of the grid exists
+      if (TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, startTile, startTileRow,
+              startTileCol, this.getLoaderType(), isClosing)) {
+        this.startTileNumber = startTile;
+        this.startTileNumberRow = startTileRow;
+        this.startTileNumberCol = startTileCol;
+      }else{
+        if(this.getLoaderType() == LoaderType.ROWCOL) {
+          this.plateStartRow.showError();
+          this.plateStartCol.showError();
+        }else{
+          this.plateStartTile.showError();
         }
+        return false;
+      }
+
+
+      // check that the last tile in the grid exists (to ensure width and height are correct)
+      int endTile = startTile + (this.getPlateWidth() * this.getPlateHeight() - 1);
+      int endTileRow = startTileRow + this.getPlateHeight() - 1;
+      int endTileCol = startTileCol + this.getPlateWidth() - 1;
+      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, endTile, endTileRow,
+              endTileCol, this.getLoaderType(), isClosing)) {
+        this.plateWidth.showError();
+        this.plateHeight.showError();
+        return false;
       }
 
     }
@@ -687,6 +730,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.filenamePattern.setValue(params.getInputParams().getFilenamePattern());
     this.assembleFromMeta.setSelected(params.getInputParams().isAssembleFromMetadata());
     this.globalPositionFile.setValue(params.getInputParams().getGlobalPositionsFile());
+    this.plateStartTile.setValue(params.getInputParams().getStartTile());
+    this.plateStartRow.setValue(params.getInputParams().getStartTileRow());
+    this.plateStartCol.setValue(params.getInputParams().getStartTileCol());
 
     GridDirection numbering = params.getInputParams().getNumbering();
 
@@ -732,7 +778,7 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   public boolean checkGUIArgs() {
 
     if (this.plateWidth.hasError() || this.plateHeight.hasError() || this.filenamePattern.hasError()
-        || this.timeSlices.hasError())
+        || this.timeSlices.hasError() || this.plateStartTile.hasError() || this.plateStartRow.hasError() || this.plateStartCol.hasError())
       return false;
 
     String imageDirectory = this.getImageDirectory();
@@ -807,6 +853,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.plateWidth.enableIgnoreErrors();
     this.plateHeight.enableIgnoreErrors();
     this.filenamePattern.enableIgnoreErrors();
+    this.plateStartTile.enableIgnoreErrors();
+    this.plateStartRow.enableIgnoreErrors();
+    this.plateStartCol.enableIgnoreErrors();
   }
 
   @Override
@@ -815,6 +864,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
     this.plateWidth.disableIgnoreErrors();
     this.plateHeight.disableIgnoreErrors();
     this.filenamePattern.disableIgnoreErrors();
+    this.plateStartTile.disableIgnoreErrors();
+    this.plateStartRow.disableIgnoreErrors();
+    this.plateStartCol.disableIgnoreErrors();
   }
 
   @Override
@@ -826,6 +878,10 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
   public void saveParamsFromGUI(StitchingAppParams params, boolean isClosing) {
     int plateWidth = this.getPlateWidth();
     int plateHeight = this.getPlateHeight();
+    int startTileNumber = this.getPlateStartTile();
+    int startTileNumberRow = this.getPlateStartRow();
+    int startTileNumberCol = this.getPlateStartCol();
+
     String filePattern = this.getFilePattern();
     String imageDirectory = this.getImageDirectory();
     GridOrigin origin = this.getOrigin();
@@ -842,6 +898,8 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
         this.startTimeSlice = 1;
         this.endTimeSlice = 1;
         this.startTileNumber = 1;
+        this.startTileNumberRow = 0;
+        this.startTileNumberCol = 0;
         this.hasTimeSlices = false;
       }
     }
@@ -853,7 +911,9 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
     params.getInputParams().setGridWidth(plateWidth);
     params.getInputParams().setGridHeight(plateHeight);
-    params.getInputParams().setStartTile(this.startTileNumber);
+    params.getInputParams().setStartTile(startTileNumber);
+    params.getInputParams().setStartTileRow(startTileNumberRow);
+    params.getInputParams().setStartTileCol(startTileNumberCol);
     params.getInputParams().setFilenamePattern(filePattern);
     params.getInputParams().setImageDir(imageDirectory);
     params.getInputParams().setOrigin(origin);
@@ -885,7 +945,12 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
           this.directionPanel.getComboBox().addItem(NA_STRING);
           this.directionPanel.getComboBox().setSelectedItem(NA_STRING);
 
-          this.discoverGridButton.setEnabled(true);
+          this.plateStartCol.setEnabled(true);
+          this.plateStartCol.setVisible(true);
+          this.plateStartRow.setEnabled(true);
+          this.plateStartRow.setVisible(true);
+          this.plateStartTile.setEnabled(false);
+          this.plateStartTile.setVisible(false);
           break;
         case SEQUENTIAL:
           this.filenamePattern.setValidator(this.sequentialValidator);
@@ -895,149 +960,19 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
 
           this.directionPanel.getComboBox().removeItem(NA_STRING);
 
-          this.discoverGridButton.setEnabled(false);
+          this.plateStartCol.setEnabled(false);
+          this.plateStartCol.setVisible(false);
+          this.plateStartRow.setEnabled(false);
+          this.plateStartRow.setVisible(false);
+          this.plateStartTile.setEnabled(true);
+          this.plateStartTile.setVisible(true);
           break;
       }
     } else if (e.getSource() == this.assembleFromMeta) {
       this.updateGlobalPositionFile();
-    } else if (e.getSource() == this.discoverGridButton) {
-      this.discoverGridSize();
     }
   }
 
-  private void discoverGridSize() {
-    // this is only possible with the row/col loader type
-    if (getLoaderType() != LoaderType.ROWCOL)
-      return;
-
-    // check that the filename pattern is valid
-    if (this.filenamePattern.hasError())
-      return;
-
-    // validate that the image directory exists
-    String imgDir = getImageDirectory();
-    String filePattern = getFilePattern();
-
-    // handle time series case
-    if (TileGridLoaderUtils.hasTimeFilePattern(filePattern)) {
-      this.hasTimeSlices = true;
-
-      boolean foundTimeSlice = false;
-      for (int timeSlice = 0; timeSlice < 2; timeSlice++) {
-        String positionPattern =
-            TileGridLoaderUtils.parseTimeSlicePattern(filePattern, timeSlice, false);
-        if (checkPosition(imgDir, positionPattern)) {
-          this.startTimeSlice = timeSlice;
-          foundTimeSlice = true;
-          break;
-        }
-      }
-
-      if (!foundTimeSlice) {
-        queryStartTimeslice();
-      }
-
-      filePattern =
-          TileGridLoaderUtils.parseTimeSlicePattern(filePattern, this.startTimeSlice, false);
-    }
-
-    if (!checkPosition(imgDir, filePattern)) {
-      queryStartTileNumber();
-
-      if (!TileGridLoaderUtils.checkStartTile(imgDir, filePattern, this.startTileNumber, LoaderType.ROWCOL, true)) {
-        this.plateWidth.setValue(0);
-        this.plateHeight.setValue(0);
-        return;
-      }
-    }
-
-    // perform discovery to find width and height of the grid
-    int stride = 100;
-    int maxRow = this.startTileNumber;
-    int minRow = this.startTileNumber;
-
-    int maxCol = this.startTileNumber;
-    int minCol = this.startTileNumber;
-
-    int prevVal = this.startTileNumber;
-    boolean found = false;
-
-
-    // perform discovery starting at a known tile where row and column index is this.startTileNumber
-
-    // find the maxRow
-    while (!found) {
-      if (TileGridLoaderUtils.checkRowColTile(imgDir, filePattern, maxRow, this.startTileNumber, true)) {
-        prevVal = maxRow;
-        maxRow += stride;
-      } else {
-        if (stride == 1)
-          found = true;
-        else
-          stride = (int) Math.ceil(stride / 2.0);
-
-        maxRow = prevVal;
-      }
-    }
-
-    // find the maxRow
-    found = false;
-    stride = 100;
-    prevVal = this.startTileNumber;
-    while (!found) {
-      if (TileGridLoaderUtils.checkRowColTile(imgDir, filePattern, minRow, this.startTileNumber, true)) {
-        prevVal = minRow;
-        minRow -= stride;
-      } else {
-        if (stride == 1)
-          found = true;
-        else
-          stride = (int) Math.ceil(stride / 2.0);
-
-        minRow = prevVal;
-      }
-    }
-
-    // find the maxCol
-    found = false;
-    stride = 100;
-    prevVal = this.startTileNumber;
-    while (!found) {
-      if (TileGridLoaderUtils.checkRowColTile(imgDir, filePattern, this.startTileNumber, maxCol, true)) {
-        prevVal = maxCol;
-        maxCol += stride;
-      } else {
-        if (stride == 1)
-          found = true;
-        else
-          stride = (int) Math.ceil(stride / 2.0);
-
-        maxCol = prevVal;
-      }
-    }
-
-    // find the minCol
-    found = false;
-    stride = 100;
-    prevVal = this.startTileNumber;
-    while (!found) {
-      if (TileGridLoaderUtils.checkRowColTile(imgDir, filePattern, this.startTileNumber, minCol, true)) {
-        prevVal = minCol;
-        minCol -= stride;
-      } else {
-        if (stride == 1)
-          found = true;
-        else
-          stride = (int) Math.ceil(stride / 2.0);
-
-        minCol = prevVal;
-      }
-    }
-
-
-    this.plateHeight.setValue(maxRow - minRow + 1);
-    this.plateWidth.setValue(maxCol - minCol + 1);
-  }
 
   private void updateGlobalPositionFile() {
     this.globalPositionFile.setEnabled(this.isAssembleWithMetadata());

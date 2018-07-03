@@ -56,12 +56,16 @@ public class RowColTileGridLoader extends TileGridLoader {
    * @param gridWidth   the width of the grid
    * @param gridHeight  the height of the grid
    * @param startTile   the start tile number
+   * @param startTileRow   the start tile number
+   * @param startTileCol   the start tile number
    * @param filePattern the file pattern
    * @param origin      the grid origin
+   *
+   * Function will use startTile with a Sequential LoaderType and (startTileRow, startTileCol) with a ROWCOL LoaderType
    */
-  public RowColTileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern,
+  public RowColTileGridLoader(int gridWidth, int gridHeight, int startTile, int startTileRow, int startTileCol, String filePattern,
                               GridOrigin origin) {
-    super(gridWidth, gridHeight, startTile, filePattern);
+    super(gridWidth, gridHeight, startTile, startTileRow, startTileCol, filePattern);
     this.origin = origin;
 
     initRowMatcher();
@@ -125,13 +129,13 @@ public class RowColTileGridLoader extends TileGridLoader {
 
 
     for (int row = 0; row < super.getGridHeight(); row++) {
-      String colPattern = String.format(this.rowMatcher, row + super.getStartTile());
+      String colPattern = String.format(this.rowMatcher, row + super.getStartTileRow());
 
       String colMatcher = getColMatcher(colPattern, false);
 
       int gridCol = startCol;
       for (int col = 0; col < super.getGridWidth(); col++) {
-        String fileName = String.format(colMatcher, col + super.getStartTile());
+        String fileName = String.format(colMatcher, col + super.getStartTileCol());
 
         super.setTileName(gridRow, gridCol, fileName);
 
@@ -179,7 +183,7 @@ public class RowColTileGridLoader extends TileGridLoader {
 
     for (GridOrigin origin : GridOrigin.values()) {
       System.out.println("Origin: " + origin);
-      RowColTileGridLoader loader = new RowColTileGridLoader(10, 10, 0, "F_{rr}_{cc}.tif", origin);
+      RowColTileGridLoader loader = new RowColTileGridLoader(10, 10, 0, 0, 0, "F_{rr}_{cc}.tif", origin);
       loader.printNumberGrid();
       System.out.println();
     }

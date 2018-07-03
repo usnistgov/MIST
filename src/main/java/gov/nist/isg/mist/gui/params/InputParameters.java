@@ -50,6 +50,8 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String GRID_WIDTH = "gridWidth";
   private static final String GRID_HEIGHT = "gridHeight";
   private static final String START_TILE = "startTile";
+  private static final String START_TILE_ROW = "startTileRow";
+  private static final String START_TILE_COL = "startTileCol";
   private static final String IMAGE_DIR = "imageDir";
   private static final String FILENAME_PATTERN = "filenamePattern";
   private static final String FILENAME_PATTERN_TYPE = "filenamePatternType";
@@ -72,6 +74,8 @@ public class InputParameters implements StitchingAppParamFunctions {
   private int gridWidth;
   private int gridHeight;
   private int startTile;
+  private int startTileRow;
+  private int startTileCol;
   private String imageDir;
   private String filenamePattern;
   private LoaderType filenamePatternType;
@@ -95,6 +99,8 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.gridWidth = 1;
     this.gridHeight = 1;
     this.startTile = 0;
+    this.startTileRow = 0;
+    this.startTileCol = 0;
     this.imageDir = System.getProperty("user.home");
     this.filenamePattern = "img_r{rrr}_c{ccc}.tif";
     this.filenamePatternType = LoaderType.ROWCOL;
@@ -136,12 +142,14 @@ public class InputParameters implements StitchingAppParamFunctions {
   public TileGridLoader getTileGridLoader(int timeSlice) {
     switch (this.filenamePatternType) {
       case ROWCOL:
-        return new RowColTileGridLoader(this.gridWidth, this.gridHeight,
-            this.startTile, this.parseTimeSlicePattern(timeSlice, false), this.origin);
+        // Function will use startTile with a Sequential LoaderType and (startRow, startCol) with a ROWCOL LoaderType
+        return new RowColTileGridLoader(this.getGridWidth(), this.getGridHeight(),
+            this.getStartTile(), this.getStartTileRow(), this.getStartTileCol(), this.parseTimeSlicePattern(timeSlice, false), this.getOrigin());
       case SEQUENTIAL:
-        return new SequentialTileGridLoader(this.gridWidth, this.gridHeight,
-            this.startTile, this.parseTimeSlicePattern(timeSlice, false), this.origin,
-            this.numberingPattern);
+        // Function will use startTile with a Sequential LoaderType and (startRow, startCol) with a ROWCOL LoaderType
+        return new SequentialTileGridLoader(this.getGridWidth(), this.getGridHeight(),
+            this.getStartTile(), this.getStartTileRow(), this.getStartTileCol(), this.parseTimeSlicePattern(timeSlice, false), this.getOrigin(),
+            this.getNumbering());
     }
 
     return null;
@@ -156,11 +164,13 @@ public class InputParameters implements StitchingAppParamFunctions {
 
     switch (this.filenamePatternType) {
       case ROWCOL:
+        // Function will use startTile with a Sequential LoaderType and (startRow, startCol) with a ROWCOL LoaderType
         return new RowColTileGridLoader(this.getGridWidth(), this.getGridHeight(),
-            this.getStartTile(), this.getFilenamePattern(), this.getOrigin());
+            this.getStartTile(), this.getStartTileRow(), this.getStartTileCol(), this.getFilenamePattern(), this.getOrigin());
       case SEQUENTIAL:
+        // Function will use startTile with a Sequential LoaderType and (startRow, startCol) with a ROWCOL LoaderType
         return new SequentialTileGridLoader(this.getGridWidth(), this.getGridHeight(),
-            this.getStartTile(), this.getFilenamePattern(), this.getOrigin(), this.getNumbering());
+            this.getStartTile(), this.getStartTileRow(), this.getStartTileCol(), this.getFilenamePattern(), this.getOrigin(), this.getNumbering());
     }
 
     return null;
@@ -287,6 +297,10 @@ public class InputParameters implements StitchingAppParamFunctions {
       this.gridHeight = StitchingParamUtils.loadInteger(value, this.gridHeight);
     else if (key.equals(START_TILE))
       this.startTile = StitchingParamUtils.loadInteger(value, this.startTile);
+    else if (key.equals(START_TILE_ROW))
+      this.startTileRow = StitchingParamUtils.loadInteger(value, this.startTileRow);
+    else if (key.equals(START_TILE_COL))
+      this.startTileCol = StitchingParamUtils.loadInteger(value, this.startTileCol);
     else if (key.equals(IMAGE_DIR))
       this.imageDir = value;
     else if (key.equals(FILENAME_PATTERN))
@@ -323,6 +337,8 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.gridWidth = pref.getInt(GRID_WIDTH, this.gridWidth);
     this.gridHeight = pref.getInt(GRID_HEIGHT, this.gridHeight);
     this.startTile = pref.getInt(START_TILE, this.startTile);
+    this.startTileRow = pref.getInt(START_TILE_ROW, this.startTileRow);
+    this.startTileCol = pref.getInt(START_TILE_COL, this.startTileCol);
     this.imageDir = pref.get(IMAGE_DIR, this.imageDir);
     this.filenamePattern = pref.get(FILENAME_PATTERN, this.filenamePattern);
     this.filenamePatternType =
@@ -348,7 +364,12 @@ public class InputParameters implements StitchingAppParamFunctions {
   public void printParams(LogType logLevel) {
     Log.msg(logLevel, GRID_WIDTH + ": " + this.gridWidth);
     Log.msg(logLevel, GRID_HEIGHT + ": " + this.gridHeight);
-    Log.msg(logLevel, START_TILE + ": " + this.startTile);
+    if(this.getFilenamePatternLoaderType() == LoaderType.ROWCOL) {
+      Log.msg(logLevel, START_TILE_ROW + ": " + this.startTileRow);
+      Log.msg(logLevel, START_TILE_COL + ": " + this.startTileCol);
+    }else{
+      Log.msg(logLevel, START_TILE + ": " + this.startTile);
+    }
     Log.msg(logLevel, IMAGE_DIR + ": " + this.imageDir);
     Log.msg(logLevel, FILENAME_PATTERN + ": " + this.filenamePattern);
     Log.msg(logLevel, FILENAME_PATTERN_TYPE + ": " + this.filenamePatternType);
@@ -378,6 +399,9 @@ public class InputParameters implements StitchingAppParamFunctions {
   public void loadMacro(String macroOptions) {
     this.gridWidth = MacroUtils.loadMacroInteger(macroOptions, GRID_WIDTH, this.gridWidth);
     this.gridHeight = MacroUtils.loadMacroInteger(macroOptions, GRID_HEIGHT, this.gridHeight);
+    this.startTileRow = MacroUtils.loadMacroInteger(macroOptions, START_TILE_ROW, this.startTileRow);
+    this.startTileCol = MacroUtils.loadMacroInteger(macroOptions, START_TILE_COL, this.startTileCol);
+    this.startTile = MacroUtils.loadMacroInteger(macroOptions, START_TILE, this.startTile);
     this.startTile = MacroUtils.loadMacroInteger(macroOptions, START_TILE, this.startTile);
     this.imageDir = MacroUtils.loadMacroString(macroOptions, IMAGE_DIR, this.imageDir);
     this.filenamePattern = MacroUtils.loadMacroString(macroOptions, FILENAME_PATTERN, this.filenamePattern);
@@ -407,7 +431,14 @@ public class InputParameters implements StitchingAppParamFunctions {
   public void recordMacro() {
     MacroUtils.recordInteger(GRID_WIDTH + ": ", this.gridWidth);
     MacroUtils.recordInteger(GRID_HEIGHT + ": ", this.gridHeight);
-    MacroUtils.recordInteger(START_TILE + ": ", this.startTile);
+
+    if(this.getFilenamePatternLoaderType() == LoaderType.ROWCOL) {
+      MacroUtils.recordInteger(START_TILE_ROW + ": ", this.startTileRow);
+      MacroUtils.recordInteger(START_TILE_COL + ": ", this.startTileCol);
+    }else{
+      MacroUtils.recordInteger(START_TILE + ": ", this.startTile);
+    }
+
     MacroUtils.recordString(IMAGE_DIR + ": ", this.imageDir);
     MacroUtils.recordString(FILENAME_PATTERN + ": ", this.filenamePattern);
     MacroUtils.recordString(FILENAME_PATTERN_TYPE + ": ", this.filenamePatternType.name());
@@ -429,6 +460,8 @@ public class InputParameters implements StitchingAppParamFunctions {
   public void saveParams(Preferences pref) {
     pref.putInt(GRID_WIDTH, this.gridWidth);
     pref.putInt(GRID_HEIGHT, this.gridHeight);
+    pref.putInt(START_TILE_ROW, this.startTileRow);
+    pref.putInt(START_TILE_COL, this.startTileCol);
     pref.putInt(START_TILE, this.startTile);
     pref.put(IMAGE_DIR, this.imageDir);
     pref.put(FILENAME_PATTERN, this.filenamePattern);
@@ -454,7 +487,14 @@ public class InputParameters implements StitchingAppParamFunctions {
     try {
       fw.write(GRID_WIDTH + ": " + this.gridWidth + newLine);
       fw.write(GRID_HEIGHT + ": " + this.gridHeight + newLine);
-      fw.write(START_TILE + ": " + this.startTile + newLine);
+
+      if(this.getFilenamePatternLoaderType() == LoaderType.ROWCOL) {
+        fw.write(START_TILE_ROW + ": " + this.startTileRow + newLine);
+        fw.write(START_TILE_COL + ": " + this.startTileCol + newLine);
+      }else{
+        fw.write(START_TILE + ": " + this.startTile + newLine);
+      }
+
       fw.write(IMAGE_DIR + ": " + this.imageDir + newLine);
       fw.write(FILENAME_PATTERN + ": " + this.filenamePattern + newLine);
       fw.write(FILENAME_PATTERN_TYPE + ": " + this.filenamePatternType.name() + newLine);
@@ -535,13 +575,42 @@ public class InputParameters implements StitchingAppParamFunctions {
     return this.startTile;
   }
 
-
   /**
    * @param startTile the startTile to set
    */
   public void setStartTile(int startTile) {
     this.startTile = startTile;
   }
+
+  /**
+   * @return the startTileRow
+   */
+  public int getStartTileRow() {
+    return this.startTileRow;
+  }
+
+  /**
+   * @param startTileRow the startTileRow to set
+   */
+  public void setStartTileRow(int startTileRow) {
+    this.startTileRow = startTileRow;
+  }
+
+  /**
+   * @return the startTileCol
+   */
+  public int getStartTileCol() {
+    return this.startTileCol;
+  }
+
+  /**
+   * @param startTileCol the startTileCol to set
+   */
+  public void setStartTileCol(int startTileCol) {
+    this.startTileCol = startTileCol;
+  }
+
+
 
 
   /**
@@ -750,6 +819,8 @@ public class InputParameters implements StitchingAppParamFunctions {
     str += GRID_WIDTH + "=" + line;
     str += GRID_HEIGHT + "=" + line;
     str += START_TILE + "=" + line;
+    str += START_TILE_ROW + "=" + line;
+    str += START_TILE_COL + "=" + line;
     str += IMAGE_DIR + "=" + line;
     str += FILENAME_PATTERN + "=" + line;
     str += FILENAME_PATTERN_TYPE + "=" + line;

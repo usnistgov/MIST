@@ -52,13 +52,17 @@ public class SequentialTileGridLoader extends TileGridLoader {
    * @param gridWidth   the width of the grid
    * @param gridHeight  the height of the grid
    * @param startTile   the start tile index
+   * @param startTileRow   the start tile number
+   * @param startTileCol   the start tile number
    * @param filePattern the file pattern
    * @param origin      the grid origin
    * @param direction   the grid traversal direction
+   *
+   * Function will use startTile with a Sequential LoaderType and (startTileRow, startTileCol) with a ROWCOL LoaderType
    */
-  public SequentialTileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern,
+  public SequentialTileGridLoader(int gridWidth, int gridHeight, int startTile, int startTileRow, int startTileCol, String filePattern,
                                   GridOrigin origin, GridDirection direction) {
-    super(gridWidth, gridHeight, startTile, filePattern);
+    super(gridWidth, gridHeight, startTile, startTileRow, startTileCol, filePattern);
     this.origin = origin;
     this.direction = direction;
 
@@ -224,7 +228,7 @@ public class SequentialTileGridLoader extends TileGridLoader {
       for (GridDirection dir : GridDirection.values()) {
         System.out.println("Origin: " + origin + " Direction: " + dir);
         SequentialTileGridLoader loader =
-            new SequentialTileGridLoader(4, 4, 1, "F_{ppp}.tif", origin, dir);
+            new SequentialTileGridLoader(4, 4, 1, 0, 0,"F_{ppp}.tif", origin, dir);
         loader.printNumberGrid();
         System.out.println();
       }
