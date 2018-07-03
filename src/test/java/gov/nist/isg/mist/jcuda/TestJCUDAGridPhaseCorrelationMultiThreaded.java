@@ -78,7 +78,7 @@ public class TestJCUDAGridPhaseCorrelationMultiThreaded {
     TileGrid<ImageTile<CUdeviceptr>> grid = null;
     try {
       TileGridLoader loader =
-          new SequentialTileGridLoader(extentWidth, extentHeight, 1, 0,0,"KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+          new SequentialTileGridLoader(extentWidth, extentHeight, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
               GridDirection.VERTICALCOMBING);
 
       grid =

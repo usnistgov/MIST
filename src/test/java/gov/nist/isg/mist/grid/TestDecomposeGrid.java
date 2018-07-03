@@ -74,7 +74,7 @@ public class TestDecomposeGrid {
     TileGrid<ImageTile<Pointer<Double>>> grid = null;
     try {
       TileGridLoader loader =
-          new SequentialTileGridLoader(plateWidth, plateHeight, 1, 0,0,"{pppp}", origin, numbering);
+          new SequentialTileGridLoader(plateWidth, plateHeight, 1, "{pppp}", origin, numbering);
 
       grid =
           new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,

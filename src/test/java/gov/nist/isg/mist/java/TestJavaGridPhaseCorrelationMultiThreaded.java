@@ -60,7 +60,7 @@ public class TestJavaGridPhaseCorrelationMultiThreaded {
     try {
 
       TileGridLoader loader =
-          new SequentialTileGridLoader(42, 59, 1, 0,0,"F_{pppp}.tif", GridOrigin.UR,
+          new SequentialTileGridLoader(42, 59, 1, "F_{pppp}.tif", GridOrigin.UR,
               GridDirection.VERTICALCOMBING);
 
       grid =

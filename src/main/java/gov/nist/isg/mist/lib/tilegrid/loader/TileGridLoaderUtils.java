@@ -161,34 +161,30 @@ public class TileGridLoaderUtils {
    *
    * @param filePattern the file pattern
    * @param loaderType  the type of file pattern loader
-   * @param startTile    the initial tile position
-   * @param startRow    the initial tile position
-   * @param startCol    the initial tile position
+   * @param position    the initial tile position
    * @param silent      whether to output errors or not
    * @return a String that replaces the time slice pattern with the time slice
    */
   public static String parsePositionPattern(String filePattern, LoaderType loaderType,
-                                            int startTile, int startRow, int startCol, boolean silent) {
+                                            int position, boolean silent) {
 
     String posMatcher = null;
     switch (loaderType) {
       case ROWCOL:
         String rowMatcher = RowColTileGridLoader.getRowMatcher(filePattern, silent);
         if (rowMatcher != null) {
-          String colFilePattern = String.format(rowMatcher, startRow);
+          String colFilePattern = String.format(rowMatcher, position);
           posMatcher = RowColTileGridLoader.getColMatcher(colFilePattern, silent);
         }
-        if (posMatcher != null)
-          return String.format(posMatcher, startCol);
         break;
       case SEQUENTIAL:
         posMatcher = SequentialTileGridLoader.getPositionPattern(filePattern, silent);
-        if (posMatcher != null)
-          return String.format(posMatcher, startTile);
         break;
-
     }
-    return null;
+
+    if (posMatcher != null)
+      return String.format(posMatcher, position);
+    return posMatcher;
   }
 
   /**
@@ -213,19 +209,17 @@ public class TileGridLoaderUtils {
    * @param imageDir       the directory where the tile exists
    * @param filePattern    the file pattern to use
    * @param startTile      the starting tile number
-   * @param startRow       the starting tile row number
-   * @param startCol       the starting tile column number
    * @param startTimeSlice the starting tile timeslice
    * @param loaderType     the type of tile loader
    * @param silent         whether to output errors or not
    * @return true if the tile exists, otherwise false
    */
-  public static boolean checkStartTile(String imageDir, String filePattern, int startTile, int startRow, int startCol,
+  public static boolean checkStartTile(String imageDir, String filePattern, int startTile,
                                        int startTimeSlice, LoaderType loaderType, boolean silent) {
 
     String timeFileName = parseTimeSlicePattern(filePattern, startTimeSlice, silent);
 
-    return checkStartTile(imageDir, timeFileName, startTile, startRow, startCol, loaderType, silent);
+    return checkStartTile(imageDir, timeFileName, startTile, loaderType, silent);
   }
 
   /**
@@ -234,17 +228,14 @@ public class TileGridLoaderUtils {
    * @param imageDir    the directory where the tile exists
    * @param filePattern the file pattern to use
    * @param startTile   the starting tile number
-   * @param startRow       the starting tile row number
-   * @param startCol       the starting tile column number
    * @param loaderType  the type of tile grid loader
    * @param silent      whether to output errors or not
    * @return true if the tile exists, otherwise false
    */
   public static boolean checkStartTile(String imageDir, String filePattern, int startTile,
-                                       int startRow, int startCol,
                                        LoaderType loaderType, boolean silent) {
 
-    String fileName = parsePositionPattern(filePattern, loaderType, startTile, startRow, startCol, silent);
+    String fileName = parsePositionPattern(filePattern, loaderType, startTile, silent);
 
     if (fileName == null)
       return false;

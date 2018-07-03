@@ -64,7 +64,7 @@ public class TestTraverseGrid {
 
     TileGrid<ImageTile<Pointer<Double>>> subGrid = null;
     try {
-      TileGridLoader loader = new SequentialTileGridLoader(10, 10, 1, 0,0,"{pppp}", origin, numbering);
+      TileGridLoader loader = new SequentialTileGridLoader(10, 10, 1, "{pppp}", origin, numbering);
 
       subGrid =
           new TileGrid<ImageTile<Pointer<Double>>>(startRow, startCol, extentWidth, extentHeight,

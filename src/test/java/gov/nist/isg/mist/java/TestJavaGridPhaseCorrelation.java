@@ -63,7 +63,7 @@ public class TestJavaGridPhaseCorrelation {
     TileGrid<ImageTile<float[][]>> grid = null;
     try {
       TileGridLoader loader =
-          new SequentialTileGridLoader(16, 22, 1,0,0,
+          new SequentialTileGridLoader(16, 22, 1,
               "KB_H9Oct4GFP_20130518_p000{ppp}t00000102z001c01.tif", GridOrigin.UL,
               GridDirection.HORIZONTALCOMBING);
 
