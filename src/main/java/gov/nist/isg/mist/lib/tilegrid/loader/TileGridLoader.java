@@ -138,6 +138,8 @@ public abstract class TileGridLoader {
   private int gridWidth;
   private int gridHeight;
   private int startTile;
+  private int startTileRow;
+  private int startTileCol;
   private String filePattern;
 
 
@@ -149,10 +151,12 @@ public abstract class TileGridLoader {
    * @param startTile   the start tile index
    * @param filePattern the file pattern
    */
-  public TileGridLoader(int gridWidth, int gridHeight, int startTile, String filePattern) {
+  public TileGridLoader(int gridWidth, int gridHeight, int startTile, int startTileRow, int startTileCol, String filePattern) {
     this.gridWidth = gridWidth;
     this.gridHeight = gridHeight;
     this.startTile = startTile;
+    this.startTileRow = startTileRow;
+    this.startTileCol = startTileCol;
     this.filePattern = filePattern;
     this.tileNames = new String[gridHeight][gridWidth];
   }
@@ -160,7 +164,7 @@ public abstract class TileGridLoader {
   @Override
   public String toString() {
     return "Grid width: " + this.gridWidth + " gridHeight: " + this.gridHeight + " startTile: " + this.startTile
-        + " filePattern: " + this.filePattern;
+    + " startTileRow: " + this.startTileRow + " startTileCol: " + this.startTileCol + " filePattern: " + this.filePattern;
   }
 
 
@@ -217,6 +221,20 @@ public abstract class TileGridLoader {
    */
   public int getStartTile() {
     return this.startTile;
+  }
+
+  /**
+   * @return the startTileRow
+   */
+  public int getStartTileRow() {
+    return this.startTileRow;
+  }
+
+  /**
+   * @return the startTileCol
+   */
+  public int getStartTileCol() {
+    return this.startTileCol;
   }
 
   /**

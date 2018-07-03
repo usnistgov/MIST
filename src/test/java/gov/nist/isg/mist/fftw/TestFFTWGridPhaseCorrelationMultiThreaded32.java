@@ -67,7 +67,7 @@ public class TestFFTWGridPhaseCorrelationMultiThreaded32 {
     TileGrid<ImageTile<Pointer<Float>>> grid = null;
     try {
       TileGridLoader loader =
-          new SequentialTileGridLoader(23, 30, 1, "KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
+          new SequentialTileGridLoader(23, 30, 1, 0,0,"KB_2012_04_13_1hWet_10Perc_IR_0{pppp}.tif", GridOrigin.UR,
               GridDirection.VERTICALCOMBING);
 
 
