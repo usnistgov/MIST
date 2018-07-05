@@ -704,16 +704,16 @@ public class InputPanel extends JPanel implements GUIParamFunctions, ActionListe
       }
 
 
-      // check that the last tile in the grid exists (to ensure width and height are correct)
-      int endTile = startTile + (this.getPlateWidth() * this.getPlateHeight() - 1);
-      int endTileRow = startTileRow + this.getPlateHeight() - 1;
-      int endTileCol = startTileCol + this.getPlateWidth() - 1;
-      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, endTile, endTileRow,
-              endTileCol, this.getLoaderType(), isClosing)) {
-        this.plateWidth.showError();
-        this.plateHeight.showError();
-        return false;
-      }
+//      // check that the last tile in the grid exists (to ensure width and height are correct)
+//      int endTile = startTile + (this.getPlateWidth() * this.getPlateHeight() - 1);
+//      int endTileRow = startTileRow + this.getPlateHeight() - 1;
+//      int endTileCol = startTileCol + this.getPlateWidth() - 1;
+//      if (!TileGridLoaderUtils.checkStartTile(imageDirectory, filePattern, endTile, endTileRow,
+//              endTileCol, this.getLoaderType(), isClosing)) {
+//        this.plateWidth.showError();
+//        this.plateHeight.showError();
+//        return false;
+//      }
 
     }
 
