@@ -121,7 +121,9 @@ public class GlobalOptimization<T> {
     // compute the stage model
     stageModel = new StageModel<T>(grid, params, stitchingStatistics, isSequential);
     stageModel.buildModel(); // build the model from the translations
+    Log.msg(Log.LogType.INFO, "Stage Model built.");
     int modelRepeatability = stageModel.getRepeatability();
+    Log.msg(Log.LogType.INFO, "Global Stage Model Repeatability: " + modelRepeatability);
     if (isCancelled)
       return modelRepeatability;
 

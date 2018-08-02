@@ -53,7 +53,9 @@ public class TranslationFilter<T> {
    */
   public void applyStageModel(StageModel stageModel) {
 
+    Log.msg(Log.LogType.INFO, "Apply Stage Model for North direction");
     applyModelPerDirection(stageModel, TileGrid.Direction.North);
+    Log.msg(Log.LogType.INFO, "Apply Stage Model for West direction");
     applyModelPerDirection(stageModel, TileGrid.Direction.West);
   }
 
@@ -69,6 +71,7 @@ public class TranslationFilter<T> {
     HashSet<ImageTile<T>> validTranslations = stageModel.getValidTranslations(dir);
 
     if (validTranslations.size() == 0) {
+      Log.msg(Log.LogType.INFO, "No valid translations found for direction: " + dir.name());
       // replace with translation estimated from overlap
       switch (dir) {
         case North:
@@ -85,7 +88,7 @@ public class TranslationFilter<T> {
     }
 
 
-    Log.msg(Log.LogType.VERBOSE, "Fixing translations");
+    Log.msg(Log.LogType.INFO, "Fixing translations");
     List<Integer> missingRowOrCol = null;
     switch (dir) {
       case North:
@@ -105,7 +108,26 @@ public class TranslationFilter<T> {
     this.stitchingStatistics.setEmptyRowsCols(dir, missingRowOrCol);
 
     if (missingRowOrCol != null && missingRowOrCol.size() > 0) {
-      CorrelationTriple median = computeOp(validTranslations, dir, StatisticUtils.OP_TYPE.MEDIAN);
+      CorrelationTriple median;
+      if(validTranslations.size() > 0) {
+        median = computeOp(validTranslations, dir, StatisticUtils.OP_TYPE.MEDIAN);
+      }else{
+        if(dir == Direction.North) {
+          Log.msg(Log.LogType.MANDATORY, "Warning: no valid translations found at all for direction: NORTH,  replacing any missing translations with estimated translation based on the stageModel overlap: (x,y) = (0, overlap*imageHeight).");
+          double overlap = stageModel.getVerticalOverlap();
+          overlap = overlap/ 100.0; // convert [0,100] to [0,1]
+          overlap = 1.0 - overlap; // invert from overlap to non-overlapping distance
+          int directionOfTravelTranslationEstimate = (int) (overlap * this.grid.getTile(0,0).getHeight());
+          median = new CorrelationTriple(Double.NaN, 0, directionOfTravelTranslationEstimate);
+        }else{
+          Log.msg(Log.LogType.MANDATORY, "Warning: no valid translations found at all for direction: WEST,  replacing any missing translations with estimated translation based on the stageModel overlap: (x,y) = (overlap*imageWidth, 0).");
+          double overlap = stageModel.getHorizontalOverlap();
+          overlap = overlap/ 100.0; // convert [0,100] to [0,1]
+          overlap = 1.0 - overlap; // invert from overlap to non-overlapping distance
+          int directionOfTravelTranslationEstimate = (int) (overlap * this.grid.getTile(0,0).getWidth());
+          median = new CorrelationTriple(Double.NaN, directionOfTravelTranslationEstimate, 0);
+        }
+      }
 
       switch (dir) {
         case North:
@@ -132,6 +154,8 @@ public class TranslationFilter<T> {
   private void removeInvalidTranslationsPerRow(Set<ImageTile<T>> validTiles, int repeatability, Direction dir) {
 
     if (validTiles.isEmpty()) return;
+
+    Log.msg(Log.LogType.VERBOSE, "Removing invalid translations for direction: " + dir.name());
 
     // compute median X and Y values
     List<Double> medianXVals = new ArrayList<Double>();
@@ -319,6 +343,8 @@ public class TranslationFilter<T> {
     List<Integer> emptyRows = new ArrayList<Integer>();
     List<CorrelationTriple> validCorrTriplesInRow = new ArrayList<CorrelationTriple>();
     List<CorrelationTriple> invalidCorrTriplesInRow = new ArrayList<CorrelationTriple>();
+
+    Log.msg(Log.LogType.VERBOSE, "Fixing invalid translations in rows/cols with some valid translations.");
 
     // handle per row
     for (int row = 0; row < grid.getExtentHeight(); row++) {
