@@ -6,7 +6,7 @@
 
     <groupId>gov.nist.isg</groupId>
     <artifactId>MIST_</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <build>
         <plugins>
             <plugin>
