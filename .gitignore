@@ -1,5 +1,6 @@
 *.dat
 *.class
+.idea
 
 # jekyll files
 _site/
