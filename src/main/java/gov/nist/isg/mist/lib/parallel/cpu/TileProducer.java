@@ -42,6 +42,9 @@ public class TileProducer<T> implements Runnable {
 
   private volatile boolean isCancelled;
 
+  private int imageTileHeight = 0;
+  private int imageTileWidth = 0;
+
   /**
    * Initializes a producer thread
    *
@@ -66,6 +69,19 @@ public class TileProducer<T> implements Runnable {
         break;
 
       tile.readTile();
+
+      if(imageTileHeight == 0) {
+        imageTileHeight = tile.getHeight();
+      }
+      if(imageTileWidth == 0) {
+        imageTileWidth = tile.getWidth();
+      }
+
+      if(imageTileHeight != tile.getHeight() || imageTileWidth != tile.getWidth()) {
+        throw new RuntimeException("All image tiles must be the same width and height. Expected image size: (" +
+                imageTileWidth + "," + imageTileHeight + ") but " + tile.getFileName() + " is of size: (" +
+                tile.getWidth() + ", " + tile.getHeight() + ").");
+      }
 
       tile.setFftState(State.IN_FLIGHT);
       tile.allocateFftMemory(this.pool);

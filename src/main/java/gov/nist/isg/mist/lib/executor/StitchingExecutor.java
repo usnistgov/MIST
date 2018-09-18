@@ -663,6 +663,7 @@ public class StitchingExecutor implements Runnable {
 
     if (displayGui) {
 
+        // TODO add a checkbox in advanced params to toggle displaying the warning dialog box
       int displayWarningDialog = 0;
       String accumulatedWarningString = "";
       for (RangeParam timeSliceParam : timeSlices) {
@@ -1147,6 +1148,8 @@ public class StitchingExecutor implements Runnable {
 
     return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
   }
+
+
 
 
 }
