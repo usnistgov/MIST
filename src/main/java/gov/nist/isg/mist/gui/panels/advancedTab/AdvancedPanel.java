@@ -106,6 +106,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
   private JComboBox debugLevel;
   private JCheckBox useDoublePrecision = new JCheckBox("Use Double Precision Math?");
   private JCheckBox useBioFormats = new JCheckBox("Use BioFormats Image Reader?");
+  private JCheckBox suppressModalWarningDialog = new JCheckBox("Suppress Any Modal Warning Dialogs?");
 
   private JComboBox translationRefinementType;
   private TextFieldInputPanel<Integer> numTransRefineHillClimbs;
@@ -228,6 +229,8 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     c.gridx = 0;
     c.gridwidth = 1;
     c.anchor = GridBagConstraints.LINE_START;
+    otherAdvancedPanel.add(this.suppressModalWarningDialog, c);
+    c.gridy++;
     otherAdvancedPanel.add(this.useBioFormats, c);
     c.gridy++;
     otherAdvancedPanel.add(this.useDoublePrecision, c);
@@ -271,6 +274,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     this.parallelOptions.loadParamsIntoGUI(params);
     this.useDoublePrecision.setSelected(params.getAdvancedParams().isUseDoublePrecision());
     this.useBioFormats.setSelected(params.getAdvancedParams().isUseBioFormats());
+    this.suppressModalWarningDialog.setSelected(params.getAdvancedParams().isSuppressModelWarningDialog());
     this.translationRefinementType.setSelectedItem(params.getAdvancedParams()
         .getTranslationRefinementType());
     this.numTransRefineHillClimbs.setValue(params.getAdvancedParams().getNumTranslationRefinementStartPoints());
@@ -346,6 +350,7 @@ public class AdvancedPanel extends JPanel implements GUIParamFunctions, ActionLi
     params.getAdvancedParams().setOverlapUncertainty(this.overlapUncertainty.getValue());
     params.getAdvancedParams().setUseDoublePrecision(this.useDoublePrecision.isSelected());
     params.getAdvancedParams().setUseBioFormats(this.useBioFormats.isSelected());
+    params.getAdvancedParams().setSuppressModalWarningDialog(this.suppressModalWarningDialog.isSelected());
     params.getAdvancedParams().setTranslationRefinementType(this.getTransRefinementType());
 
     int val = this.numTransRefineHillClimbs.getValue();

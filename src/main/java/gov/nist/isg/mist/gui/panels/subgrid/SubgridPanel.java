@@ -58,7 +58,6 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
   private TextFieldInputPanel<Integer> startCol;
   private TextFieldInputPanel<Integer> extentWidth;
   private TextFieldInputPanel<Integer> extentHeight;
-  private JCheckBox suppressSubGridWarning = new JCheckBox("Suppress SubGrid Warning Dialog Box");
   private JLabel picLabel;
   private InputPanel inputPanel;
 
@@ -159,9 +158,6 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     vertPanel.add(widthHeightPanel, c);
 
     c.gridy = 4;
-    vertPanel.add(suppressSubGridWarning, c);
-
-    c.gridy = 5;
     vertPanel.add(this.picLabel, c);
 
     mainPanel.add(vertPanel);
@@ -311,14 +307,6 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     this.extentHeight.hideError();
   }
 
-  /**
-   * Get whether the user has selected to suppress the subgrid warnings
-   *
-   * @return whether to suppress the subgrid warning or not
-   */
-  public boolean isSuppressSubGridWarning() {
-    return this.suppressSubGridWarning.isSelected();
-  }
 
   /**
    * Gets the start row for the sub-grid
@@ -381,7 +369,6 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
 
     updateSubGrid();
 
-    this.suppressSubGridWarning.setSelected(params.getInputParams().isSuppressSubGridWarning());
     this.changingValues = false;
 
   }
@@ -431,6 +418,5 @@ public class SubgridPanel extends JPanel implements GUIParamFunctions {
     params.getInputParams().setStartCol(this.startCol.getValue());
     params.getInputParams().setExtentWidth(this.extentWidth.getValue());
     params.getInputParams().setExtentHeight(this.extentHeight.getValue());
-    params.getInputParams().setSuppressSubGridWarning(this.suppressSubGridWarning.isSelected());
   }
 }

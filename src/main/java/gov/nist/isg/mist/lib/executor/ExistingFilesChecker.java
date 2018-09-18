@@ -80,13 +80,17 @@ public class ExistingFilesChecker implements Comparator<String> {
       if (displayGui && !GraphicsEnvironment.isHeadless() && !Interpreter.isBatchMode()) {
 
         if (existingOverwrittenFiles.size() > 0) {
-          if (canOverwriteExistingFilesCheck(existingOverwrittenFiles)) {
-            Log.msg(LogType.MANDATORY, "Overwritting files has been approved.");
-          } else {
-            Log.msg(LogType.MANDATORY, "Overwritting files has not been approved.");
-            Log.msg(LogType.MANDATORY,
-                "Please modify your file prefix, meta data directory, or output directory.");
-            return false;
+          if(!params.getAdvancedParams().isSuppressModelWarningDialog()) {
+            if (canOverwriteExistingFilesCheck(existingOverwrittenFiles)) {
+              Log.msg(LogType.MANDATORY, "Overwritting files has been approved.");
+            } else {
+              Log.msg(LogType.MANDATORY, "Overwritting files has not been approved.");
+              Log.msg(LogType.MANDATORY,
+                      "Please modify your file prefix, meta data directory, or output directory.");
+              return false;
+            }
+          }else{
+            Log.msg(LogType.MANDATORY, "Overwritting files has been implicitly approved (model dialog was suppressed).");
           }
         }
       }

@@ -68,6 +68,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private static final String NUM_TRANS_REFINEMENT_START_POINTS =
       "numTranslationRefinementStartPoints";
   private static final String RUN_HEADLESS = "headless";
+  private static final String IS_SUPPRESS_MODAL_WARNING_DIALOG = "isSuppressModelWarningDialog";
 
 
   private StitchingType programType;
@@ -100,6 +101,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   private boolean useDoublePrecision;
   private boolean useBioFormats;
   private boolean enableCudaExceptions;
+  private boolean suppressModelWarningDialog;
 
   public AdvancedParameters() {
     this.programType = StitchingType.AUTO;
@@ -130,6 +132,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.numFFTPeaks = 0;
     this.overlapUncertainty = Double.NaN;
     this.translationRefinementType = Stitching.TranslationRefinementType.SINGLE_HILL_CLIMB;
+    suppressModelWarningDialog = false;
   }
 
   @Override
@@ -298,6 +301,8 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       this.useDoublePrecision = StitchingParamUtils.loadBoolean(value, this.useDoublePrecision);
     else if (key.equals(IS_USE_BIOFORMATS))
       this.useBioFormats = StitchingParamUtils.loadBoolean(value, this.useBioFormats);
+    else if (key.equals(IS_SUPPRESS_MODAL_WARNING_DIALOG))
+      this.suppressModelWarningDialog = StitchingParamUtils.loadBoolean(value, this.suppressModelWarningDialog);
     else if (key.equals(IS_ENABLE_CUDA_EXCEPTIONS))
       this.enableCudaExceptions = StitchingParamUtils.loadBoolean(value, this.enableCudaExceptions);
     else if (key.equals(TRANSLATION_REFINEMENT_TYPE))
@@ -349,6 +354,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.numFFTPeaks = pref.getInt(NUM_FFT_PEAKS, this.numFFTPeaks);
     this.overlapUncertainty = pref.getDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = pref.getBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
+    this.suppressModelWarningDialog = pref.getBoolean(IS_SUPPRESS_MODAL_WARNING_DIALOG, this.suppressModelWarningDialog);
     this.useBioFormats = pref.getBoolean(IS_USE_BIOFORMATS, this.useBioFormats);
     this.enableCudaExceptions = pref.getBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     this.translationRefinementType = PreferencesUtils.loadPrefTransRefineType(pref,
@@ -393,6 +399,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty);
     Log.msg(logLevel, IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision);
     Log.msg(logLevel, IS_USE_BIOFORMATS + ": " + this.useBioFormats);
+    Log.msg(logLevel, IS_SUPPRESS_MODAL_WARNING_DIALOG + ": " + this.suppressModelWarningDialog);
     Log.msg(logLevel, IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions);
     Log.msg(logLevel, TRANSLATION_REFINEMENT_TYPE + ": " + this.translationRefinementType);
     Log.msg(logLevel, NUM_TRANS_REFINEMENT_START_POINTS + ": " + this.numTranslationRefinementStartPoints);
@@ -424,6 +431,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.overlapUncertainty = MacroUtils.loadMacroDouble(macroOptions, OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     this.useDoublePrecision = MacroUtils.loadMacroBoolean(macroOptions, IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
     this.useBioFormats = MacroUtils.loadMacroBoolean(macroOptions, IS_USE_BIOFORMATS, this.useBioFormats);
+    this.suppressModelWarningDialog = MacroUtils.loadMacroBoolean(macroOptions, IS_SUPPRESS_MODAL_WARNING_DIALOG, this.suppressModelWarningDialog);
     this.enableCudaExceptions = MacroUtils.loadMacroBoolean(macroOptions, IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     this.translationRefinementType = MacroUtils.loadTranslationRefinementType(macroOptions,
         TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
@@ -464,6 +472,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     MacroUtils.recordDouble(OVERLAP_UNCERTAINTY + ": ", this.overlapUncertainty);
     MacroUtils.recordBoolean(IS_USE_DOUBLE_PRECISION + ": ", this.useDoublePrecision);
     MacroUtils.recordBoolean(IS_USE_BIOFORMATS + ": ", this.useBioFormats);
+    MacroUtils.recordBoolean(IS_SUPPRESS_MODAL_WARNING_DIALOG + ": ", this.suppressModelWarningDialog);
     MacroUtils.recordBoolean(IS_ENABLE_CUDA_EXCEPTIONS + ": ", this.enableCudaExceptions);
     MacroUtils.recordString(TRANSLATION_REFINEMENT_TYPE + ": ", this.translationRefinementType.name());
     MacroUtils.recordInteger(NUM_TRANS_REFINEMENT_START_POINTS + ": ", this.numTranslationRefinementStartPoints);
@@ -490,6 +499,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     pref.putDouble(OVERLAP_UNCERTAINTY, this.overlapUncertainty);
     pref.putBoolean(IS_USE_DOUBLE_PRECISION, this.useDoublePrecision);
     pref.putBoolean(IS_USE_BIOFORMATS, this.useBioFormats);
+    pref.putBoolean(IS_SUPPRESS_MODAL_WARNING_DIALOG, this.suppressModelWarningDialog);
     pref.putBoolean(IS_ENABLE_CUDA_EXCEPTIONS, this.enableCudaExceptions);
     pref.put(TRANSLATION_REFINEMENT_TYPE, this.translationRefinementType.name());
     pref.putInt(NUM_TRANS_REFINEMENT_START_POINTS, this.numTranslationRefinementStartPoints);
@@ -518,6 +528,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       fw.write(OVERLAP_UNCERTAINTY + ": " + this.overlapUncertainty + newLine);
       fw.write(IS_USE_DOUBLE_PRECISION + ": " + this.useDoublePrecision + newLine);
       fw.write(IS_USE_BIOFORMATS + ": " + this.useBioFormats + newLine);
+      fw.write(IS_SUPPRESS_MODAL_WARNING_DIALOG + ": " + this.suppressModelWarningDialog+ newLine);
       fw.write(IS_ENABLE_CUDA_EXCEPTIONS + ": " + this.enableCudaExceptions + newLine);
       fw.write(TRANSLATION_REFINEMENT_TYPE + ": " + this.translationRefinementType.name() + newLine);
       fw.write(NUM_TRANS_REFINEMENT_START_POINTS + ": " +
@@ -752,6 +763,14 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     this.useBioFormats = val;
   }
 
+  public boolean isSuppressModelWarningDialog() {
+    return this.suppressModelWarningDialog;
+  }
+
+  public void setSuppressModalWarningDialog(boolean val) {
+    this.suppressModelWarningDialog = val;
+  }
+
   public boolean isEnableCudaExceptions() {
     return this.enableCudaExceptions;
   }
@@ -812,6 +831,7 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
     str += OVERLAP_UNCERTAINTY + "=" + line;
     str += IS_USE_DOUBLE_PRECISION + "=" + line;
     str += IS_USE_BIOFORMATS + "=" + line;
+    str += IS_SUPPRESS_MODAL_WARNING_DIALOG + "=" + line;
     str += IS_ENABLE_CUDA_EXCEPTIONS + "=" + line;
     str += TRANSLATION_REFINEMENT_TYPE + "=" + line;
     str += NUM_TRANS_REFINEMENT_START_POINTS + "=" + line;

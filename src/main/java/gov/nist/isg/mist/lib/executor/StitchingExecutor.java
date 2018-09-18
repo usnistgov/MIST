@@ -419,7 +419,7 @@ public class StitchingExecutor implements Runnable {
       return;
 
 
-    if (!params.getInputParams().isSuppressSubGridWarning()) {
+    if (!params.getAdvancedParams().isSuppressModelWarningDialog()) {
       // open dialog telling the user if they are stitching with a subgrid
       int dH = params.getInputParams().getGridHeight() - params.getInputParams().getExtentHeight();
       int dW = params.getInputParams().getGridWidth() - params.getInputParams().getExtentWidth();
@@ -653,14 +653,6 @@ public class StitchingExecutor implements Runnable {
       }
     }
 
-    stitchingStatistics.stopEndToEndTimer();
-    if(params.getOutputParams().isOutputMeta()) {
-      stitchingStatistics.writeStatistics(params.getOutputParams().getStatsFile());
-      stitchingStatistics.writeLog(params.getOutputParams().getLogFile());
-    }
-    Log.msg(LogType.MANDATORY, "Done");
-
-
     if (displayGui) {
 
         // TODO add a checkbox in advanced params to toggle displaying the warning dialog box
@@ -697,37 +689,56 @@ public class StitchingExecutor implements Runnable {
 //            "<a href=\"https://github.com/usnistgov/MIST/wiki\">MIST Wiki</a> contains additional help and usage details.";
 //        new MessageDialog(IJ.getInstance(), "Stitching Warning", warnStr);
 
+        warnStr = warnStr.replaceAll("<br/>","\n");
+
+        // print the entire warning to the log
+        Log.msg(LogType.MANDATORY, warnStr);
+
+
         warnStr = warnStr.replaceAll("\n","<br/>");
         warnStr = warnStr.replace("nist-mist@nist.gov",
             "<a href=\"mailto:nist-mist@nist.gov\">nist-mist@nist.gov</a>");
         warnStr = warnStr.replace("http://github.com/USNISTGOV/MIST/issues",
             "<a href=\"http://github.com/USNISTGOV/MIST/issues\">MIST-Github-Issues</a>");
 
-        JEditorPane ep = new JEditorPane("text/html", "<html>" + warnStr +
-            "</html>");
 
-        ep.addHyperlinkListener(new HyperlinkListener() {
-          @Override
-          public void hyperlinkUpdate(HyperlinkEvent e) {
-            if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-              try {
-                Desktop.getDesktop().browse(new URI(e.getURL().toString()));
-              } catch (IOException e1) {
-//                e1.printStackTrace();
-              } catch (URISyntaxException e1) {
-//                e1.printStackTrace();
-              }
-          }
-        });
 
-        ep.setEditable(false);
-        ep.setBackground(new Color(0,0,0,0));
+
+        // Only display the modal warning dialog if the user has not disabled it under advanced params
+        if(!params.getAdvancedParams().isSuppressModelWarningDialog()) {
+          JEditorPane ep = new JEditorPane("text/html", "<html>" + warnStr +
+                  "</html>");
+
+          ep.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+              if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                try {
+                  Desktop.getDesktop().browse(new URI(e.getURL().toString()));
+                } catch (IOException e1) {
+//                e1.printStackTrace();
+                } catch (URISyntaxException e1) {
+//                e1.printStackTrace();
+                }
+            }
+          });
+
+          ep.setEditable(false);
+          ep.setBackground(new Color(0,0,0,0));
 //        ep.setSize(new Dimension(300,Integer.MAX_VALUE));
 
-        JOptionPane.showMessageDialog(null, ep, "Stitching Warning", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, ep, "Stitching Warning", JOptionPane.ERROR_MESSAGE);
+        }
 
       }
     }
+
+    stitchingStatistics.stopEndToEndTimer();
+    if(params.getOutputParams().isOutputMeta()) {
+      stitchingStatistics.writeStatistics(params.getOutputParams().getStatsFile());
+      stitchingStatistics.writeLog(params.getOutputParams().getLogFile());
+    }
+    Log.msg(LogType.MANDATORY, "Done");
 
     executor.cleanup();
   }

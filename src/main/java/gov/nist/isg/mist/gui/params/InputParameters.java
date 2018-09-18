@@ -65,7 +65,6 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String TIME_SLICES = "timeSlices";
   private static final String IS_TIME_SLICES_ENABLED = "isTimeSlicesEnabled";
   private static final String GLOBAL_POSITIONS_FILE = "globalPositionsFile";
-  private static final String IS_SUPPRESS_SUBGRID_WARNING_ENABLED = "isSuppressSubGridWarningEnabled";
 
 
 
@@ -82,7 +81,6 @@ public class InputParameters implements StitchingAppParamFunctions {
   private GridOrigin origin;
   private GridDirection numberingPattern;
   private boolean assembleFromMetadata;
-  private boolean isSuppressSubGridWarning;
 
   private String globalPositionsFile;
 
@@ -107,7 +105,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = GridOrigin.UL;
     this.numberingPattern = GridDirection.HORIZONTALCOMBING;
     this.assembleFromMetadata = false;
-    this.isSuppressSubGridWarning = false;
     this.globalPositionsFile = "";
 
     // Processing Options
@@ -327,8 +324,6 @@ public class InputParameters implements StitchingAppParamFunctions {
       this.timeSlices = RangeParam.parseTimeSlices(value);
     else if (key.equals(IS_TIME_SLICES_ENABLED))
       this.isTimeSlicesEnabled = StitchingParamUtils.loadBoolean(value, this.isTimeSlicesEnabled);
-    else if (key.equals(IS_SUPPRESS_SUBGRID_WARNING_ENABLED))
-      this.isSuppressSubGridWarning = StitchingParamUtils.loadBoolean(value, this.isSuppressSubGridWarning);
   }
 
 
@@ -353,7 +348,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.extentHeight = pref.getInt(EXTENT_HEIGHT, this.extentHeight);
     this.timeSlices = PreferencesUtils.loadPrefTimeslices(pref, TIME_SLICES);
     this.isTimeSlicesEnabled = pref.getBoolean(IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);
-    this.isSuppressSubGridWarning = pref.getBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
 
 
     return true;
@@ -391,7 +385,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     }
     Log.msg(logLevel, TIME_SLICES + ": " + timeSliceStr);
     Log.msg(logLevel, IS_TIME_SLICES_ENABLED + ": " + this.isTimeSlicesEnabled);
-    Log.msg(logLevel, IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": " + this.isSuppressSubGridWarning);
   }
 
 
@@ -422,8 +415,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.timeSlices = MacroUtils.loadMacroTimeslices(macroOptions, "timeSlices");
     this.isTimeSlicesEnabled = MacroUtils.loadMacroBoolean(macroOptions, IS_TIME_SLICES_ENABLED,
         this.isTimeSlicesEnabled);
-    this.isSuppressSubGridWarning = MacroUtils.loadMacroBoolean(macroOptions,
-        IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
   }
 
 
@@ -452,7 +443,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordInteger(EXTENT_HEIGHT + ": ", this.extentHeight);
     MacroUtils.recordTimeslices(this.timeSlices);
     MacroUtils.recordBoolean(IS_TIME_SLICES_ENABLED + ": ", this.isTimeSlicesEnabled);
-    MacroUtils.recordBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": ", this.isSuppressSubGridWarning);
   }
 
 
@@ -476,7 +466,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     pref.putInt(EXTENT_HEIGHT, this.extentHeight);
     PreferencesUtils.recordPrefTimeslices(pref, this.timeSlices);
     pref.putBoolean(IS_TIME_SLICES_ENABLED, this.isTimeSlicesEnabled);
-    pref.putBoolean(IS_SUPPRESS_SUBGRID_WARNING_ENABLED, this.isSuppressSubGridWarning);
 
   }
 
@@ -517,7 +506,6 @@ public class InputParameters implements StitchingAppParamFunctions {
       fw.write(TIME_SLICES + ": " + timeSliceStr);
 
       fw.write(IS_TIME_SLICES_ENABLED + ": " + this.isTimeSlicesEnabled + newLine);
-      fw.write(IS_SUPPRESS_SUBGRID_WARNING_ENABLED + ": " + this.isSuppressSubGridWarning + newLine);
 
       return true;
 
@@ -528,13 +516,6 @@ public class InputParameters implements StitchingAppParamFunctions {
   }
 
 
-  public boolean isSuppressSubGridWarning() {
-    return isSuppressSubGridWarning;
-  }
-
-  public void setSuppressSubGridWarning(boolean val) {
-    this.isSuppressSubGridWarning = val;
-  }
 
   /**
    * @return the gridWidth
@@ -833,7 +814,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     str += TIME_SLICES + "=" + line;
     str += IS_TIME_SLICES_ENABLED + "=" + line;
     str += GLOBAL_POSITIONS_FILE + "=" + line;
-    str += IS_SUPPRESS_SUBGRID_WARNING_ENABLED + "=" + line;
     return str;
   }
 
