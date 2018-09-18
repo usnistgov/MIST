@@ -276,8 +276,6 @@ public class StageModel<T> {
       throw new GlobalOptimizationException("Unable to compute overlap for " + dir + " direction.");
     }
 
-    // limit the overlap to reasonable values
-    overlap = Math.max(percOverlapError, Math.min(overlap, 100.0 - percOverlapError));
     // record the computed overlap in the statistics object
     this.stitchingStatistics.setOverlap(dir, overlap);
     Log.msg(LogType.MANDATORY, "Computed " + dir + " overlap: " + overlap + "%");
@@ -707,9 +705,13 @@ public class StageModel<T> {
         switch (dispValue) {
           case Y:
             if (triple.getY() < t_min || triple.getY() > t_max) continue;
+            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
+            if (triple.getX() < -percOverlapError || triple.getX() > percOverlapError) continue;
             break;
           case X:
             if (triple.getX() < t_min || triple.getX() > t_max) continue;
+            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
+            if (triple.getY() < -percOverlapError || triple.getY() > percOverlapError) continue;
             break;
         }
         validTiles.add(tile);
