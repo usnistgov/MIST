@@ -231,6 +231,26 @@ public class StageModel<T> {
     DisplacementValue dispValue = getDisplacement(dir);
     if (dispValue == null) return Double.NaN;
 
+
+    // print the grid being used to compute the overlap in Direction
+    Log.msg(LogType.INFO, "Grid being used to compute tile overlap for " + dir);
+    for(int i = 0; i < grid.getExtentHeight(); ++i) {
+      String tmp = "";
+      for(int j = 0; j < grid.getExtentWidth(); ++j) {
+        if(grid.hasTile(i + grid.getStartRow(), j + grid.getStartCol())) {
+          if(dir == Direction.North) {
+            if( grid.getTile(i + grid.getStartRow(), j + grid.getStartCol()).getNorthTranslation() != null)
+              tmp = tmp + grid.getTile(i + grid.getStartRow(), j + grid.getStartCol()).getNorthTranslation().getY() + ", ";
+          }else{
+            if( grid.getTile(i + grid.getStartRow(), j + grid.getStartCol()).getWestTranslation() != null)
+              tmp = tmp + grid.getTile(i + grid.getStartRow(), j + grid.getStartCol()).getWestTranslation().getX() + ", ";
+          }
+        }
+      }
+      Log.msg(LogType.INFO, tmp);
+    }
+
+
     // compute the overlap from the translations
     // setup the overlap computation executor
     if (isSequential) {
