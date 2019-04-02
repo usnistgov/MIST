@@ -592,7 +592,7 @@ public class TranslationFilter<T> {
    * @param dispVal the displacement value that is operated on
    * @return op(vals.dispVal)
    */
-  private static double computeOp(List<CorrelationTriple> vals, StatisticUtils.OP_TYPE op, TileGrid.DisplacementValue dispVal) {
+  protected static double computeOp(List<CorrelationTriple> vals, StatisticUtils.OP_TYPE op, TileGrid.DisplacementValue dispVal) {
     List<Double> tVals = new ArrayList<Double>();
 
     for (CorrelationTriple t : vals) {

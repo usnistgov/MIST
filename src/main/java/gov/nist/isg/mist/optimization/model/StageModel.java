@@ -30,6 +30,8 @@ import gov.nist.isg.mist.optimization.model.overlap.MleOverlapParallelExecutor;
 import gov.nist.isg.mist.optimization.model.overlap.MleOverlapSequentialExecutor;
 import gov.nist.isg.mist.optimization.model.overlap.OverlapExecutorInterface;
 
+import static gov.nist.isg.mist.optimization.model.TranslationFilter.computeOp;
+
 /**
  * The Stage Model used to filter, refine, and fix a TileGrids translations.
  *
@@ -695,15 +697,18 @@ public class StageModel<T> {
 
     double width = initTile.getWidth();
     double height = initTile.getHeight();
+    double overlap_error = 0;
 
     switch (dispValue) {
       case Y:
         t_min = height - (overlap + percOverlapError) * height / 100.0;
         t_max = height - (overlap - percOverlapError) * height / 100.0;
+        overlap_error = percOverlapError * height / 100.0;
         break;
       case X:
         t_min = width - (overlap + percOverlapError) * width / 100.0;
         t_max = width - (overlap - percOverlapError) * width / 100.0;
+        overlap_error = percOverlapError * width / 100.0;
         break;
     }
 
@@ -712,7 +717,8 @@ public class StageModel<T> {
 
     Log.msg(LogType.VERBOSE, "min,max threshold: " + t_min + "," + t_max);
 
-    // Filter based on t_min, t_max, and minCorrelation
+
+    // Filter based on t_min, t_max, and minCorrelation, and orthogonal direction
     for (int r = 0; r < grid.getExtentHeight(); r++) {
       for (int c = 0; c < grid.getExtentWidth(); c++) {
         ImageTile<T> tile = grid.getSubGridTile(r, c);
@@ -725,18 +731,59 @@ public class StageModel<T> {
         switch (dispValue) {
           case Y:
             if (triple.getY() < t_min || triple.getY() > t_max) continue;
-            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
-            if (triple.getX() < -percOverlapError || triple.getX() > percOverlapError) continue;
+//            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
+//            if (triple.getX() < (orthogonal_median-overlap_error) || triple.getX() > (orthogonal_median+overlap_error)) continue;
             break;
           case X:
             if (triple.getX() < t_min || triple.getX() > t_max) continue;
             // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
-            if (triple.getY() < -percOverlapError || triple.getY() > percOverlapError) continue;
+//            if (triple.getY() < (orthogonal_median-overlap_error) || triple.getY() > (orthogonal_median+overlap_error)) continue;
             break;
         }
         validTiles.add(tile);
       }
     }
+
+    // compute the median orthogonal translation
+    if(validTiles.size() > 0) {
+
+      ArrayList<CorrelationTriple> validTriples = new ArrayList<CorrelationTriple>();
+      for(ImageTile<T> tile : validTiles) {
+        validTriples.add(tile.getTranslation(dir));
+      }
+
+      double orthogonal_median = 0;
+      switch (dispValue) {
+        case Y:
+          orthogonal_median = computeOp(validTriples, StatisticUtils.OP_TYPE.MEDIAN, DisplacementValue.X);
+          break;
+        case X:
+          orthogonal_median = computeOp(validTriples, StatisticUtils.OP_TYPE.MEDIAN, DisplacementValue.Y);
+          break;
+      }
+
+      HashSet<ImageTile<T>> validTilesFinal = new HashSet<ImageTile<T>>();
+
+      for (ImageTile<T> tile : validTiles) {
+        CorrelationTriple triple = tile.getTranslation(dir);
+
+        switch (dispValue) {
+          case Y:
+            // limit the valid translations to within percent overlap error of median on the orthogonal direction
+            if (triple.getX() < (orthogonal_median - overlap_error) || triple.getX() > (orthogonal_median + overlap_error))
+              continue;
+            break;
+          case X:
+            // limit the valid translations to within percent overlap error of median on the orthogonal direction
+            if (triple.getY() < (orthogonal_median - overlap_error) || triple.getY() > (orthogonal_median + overlap_error))
+              continue;
+            break;
+        }
+        validTilesFinal.add(tile);
+      }
+      validTiles = validTilesFinal;
+    }
+
     return validTiles;
   }
 
