@@ -134,9 +134,9 @@ public class Log {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
         if (stackTrace != null) {
-          String fullClassName = stackTrace[3].getClassName();
-          String methodName = stackTrace[3].getMethodName();
-          int lineNumber = stackTrace[3].getLineNumber();
+          String fullClassName = stackTrace[2].getClassName();
+          String methodName = stackTrace[2].getMethodName();
+          int lineNumber = stackTrace[2].getLineNumber();
           message = fullClassName + ":" + methodName + ":" + lineNumber + " - " + message;
         }
       }
@@ -170,9 +170,9 @@ public class Log {
         // 3 because we want to omit this method and the calling method
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
-        String fullClassName = stackTrace[3].getClassName();
-        String methodName = stackTrace[3].getMethodName();
-        int lineNumber = stackTrace[3].getLineNumber();
+        String fullClassName = stackTrace[2].getClassName();
+        String methodName = stackTrace[2].getMethodName();
+        int lineNumber = stackTrace[2].getLineNumber();
         message = fullClassName + ":" + methodName + ":" + lineNumber + " - " + message;
       }
 
@@ -203,9 +203,9 @@ public class Log {
         // 3 because we want to omit this method and the calling method
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
-        String fullClassName = stackTrace[3].getClassName();
-        String methodName = stackTrace[3].getMethodName();
-        int lineNumber = stackTrace[3].getLineNumber();
+        String fullClassName = stackTrace[2].getClassName();
+        String methodName = stackTrace[2].getMethodName();
+        int lineNumber = stackTrace[2].getLineNumber();
         message = fullClassName + ":" + methodName + ":" + lineNumber + " - " + message;
       }
 
@@ -229,9 +229,9 @@ public class Log {
         // 3 because we want to omit this method and the calling method
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
-        String fullClassName = stackTrace[3].getClassName();
-        String methodName = stackTrace[3].getMethodName();
-        int lineNumber = stackTrace[3].getLineNumber();
+        String fullClassName = stackTrace[2].getClassName();
+        String methodName = stackTrace[2].getMethodName();
+        int lineNumber = stackTrace[2].getLineNumber();
         message = fullClassName + ":" + methodName + ":" + lineNumber + " - " + message;
       }
 
