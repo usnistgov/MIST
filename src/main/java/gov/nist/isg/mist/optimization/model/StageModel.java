@@ -731,57 +731,17 @@ public class StageModel<T> {
         switch (dispValue) {
           case Y:
             if (triple.getY() < t_min || triple.getY() > t_max) continue;
-//            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
-//            if (triple.getX() < (orthogonal_median-overlap_error) || triple.getX() > (orthogonal_median+overlap_error)) continue;
+            // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
+            if (triple.getX() < -overlap_error || triple.getX() > overlap_error) continue;
             break;
           case X:
             if (triple.getX() < t_min || triple.getX() > t_max) continue;
             // limit the valid translations to within percent overlap error of 0 on the orthogonal direction
-//            if (triple.getY() < (orthogonal_median-overlap_error) || triple.getY() > (orthogonal_median+overlap_error)) continue;
+            if (triple.getY() < -overlap_error || triple.getY() > overlap_error) continue;
             break;
         }
         validTiles.add(tile);
       }
-    }
-
-    // compute the median orthogonal translation
-    if(validTiles.size() > 0) {
-
-      ArrayList<CorrelationTriple> validTriples = new ArrayList<CorrelationTriple>();
-      for(ImageTile<T> tile : validTiles) {
-        validTriples.add(tile.getTranslation(dir));
-      }
-
-      double orthogonal_median = 0;
-      switch (dispValue) {
-        case Y:
-          orthogonal_median = computeOp(validTriples, StatisticUtils.OP_TYPE.MEDIAN, DisplacementValue.X);
-          break;
-        case X:
-          orthogonal_median = computeOp(validTriples, StatisticUtils.OP_TYPE.MEDIAN, DisplacementValue.Y);
-          break;
-      }
-
-      HashSet<ImageTile<T>> validTilesFinal = new HashSet<ImageTile<T>>();
-
-      for (ImageTile<T> tile : validTiles) {
-        CorrelationTriple triple = tile.getTranslation(dir);
-
-        switch (dispValue) {
-          case Y:
-            // limit the valid translations to within percent overlap error of median on the orthogonal direction
-            if (triple.getX() < (orthogonal_median - overlap_error) || triple.getX() > (orthogonal_median + overlap_error))
-              continue;
-            break;
-          case X:
-            // limit the valid translations to within percent overlap error of median on the orthogonal direction
-            if (triple.getY() < (orthogonal_median - overlap_error) || triple.getY() > (orthogonal_median + overlap_error))
-              continue;
-            break;
-        }
-        validTilesFinal.add(tile);
-      }
-      validTiles = validTilesFinal;
     }
 
     return validTiles;
