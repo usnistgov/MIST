@@ -19,8 +19,17 @@
 package gov.nist.isg.mist;
 
 import java.awt.GraphicsEnvironment;
+import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import gov.nist.isg.mist.gui.StitchingSwingWorker;
 import gov.nist.isg.mist.gui.params.AdvancedParameters;
@@ -208,32 +217,25 @@ public class MISTMain implements PlugIn {
   /**
    * Main entry point for executing
    *
-   * @param args not used
+   * @param args
    */
   public static void main(String[] args) {
 
-
     // if this is being run from command line
     if(args.length > 0) {
-      if(args[0].equals("-h") || args[0].equals("-help")) {
-        Log.msg(LogType.MANDATORY, MISTMain.getCommandLineHelp());
-        return;
-      }
 
-      Log.msg(LogType.VERBOSE,"MISTMain.main: parsing args");
-      for(int i = 0; i < args.length; i++) {
-        Log.msg(LogType.MANDATORY,args[i]);
+      Log.msg(LogType.VERBOSE,"MISTMain.main: parsing args and converting to macro params");
+      MISTMain.macroOptions = parseCommandLineOptions(args);
+      
+      if(MISTMain.macroOptions == null) {
+    	  return;
       }
-
-      MISTMain.macroOptions = "";
-      for(int i = 0; i < args.length; i++) {
-        MISTMain.macroOptions += args[i].trim() + " ";
-      }
+      
       MISTMain.macro = false;
       MISTMain.runHeadless = false;
       MISTMain.executeStitchingWithMacro();
 
-    }else {
+    } else {
       // Launch ImageJ window
       ImageJ.main(args);
       if (GraphicsEnvironment.isHeadless()) {
@@ -263,16 +265,73 @@ public class MISTMain implements PlugIn {
     }
   }
 
+   /**
+    * Parses command line arguments and returns macro arguments as String
+    * @param args Command line arguments
+    * @return Command line arguments formatted for ImageJ macro
+    */
+   private static String parseCommandLineOptions(String[] args) {
+	   Options options = new Options();
+	   
+	   // add help option
+	   Option helpOption = new Option("h", "help", false,
+               "Display this help message and exit.");
+       options.addOption(helpOption);
+	   
+	   // add input parameter names to list of options
+	   List<String> inputParameterNames = InputParameters.getParameterNamesList();
+	   for (String param : inputParameterNames) {
+		   options.addOption(null, param, true, "Input param " + param);
+	   }
+	   
+	   // add output parameter names to list of options
+	   List<String> outputParameterNames = OutputParameters.getParameterNamesList();
+	   for (String param : outputParameterNames) {
+		   options.addOption(null, param, true, "Output param " + param);
+	   }
+	   
+	   // add logging parameter names to list of options
+	   List<String> loggingParameterNames = LoggingParameters.getParameterNamesList();
+	   for (String param : loggingParameterNames) {
+		   options.addOption(null, param, true, "Logging param " + param);
+	   }
+	   
+	   // add advanced parameter names to list of options
+	   List<String> advancedParameterNames = AdvancedParameters.getParameterNamesList();
+	   for (String param : advancedParameterNames) {
+		   options.addOption(null, param, true, "Advanced param " + param);
+	   }
+	   
+	   String macroParams = "";
+	   CommandLineParser parser = new DefaultParser();
+       try {
+           CommandLine commandLine = parser.parse(options, args);
 
-  private static String getCommandLineHelp() {
-    String str = InputParameters.getParametersCommandLineHelp();
-    str += "\r\n";
-    str += OutputParameters.getParametersCommandLineHelp();
-    str += "\r\n";
-    str += LoggingParameters.getParametersCommandLineHelp();
-    str += "\r\n";
-    str += AdvancedParameters.getParametersCommandLineHelp();
-    return str;
-  }
+           if (commandLine.hasOption(helpOption.getOpt())) {
+               printHelp(options);
+               return null;
+           }
+           
+           for (Option option : commandLine.getOptions()) {
+        	   String param = option.getLongOpt().toLowerCase() + "=" + commandLine.getOptionValue(option.getLongOpt()) + " ";
+        	   Log.msg(LogType.MANDATORY, param);
+			   macroParams += param;
+           }
 
+       } catch (ParseException ex) {
+           System.err.println(ex.getMessage());
+           printHelp(options);
+           return null;
+       }
+	   
+	   return macroParams;
+   }
+       
+   /**
+    * Print help
+    * @param options
+    */
+   private static void printHelp(Options options) {
+       new HelpFormatter().printHelp("MIST", options);
+   }
 }

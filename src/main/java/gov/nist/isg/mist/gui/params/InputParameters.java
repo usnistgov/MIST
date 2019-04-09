@@ -793,28 +793,33 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.globalPositionsFile = globalPositionsFile;
   }
 
-  public static String getParametersCommandLineHelp() {
-    String line = "\r\n";
-    String str = "********* Input Parameters *********";
-    str += line;
-    str += GRID_WIDTH + "=" + line;
-    str += GRID_HEIGHT + "=" + line;
-    str += START_TILE + "=" + line;
-    str += START_TILE_ROW + "=" + line;
-    str += START_TILE_COL + "=" + line;
-    str += IMAGE_DIR + "=" + line;
-    str += FILENAME_PATTERN + "=" + line;
-    str += FILENAME_PATTERN_TYPE + "=" + line;
-    str += NUMBERING_PATTERN + "=" + line;
-    str += ASSEMBLE_FROM_META + "=" + line;
-    str += START_ROW + "=" + line;
-    str += START_COL + "=" + line;
-    str += EXTENT_WIDTH + "=" + line;
-    str += EXTENT_HEIGHT + "=" + line;
-    str += TIME_SLICES + "=" + line;
-    str += IS_TIME_SLICES_ENABLED + "=" + line;
-    str += GLOBAL_POSITIONS_FILE + "=" + line;
-    return str;
-  }
+  
+  /**
+   * Builds the list of input parameter names
+   * 
+   * @return the list of input parameter names
+   */
+  public static List<String> getParameterNamesList() {
+	  	List<String> parameterNames = new ArrayList<String>();
+	  	parameterNames.add(GRID_WIDTH);
+	  	parameterNames.add(GRID_HEIGHT);
+	  	parameterNames.add(START_TILE);
+	  	parameterNames.add(START_TILE_ROW);
+	  	parameterNames.add(START_TILE_COL);
+	  	parameterNames.add(IMAGE_DIR);
+	  	parameterNames.add(FILENAME_PATTERN);
+	  	parameterNames.add(FILENAME_PATTERN_TYPE);
+	  	parameterNames.add(GRID_ORIGIN);
+	  	parameterNames.add(NUMBERING_PATTERN);
+	  	parameterNames.add(ASSEMBLE_FROM_META);
+	  	parameterNames.add(START_ROW);
+	  	parameterNames.add(START_COL);
+	  	parameterNames.add(EXTENT_WIDTH);
+	  	parameterNames.add(EXTENT_HEIGHT);
+	  	parameterNames.add(TIME_SLICES);
+	  	parameterNames.add(IS_TIME_SLICES_ENABLED);
+	  	parameterNames.add(GLOBAL_POSITIONS_FILE);
+	    return parameterNames;
+	  }
 
 }

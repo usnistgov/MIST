@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import gov.nist.isg.mist.gui.params.interfaces.StitchingAppParamFunctions;
@@ -199,15 +201,17 @@ public class LoggingParameters implements StitchingAppParamFunctions {
     this.debugLevel = debugLevel;
   }
 
-
-  public static String getParametersCommandLineHelp() {
-    String line = "\r\n";
-    String str = "********* Logging Parameters *********";
-    str += line;
-    str += LOG_LEVEL + "=" + line;
-    str += DEBUG_LEVEL + "=" + line;
-    return str;
+  
+  /**
+   * Builds the list of logging parameter names
+   * 
+   * @return the list of logging parameter names
+   */
+  public static List<String> getParameterNamesList() {
+  	List<String> parameterNames = new ArrayList<String>();
+  	parameterNames.add(LOG_LEVEL);
+  	parameterNames.add(DEBUG_LEVEL);
+    return parameterNames;
   }
-
 
 }
