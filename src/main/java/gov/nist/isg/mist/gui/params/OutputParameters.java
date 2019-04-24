@@ -86,8 +86,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice for the output image
    * @return the output image name
    */
-  public String getOutputImageName(int timeSlice) {
-    String fmt = "%d";
+  public String getOutputImageName(int timeSlice, int maxTimeSlice) {
+    int padLength = String.format("%d", maxTimeSlice).length();
+    String fmt = "%0" + padLength + "d";
     return this.outFilePrefix + fullImgFilename + "-" + String.format(fmt, timeSlice) + ".tif";
   }
 
@@ -97,8 +98,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeslice the timeslice
    * @return the hill climbing starting position name
    */
-  public String getHillClimbStartingPositionsName(int timeslice) {
-    String fmt = "%d";
+  public String getHillClimbStartingPositionsName(int timeslice, int maxTimeSlice) {
+    int padLength = String.format("%d", maxTimeSlice).length();
+    String fmt = "%0" + padLength + "d";
     return this.outFilePrefix + hillClimbPosFilename + "-" + String.format(fmt, timeslice) + metadataSuffix;
   }
 
@@ -119,8 +121,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the absolute positions filename
    */
-  public String getAbsPosFileName(int timeSlice) {
-    String fmt = "%d";
+  public String getAbsPosFileName(int timeSlice, int maxTimeSlice) {
+    int padLength = String.format("%d", maxTimeSlice).length();
+    String fmt = "%0" + padLength + "d";
     return this.outFilePrefix + absPosFilename + "-" + String.format(fmt, timeSlice) + metadataSuffix;
   }
 
@@ -130,8 +133,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the relative positions filename
    */
-  public String getRelPosFileName(int timeSlice) {
-    String fmt = "%d";
+  public String getRelPosFileName(int timeSlice, int maxTimeSlice) {
+    int padLength = String.format("%d", maxTimeSlice).length();
+    String fmt = "%0" + padLength + "d";
     return this.outFilePrefix + relPosFilename + "-" + String.format(fmt, timeSlice) + metadataSuffix;
   }
 
@@ -141,8 +145,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the relative positions before optimization filename
    */
-  public String getRelPosNoOptFileName(int timeSlice) {
-    String fmt = "%d";
+  public String getRelPosNoOptFileName(int timeSlice, int maxTimeSlice) {
+    int padLength = String.format("%d", maxTimeSlice).length();
+    String fmt = "%0" + padLength + "d";
     return this.outFilePrefix + relPosNoOptFilename + "-" + String.format(fmt, timeSlice) + metadataSuffix;
   }
 
@@ -166,8 +171,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the timeslice
    * @return the hill climb position file
    */
-  public File getHillClimbPositionFile(int timeSlice) {
-    return new File(this.outputPath, getHillClimbStartingPositionsName(timeSlice));
+  public File getHillClimbPositionFile(int timeSlice, int maxTimeSlice) {
+    return new File(this.outputPath, getHillClimbStartingPositionsName(timeSlice, maxTimeSlice));
   }
 
   /**
@@ -176,8 +181,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the time slice
    * @return the output image file
    */
-  public File getOutputImageFile(int timeSlice) {
-    return new File(this.outputPath, this.getOutputImageName(timeSlice));
+  public File getOutputImageFile(int timeSlice, int maxTimeSlice) {
+    return new File(this.outputPath, this.getOutputImageName(timeSlice, maxTimeSlice));
   }
 
   /**
@@ -186,8 +191,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the time slice
    * @return the absolute position file
    */
-  public File getAbsPosFile(int timeSlice) {
-    return new File(this.outputPath, getAbsPosFileName(timeSlice));
+  public File getAbsPosFile(int timeSlice, int maxTimeSlice) {
+    return new File(this.outputPath, getAbsPosFileName(timeSlice, maxTimeSlice));
   }
 
   /**
@@ -196,8 +201,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the time slice
    * @return the relative position file
    */
-  public File getRelPosFile(int timeSlice) {
-    return new File(this.outputPath, getRelPosFileName(timeSlice));
+  public File getRelPosFile(int timeSlice, int maxTimeSlice) {
+    return new File(this.outputPath, getRelPosFileName(timeSlice, maxTimeSlice));
   }
 
   /**
@@ -206,8 +211,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
    * @param timeSlice the time slice
    * @return the relative position without optimization file
    */
-  public File getRelPosNoOptFile(int timeSlice) {
-    return new File(this.outputPath, getRelPosNoOptFileName(timeSlice));
+  public File getRelPosNoOptFile(int timeSlice, int maxTimeSlice) {
+    return new File(this.outputPath, getRelPosNoOptFileName(timeSlice, maxTimeSlice));
   }
 
 

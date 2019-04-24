@@ -791,17 +791,24 @@ public class StitchingExecutor implements Runnable {
 
     StitchingGuiUtils.updateProgressBar(progress, true, "Outputting metadata");
 
+    List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
+    int globalMaxTimeSlice = 0;
+    for (RangeParam timeSliceParam : timeSlices) {
+      globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+    }
+
+
     // abs positions
-    Stitching.outputAbsolutePositions(grid, params.getOutputParams().getAbsPosFile(timeSlice));
+    Stitching.outputAbsolutePositions(grid, params.getOutputParams().getAbsPosFile(timeSlice, globalMaxTimeSlice));
 
     // relative positions
     Stitching.outputRelativeDisplacements(grid,
-        params.getOutputParams().getRelPosFile(timeSlice));
+        params.getOutputParams().getRelPosFile(timeSlice, globalMaxTimeSlice));
 
     // relative positions no optimization
     if (params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, params.getOutputParams()
-          .getRelPosNoOptFile(timeSlice));
+          .getRelPosNoOptFile(timeSlice, globalMaxTimeSlice));
   }
 
   private <T> ImagePlus saveFullImage(TileGrid<ImageTile<T>> grid, final JProgressBar progress,
@@ -809,7 +816,13 @@ public class StitchingExecutor implements Runnable {
     ImagePlus img = null;
     StitchingGuiUtils.updateProgressBar(progress, true, "Writing Full Image");
 
-    File imageFile = params.getOutputParams().getOutputImageFile(timeSlice);
+    List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
+    int globalMaxTimeSlice = 0;
+    for (RangeParam timeSliceParam : timeSlices) {
+      globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+    }
+
+    File imageFile = params.getOutputParams().getOutputImageFile(timeSlice, globalMaxTimeSlice);
 
     ImageTile<T> initImg = grid.getTileThatExists();
     initImg.readTile();

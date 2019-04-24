@@ -8,12 +8,14 @@
 package gov.nist.isg.mist.optimization;
 
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JProgressBar;
 
 import gov.nist.isg.mist.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.gui.StitchingStatistics;
 import gov.nist.isg.mist.gui.params.StitchingAppParams;
+import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.lib.imagetile.Stitching;
 import gov.nist.isg.mist.lib.log.Log;
@@ -165,7 +167,13 @@ public class GlobalOptimization<T> {
     if (params.getOutputParams().isOutputMeta())
       directory.mkdirs();
 
-    File preOptPosFile = params.getOutputParams().getRelPosNoOptFile(stitchingStatistics.getCurrentTimeSlice());
+    List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
+    int globalMaxTimeSlice = 0;
+    for (RangeParam timeSliceParam : timeSlices) {
+      globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+    }
+
+    File preOptPosFile = params.getOutputParams().getRelPosNoOptFile(stitchingStatistics.getCurrentTimeSlice(), globalMaxTimeSlice);
     if (params.getOutputParams().isOutputMeta())
       Stitching.outputRelativeDisplacementsNoOptimization(grid, preOptPosFile);
 

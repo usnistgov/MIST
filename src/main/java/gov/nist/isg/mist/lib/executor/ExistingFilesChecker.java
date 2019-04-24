@@ -163,6 +163,11 @@ public class ExistingFilesChecker implements Comparator<String> {
     if (checkOutputImage || checkOutputMeta) {
 
       List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
+      int globalMaxTimeSlice = 0;
+      for (RangeParam timeSliceParam : timeSlices) {
+        globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+      }
+
 
       for (RangeParam timeSliceParam : timeSlices) {
         int minTimeSlice = timeSliceParam.getMin();
@@ -170,7 +175,7 @@ public class ExistingFilesChecker implements Comparator<String> {
 
         for (int timeSlice = minTimeSlice; timeSlice <= maxTimeSlice; timeSlice++) {
           if (checkOutputImage) {
-            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice);
+            File imgFile = this.params.getOutputParams().getOutputImageFile(timeSlice, globalMaxTimeSlice);
 
             if (imgFile.exists())
               fileList.add(imgFile.getAbsolutePath());
@@ -179,15 +184,15 @@ public class ExistingFilesChecker implements Comparator<String> {
           if (checkOutputMeta) {
 
 
-            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice);
+            File absFile = this.params.getOutputParams().getAbsPosFile(timeSlice, globalMaxTimeSlice);
             if (absFile.exists())
               fileList.add(absFile.getAbsolutePath());
 
-            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice);
+            File relPosFile = this.params.getOutputParams().getRelPosFile(timeSlice, globalMaxTimeSlice);
             if (relPosFile.exists())
               fileList.add(relPosFile.getAbsolutePath());
 
-            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice);
+            File relPosNoOptFile = this.params.getOutputParams().getRelPosNoOptFile(timeSlice, globalMaxTimeSlice);
             if (relPosNoOptFile.exists())
               fileList.add(relPosNoOptFile.getAbsolutePath());
 
