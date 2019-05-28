@@ -810,33 +810,37 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
   }
 
 
-  public static String getParametersCommandLineHelp() {
-    String line = "\r\n";
-    String str = "********* Advanced Parameters *********";
-    str += line;
-    str += PROGRAM_TYPE + "=" + line;
-    str += NUM_CPU_THREADS + "=" + line;
-    str += LOAD_FFTW_PLAN + "=" + line;
-    str += SAVE_FFTW_PLAN + "=" + line;
-    str += FFTW_PLAN_TYPE + "=" + line;
-    str += PLAN_PATH + "=" + line;
-    str += FFTW_LIBRARY_PATH + "=" + line;
-    str += FFTW_LIBRARY_NAME + "=" + line;
-    str += FFTW_LIBRARY_FILENAME + "=" + line;
-    str += CUDA_DEVICE + "=" + line;
-    str += STAGE_REPEATABILITY + "=" + line;
-    str += HORIZONTAL_OVERLAP + "=" + line;
-    str += VERTICAL_OVERLAP + "=" + line;
-    str += NUM_FFT_PEAKS + "=" + line;
-    str += OVERLAP_UNCERTAINTY + "=" + line;
-    str += IS_USE_DOUBLE_PRECISION + "=" + line;
-    str += IS_USE_BIOFORMATS + "=" + line;
-    str += IS_SUPPRESS_MODAL_WARNING_DIALOG + "=" + line;
-    str += IS_ENABLE_CUDA_EXCEPTIONS + "=" + line;
-    str += TRANSLATION_REFINEMENT_TYPE + "=" + line;
-    str += NUM_TRANS_REFINEMENT_START_POINTS + "=" + line;
-    str += RUN_HEADLESS + "=" + line;
-    return str;
+  /**
+   * Builds the list of advanced parameter names
+   * 
+   * @return the list of advanced parameter names
+   */
+  public static List<String> getParameterNamesList() {
+  	List<String> parameterNames = new ArrayList<String>();
+  	parameterNames.add(PROGRAM_TYPE);
+  	parameterNames.add(NUM_CPU_THREADS);
+  	parameterNames.add(LOAD_FFTW_PLAN);
+  	parameterNames.add(SAVE_FFTW_PLAN);
+  	parameterNames.add(FFTW_PLAN_TYPE);
+  	parameterNames.add(PLAN_PATH);
+  	parameterNames.add(FFTW_LIBRARY_PATH);
+  	parameterNames.add(FFTW_LIBRARY_NAME);
+  	parameterNames.add(FFTW_LIBRARY_FILENAME);
+  	parameterNames.add(CUDA_DEVICE);
+  	parameterNames.add(STAGE_REPEATABILITY);
+  	parameterNames.add(HORIZONTAL_OVERLAP);
+  	parameterNames.add(VERTICAL_OVERLAP);
+  	parameterNames.add(NUM_FFT_PEAKS);
+  	parameterNames.add(OVERLAP_UNCERTAINTY);
+  	parameterNames.add(IS_USE_DOUBLE_PRECISION);
+  	parameterNames.add(IS_USE_BIOFORMATS);
+  	parameterNames.add(IS_SUPPRESS_MODAL_WARNING_DIALOG);
+  	parameterNames.add(IS_ENABLE_CUDA_EXCEPTIONS);
+  	parameterNames.add(TRANSLATION_REFINEMENT_TYPE);
+  	parameterNames.add(NUM_TRANS_REFINEMENT_START_POINTS);
+  	parameterNames.add(RUN_HEADLESS);
+    return parameterNames;
   }
+
 
 }

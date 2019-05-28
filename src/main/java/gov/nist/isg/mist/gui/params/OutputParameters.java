@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import gov.nist.isg.mist.gui.params.interfaces.StitchingAppParamFunctions;
@@ -507,20 +509,22 @@ public class OutputParameters implements StitchingAppParamFunctions {
   }
 
 
-  public static String getParametersCommandLineHelp() {
-    String line = "\r\n";
-    String str = "********* Output Parameters *********";
-    str += line;
-    str += OUTPUT_PATH + "=" + line;
-    str += DISPLAY_STITCHING + "=" + line;
-    str += OUTPUT_FULL_IMAGE + "=" + line;
-    str += OUTPUT_META + "=" + line;
-    str += OUTPUT_IMG_PYRAMID + "=" + line;
-    str += OUT_FILE_PREFIX + "=" + line;
-    str += BLENDING_MODE + "=" + line;
-    str += BLENDING_ALPHA + "=" + line;
-    return str;
+  /**
+   * Builds the list of output parameter names
+   * 
+   * @return the list of output parameter names
+   */
+  public static List<String> getParameterNamesList() {
+  	List<String> parameterNames = new ArrayList<String>();
+  	parameterNames.add(OUTPUT_PATH);
+  	parameterNames.add(DISPLAY_STITCHING);
+  	parameterNames.add(OUTPUT_FULL_IMAGE);
+  	parameterNames.add(OUTPUT_META);
+  	parameterNames.add(OUTPUT_IMG_PYRAMID);
+  	parameterNames.add(OUT_FILE_PREFIX);
+  	parameterNames.add(BLENDING_MODE);
+  	parameterNames.add(BLENDING_ALPHA);
+    return parameterNames;
   }
-
 
 }
