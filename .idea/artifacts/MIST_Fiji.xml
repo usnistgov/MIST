@@ -11,6 +11,7 @@
       <element id="directory" name="jars">
         <element id="library" level="project" name="Maven: org.jcuda:jcuda:0.9.0d" />
         <element id="library" level="project" name="Maven: org.jcuda:jcufft:0.9.0d" />
+        <element id="library" level="project" name="Maven: commons-cli:commons-cli:1.4" />
       </element>
       <element id="directory" name="lib">
         <element id="directory" name="fftw">

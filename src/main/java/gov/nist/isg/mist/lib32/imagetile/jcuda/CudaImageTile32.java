@@ -251,7 +251,7 @@ public class CudaImageTile32 extends ImageTile<CUdeviceptr> {
       throws IOException {
 
     String fijiDir = IJ.getDirectory("imagej");
-    if(fijiDir == null)
+    if(fijiDir == null || fijiDir.equals("null/"))
       fijiDir = "";
 
     File testFile = new File(fijiDir + CUDA_MODULE_NAME);

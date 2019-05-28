@@ -20,3 +20,11 @@ target
 
 # User-specific IntlliJ workspace:
 .idea/workspace.xml
+
+# Eclipse files
+.settings/
+.project
+.classpath
+
+# macOS files
+**/.DS_Store
