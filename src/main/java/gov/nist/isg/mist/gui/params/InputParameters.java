@@ -58,6 +58,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private static final String GRID_ORIGIN = "gridOrigin";
   private static final String NUMBERING_PATTERN = "numberingPattern";
   private static final String ASSEMBLE_FROM_META = "assembleFromMetadata";
+  private static final String ASSEMBLE_NO_OVERLAP = "assembleNoOverlap";
   private static final String START_ROW = "startRow";
   private static final String START_COL = "startCol";
   private static final String EXTENT_WIDTH = "extentWidth";
@@ -81,6 +82,7 @@ public class InputParameters implements StitchingAppParamFunctions {
   private GridOrigin origin;
   private GridDirection numberingPattern;
   private boolean assembleFromMetadata;
+  private boolean assembleNoOverlap;
 
   private String globalPositionsFile;
 
@@ -105,6 +107,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = GridOrigin.UL;
     this.numberingPattern = GridDirection.HORIZONTALCOMBING;
     this.assembleFromMetadata = false;
+    this.assembleNoOverlap = false;
     this.globalPositionsFile = "";
 
     // Processing Options
@@ -310,6 +313,8 @@ public class InputParameters implements StitchingAppParamFunctions {
       this.numberingPattern = GridDirection.valueOf(value.toUpperCase());
     else if (key.equals(ASSEMBLE_FROM_META))
       this.assembleFromMetadata = StitchingParamUtils.loadBoolean(value, this.assembleFromMetadata);
+    else if (key.equals(ASSEMBLE_NO_OVERLAP))
+      this.assembleNoOverlap = StitchingParamUtils.loadBoolean(value, this.assembleNoOverlap);
     else if (key.equals(GLOBAL_POSITIONS_FILE))
       this.globalPositionsFile = value;
     else if (key.equals(START_ROW))
@@ -341,6 +346,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.origin = PreferencesUtils.loadPrefGridOrigin(pref, GRID_ORIGIN, this.origin.name());
     this.numberingPattern = PreferencesUtils.loadPrefGridNumbering(pref, NUMBERING_PATTERN, this.numberingPattern.name());
     this.assembleFromMetadata = pref.getBoolean(ASSEMBLE_FROM_META, this.assembleFromMetadata);
+    this.assembleNoOverlap = pref.getBoolean(ASSEMBLE_NO_OVERLAP, this.assembleNoOverlap);
     this.globalPositionsFile = pref.get(GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
     this.startRow = pref.getInt(START_ROW, this.startRow);
     this.startCol = pref.getInt(START_COL, this.startCol);
@@ -370,6 +376,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, GRID_ORIGIN + ": " + this.origin);
     Log.msg(logLevel, NUMBERING_PATTERN + ": " + this.numberingPattern);
     Log.msg(logLevel, ASSEMBLE_FROM_META + ": " + this.assembleFromMetadata);
+    Log.msg(logLevel, ASSEMBLE_NO_OVERLAP + ": " + this.assembleNoOverlap);
     Log.msg(logLevel, GLOBAL_POSITIONS_FILE + ": " + this.globalPositionsFile);
     Log.msg(logLevel, START_ROW + ": " + this.startRow);
     Log.msg(logLevel, START_COL + ": " + this.startCol);
@@ -406,6 +413,8 @@ public class InputParameters implements StitchingAppParamFunctions {
         this.numberingPattern.name());
     this.assembleFromMetadata = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_FROM_META,
         this.assembleFromMetadata);
+    this.assembleNoOverlap = MacroUtils.loadMacroBoolean(macroOptions, ASSEMBLE_NO_OVERLAP,
+            this.assembleNoOverlap);
     this.globalPositionsFile = MacroUtils.loadMacroString(macroOptions, GLOBAL_POSITIONS_FILE,
         this.globalPositionsFile);
     this.startRow = MacroUtils.loadMacroInteger(macroOptions, START_ROW, this.startRow);
@@ -435,6 +444,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordString(FILENAME_PATTERN_TYPE + ": ", this.filenamePatternType.name());
     MacroUtils.recordString(GRID_ORIGIN + ": ", this.origin.name());
     MacroUtils.recordBoolean(ASSEMBLE_FROM_META + ": ", this.assembleFromMetadata);
+    MacroUtils.recordBoolean(ASSEMBLE_NO_OVERLAP + ": ", this.assembleNoOverlap);
     MacroUtils.recordString(GLOBAL_POSITIONS_FILE + ": ", this.globalPositionsFile);
     MacroUtils.recordString(NUMBERING_PATTERN + ": ", this.numberingPattern.name());
     MacroUtils.recordInteger(START_ROW + ": ", this.startRow);
@@ -458,6 +468,7 @@ public class InputParameters implements StitchingAppParamFunctions {
     pref.put(FILENAME_PATTERN_TYPE, this.filenamePatternType.name());
     pref.put(GRID_ORIGIN, this.origin.name());
     pref.putBoolean(ASSEMBLE_FROM_META, this.assembleFromMetadata);
+    pref.putBoolean(ASSEMBLE_NO_OVERLAP, this.assembleNoOverlap);
     pref.put(GLOBAL_POSITIONS_FILE, this.globalPositionsFile);
     pref.put(NUMBERING_PATTERN, this.numberingPattern.name());
     pref.putInt(START_ROW, this.startRow);
@@ -490,6 +501,7 @@ public class InputParameters implements StitchingAppParamFunctions {
       fw.write(GRID_ORIGIN + ": " + this.origin.name() + newLine);
       fw.write(NUMBERING_PATTERN + ": " + this.numberingPattern.name() + newLine);
       fw.write(ASSEMBLE_FROM_META + ": " + this.assembleFromMetadata + newLine);
+      fw.write(ASSEMBLE_NO_OVERLAP + ": " + this.assembleNoOverlap + newLine);
       fw.write(GLOBAL_POSITIONS_FILE + ": " + this.globalPositionsFile + newLine);
       fw.write(START_ROW + ": " + this.startRow + newLine);
       fw.write(START_COL + ": " + this.startCol + newLine);
@@ -681,7 +693,6 @@ public class InputParameters implements StitchingAppParamFunctions {
     return this.assembleFromMetadata;
   }
 
-
   /**
    * @param assembleFromMetadata the assembleFromMetadata to set
    */
@@ -689,6 +700,19 @@ public class InputParameters implements StitchingAppParamFunctions {
     this.assembleFromMetadata = assembleFromMetadata;
   }
 
+  /**
+   * @return the assembleNoOverlap
+   */
+  public boolean isAssembleNoOverlap() {
+    return this.assembleNoOverlap;
+  }
+
+  /**
+   * @param assembleNoOverlap the assembleNoOverlap to set
+   */
+  public void setAssembleNoOverlap(boolean assembleNoOverlap) {
+    this.assembleNoOverlap = assembleNoOverlap;
+  }
 
   /**
    * @return the startRow
@@ -812,6 +836,7 @@ public class InputParameters implements StitchingAppParamFunctions {
 	  	parameterNames.add(GRID_ORIGIN);
 	  	parameterNames.add(NUMBERING_PATTERN);
 	  	parameterNames.add(ASSEMBLE_FROM_META);
+        parameterNames.add(ASSEMBLE_NO_OVERLAP);
 	  	parameterNames.add(START_ROW);
 	  	parameterNames.add(START_COL);
 	  	parameterNames.add(EXTENT_WIDTH);

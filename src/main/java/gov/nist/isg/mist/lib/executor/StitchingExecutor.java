@@ -323,6 +323,10 @@ public class StitchingExecutor implements Runnable {
 
     StitchingExecutorInterface<T> stitchingExecutorInf = null;
 
+    if(params.getInputParams().isAssembleNoOverlap()) {
+      params.getAdvancedParams().setProgramType(StitchingType.NOOVERLAP);
+    }
+
     if (params.getInputParams().isAssembleFromMetadata()) {
       stitchingExecutorInf = (StitchingExecutorInterface<T>) new AssembleFromMetaExecutor<Pointer<Double>>();
       params.getOutputParams().setOutputMeta(false); // if assembling from meta, don't also output meta
@@ -959,6 +963,7 @@ public class StitchingExecutor implements Runnable {
       img.show();
     }
   }
+
 
   private <T> void previewNoOverlap() throws FileNotFoundException {
     Log.msg(LogType.MANDATORY, "Checking args for preview:");

@@ -1,0 +1,374 @@
+{
+	"name": "MIST",
+	"version": "2.0.7",
+	"title": "MIST plugin",
+	"description": "Microscopy Image Stitching Tool",
+    "creator": "National Institute of Standards and Technology",
+	"containerId": "wipp/mist:2.0.7",
+
+	"inputs": [
+		{
+			"name": "imageDir",
+			"type": "collection",
+            "options": {
+				"format": "tiledtiff"
+			},
+			"description": "Input Images",
+            "required": true
+		},
+        {
+			"name": "filenamePatternType",
+			"type": "enum",
+			"options": {
+				"values": [
+					"ROWCOL",
+                    "SEQUENTIAL"
+				]
+			},
+			"description": "Filename Pattern Type",
+            "required": true
+		},
+        {
+			"name": "filenamePattern",
+			"type": "string",
+			"description": "Filename Pattern",
+            "required": true
+		},
+        {
+			"name": "gridOrigin",
+			"type": "enum",
+			"options": {
+				"values": [
+					"UL",
+                    "UR",
+                    "LL",
+                    "LR"
+				]
+			},
+			"description": "Starting Point"
+		},
+        {
+			"name": "numberingPattern",
+			"type": "enum",
+			"options": {
+				"values": [
+					"VERTICALCOMBING",
+                    "VERTICALCONTINUOUS",
+                    "HORIZONTALCOMBING",
+                    "HORIZONTALCONTINUOUS"
+				]
+			},
+			"description": "Direction"
+		},
+        {
+			"name": "gridWidth",
+			"type": "number",
+			"description": "Grid Width",
+            "required": true
+		},
+        {
+			"name": "gridHeight",
+			"type": "number",
+			"description": "Grid Height",
+            "required": true
+		},
+        {
+			"name": "startTile",
+			"type": "enum",
+			"options": {
+				"values": [
+					"0",
+					"1"
+				]
+			},
+			"description": "Start tile"
+		},
+        {
+			"name": "startTileRow",
+			"type": "enum",
+			"options": {
+				"values": [
+					"0",
+					"1"
+				]
+			},
+			"description": "Start tile row"
+		},
+        {
+			"name": "startTileCol",
+			"type": "enum",
+			"options": {
+				"values": [
+					"0",
+					"1"
+				]
+			},
+			"description": "Start tile column"
+		},
+        {
+			"name": "startRow",
+			"type": "number",
+			"description": "Subgrid start row"
+		},
+        {
+			"name": "startCol",
+			"type": "number",
+			"description": "Subgrid start column"
+		},
+        {
+			"name": "extentWidth",
+			"type": "number",
+            "bind": "gridWidth",
+			"description": "Subgrid extent width"
+		},
+        {
+			"name": "extentHeight",
+			"type": "number",
+            "bind": "gridHeight",
+			"description": "Subgrid extent height"
+		},
+        {
+			"name": "isTimeSlices",
+			"type": "boolean",
+			"description": "Has timeslices"
+		},
+        {
+			"name": "timeSlices",
+			"type": "string",
+			"description": "Timeslices"
+		},
+		{
+	      "name": "assembleNoOverlap",
+	      "type": "enum",
+				"options": {
+					"values": [
+						"False",
+	                    "True"
+					]
+				},
+	      "description": "Whether or not to assemble images without overlap.",
+	      "required": true
+	    },
+        {
+			"name": "stageRepeatability",
+			"type": "number",
+			"description": "Stage repeatability"
+		},
+        {
+			"name": "horizontalOverlap",
+			"type": "number",
+			"description": "Horizontal Overlap"
+		},
+        {
+			"name": "verticalOverlap",
+			"type": "number",
+			"description": "Vertical Overlap"
+		},
+        {
+			"name": "overlapUncertainty",
+			"type": "number",
+			"description": "Overlap Uncertainty"
+		},
+        
+		{
+			"name": "programType",
+			"type": "enum",
+			"options": {
+				"values": [
+					"JAVA",
+					"FFTW",
+					"CUDA"
+				]
+			},
+			"description": "Stitching Program"
+		}
+        
+        
+        
+		
+	],
+	"outputs": [
+		{
+			"name": "outputPath",
+			"type": "stitchingVector",
+			"description": "Output stitching vector"
+		}
+	],
+	"ui": [
+		{
+	      "key": "inputs.assembleNoOverlap",
+	      "title": "Assemble No Overlap: ",
+	      "description": "Whether or not to assemble images with no overlap."
+	    },
+    	{
+			"key": "inputs.imageDir",
+			"title": "Input Images: ",
+			"description": "Pick a collection..."
+		},
+        {
+			"key": "inputs.filenamePatternType",
+			"title": "Filename Pattern Type: ",
+			"description": "Specify the type of filename pattern used in the acquired images."
+		},
+        {
+			"key": "inputs.filenamePattern",
+			"title": "Filename Pattern: ",
+			"description": "Specify the filename pattern."
+		},
+        {
+			"key": "inputs.gridOrigin",
+			"title": "Starting Point: ",
+			"description": "Specify the starting point of the microscope scan, specifies the origin for the grid of images."
+		},
+        {
+			"key": "inputs.numberingPattern",
+			"title": "Direction: ",
+			"description": "Specify the direction and pattern of the microscope motion during acquisition.",
+            "condition": "model.inputs.filenamePatternType=='SEQUENTIAL'"
+		},
+        {
+			"key": "inputs.gridWidth",
+			"title": "Grid Width: ",
+			"description": "Specify the number of images in a row (The number of columns, the width of the image grid)."
+		},
+        {
+			"key": "inputs.gridHeight",
+			"title": "Grid Height: ",
+			"description": "Specify the number of images in a column. (The number of rows, the height of the image grid)."
+		},
+        {
+			"key": "inputs.startTile",
+			"title": "Start Tile: ",
+			"description": "Specify the index of the first tile (0 or 1)",
+            "condition": "model.inputs.filenamePatternType=='SEQUENTIAL'"
+		},
+        {
+			"key": "inputs.startTileRow",
+			"title": "Start Tile Row: ",
+			"description": "Specify the index of the first tile row (0 or 1)",
+            "condition": "model.inputs.filenamePatternType=='ROWCOL'"
+		},
+        {
+			"key": "inputs.startTileCol",
+			"title": "Start Tile Column: ",
+			"description": "Specify the index of the first tile column (0 or 1)",
+            "condition": "model.inputs.filenamePatternType=='ROWCOL'"
+		},
+        {
+			"key": "inputs.startRow",
+			"title": "Subgrid Start Row: ",
+			"description": "Specify the start row for the subgrid",
+            "hidden": true,
+            "default": 0
+		},
+        {
+			"key": "inputs.startCol",
+			"title": "Subgrid Start Column: ",
+			"description": "Specify the start column for the subgrid",
+            "hidden": true,
+            "default": 0
+		},
+        {
+			"key": "inputs.extentWidth",
+			"title": "Subgrid Extent Width: ",
+			"description": "Specify the width for the subgrid",
+            "hidden": true,
+            "bind": "gridWidth"
+		},
+        {
+			"key": "inputs.extentHeight",
+			"title": "Subgrid Extent Height: ",
+			"description": "Specify the height for the subgrid",
+            "hidden": true,
+            "bind": "gridHeight"
+		},
+        {
+			"key": "inputs.isTimeSlices",
+			"title": "Has timeslices: ",
+			"description": "Specify if the dataset has timeslices.",
+            "default": true
+		},
+        {
+			"key": "inputs.timeSlices",
+			"title": "Timeslices: ",
+			"description": "Specify the timeslices to stitch",
+            "condition": "model.inputs.isTimeSlices==true"
+		},
+        {
+			"key": "inputs.stageRepeatability",
+			"title": "Stage Repeatability: ",
+			"description": "Specify the stage repeatability variable used when computing the global optimization",
+            "default": 0,
+            "condition": "model.inputs.assembleNoOverlap=='False'"
+		},
+        {
+			"key": "inputs.horizontalOverlap",
+			"title": "Horizontal Overlap: ",
+			"description": "Specify the horizontal overlap variable used when computing the global optimization",
+            "condition": "model.inputs.assembleNoOverlap=='False'"
+		},
+        {
+			"key": "inputs.verticalOverlap",
+			"title": "Vertical Overlap: ",
+			"description": "Specify the vertical overlap variable when computing the global optimization",
+            "condition": "model.inputs.assembleNoOverlap=='False'"
+		},
+        {
+			"key": "inputs.overlapUncertainty",
+			"title": "Overlap Uncertainty: ",
+			"description": "Specify the overlap uncertainty variable when computing the global optimization",
+             "default": 5,
+            "condition": "model.inputs.assembleNoOverlap=='False'"
+		},
+        
+        
+        {
+			"key": "inputs.programType",
+			"title": "Stitching Program: ",
+			"description": "Select which type of program to execute.",
+            "condition": "model.inputs.assembleNoOverlap=='False'"
+		},
+        {
+            "key" : "fieldsets",
+            "fieldsets": [
+                {
+                  "title": "Input images",
+                  "fields": [
+                  	"assembleNoOverlap",
+                    "imageDir",
+                    "filenamePatternType",
+                    "filenamePattern"
+                  ]
+                },
+                {
+                  "title": "Acquisition setup",
+                  "fields": [
+                    "gridOrigin",
+                    "numberingPattern",
+                    "gridWidth",
+                    "gridHeight",
+                    "startTile",
+                    "startTileRow",
+                    "startTileCol",
+                    "isTimeSlices",
+                    "timeSlices"
+                  ]
+                },
+                {
+                  "title": "Advanced parameters",
+                  "fields": [
+                    "startRow",
+                    "startCol",
+                    "extentWidth",
+                    "extentHeight",
+                    "stageRepeatability",
+                    "horizontalOverlap",
+                    "verticalOverlap",
+                    "overlapUncertainty",
+                    "programType"
+                  ]
+                }
+            ]
+        }
+	]
+}
