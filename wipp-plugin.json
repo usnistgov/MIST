@@ -2,8 +2,12 @@
 	"name": "MIST",
 	"version": "2.0.7",
 	"title": "MIST plugin",
+	"author": "Michael Majurski and Tim Blattner",
+	"institution": "National Institute of Standards and Technology",
+	"repository": "https://github.com/usnistgov/MIST",
+	"website": "https://isg.nist.gov/deepzoomweb/resources/csmet/pages/image_stitching/image_stitching.html",
+	"citation": "Chalfoun, Joe, et al. \"Mist: accurate and scalable microscopy image stitching tool with stage modeling and error minimization.\" Scientific reports (2017)",
 	"description": "Microscopy Image Stitching Tool",
-    "creator": "National Institute of Standards and Technology",
 	"containerId": "wipp/mist:2.0.7",
 
 	"inputs": [
