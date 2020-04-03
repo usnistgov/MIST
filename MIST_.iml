@@ -13,15 +13,13 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcuda-natives:windows-x86_64:0.9.0d" level="project" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcufft-natives:windows-x86_64:0.9.0d" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij:1.51d" level="project" />
     <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.2" level="project" />
     <orderEntry type="library" name="Maven: com.google.android.tools:dx:1.7" level="project" />
     <orderEntry type="library" name="Maven: org.jcuda:jcuda:0.9.0d" level="project" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcuda-natives:linux-x86_64:0.9.0d" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcuda-natives:windows-x86_64:0.9.0d" level="project" />
     <orderEntry type="library" name="Maven: org.jcuda:jcufft:0.9.0d" level="project" />
-    <orderEntry type="library" name="Maven: org.jcuda:jcufft-natives:linux-x86_64:0.9.0d" level="project" />
+    <orderEntry type="library" name="Maven: org.jcuda:jcufft-natives:windows-x86_64:0.9.0d" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20100113" level="project" />
     <orderEntry type="library" name="Maven: ome:formats-gpl:5.1.7" level="project" />
     <orderEntry type="library" name="Maven: ome:formats-api:5.1.7" level="project" />
@@ -58,5 +56,16 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.4" level="project" />
+    <orderEntry type="library" name="Maven: io.scif:scifio:0.24.0" level="project" />
+    <orderEntry type="library" name="Maven: io.scif:scifio-jai-imageio:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.15.0" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2-roi:0.3.0" level="project" />
+    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2:2.2.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:scijava-common:2.42.0" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.gentyref:gentyref:1.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.bushe:eventbus:1.4" level="project" />
+    <orderEntry type="library" name="Maven: org.mapdb:mapdb:1.0.3" level="project" />
   </component>
 </module>

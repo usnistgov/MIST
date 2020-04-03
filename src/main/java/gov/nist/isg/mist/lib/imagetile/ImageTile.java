@@ -191,8 +191,10 @@ public abstract class ImageTile<T> implements Comparable<ImageTile<?>> {
    * @return the release count based on how many neighbors the tile has
    */
   public int getReleaseCount(int gridWidth, int gridHeight, int startRow, int startCol) {
-    return 2 + (this.colIdx - startCol < gridWidth - 1 && this.colIdx > startCol ? 1 : 0)
-        + (this.rowIdx - startRow < gridHeight - 1 && this.rowIdx > startRow ? 1 : 0);
+    return (this.rowIdx == startRow ? 0 : 1) + // check on top boundary
+            (this.colIdx == startCol ? 0 : 1) + // check on left boundary
+            (this.rowIdx == gridHeight-1 ? 0 : 1) + // check on bottom boundary
+            (this.colIdx == gridWidth-1 ? 0 : 1); // check on right boundary
   }
 
   /**

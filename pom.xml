@@ -59,7 +59,25 @@
         <!--<outputDirectory>${project.build.directory}/maven-results/</outputDirectory>-->
     </build>
 
-
+    <repositories>
+        <repository>
+            <id>scijava.public</id>
+            <url>https://maven.scijava.org/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>mist.in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${project.basedir}/java_libs</url>
+        </repository>
+        <repository>
+            <id>ome.snapshots</id>
+            <url>http://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -112,24 +130,14 @@
             <artifactId>commons-cli</artifactId>
             <version>1.4</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.scif</groupId>
+            <artifactId>scifio</artifactId>
+            <version>0.24.0</version>
+        </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>imagej.public</id>
-            <url>http://maven.imagej.net/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>mist.in-project</id>
-            <name>In Project Repo</name>
-            <url>file://${project.basedir}/java_libs</url>
-        </repository>
-        <repository>
-            <id>ome.snapshots</id>
-            <url>http://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
-        </repository>
-    </repositories>
+
 
 
 </project>
