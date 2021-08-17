@@ -880,7 +880,6 @@ public class StitchingExecutor implements Runnable {
                 return;
 
             try {
-                // TODO: Resolve this
                 imageExporter = new LargeImageExporter<T>(grid, tileSize, initImg.getImagePlus().getType(), 0, 0,
                         width, height, params.getOutputParams().getBlendingMode(), params.getOutputParams().getPerPixelUnit(),
                         params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progress);

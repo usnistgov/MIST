@@ -34,51 +34,20 @@ import java.nio.*;
  * @author Tim Blattner
  * @version 1.0
  */
-public class TileAverageBlend implements TileBlender {
-
-  private ImageProcessor ip;
-  private ByteBuffer buffer;
+public class TileAverageBlend extends TileBlender {
 
   private double[][][] sums;
   private int[][][] counts;
-  private int numChannels;
-  private int bytesPerPixel;
-  private int imageType;
 
   public TileAverageBlend(int bytesPerPixel, int imageType) {
-    this.bytesPerPixel = bytesPerPixel;
-    this.imageType = imageType;
+    super(bytesPerPixel, imageType);
   }
 
   @Override
-  public void init(int tileSizeX, int tileSizeY)
+  public void initBlender(int tileSizeX, int tileSizeY)
   {
-    this.buffer = ByteBuffer.allocate(tileSizeY * tileSizeX * this.bytesPerPixel);
-    this.buffer.order(ByteOrder.BIG_ENDIAN);
-
-    switch(imageType){
-      case ImagePlus.GRAY8:
-        this.ip = new ByteProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY16:
-        this.ip = new ShortProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY32:
-        this.ip = new FloatProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.COLOR_RGB:
-        this.ip = new ColorProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 4;
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-
-    this.sums = new double[tileSizeY][tileSizeX][this.numChannels];
-    this.counts = new int[tileSizeY][tileSizeX][this.numChannels];
+    this.sums = new double[tileSizeY][tileSizeX][this.getNumChannels()];
+    this.counts = new int[tileSizeY][tileSizeX][this.getNumChannels()];
   }
 
   @Override
@@ -92,7 +61,7 @@ public class TileAverageBlend implements TileBlender {
 
         int[] pixelChannels = imgPlus.getPixel(col, row);
 
-        for (int channel = 0; channel < this.numChannels; channel++) {
+        for (int channel = 0; channel < this.getNumChannels(); channel++) {
           this.sums[y + tileY][x + tileX][channel] += pixelChannels[channel];
           this.counts[y + tileY][x + tileX][channel] += 1;
         }
@@ -104,52 +73,27 @@ public class TileAverageBlend implements TileBlender {
 
 
   @Override
-  public void postProcess(int tileX, int tileY, int tileXSize, int tileYSize, OMETiffWriter omeTiffWriter) throws IOException, FormatException {
+  public void finalizeBlend() {
 
-    for (int row = 0; row < this.ip.getHeight(); row++) {
-      for (int col = 0; col < this.ip.getWidth(); col++) {
+    for (int row = 0; row < this.getIp().getHeight(); row++) {
+      for (int col = 0; col < this.getIp().getWidth(); col++) {
 
         int val = 0;
-        for (int channel = 0; channel < this.numChannels; channel++) {
+        for (int channel = 0; channel < this.getNumChannels(); channel++) {
           double avgVal = 0.0;
           if (this.counts[row][col][channel] != 0) {
             avgVal = this.sums[row][col][channel] / this.counts[row][col][channel];
           }
 
-          if (this.numChannels > 1) {
-            val = val | ((int) avgVal & 0xFF) << ((this.numChannels - 1 - channel) * 8);
+          if (this.getNumChannels() > 1) {
+            val = val | ((int) avgVal & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8);
           } else {
             val = (int) avgVal;
           }
         }
-
-        this.ip.set(col, row, val);
+        this.getIp().set(col, row, val);
       }
     }
-
-    Object pixels = this.ip.getPixels();
-
-    switch (imageType) {
-      case ImagePlus.GRAY8:
-        this.buffer.put((byte[]) pixels);
-        break;
-      case ImagePlus.GRAY16:
-        ShortBuffer shortBuffer = this.buffer.asShortBuffer();
-        shortBuffer.put((short[]) pixels);
-        break;
-      case ImagePlus.GRAY32:
-        FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-        floatBuffer.put((float[]) pixels);
-        break;
-      case ImagePlus.COLOR_RGB:
-        IntBuffer intBuffer = this.buffer.asIntBuffer();
-        intBuffer.put((int[]) pixels);
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-
-    omeTiffWriter.saveBytes(0, this.buffer.array(), tileX, tileY, tileXSize, tileYSize);
   }
 
 }

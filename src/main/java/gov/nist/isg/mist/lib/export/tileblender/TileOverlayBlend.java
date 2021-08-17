@@ -38,48 +38,15 @@ import java.util.Arrays;
  * @version 1.0
  */
 
-public class TileOverlayBlend implements TileBlender {
-
-  private ImageProcessor ip;
-  private int bytesPerPixel;
-  private int imageType;
-  private ByteBuffer buffer;
-  private int numChannels;
-
+public class TileOverlayBlend extends TileBlender {
 
 
   public TileOverlayBlend(int bytesPerPixel, int imageType) {
-    this.bytesPerPixel = bytesPerPixel;
-    this.imageType = imageType;
+    super(bytesPerPixel, imageType);
   }
 
   @Override
-  public void init(int tileSizeX, int tileSizeY) {
-    // Reset buffer to zero
-    this.buffer = ByteBuffer.allocate(tileSizeY * tileSizeX * this.bytesPerPixel);
-    this.buffer.order(ByteOrder.BIG_ENDIAN);
-
-    switch(imageType){
-      case ImagePlus.GRAY8:
-        this.ip = new ByteProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY16:
-        this.ip = new ShortProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY32:
-        this.ip = new FloatProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.COLOR_RGB:
-        this.ip = new ColorProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 4;
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-  }
+  public void initBlender(int tileSizeX, int tileSizeY) {  }
 
   @Override
   public void blend(int x, int y, Array2DView pixels, ImageTile<?> tile) {
@@ -93,13 +60,13 @@ public class TileOverlayBlend implements TileBlender {
         int[] pixelChannels = imgPlus.getPixel(col, row);
 
         int val = 0;
-        for (int channel = 0; channel < this.numChannels; channel++) {
-          if (this.numChannels > 1)
-            val = val | ((pixelChannels[channel] & 0xFF) << ((this.numChannels - 1 - channel) * 8));
+        for (int channel = 0; channel < this.getNumChannels(); channel++) {
+          if (this.getNumChannels() > 1)
+            val = val | ((pixelChannels[channel] & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8));
           else
             val = pixelChannels[channel];
         }
-        this.ip.set(tileX + x, tileY + y, val);
+        this.getIp().set(tileX + x, tileY + y, val);
         tileX++;
       }
       tileY++;
@@ -107,31 +74,6 @@ public class TileOverlayBlend implements TileBlender {
   }
 
   @Override
-  public void postProcess(int tileX, int tileY, int tileXSize, int tileYSize, OMETiffWriter omeTiffWriter) throws IOException, FormatException {
-    // Save to image
-    Object pixels = this.ip.getPixels();
-
-    switch(imageType){
-      case ImagePlus.GRAY8:
-        this.buffer.put((byte[])pixels);
-        break;
-      case ImagePlus.GRAY16:
-        ShortBuffer shortBuffer = this.buffer.asShortBuffer();
-        shortBuffer.put((short[])pixels);
-        break;
-      case ImagePlus.GRAY32:
-        FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-        floatBuffer.put((float[])pixels);
-        break;
-      case ImagePlus.COLOR_RGB:
-        IntBuffer intBuffer = this.buffer.asIntBuffer();
-        intBuffer.put((int[])pixels);
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-
-    omeTiffWriter.saveBytes(0, this.buffer.array(), tileX, tileY, tileXSize, tileYSize);
-  }
+  public void finalizeBlend(){  }
 
 }

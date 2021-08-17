@@ -215,17 +215,16 @@ public class LargeImageExporter<T> {
         numBytesPerChannel = 2;
         pixelType = PixelType.UINT16;
         break;
-      case ImagePlus.GRAY32:
-        numBytesPerChannel = 4;
-        pixelType = PixelType.FLOAT;
-        break;
       case ImagePlus.COLOR_RGB:
         numChannels = 4;
         numBytesPerChannel = 4;
         pixelType = PixelType.UINT8;
         break;
+      case ImagePlus.GRAY32:
       default:
-        // TODO: Error or set a default?
+        numBytesPerChannel = 4;
+        pixelType = PixelType.FLOAT;
+        break;
     }
 
     // for each image tile get the region ...

@@ -34,20 +34,12 @@ import java.nio.*;
  * @author Tim Blattner
  * @version 1.0
  */
-public class TileLinearBlend implements TileBlender {
+public class TileLinearBlend extends TileBlender {
 
   private static final double DEFAULT_ALPHA = 1.5;
-
-  private ImageProcessor ip;
-  private int bytesPerPixel;
-  private int imageType;
-  private ByteBuffer buffer;
-
   private double[][][] pixelSums;
   private double[][][] weightSums;
   private double[][] lookupTable;
-
-  private int numChannels;
 
   /**
    * Initializes the linear blend
@@ -57,8 +49,7 @@ public class TileLinearBlend implements TileBlender {
    * @param alpha         the alpha component of the linear blend
    */
   public TileLinearBlend(int bytesPerPixel, int imageType, int initImgWidth, int initImgHeight, double alpha) {
-    this.bytesPerPixel = bytesPerPixel;
-    this.imageType = imageType;
+    super(bytesPerPixel, imageType);
 
     if (Double.isNaN(alpha))
       alpha = DEFAULT_ALPHA;
@@ -86,34 +77,9 @@ public class TileLinearBlend implements TileBlender {
   }
 
   @Override
-  public void init(int tileSizeX, int tileSizeY) {
-    // Reset buffer to zero
-    this.buffer = ByteBuffer.allocate(tileSizeY * tileSizeX * this.bytesPerPixel);
-    this.buffer.order(ByteOrder.BIG_ENDIAN);
-
-    switch(imageType){
-      case ImagePlus.GRAY8:
-        this.ip = new ByteProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY16:
-        this.ip = new ShortProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.GRAY32:
-        this.ip = new FloatProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 1;
-        break;
-      case ImagePlus.COLOR_RGB:
-        this.ip = new ColorProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 4;
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-
-    this.pixelSums = new double[tileSizeY][tileSizeX][this.numChannels];
-    this.weightSums = new double[tileSizeY][tileSizeX][this.numChannels];
+  public void initBlender(int tileSizeX, int tileSizeY) {
+    this.pixelSums = new double[tileSizeY][tileSizeX][this.getNumChannels()];
+    this.weightSums = new double[tileSizeY][tileSizeX][this.getNumChannels()];
   }
 
   @Override
@@ -128,7 +94,7 @@ public class TileLinearBlend implements TileBlender {
         int[] pixelChannels = imgPlus.getPixel(col, row);
         double weight = this.lookupTable[row][col];
 
-        for (int channel = 0; channel < this.numChannels; channel++) {
+        for (int channel = 0; channel < this.getNumChannels(); channel++) {
             this.pixelSums[y + tileY][x + tileX][channel] += (weight * pixelChannels[channel]);
             this.weightSums[y + tileY][x + tileX][channel] += weight;
         }
@@ -139,53 +105,26 @@ public class TileLinearBlend implements TileBlender {
   }
 
   @Override
-  public void postProcess(int tileX, int tileY, int tileXSize, int tileYSize, OMETiffWriter omeTiffWriter) throws IOException, FormatException
+  public void finalizeBlend()
   {
-    for (int row = 0; row < this.ip.getHeight(); row++) {
-      for (int col = 0; col < this.ip.getWidth(); col++) {
+    for (int row = 0; row < this.getIp().getHeight(); row++) {
+      for (int col = 0; col < this.getIp().getWidth(); col++) {
         int val = 0;
-        for (int channel = 0; channel < this.numChannels; channel++) {
+        for (int channel = 0; channel < this.getNumChannels(); channel++) {
           double weightedVal = 0.0;
           if (this.weightSums[row][col][channel] != 0) {
             weightedVal = this.pixelSums[row][col][channel] / this.weightSums[row][col][channel];
           }
 
-
-          if (this.numChannels > 1) {
-            val = val | ((int) weightedVal & 0xFF) << ((this.numChannels - 1 - channel) * 8);
+          if (this.getNumChannels() > 1) {
+            val = val | ((int) weightedVal & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8);
           } else {
             val = (int) weightedVal;
           }
         }
-        this.ip.set(col, row, val);
+        this.getIp().set(col, row, val);
       }
     }
-
-
-    Object pixels = this.ip.getPixels();
-
-    switch (imageType) {
-      case ImagePlus.GRAY8:
-        this.buffer.put((byte[]) pixels);
-        break;
-      case ImagePlus.GRAY16:
-        ShortBuffer shortBuffer = this.buffer.asShortBuffer();
-        shortBuffer.put((short[]) pixels);
-        break;
-      case ImagePlus.GRAY32:
-        FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-        floatBuffer.put((float[]) pixels);
-        break;
-      case ImagePlus.COLOR_RGB:
-        IntBuffer intBuffer = this.buffer.asIntBuffer();
-        intBuffer.put((int[]) pixels);
-        break;
-      default:
-        // TODO: Error or set a default?
-    }
-
-    omeTiffWriter.saveBytes(0, this.buffer.array(), tileX, tileY, tileXSize, tileYSize);
-
   }
 
 }
