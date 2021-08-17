@@ -22,6 +22,7 @@ import gov.nist.isg.mist.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.lib.log.Debug.DebugType;
@@ -256,6 +257,27 @@ public class MacroUtils {
 
     if (type == null) {
       Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid BlendingMode");
+    }
+
+    return type;
+  }
+
+
+  /**
+   * Loads a macro microscopy unit enum
+   *
+   * @param options the macro options
+   * @param key     the key value
+   * @param def     the default value
+   * @return the loaded blending mode enum
+   */
+  public static MicroscopyUnits loadMacroMicroscopyUnits(String options, String key, String def) {
+    String res = Macro.getValue(options, key.toLowerCase(), def);
+
+    MicroscopyUnits type = MicroscopyUnits.valueOf(res.toUpperCase());
+
+    if (type == null) {
+      Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid MicroscopyUnits");
     }
 
     return type;

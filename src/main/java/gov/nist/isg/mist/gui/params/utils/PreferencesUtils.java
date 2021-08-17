@@ -23,6 +23,7 @@ import gov.nist.isg.mist.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.lib.imagetile.fftw.FftwPlanType;
 import gov.nist.isg.mist.lib.log.Debug.DebugType;
@@ -183,6 +184,17 @@ public class PreferencesUtils {
     }
 
     return type;
+  }
+
+  public static MicroscopyUnits loadPrefMicroscopyUnitsType(Preferences pref, String key, String def) {
+    String res = pref.get(key, def);
+
+    MicroscopyUnits unit = MicroscopyUnits.valueOf(res.toUpperCase());
+    if (unit == null) {
+      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid MicroscopyUnit");
+    }
+
+    return unit;
   }
 
   /**

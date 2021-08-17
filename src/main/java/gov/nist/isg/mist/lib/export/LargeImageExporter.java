@@ -18,18 +18,26 @@
 
 package gov.nist.isg.mist.lib.export;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JProgressBar;
 
 import gov.nist.isg.mist.gui.StitchingGuiUtils;
 import gov.nist.isg.mist.lib.common.Array2DView;
-import gov.nist.isg.mist.lib.export.blend.Blender;
+import gov.nist.isg.mist.lib.export.tileblender.TileAverageBlend;
+import gov.nist.isg.mist.lib.export.tileblender.TileBlender;
+import gov.nist.isg.mist.lib.export.tileblender.TileLinearBlend;
+import gov.nist.isg.mist.lib.export.tileblender.TileOverlayBlend;
 import gov.nist.isg.mist.lib.imagetile.ImageTile;
 import gov.nist.isg.mist.lib.log.Log;
 import gov.nist.isg.mist.lib.log.Log.LogType;
@@ -40,6 +48,19 @@ import gov.nist.isg.mist.lib.tilegrid.traverser.TileGridTraverserFactory;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import loci.common.services.DependencyException;
+import loci.common.services.ServiceException;
+import loci.common.services.ServiceFactory;
+import loci.formats.FormatException;
+import loci.formats.meta.IMetadata;
+import loci.formats.out.OMETiffWriter;
+import loci.formats.services.OMEXMLService;
+import ome.units.UNITS;
+import ome.units.quantity.Length;
+import ome.units.unit.Unit;
+import ome.xml.model.enums.DimensionOrder;
+import ome.xml.model.enums.PixelType;
+import ome.xml.model.primitives.PositiveInteger;
 
 /**
  * Class for exporting large images using a blending mode
@@ -107,58 +128,114 @@ public class LargeImageExporter<T> {
 
   }
 
-  private Blender blender;
+  private BlendingMode blendingMode;
+  private MicroscopyUnits unit;
+  private double unitX;
+  private double unitY;
+
   private TileGrid<ImageTile<T>> grid;
+  private int tileDim;
   private int startX;
   private int startY;
   private int endX;
   private int endY;
+  private int imageWidth;
+  private int imageHeight;
   private JProgressBar progressBar;
   private volatile boolean isCancelled;
+
+  private int imageType;
+  private double alpha;
 
   /**
    * Creates a large image exporter with a specific blending function
    *
    * @param grid        the grid of images
+   * @param tileDim    the dimensions of the tiles
+   * @param imageType   the type of image
    * @param startX      the start x position
    * @param startY      the start y position
    * @param width       the width of the final image
    * @param height      the height of the final image
-   * @param blender     the blending function
+   * @param blendingMode     the blending mode
    * @param progressBar the progress bar
+   * @param unit the microscopy unit to save in metadata
+   * @param unitX the x size based around unit
+   * @param unitY the x size based around unit
+   * @param alpha the alpha value for linear blend
    */
-  public LargeImageExporter(TileGrid<ImageTile<T>> grid, int startX, int startY, int width,
-                            int height, Blender blender, JProgressBar progressBar) {
+  public LargeImageExporter(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY, int width,
+                            int height, BlendingMode blendingMode, MicroscopyUnits unit, double unitX, double unitY, double alpha, JProgressBar progressBar) {
     this.grid = grid;
+    this.tileDim = tileDim;
+    this.imageType = imageType;
     this.startX = startX;
     this.startY = startY;
-    this.blender = blender;
+    this.blendingMode = blendingMode;
+    this.imageWidth = width;
+    this.imageHeight = height;
     this.endX = startX + width;
     this.endY = startY + height;
     this.progressBar = progressBar;
+    this.unit = unit;
+    this.unitX = unitX;
+    this.unitY = unitY;
+    this.alpha = alpha;
     this.isCancelled = false;
   }
 
-  /**
-   * Exports image to file, if the file is null, then it will return the image plus object without
-   * saving it to file
-   *
-   * @param file the file to export or null if save is not needed
-   * @return the image plus object that was created after the export
-   */
-  public ImagePlus exportImage(File file) throws FileNotFoundException {
+  private File doExport(File file, boolean withOverlap) {
+    String filePath = "temp.ome.tif";
+
+    if (file != null) {
+      filePath = file.getAbsolutePath();
+    }
+
+    File outputFile = new File(filePath);
+
+    if (outputFile.exists()) {
+      boolean deleted = outputFile.delete();
+      if (!deleted) {
+        Log.msg(LogType.INFO, "Failed to delete existing file: " + outputFile.getAbsolutePath());
+      }
+    }
+
+
+    int numChannels = 1;
+    int samplesPerChannel = 1;
+    int numBytesPerChannel = 1;
+    PixelType pixelType = null;
+
+    switch(this.imageType) {
+      case ImagePlus.GRAY8:
+        numBytesPerChannel = 1;
+        pixelType = PixelType.UINT8;
+        break;
+      case ImagePlus.GRAY16:
+        numBytesPerChannel = 2;
+        pixelType = PixelType.UINT16;
+        break;
+      case ImagePlus.GRAY32:
+        numBytesPerChannel = 4;
+        pixelType = PixelType.FLOAT;
+        break;
+      case ImagePlus.COLOR_RGB:
+        numChannels = 4;
+        numBytesPerChannel = 4;
+        pixelType = PixelType.UINT8;
+        break;
+      default:
+        // TODO: Error or set a default?
+    }
+
     // for each image tile get the region ...
     TileGridTraverser<ImageTile<T>> traverser =
-        TileGridTraverserFactory.makeTraverser(Traversals.ROW, this.grid);
-
-    StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Blending tiles...", 0,
-        this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0, false);
+            TileGridTraverserFactory.makeTraverser(Traversals.ROW, this.grid);
 
     List<ImageTile<T>> sortedTileList = new ArrayList<ImageTile<T>>();
     for (ImageTile<T> tile : traverser) {
       sortedTileList.add(tile);
     }
-
     // Sorts tiles  from smallest correlation tile to largest correlation tile
     // This enables painting the highest correlation tiles last.
     Collections.sort(sortedTileList, new Comparator<ImageTile<T>>() {
@@ -170,73 +247,213 @@ public class LargeImageExporter<T> {
 
     });
 
-    for (ImageTile<T> tile : sortedTileList) {
+    TileBlender tileBlender = null;
 
-      if (this.isCancelled)
-        return null;
-
-      if (tile.getWidth() == 0 || tile.getHeight() == 0)
+    switch(this.blendingMode)
+    {
+      case OVERLAY:
+        tileBlender = new TileOverlayBlend(numBytesPerChannel, this.imageType);
+        break;
+      case AVERAGE:
+        tileBlender = new TileAverageBlend(numBytesPerChannel, this.imageType);
+        break;
+      case LINEAR:
+        ImageTile<T> tile = sortedTileList.get(0);
         tile.readTile();
-
-      int absX = tile.getAbsXPos();
-      int absY = tile.getAbsYPos();
-      int absEndX = absX + tile.getWidth();
-      int absEndY = absY + tile.getHeight();
-
-      // Determine tile start and end positions within the selected
-      // region
-      int tileStartX = (absX >= this.startX) ? absX : this.startX;
-      int tileStartY = (absY >= this.startY) ? absY : this.startY;
-
-      int tileEndX = (absEndX <= this.endX) ? absEndX : this.endX;
-      int tileEndY = (absEndY <= this.endY) ? absEndY : this.endY;
-
-      int tileWidth = tileEndX - tileStartX;
-      int tileHeight = tileEndY - tileStartY;
-
-      if (tileWidth <= 0 || tileHeight <= 0) {
-        tile.releasePixelsNow();
-
-        StitchingGuiUtils.incrementProgressBar(this.progressBar);
-
-        continue;
-      }
-
-      // Translate the absolute coordinates back into tile coordinates
-      int tileX = tileStartX - absX;
-      int tileY = tileStartY - absY;
-
-      if (tileX < 0 || tileY < 0) {
-        tile.releasePixelsNow();
-
-        StitchingGuiUtils.incrementProgressBar(this.progressBar);
-
-        continue;
-      }
-
-      tile.readTile();
-      Array2DView arrayView = new Array2DView(tile, tileY, tileHeight, tileX, tileWidth);
-      this.blender.blend(tileStartX, tileStartY, arrayView, tile);
-
-      tile.releasePixelsNow();
-
-      StitchingGuiUtils.incrementProgressBar(this.progressBar);
+        tileBlender = new TileLinearBlend(numBytesPerChannel, this.imageType, tile.getWidth(), tile.getHeight(), this.alpha);
+        break;
     }
 
-    if (this.progressBar != null) {
-      if (file == null) {
-        StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Preparing image for Fiji",
-            null, 0, 0, 0, false);
 
-      } else {
-        StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Saving image to disk", null,
-            0, 0, 0, false);
+    // Compute number of tiles
+    int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
+    int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
+
+    StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Blending tiles...", 0,
+            numTilesRow * numTilesCol, 0, false);
+
+    ServiceFactory factory = null;
+    try {
+      factory = new ServiceFactory();
+      OMEXMLService service = factory.getInstance(OMEXMLService.class);
+      IMetadata omexml = service.createOMEXMLMetadata();
+
+      omexml.setImageID("Image:0", 0);
+      omexml.setPixelsID("Pixels:0", 0);
+
+      omexml.setPixelsBinDataBigEndian(Boolean.TRUE, 0, 0);
+
+      omexml.setPixelsDimensionOrder(DimensionOrder.XYCZT, 0);
+      omexml.setPixelsType(pixelType, 0);
+      omexml.setPixelsSizeX(new PositiveInteger(this.imageWidth), 0);
+      omexml.setPixelsSizeY(new PositiveInteger(this.imageHeight), 0);
+      omexml.setPixelsSizeZ(new PositiveInteger(1), 0);
+
+      omexml.setPixelsSizeC(new PositiveInteger(numChannels * samplesPerChannel), 0);
+      omexml.setPixelsSizeT(new PositiveInteger(1), 0);
+
+
+      for (int channel = 0; channel < numChannels; channel++) {
+        omexml.setChannelID("Channel:0:" + channel, 0,  channel);
+        omexml.setChannelSamplesPerPixel(new PositiveInteger(samplesPerChannel), 0, channel);
       }
+
+      Unit<Length> unit = this.unit.getUnit();
+
+      Length physicalSizeX = new Length(this.unitX, unit);
+      Length physicalSizeY = new Length(this.unitY, unit);
+      Length physicalSizeZ = new Length(1.0, unit);
+
+      omexml.setPixelsPhysicalSizeX(physicalSizeX, 0);
+      omexml.setPixelsPhysicalSizeY(physicalSizeY, 0);
+      omexml.setPixelsPhysicalSizeZ(physicalSizeZ, 0);
+
+      OMETiffWriter omeTiffWriter = new OMETiffWriter();
+      omeTiffWriter.setMetadataRetrieve(omexml);
+      omeTiffWriter.setInterleaved(false);
+      omeTiffWriter.setBigTiff(true);
+      omeTiffWriter.setCompression(OMETiffWriter.COMPRESSION_UNCOMPRESSED);
+
+
+      int actualTileSizeX = omeTiffWriter.setTileSizeX(this.tileDim);
+      int actualTileSizeY = omeTiffWriter.setTileSizeY(this.tileDim);
+
+      omeTiffWriter.setId(filePath);
+
+      // Loop over each tile to fill them in
+      for (int tileRow = 0; tileRow < numTilesRow; ++tileRow) {
+        int tileStartY = tileRow * actualTileSizeY;
+//        int tileEndY = Math.min(tileStartY + actualTileSizeY, this.imageHeight);
+
+        for (int tileCol = 0; tileCol < numTilesCol; ++tileCol) {
+          int tileStartX = tileCol * actualTileSizeX;
+//          int tileEndX = Math.min(tileStartX + actualTileSizeX, this.imageWidth);
+
+          int tileSizeX = actualTileSizeX;
+          int tileSizeY = actualTileSizeY;
+
+          if (tileStartX + tileSizeX > this.imageWidth) {
+            tileSizeX = this.imageWidth - tileStartX;
+          }
+
+          if (tileStartY + tileSizeY > this.imageHeight) {
+            tileSizeY = this.imageHeight - tileStartY;
+          }
+
+
+          tileBlender.init(tileSizeX, tileSizeY);
+
+          Rectangle2D tileRect = new Rectangle(tileStartX, tileStartY, tileSizeX, tileSizeY);
+
+          for (ImageTile<T> tile : sortedTileList) {
+            if (this.isCancelled)
+              return file;
+
+            int absX = tile.getCol() * tile.getWidth();
+            int absY = tile.getRow() * tile.getHeight();
+
+            if (withOverlap) {
+              absX = tile.getAbsXPos();
+              absY = tile.getAbsYPos();
+//              int absEndX = absX + tile.getWidth();
+//              int absEndY = absY + tile.getHeight();
+            }
+
+            if (tile.getWidth() == 0 || tile.getHeight() == 0)
+              tile.readTile();
+
+            Rectangle2D imageTileRect = new Rectangle(absX, absY, tile.getWidth(), tile.getHeight());
+
+            Rectangle2D intersect = tileRect.createIntersection(imageTileRect);
+
+            // Check if intersection has height and width, if it doesn't then check next tile
+            if (intersect.getHeight() <= 0 || intersect.getWidth() <=0) {
+              tile.releasePixels();
+              continue;
+            }
+
+            int absImageTileStartX = (int)intersect.getX();
+            int absImageTileStartY = (int)intersect.getY();
+            int copyWidth = (int)intersect.getWidth();
+            int copyHeight = (int)intersect.getHeight();
+
+            // Clip width to edge of image
+            if (absImageTileStartX + copyWidth > this.imageWidth) {
+              copyWidth = this.imageWidth - absImageTileStartX;
+            }
+
+            // Clip height to edge of image
+            if (absImageTileStartY + copyHeight > this.imageHeight) {
+              copyHeight = this.imageHeight - absImageTileStartY;
+            }
+
+            // Translate the absolute coordinates back into tile and view coordinates
+            int tileX = absImageTileStartX - tileStartX;
+            int tileY = absImageTileStartY - tileStartY;
+            int viewX = absImageTileStartX - absX;
+            int viewY = absImageTileStartY - absY;
+
+            if (tileX < 0 || tileY < 0 || viewX < 0 || viewY < 0) {
+              tile.releasePixels();
+              continue;
+            }
+
+            tile.readTile();
+            Array2DView arrayView = new Array2DView(tile, viewY, copyHeight, viewX, copyWidth);
+
+            tileBlender.blend(tileX, tileY, arrayView, tile);
+
+            tile.releasePixels();
+
+          }
+
+          int writeXSize = actualTileSizeX;
+          int writeYSize = actualTileSizeY;
+
+          if (tileStartX + actualTileSizeX > this.imageWidth) {
+            writeXSize = this.imageWidth - tileStartX;
+          }
+
+          if (tileStartY + actualTileSizeY > this.imageHeight) {
+            writeYSize = this.imageHeight - tileStartY;
+          }
+
+          tileBlender.postProcess(tileStartX, tileStartY, writeXSize, writeYSize, omeTiffWriter);
+          StitchingGuiUtils.incrementProgressBar(this.progressBar);
+        }
+
+
+      }
+
+      omeTiffWriter.close();
+
+
+    } catch (DependencyException e) {
+      e.printStackTrace();
+    } catch (ServiceException e) {
+      e.printStackTrace();
+    } catch (FormatException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
-    this.blender.postProcess();
+    return outputFile;
 
-    return saveFile(file);
+  }
+
+
+  /**
+   * Exports image to file, if the file is null, then it will return the image plus object without
+   * saving it to file
+   *
+   * @param file the file to export or null if save is not needed
+   * @return the image plus object that was created after the export
+   */
+  public File exportImage(File file) throws FileNotFoundException {
+    File exportedFile = this.doExport(file, true);
+
+    return exportedFile;
   }
 
   /**
@@ -246,73 +463,10 @@ public class LargeImageExporter<T> {
    * @param file the file to export or null if save is not needed
    * @return the image plus object that was created after the export
    */
-  public ImagePlus exportImageNoOverlap(File file) throws FileNotFoundException {
+  public File exportImageNoOverlap(File file) throws FileNotFoundException {
 
-    StitchingGuiUtils.updateProgressBar(this.progressBar, false, null,
-        "Blending tiles...", 0, this.grid.getExtentHeight() * this.grid.getExtentWidth(), 0,
-        false);
-
-    for (int row = 0; row < this.grid.getExtentHeight(); row++) {
-      for (int col = 0; col < this.grid.getExtentWidth(); col++) {
-
-        if (this.isCancelled)
-          return null;
-
-        ImageTile<T> tile = this.grid.getSubGridTile(row, col);
-        tile.readTile();
-
-        int absX = col * tile.getWidth();
-        int absY = row * tile.getHeight();
-
-        Array2DView arrayView = new Array2DView(tile, 0, tile.getHeight(), 0, tile.getWidth());
-        this.blender.blend(absX, absY, arrayView, tile);
-
-        tile.releasePixelsNow();
-
-        StitchingGuiUtils.incrementProgressBar(this.progressBar);
-      }
-    }
-
-
-    if (this.progressBar != null) {
-      if (file == null) {
-        StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Preparing image for Fiji",
-            null, 0, 0, 0, false);
-
-      } else {
-        StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Saving image to disk", null,
-            0, 0, 0, false);
-      }
-    }
-
-    this.blender.postProcess();
-
-    return saveFile(file);
-  }
-
-
-  /**
-   * Writes the file to disk, if file is null, then it will only return the ImagePlus object
-   * associated with the large image
-   *
-   * @param file the file to save or null if no save is needed
-   * @return the image plus object
-   */
-  public ImagePlus saveFile(File file) {
-    ImageProcessor ip = this.blender.getResult();
-    if (ip != null) {
-      if (file == null) {
-        Log.msg(LogType.MANDATORY, "Generating display image");
-        return new ImagePlus("", ip);
-      }
-
-      Log.msg(LogType.MANDATORY, "Saving tiles to file: " + file.getAbsolutePath());
-      ImagePlus img = new ImagePlus(file.getName(), ip);
-      IJ.saveAs(img, "tiff", file.getAbsolutePath());
-      return img;
-    }
-
-    return null;
+    File exportedFile = this.doExport(file, false);
+    return exportedFile;
   }
 
   public void cancel() {
@@ -324,19 +478,24 @@ public class LargeImageExporter<T> {
    * the export
    *
    * @param grid        the grid of images
+   * @param tileDim     the tile dimension
    * @param startX      the start X position
    * @param startY      the start Y position
    * @param width       the width of the large image
    * @param height      the height of the large image
-   * @param blender     the blending function
+   * @param blendingMode  the blending mode
+   * @param alpha       the alpha value for linear blend
+   * @param unit    the unit of measurement
+   * @param unitX  the x dim unit value
+   * @param unitY  the y dim unit value
    * @param file        the file or null if no save is needed
    * @param progressBar the progress bar
-   * @return the ImagePlus object associated with the export
+   * @return the File object associated with the export
    */
-  public static <T> ImagePlus exportImage(TileGrid<ImageTile<T>> grid, int startX, int startY,
-                                          int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException {
+  public static <T> File exportImage(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
+                                          int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, startX, startY, width, height, blender, progressBar);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, progressBar);
     return exporter.exportImage(file);
   }
 
@@ -349,13 +508,17 @@ public class LargeImageExporter<T> {
    * @param startY  the start Y position
    * @param width   the width of the large image
    * @param height  the height of the large image
-   * @param blender the blending function
+   * @param blendingMode the blending function
+   * @param alpha       the alpha value for linear blend
+   * @param unit    the unit of measurement
+   * @param unitX  the x dim unit value
+   * @param unitY  the y dim unit value
    * @param file    the file or null if no save is needed
    */
-  public static <T> void exportImage(TileGrid<ImageTile<T>> grid, int startX, int startY,
-                                     int width, int height, Blender blender, File file) throws FileNotFoundException {
+  public static <T> void exportImage(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
+                                     int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY,File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, startX, startY, width, height, blender, null);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, null);
     exporter.exportImage(file);
 
   }
@@ -370,15 +533,19 @@ public class LargeImageExporter<T> {
    * @param startY      the start Y position
    * @param width       the width of the large image
    * @param height      the height of the large image
-   * @param blender     the blending function
+   * @param blendingMode     the blending mode
+   * @param alpha       the alpha value for linear blend
+   * @param unit    the unit of measurement
+   * @param unitX  the x dim unit value
+   * @param unitY  the y dim unit value
    * @param file        the file or null if no save is needed
    * @param progressBar the progress bar
-   * @return the ImagePlus object associated with the export
+   * @return the File object associated with the export
    */
-  public static <T> ImagePlus exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int startX,
-                                                   int startY, int width, int height, Blender blender, File file, JProgressBar progressBar) throws FileNotFoundException {
+  public static <T> File exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX,
+                                                   int startY, int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, startX, startY, width, height, blender, progressBar);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, progressBar);
     return exporter.exportImageNoOverlap(file);
   }
 
@@ -391,13 +558,17 @@ public class LargeImageExporter<T> {
    * @param startY  the start Y position
    * @param width   the width of the large image
    * @param height  the height of the large image
-   * @param blender the blending function
+   * @param blendingMode the blending mode
+   * @param alpha   the alpha value for linear blend
+   * @param unit    the unit of measurement
+   * @param unitX  the x dim unit value
+   * @param unitY  the y dim unit value
    * @param file    the file or null if no save is needed
    */
-  public static <T> void exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int startX, int startY,
-                                              int width, int height, Blender blender, File file) throws FileNotFoundException {
+  public static <T> void exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
+                                              int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, startX, startY, width, height, blender, null);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha,null);
     exporter.exportImageNoOverlap(file);
 
   }

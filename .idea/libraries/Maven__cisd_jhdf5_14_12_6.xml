@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: cisd:jhdf5:14.12.6">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/cisd/jhdf5/14.12.6/jhdf5-14.12.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/cisd/jhdf5/14.12.6/jhdf5-14.12.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/cisd/jhdf5/14.12.6/jhdf5-14.12.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

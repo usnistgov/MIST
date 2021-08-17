@@ -30,6 +30,7 @@ import gov.nist.isg.mist.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.gui.params.utils.PreferencesUtils;
 import gov.nist.isg.mist.gui.params.utils.StitchingParamUtils;
 import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.log.Log;
 import gov.nist.isg.mist.lib.log.Log.LogType;
 
@@ -48,6 +49,10 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String OUT_FILE_PREFIX = "outFilePrefix";
   private static final String BLENDING_MODE = "blendingMode";
   private static final String BLENDING_ALPHA = "blendingAlpha";
+
+  private static final String UNIT = "unit";
+  private static final String UNIT_X = "unitX";
+  private static final String UNIT_Y = "unitY";
 
 
 
@@ -69,6 +74,10 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private BlendingMode blendingMode;
   private double blendingAlpha;
 
+  private MicroscopyUnits perPixelUnit;
+  private double perPixelX;
+  private double perPixelY;
+
 
   public OutputParameters() {
     this.outputPath = System.getProperty("user.home");
@@ -79,6 +88,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.outFilePrefix = "img-";
     this.blendingMode = BlendingMode.OVERLAY;
     this.blendingAlpha = Double.NaN;
+    this.perPixelUnit = MicroscopyUnits.MICROMETER;
+    this.perPixelX = 1.0;
+    this.perPixelY = 1.0;
   }
 
 
@@ -91,7 +103,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
   public String getOutputImageName(int timeSlice, int maxTimeSlice) {
     int padLength = String.format("%d", maxTimeSlice).length();
     String fmt = "%0" + padLength + "d";
-    return this.outFilePrefix + fullImgFilename + "-" + String.format(fmt, timeSlice) + ".tif";
+    return this.outFilePrefix + fullImgFilename + "-" + String.format(fmt, timeSlice) + ".ome.tif";
   }
 
   /**
@@ -286,6 +298,12 @@ public class OutputParameters implements StitchingAppParamFunctions {
       this.blendingAlpha = StitchingParamUtils.loadDouble(value, this.blendingAlpha);
     else if (key.equals(OUT_FILE_PREFIX))
       this.outFilePrefix = value;
+    else if (key.equals(UNIT))
+      this.perPixelUnit = MicroscopyUnits.valueOf(value.toUpperCase());
+    else if (key.equals(UNIT_X))
+      this.perPixelX = StitchingParamUtils.loadDouble(value, this.perPixelX);
+    else if (key.equals(UNIT_Y))
+      this.perPixelY = StitchingParamUtils.loadDouble(value, this.perPixelY);
   }
 
 
@@ -301,6 +319,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.blendingAlpha = pref.getDouble(BLENDING_ALPHA, this.blendingAlpha);
     this.outFilePrefix = pref.get(OUT_FILE_PREFIX, this.outFilePrefix);
 
+    this.perPixelUnit = PreferencesUtils.loadPrefMicroscopyUnitsType(pref, UNIT, this.perPixelUnit.name());
+    this.perPixelX = pref.getDouble(UNIT_X, this.perPixelX);
+    this.perPixelY = pref.getDouble(UNIT_Y, this.perPixelY);
 
     return true;
   }
@@ -316,6 +337,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, BLENDING_MODE + ": " + this.blendingMode);
     Log.msg(logLevel, BLENDING_ALPHA + ": " + this.blendingAlpha);
     Log.msg(logLevel, OUT_FILE_PREFIX + ": " + this.outFilePrefix);
+    Log.msg(logLevel, UNIT + ": " + this.perPixelUnit);
+    Log.msg(logLevel, UNIT_X + ": " + this.perPixelX);
+    Log.msg(logLevel, UNIT_Y + ": " + this.perPixelY);
   }
 
 
@@ -329,6 +353,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.blendingMode = MacroUtils.loadMacroBlendingModeType(macroOptions, BLENDING_MODE, this.blendingMode.name());
     this.blendingAlpha = MacroUtils.loadMacroDouble(macroOptions, BLENDING_ALPHA, this.blendingAlpha);
     this.outFilePrefix = MacroUtils.loadMacroString(macroOptions, OUT_FILE_PREFIX, this.outFilePrefix);
+    this.perPixelUnit = MacroUtils.loadMacroMicroscopyUnits(macroOptions, UNIT, this.perPixelUnit.name());
+    this.perPixelX = MacroUtils.loadMacroDouble(macroOptions, UNIT_X, this.perPixelX);
+    this.perPixelY = MacroUtils.loadMacroDouble(macroOptions, UNIT_Y, this.perPixelY);
   }
 
 
@@ -342,6 +369,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordString(BLENDING_MODE + ": ", this.blendingMode.name());
     MacroUtils.recordDouble(BLENDING_ALPHA + ": ", this.blendingAlpha);
     MacroUtils.recordString(OUT_FILE_PREFIX + ": ", this.outFilePrefix);
+    MacroUtils.recordString(UNIT + ": ", this.perPixelUnit.name());
+    MacroUtils.recordDouble(UNIT_X + ": ", this.perPixelX);
+    MacroUtils.recordDouble(UNIT_Y + ": ", this.perPixelY);
   }
 
 
@@ -355,6 +385,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
     pref.put(BLENDING_MODE, this.blendingMode.name());
     pref.putDouble(BLENDING_ALPHA, this.blendingAlpha);
     pref.put(OUT_FILE_PREFIX, this.outFilePrefix);
+    pref.put(UNIT, this.perPixelUnit.name());
+    pref.putDouble(UNIT_X, this.perPixelX);
+    pref.putDouble(UNIT_Y, this.perPixelY);
   }
 
 
@@ -371,6 +404,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
       fw.write(BLENDING_MODE + ": " + this.blendingMode.name() + newLine);
       fw.write(BLENDING_ALPHA + ": " + this.blendingAlpha + newLine);
       fw.write(OUT_FILE_PREFIX + ": " + this.outFilePrefix + newLine);
+      fw.write(UNIT + ": " + this.perPixelUnit.name() + newLine);
+      fw.write(UNIT_X + ": " + this.perPixelX + newLine);
+      fw.write(UNIT_Y + ": " + this.perPixelY + newLine);
 
       return true;
 
@@ -508,6 +544,53 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.blendingAlpha = blendingAlpha;
   }
 
+  /**
+   * Gets the per pixel unit
+   * @return
+   */
+  public MicroscopyUnits getPerPixelUnit() {
+    return perPixelUnit;
+  }
+
+  /**
+   * Gets the per pixel x value
+   * @return
+   */
+  public double getPerPixelX() {
+    return perPixelX;
+  }
+
+  /**
+   * Gets the per pixel y value
+   * @return
+   */
+  public double getPerPixelY() {
+    return perPixelY;
+  }
+
+  /**
+   * Sets the per pixel unit
+   * @param perPixelUnit
+   */
+  public void setPerPixelUnit(MicroscopyUnits perPixelUnit) {
+    this.perPixelUnit = perPixelUnit;
+  }
+
+  /**
+   * Sets the per pixel x value
+   * @param perPixelX
+   */
+  public void setPerPixelX(double perPixelX) {
+    this.perPixelX = perPixelX;
+  }
+
+  /**
+   * Sets the per pixel y value
+   * @param perPixelY
+   */
+  public void setPerPixelY(double perPixelY) {
+    this.perPixelY = perPixelY;
+  }
 
   /**
    * Builds the list of output parameter names
@@ -524,6 +607,9 @@ public class OutputParameters implements StitchingAppParamFunctions {
   	parameterNames.add(OUT_FILE_PREFIX);
   	parameterNames.add(BLENDING_MODE);
   	parameterNames.add(BLENDING_ALPHA);
+  	parameterNames.add(UNIT);
+  	parameterNames.add(UNIT_X);
+  	parameterNames.add(UNIT_Y);
     return parameterNames;
   }
 

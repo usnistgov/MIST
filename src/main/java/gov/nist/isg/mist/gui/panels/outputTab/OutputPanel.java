@@ -28,12 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
@@ -49,6 +44,11 @@ import gov.nist.isg.mist.gui.panels.subgrid.SubgridPanel;
 import gov.nist.isg.mist.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.MicroscopyUnits;
+import ome.units.UNITS;
+import ome.units.quantity.Length;
+import ome.units.unit.Unit;
+
 
 /**
  * Creates the output panel
@@ -59,6 +59,9 @@ import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
 public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentListener, ActionListener {
 
   private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
+  private static final String openInfoText = "<html>Please enable SCIFIO to open saved images.<br>" +
+          "To Enable: Edit->Options->ImageJ2...<br>Select 'Use SCIFIO when opening files (BETA!)'<br><br>" +
+          "Images are saved as 'ome.tif'.<br>Update metadata using external tools as needed.</html>";
 
   private static final String filenamePrefixHelpText = "The prefix prepended to each file saved in "
       + "the output directory. \n\nMIST will query for confirmation before overwriting any files.";
@@ -77,10 +80,18 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
   private JComboBox blendingType = new JComboBox(BlendingMode.values());
   private TextFieldInputPanel<Double> blendingAlpha;
 
+
+  private JComboBox unit = new JComboBox(MicroscopyUnits.values());
+  private TextFieldInputPanel<Double> xSize;
+  private TextFieldInputPanel<Double> ySize;
+
+
   private JTextField imageDirectory;
 
   private JLabel estimatedFileSizeLabel;
   private JButton updateBtn;
+  private JLabel openSavedInfo;
+
 
   private InputPanel inputPanel;
   private SubgridPanel subGridPanel;
@@ -142,6 +153,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.displayStitching.setSelected(true);
     this.outputFullImage.setSelected(false);
 
+    this.openSavedInfo = new JLabel(openInfoText);
 
     JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
@@ -188,6 +200,17 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     outputFolderPanel.add(this.filePrefixName, c);
 
 
+    // setup meta data panel
+    JPanel metaDataPanel = new JPanel();
+    this.xSize = new TextFieldInputPanel<Double>("x", "1", 4, new DblModel(false));
+    this.ySize = new TextFieldInputPanel<Double>("y", "1", 4, new DblModel(false));
+//    this.unit.setSelectedItem(MicroscopyUnits.MICROMETER);
+    metaDataPanel.add(new JLabel("Pixel Size Metadata:"));
+    metaDataPanel.add(unit);
+    metaDataPanel.add(this.xSize);
+    metaDataPanel.add(this.ySize);
+
+
     // setup the estimated stitched image size panel
     JPanel estimatedFileSizePanel = new JPanel();
     this.updateBtn = new JButton("Update");
@@ -195,6 +218,9 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
     estimatedFileSizePanel.add(this.estimatedFileSizeLabel);
     estimatedFileSizePanel.add(this.updateBtn);
+
+    JPanel exportInfoPanel = new JPanel();
+    exportInfoPanel.add(this.openSavedInfo);
 
 
     // setup the Stitched Image Panel
@@ -209,7 +235,11 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     c.gridy = 1;
     stitchedImagePanel.add(checkBoxPanel, c);
     c.gridy = 2;
+    stitchedImagePanel.add(metaDataPanel, c);
+    c.gridy = 3;
     stitchedImagePanel.add(estimatedFileSizePanel, c);
+    c.gridy = 4;
+    stitchedImagePanel.add(exportInfoPanel, c);
 
 
     JButton qButton = new JButton("Help?");
@@ -373,6 +403,10 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.blendingType.setSelectedItem(params.getOutputParams().getBlendingMode());
     this.blendingAlpha.setValue(params.getOutputParams().getBlendingAlpha());
 
+    this.unit.setSelectedItem(params.getOutputParams().getPerPixelUnit());
+    this.xSize.setValue(params.getOutputParams().getPerPixelX());
+    this.ySize.setValue(params.getOutputParams().getPerPixelY());
+
     this.makingChanges = false;
   }
 
@@ -416,5 +450,8 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     params.getOutputParams().setOutFilePrefix(this.filePrefixName.getValue());
     params.getOutputParams().setBlendingMode((BlendingMode) this.blendingType.getSelectedItem());
     params.getOutputParams().setBlendingAlpha(this.blendingAlpha.getValue());
+    params.getOutputParams().setPerPixelUnit((MicroscopyUnits) this.unit.getSelectedItem());
+    params.getOutputParams().setPerPixelX(this.xSize.getValue());
+    params.getOutputParams().setPerPixelY(this.ySize.getValue());
   }
 }

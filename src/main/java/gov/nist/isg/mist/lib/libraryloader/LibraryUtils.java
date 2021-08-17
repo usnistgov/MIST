@@ -21,6 +21,8 @@ package gov.nist.isg.mist.lib.libraryloader;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+//import java.lang.invoke.MethodHandles;
+//import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import javax.swing.JOptionPane;
@@ -93,7 +95,11 @@ public class LibraryUtils {
       // From a Sun engineer at
       // http://forums.sun.com/thread.jspa?threadID=707176
       //
+
+//      MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
+//      VarHandle sys_paths = lookup.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
       Field field = ClassLoader.class.getDeclaredField("usr_paths");
+
       field.setAccessible(true);
       String[] paths = (String[]) field.get(null);
       for (int i = 0; i < paths.length; i++) {
