@@ -468,9 +468,7 @@ public class StitchingStatistics {
     HashMap<String, Long> startMap = this.startTimers.get(timeSlice);
     HashMap<String, Long> endMap = this.endTimers.get(timeSlice);
 
-    if (startMap.containsKey(timer.name()) && endMap.containsKey(timer.name()))
-      return true;
-    return false;
+    return startMap.containsKey(timer.name()) && endMap.containsKey(timer.name());
   }
 
   /**
@@ -1012,13 +1010,13 @@ public class StitchingStatistics {
           case AUTO:
             //writer.write("Error in selecting execution type" + newLine);
             break;
-          case CUDA:
-            List<CudaDeviceParam> cudaDevices = this.runParams.getAdvancedParams().getCudaDevices();
-            writer.write("Number of GPUs used: " + cudaDevices.size() + newLine);
-            for (CudaDeviceParam dev : cudaDevices) {
-              writer.write(dev + newLine);
-            }
-            break;
+//          case CUDA:
+//            List<CudaDeviceParam> cudaDevices = this.runParams.getAdvancedParams().getCudaDevices();
+//            writer.write("Number of GPUs used: " + cudaDevices.size() + newLine);
+//            for (CudaDeviceParam dev : cudaDevices) {
+//              writer.write(dev + newLine);
+//            }
+//            break;
           case FFTW:
             writer.write("FFTW Planning mode: " + this.runParams.getAdvancedParams().getFftwPlanType() + newLine);
             writer.write("Native utility functions used?: "

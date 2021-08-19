@@ -173,10 +173,10 @@ public class ImageStitchingRunTime {
           if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
             continue;
 
-          if (t == StitchingType.CUDA) {
-            if (!cudaPanel.isCudaAvailable())
-              continue;
-          }
+//          if (t == StitchingType.CUDA) {
+//            if (!cudaPanel.isCudaAvailable())
+//              continue;
+//          }
 
 
           double totalRunTime = 0;

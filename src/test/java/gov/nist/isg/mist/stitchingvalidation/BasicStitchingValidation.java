@@ -154,21 +154,21 @@ public class BasicStitchingValidation {
 
 
     // Run CUDA 32bit
-    params.getAdvancedParams().setProgramType(StitchingType.CUDA);
-    params.getOutputParams().setOutFilePrefix("cuda32-");
-    params.getAdvancedParams().setUseDoublePrecision(false);
-    elapsedTime = 0;
-    for (int i = 0; i < nbIter; i++) {
-      long startTime = System.currentTimeMillis();
-      try {
-        params.getInputParams().setAssembleFromMetadata(false);
-        (new StitchingExecutor(params)).runStitching(false, false);
-      } catch (StitchingException e) {
-        Log.msg(LogType.MANDATORY, e.getMessage());
-      }
-      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
-    }
-    System.out.println("CUDA 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
+//    params.getAdvancedParams().setProgramType(StitchingType.CUDA);
+//    params.getOutputParams().setOutFilePrefix("cuda32-");
+//    params.getAdvancedParams().setUseDoublePrecision(false);
+//    elapsedTime = 0;
+//    for (int i = 0; i < nbIter; i++) {
+//      long startTime = System.currentTimeMillis();
+//      try {
+//        params.getInputParams().setAssembleFromMetadata(false);
+//        (new StitchingExecutor(params)).runStitching(false, false);
+//      } catch (StitchingException e) {
+//        Log.msg(LogType.MANDATORY, e.getMessage());
+//      }
+//      elapsedTime = elapsedTime + (System.currentTimeMillis() - startTime);
+//    }
+//    System.out.println("CUDA 32bit Elapsed: " + (elapsedTime / nbIter) + " ms");
 
 
 //    // Run CUDA 64bit

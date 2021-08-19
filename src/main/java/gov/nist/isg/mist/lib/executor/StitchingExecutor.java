@@ -105,10 +105,10 @@ public class StitchingExecutor implements Runnable {
          */
         FFTW("FFTW"),
 
-        /**
-         * Selects CUDA version
-         */
-        CUDA("CUDA"),
+//        /**
+//         * Selects CUDA version
+//         */
+//        CUDA("CUDA"),
 
         /**
          * Selects the No Overlap version
@@ -144,7 +144,7 @@ public class StitchingExecutor implements Runnable {
     private StitchingAppParams params;
     private ExecutionType executionType;
 
-    GlobalOptimization globalOptimization;
+    private GlobalOptimization globalOptimization;
 
     private LargeImageExporter<?> imageExporter;
 
@@ -364,17 +364,17 @@ public class StitchingExecutor implements Runnable {
                     }
 
                     break;
-                case CUDA:
-                    if (params.getAdvancedParams().isUseDoublePrecision()) {
-                        stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
-                    } else {
-                        stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor32<CUdeviceptr>(this);
-                    }
-
-                    JCufft.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
-                    JCudaDriver.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
-
-                    break;
+//                case CUDA:
+//                    if (params.getAdvancedParams().isUseDoublePrecision()) {
+//                        stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor<CUdeviceptr>(this);
+//                    } else {
+//                        stitchingExecutorInf = (StitchingExecutorInterface<T>) new CudaStitchingExecutor32<CUdeviceptr>(this);
+//                    }
+//
+//                    JCufft.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
+//                    JCudaDriver.setExceptionsEnabled(params.getAdvancedParams().isEnableCudaExceptions());
+//
+//                    break;
                 case FFTW:
                     if (params.getAdvancedParams().isUseDoublePrecision()) {
                         String libFN = params.getAdvancedParams().getFftwLibraryFileName();
@@ -715,9 +715,8 @@ public class StitchingExecutor implements Runnable {
                             if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
                                 try {
                                     Desktop.getDesktop().browse(new URI(e.getURL().toString()));
-                                } catch (IOException e1) {
-//                e1.printStackTrace();
-                                } catch (URISyntaxException e1) {
+                                } catch (IOException | URISyntaxException e1) {
+                                    Log.msg(LogType.INFO, "IO Exception creating warning dialog: " + e1.getMessage());
 //                e1.printStackTrace();
                                 }
                         }
@@ -796,7 +795,7 @@ public class StitchingExecutor implements Runnable {
         List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
         int globalMaxTimeSlice = 0;
         for (RangeParam timeSliceParam : timeSlices) {
-            globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+            globalMaxTimeSlice = Math.max(timeSliceParam.getMax(), globalMaxTimeSlice);
         }
 
 
@@ -821,7 +820,7 @@ public class StitchingExecutor implements Runnable {
         List<RangeParam> timeSlices = this.params.getInputParams().getTimeSlices();
         int globalMaxTimeSlice = 0;
         for (RangeParam timeSliceParam : timeSlices) {
-            globalMaxTimeSlice = timeSliceParam.getMax() > globalMaxTimeSlice ? timeSliceParam.getMax() : globalMaxTimeSlice;
+            globalMaxTimeSlice = Math.max(timeSliceParam.getMax(), globalMaxTimeSlice);
         }
 
         File imageFile = params.getOutputParams().getOutputImageFile(timeSlice, globalMaxTimeSlice);
@@ -1122,7 +1121,7 @@ public class StitchingExecutor implements Runnable {
             case LINEAR:
                 // Account for the pixel weights
                 requiredMemoryBytes +=
-                        tile.getHeight() * tile.getWidth()
+                        (long)tile.getHeight() * tile.getWidth()
                                 * 8; // lookupTable = new double[initImgHeight][initImgWidth];
 
                 // Account for average blend data

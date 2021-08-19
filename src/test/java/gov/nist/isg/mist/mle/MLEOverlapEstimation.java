@@ -11,6 +11,7 @@ package gov.nist.isg.mist.mle;
 import java.io.File;
 
 import gov.nist.isg.mist.gui.panels.advancedTab.parallelPanels.CUDAPanel;
+import gov.nist.isg.mist.gui.panels.advancedTab.parallelPanels.FFTWPanel;
 import gov.nist.isg.mist.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.lib.exceptions.StitchingException;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor;
@@ -52,7 +53,7 @@ public class MLEOverlapEstimation {
 
     File[] roots = rootFolder.listFiles();
 
-    CUDAPanel cudaPanel = new CUDAPanel();
+    FFTWPanel fftwPanel = new FFTWPanel();
 
     Log.setLogLevel(Log.LogType.MANDATORY);
     StitchingAppParams params;
@@ -80,14 +81,14 @@ public class MLEOverlapEstimation {
       params.getAdvancedParams().setPlanPath(fftwPlanPath);
       params.getAdvancedParams().setFftwLibraryPath(fftwLibraryPath);
 
-      if (cudaPanel.isCudaAvailable())
-        params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
+//      if (cudaPanel.isCudaAvailable())
+//        params.getAdvancedParams().setCudaDevices(cudaPanel.getSelectedDevices());
 
       params.getOutputParams().setOutputFullImage(false);
       params.getOutputParams().setDisplayStitching(false);
       params.getAdvancedParams().setNumCPUThreads(8);
 
-      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.CUDA;
+      StitchingExecutor.StitchingType t = StitchingExecutor.StitchingType.FFTW;
       if (r.getAbsolutePath().contains("Keana_Scott_"))
         t = StitchingExecutor.StitchingType.FFTW;
 

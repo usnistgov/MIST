@@ -151,9 +151,9 @@ public class AdvancedParameters implements StitchingAppParamFunctions {
       case JAVA:
         check = checkJavaParams();
         break;
-      case CUDA:
-        check = checkCUDAParams();
-        break;
+//      case CUDA:
+//        check = checkCUDAParams();
+//        break;
       case FFTW:
         check = checkFFTWParams();
         break;

@@ -94,10 +94,10 @@ public class ImageStitchingValidationDatasets {
         if (t == StitchingType.AUTO || t == StitchingType.JAVA || t == StitchingType.FFTW)
           continue;
 
-        if (t == StitchingType.CUDA) {
-          if (!cudaPanel.isCudaAvailable())
-            continue;
-        }
+//        if (t == StitchingType.CUDA) {
+//          if (!cudaPanel.isCudaAvailable())
+//            continue;
+//        }
 
 
         File metaDataPath = new File(r, "VALID");
@@ -118,7 +118,6 @@ public class ImageStitchingValidationDatasets {
 
 
         // Run the double precision version
-        System.out.println("Stitching Type: " + t + "64");
         params.getAdvancedParams().setUseDoublePrecision(true);
         params.getOutputParams().setOutFilePrefix(t.name().toLowerCase() + "64-");
         params.getAdvancedParams().setProgramType(t);

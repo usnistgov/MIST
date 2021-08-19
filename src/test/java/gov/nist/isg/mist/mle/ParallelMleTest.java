@@ -100,19 +100,19 @@ public class ParallelMleTest {
 
 
     // Run CUDA 32bit
-    params.getAdvancedParams().setProgramType(StitchingExecutor.StitchingType.CUDA);
-    params.getOutputParams().setOutFilePrefix("cuda32-");
-    params.getAdvancedParams().setUseDoublePrecision(false);
-
-    try {
-      params.getInputParams().setAssembleFromMetadata(false);
-      (new StitchingExecutor(params)).runStitching(false, false);
-    } catch (StitchingException e) {
-      Log.msg(Log.LogType.MANDATORY, e.getMessage());
-    }
-
-
-    System.exit(1);
+//    params.getAdvancedParams().setProgramType(StitchingExecutor.StitchingType.CUDA);
+//    params.getOutputParams().setOutFilePrefix("cuda32-");
+//    params.getAdvancedParams().setUseDoublePrecision(false);
+//
+//    try {
+//      params.getInputParams().setAssembleFromMetadata(false);
+//      (new StitchingExecutor(params)).runStitching(false, false);
+//    } catch (StitchingException e) {
+//      Log.msg(Log.LogType.MANDATORY, e.getMessage());
+//    }
+//
+//
+//    System.exit(1);
   }
 
 

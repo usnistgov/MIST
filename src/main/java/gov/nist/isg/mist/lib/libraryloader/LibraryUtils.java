@@ -23,10 +23,12 @@ import java.io.File;
 import java.io.IOException;
 //import java.lang.invoke.MethodHandles;
 //import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
 import javax.swing.JOptionPane;
 
+import gov.nist.isg.mist.lib.log.Log;
 import jcuda.LibUtils;
 import jcuda.LibUtils.OSType;
 
@@ -52,12 +54,34 @@ public class LibraryUtils {
   public static LibUtils.ArchType arch;
 
   /**
+   * Gets the major version number for Java
+   * @return the major version number
+   */
+  private static int getJavaMajorVersionNumber() {
+    String version = System.getProperty("java.version");
+    if(version.startsWith("1.")) {
+      version = version.substring(2, 3);
+    } else {
+      int dot = version.indexOf(".");
+      if(dot != -1) { version = version.substring(0, dot); }
+    } return Integer.parseInt(version);
+  }
+
+  /**
    * Initializes the libraries
    */
   public static void initalize() {
     try {
-      addDir("." + File.separator + "lib" + File.separator + "jcuda");
+//      addDir("." + File.separator + "lib" + File.separator + "jcuda");
       addDir("." + File.separator + "lib");
+    } catch (IOException e) {
+
+      System.err.println("Failed to add required library paths for FFTW. If you want to use FFTW make sure you set the correct library path in the advanced options. " +
+              "Possibly adding FFTW library to your system paths. " + e.getMessage());
+      Log.msg(Log.LogType.INFO, "Failed to add required library paths for FFTW. If you want to use FFTW make sure you set the correct library path in the advanced options. " +
+              "Possibly adding FFTW library to your system paths. " + e.getMessage());
+    }
+
       os = LibUtils.calculateOS();
       arch = LibUtils.calculateArch();
 
@@ -84,40 +108,35 @@ public class LibraryUtils {
           break;
       }
 
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   private static void addDir(String s) throws IOException {
-    try {
-      // This enables the java.library.path to be modified at runtime
-      // From a Sun engineer at
-      // http://forums.sun.com/thread.jspa?threadID=707176
-      //
+    // This enables the java.library.path to be modified at runtime
+    // From a Sun engineer at
+    // http://forums.sun.com/thread.jspa?threadID=707176
+    //
+      try {
+        Field field = ClassLoader.class.getDeclaredField("usr_paths");
 
-//      MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
-//      VarHandle sys_paths = lookup.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
-      Field field = ClassLoader.class.getDeclaredField("usr_paths");
-
-      field.setAccessible(true);
-      String[] paths = (String[]) field.get(null);
-      for (int i = 0; i < paths.length; i++) {
-        if (s.equals(paths[i])) {
-          return;
+        field.setAccessible(true);
+        String[] paths = (String[]) field.get(null);
+        for (String path : paths) {
+          if (s.equals(path)) {
+            return;
+          }
         }
+        String[] tmp = new String[paths.length + 1];
+        System.arraycopy(paths, 0, tmp, 0, paths.length);
+        tmp[paths.length] = s;
+        field.set(null, tmp);
+        System.setProperty("java.library.path", System.getProperty("java.library.path")
+                + File.pathSeparator + s);
+      } catch (IllegalAccessException e) {
+        throw new IOException("Failed to get permissions to set library path");
+      } catch (NoSuchFieldException e) {
+        throw new IOException("Failed to get field handle to set library path");
       }
-      String[] tmp = new String[paths.length + 1];
-      System.arraycopy(paths, 0, tmp, 0, paths.length);
-      tmp[paths.length] = s;
-      field.set(null, tmp);
-      System.setProperty("java.library.path", System.getProperty("java.library.path")
-          + File.pathSeparator + s);
-    } catch (IllegalAccessException e) {
-      throw new IOException("Failed to get permissions to set library path");
-    } catch (NoSuchFieldException e) {
-      throw new IOException("Failed to get field handle to set library path");
     }
-  }
+
 
 }

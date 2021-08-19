@@ -56,7 +56,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
   private JPanel programPanel;
   private FFTWPanel fftwPanel = null;
-  private CUDAPanel cudaPanel = null;
+//  private CUDAPanel cudaPanel = null;
   private JavaPanel javaPanel = null;
 
   private GridBagConstraints c;
@@ -83,7 +83,7 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
 
     this.fftwPanel = new FFTWPanel();
-    this.cudaPanel = new CUDAPanel();
+//    this.cudaPanel = new CUDAPanel();
     this.javaPanel = new JavaPanel();
 
     initListeners();
@@ -123,9 +123,10 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
     
     if (LibraryUtils.arch != LibUtils.ArchType.X86_64) {
       this.stitchingExecutionType.disableAllButtonsExcept(StitchingType.JAVA.toString());
-    } else if (!this.cudaPanel.isCudaAvailable()) {
-      this.stitchingExecutionType.disableButton(StitchingType.CUDA.toString());
     }
+//    else if (!this.cudaPanel.isCudaAvailable()) {
+//      this.stitchingExecutionType.disableButton(StitchingType.CUDA.toString());
+//    }
   }
 
   private void initListeners() {
@@ -143,8 +144,8 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
     if (e.getActionCommand().equals(StitchingType.AUTO.toString())) {
       if (this.fftwPanel != null)
         this.fftwPanel.setVisible(false);
-      if (this.cudaPanel != null)
-        this.cudaPanel.setVisible(false);
+//      if (this.cudaPanel != null)
+//        this.cudaPanel.setVisible(false);
       if (this.javaPanel != null)
         this.javaPanel.setVisible(false);
     } else if (e.getActionCommand().equals(StitchingType.FFTW.toString())) {
@@ -152,24 +153,26 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
         this.programPanel.add(this.fftwPanel, this.c);
         this.fftwPanel.setVisible(true);
       }
-      if (this.cudaPanel != null)
-        this.cudaPanel.setVisible(false);
+//      if (this.cudaPanel != null)
+//        this.cudaPanel.setVisible(false);
       if (this.javaPanel != null)
         this.javaPanel.setVisible(false);
-    } else if (e.getActionCommand().equals(StitchingType.CUDA.toString())) {
+    }
+//    else if (e.getActionCommand().equals(StitchingType.CUDA.toString())) {
+//      if (this.fftwPanel != null)
+//        this.fftwPanel.setVisible(false);
+//      if (this.cudaPanel != null) {
+//        this.programPanel.add(this.cudaPanel, this.c);
+//        this.cudaPanel.setVisible(true);
+//      }
+//      if (this.javaPanel != null)
+//        this.javaPanel.setVisible(false);
+//    }
+    else if (e.getActionCommand().equals(StitchingType.JAVA.toString())) {
       if (this.fftwPanel != null)
         this.fftwPanel.setVisible(false);
-      if (this.cudaPanel != null) {
-        this.programPanel.add(this.cudaPanel, this.c);
-        this.cudaPanel.setVisible(true);
-      }
-      if (this.javaPanel != null)
-        this.javaPanel.setVisible(false);
-    } else if (e.getActionCommand().equals(StitchingType.JAVA.toString())) {
-      if (this.fftwPanel != null)
-        this.fftwPanel.setVisible(false);
-      if (this.cudaPanel != null)
-        this.cudaPanel.setVisible(false);
+//      if (this.cudaPanel != null)
+//        this.cudaPanel.setVisible(false);
       if (this.javaPanel != null) {
         this.programPanel.add(this.javaPanel, this.c);
         this.javaPanel.setVisible(true);
@@ -208,10 +211,10 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
         if (this.javaPanel != null)
           this.javaPanel.loadParamsIntoGUI(params);
         break;
-      case CUDA:
-        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
-          this.cudaPanel.loadParamsIntoGUI(params);
-        break;
+//      case CUDA:
+//        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
+//          this.cudaPanel.loadParamsIntoGUI(params);
+//        break;
       case FFTW:
         if (this.fftwPanel != null)
           this.fftwPanel.loadParamsIntoGUI(params);
@@ -237,8 +240,8 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
     boolean checkPanel = true;
     switch (type) {
       case AUTO:
-        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
-          checkPanel &= this.cudaPanel.checkGUIArgs();
+//        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
+//          checkPanel &= this.cudaPanel.checkGUIArgs();
         if (this.fftwPanel != null)
           checkPanel &= this.fftwPanel.checkGUIArgs();
         if (this.javaPanel != null)
@@ -249,10 +252,10 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
         if (this.javaPanel != null)
           checkPanel = this.javaPanel.checkGUIArgs();
         break;
-      case CUDA:
-        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
-          checkPanel = this.cudaPanel.checkGUIArgs();
-        break;
+//      case CUDA:
+//        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
+//          checkPanel = this.cudaPanel.checkGUIArgs();
+//        break;
       case FFTW:
         if (this.fftwPanel != null)
           checkPanel = this.fftwPanel.checkGUIArgs();
@@ -272,8 +275,8 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
     if (this.fftwPanel != null)
       this.fftwPanel.enableLoadingParams();
-    if (this.cudaPanel != null)
-      this.cudaPanel.enableLoadingParams();
+//    if (this.cudaPanel != null)
+//      this.cudaPanel.enableLoadingParams();
     if (this.javaPanel != null)
       this.javaPanel.enableLoadingParams();
   }
@@ -284,8 +287,8 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
 
     if (this.fftwPanel != null)
       this.fftwPanel.disableLoadingParams();
-    if (this.cudaPanel != null)
-      this.cudaPanel.disableLoadingParams();
+//    if (this.cudaPanel != null)
+//      this.cudaPanel.disableLoadingParams();
     if (this.javaPanel != null)
       this.javaPanel.disableLoadingParams();
   }
@@ -306,10 +309,10 @@ public class ParallelOptPane implements ActionListener, GUIParamFunctions {
         if (this.javaPanel != null)
           this.javaPanel.saveParamsFromGUI(params, isClosing);
         break;
-      case CUDA:
-        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
-          this.cudaPanel.saveParamsFromGUI(params, isClosing);
-        break;
+//      case CUDA:
+//        if (this.cudaPanel != null && this.cudaPanel.isCudaAvailable())
+//          this.cudaPanel.saveParamsFromGUI(params, isClosing);
+//        break;
       case FFTW:
         if (this.fftwPanel != null)
           this.fftwPanel.saveParamsFromGUI(params, isClosing);
