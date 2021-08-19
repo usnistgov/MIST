@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 
+import loci.common.DebugTools;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -103,6 +104,8 @@ public class MISTMain implements PlugIn {
   }
 
   static {
+    // Disable debug logging from bioformats
+    DebugTools.setRootLevel("OFF");
     LibraryUtils.initalize();
   }
 
