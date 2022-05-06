@@ -424,8 +424,8 @@ public class LargeImageExporter<T> {
 
       }
 
+      StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Finalizing Write");
       omeTiffWriter.close();
-
 
     } catch (DependencyException e) {
       e.printStackTrace();
