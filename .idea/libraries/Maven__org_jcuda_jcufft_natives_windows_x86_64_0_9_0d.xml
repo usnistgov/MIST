@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="Maven: org.jcuda:jcufft-natives:linux-x86_64:0.9.0d">
+  <library name="Maven: org.jcuda:jcufft-natives:windows-x86_64:0.9.0d">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/jcuda/jcufft-natives/0.9.0d/jcufft-natives-0.9.0d-linux-x86_64.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jcuda/jcufft-natives/0.9.0d/jcufft-natives-0.9.0d-windows-x86_64.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$MAVEN_REPOSITORY$/org/jcuda/jcufft-natives/0.9.0d/jcufft-natives-0.9.0d-javadoc.jar!/" />

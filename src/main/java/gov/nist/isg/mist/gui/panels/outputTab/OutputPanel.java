@@ -60,7 +60,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   private static final String fileSizeLabel = "Est. individual stitched image size (0% overlap): ";
   private static final String openInfoText = "<html>Please enable SCIFIO to open saved images.<br>" +
-          "To Enable: Edit->Options->ImageJ2...<br>Select 'Use SCIFIO when opening files (BETA!)'<br><br>" +
+          "To Enable: Edit->Options->ImageJ2...<br>Select 'Use SCIFIO when opening files (BETA!)' and restart Fiji<br><br>" +
           "Images are saved as 'ome.tif'.<br>Update metadata using external tools as needed.</html>";
 
   private static final String filenamePrefixHelpText = "The prefix prepended to each file saved in "
