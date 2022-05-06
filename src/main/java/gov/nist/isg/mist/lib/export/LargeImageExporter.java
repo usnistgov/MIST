@@ -70,6 +70,78 @@ import ome.xml.model.primitives.PositiveInteger;
  */
 public class LargeImageExporter<T> {
 
+  private class TileBuckets {
+    public TileBuckets(int numTileRows, int numTileCols) {
+      this.numTileRows = numTileRows;
+      this.numTileCols = numTileCols;
+
+      // Allocate data struct
+
+      this.tileBuckets = new ArrayList<List<List<ImageTile<T>>>>(numTileRows);
+
+      for (int tileRow = 0; tileRow < numTileRows; ++tileRow) {
+        this.tileBuckets.set(tileRow, new ArrayList<List<ImageTile<T>>>(numTileCols));
+
+        for (int tileCol = 0; tileCol < numTileCols; ++tileCol) {
+          this.tileBuckets.get(tileRow).set(tileCol, new ArrayList<ImageTile<T>>());
+        }
+      }
+    }
+
+    public void addTiles(TileGrid<ImageTile<T>> grid) {
+      // Add tiles to data struct
+
+      // for each image tile get the region ...
+      TileGridTraverser<ImageTile<T>> traverser =
+              TileGridTraverserFactory.makeTraverser(Traversals.ROW, grid);
+
+      for (ImageTile<T> tile : traverser) {
+        int tileRow = tile.getAbsYPos() / tile.getHeight();
+        int tileCol = tile.getAbsXPos() / tile.getWidth();
+
+        this.tileBuckets.get(tileRow).get(tileCol).add(tile);
+      }
+    }
+
+    public List<ImageTile<T>> getPotentialOverlapTiles(int tileRow, int tileCol) {
+      int bucketRowStart = tileRow - 1;
+      int bucketColStart = tileCol - 1;
+
+      int bucketRowEnd = tileRow + 2;
+      int bucketColEnd = tileCol + 2;
+
+      if (bucketRowStart < 0) bucketRowStart = 0;
+      if (bucketColStart < 0) bucketColStart = 0;
+
+      if (bucketRowEnd > numTileRows) bucketRowEnd = numTileRows;
+      if (bucketColEnd > numTileCols) bucketColEnd = numTileCols;
+
+      List<ImageTile<T>> tiles = new ArrayList<ImageTile<T>>();
+
+      for (int bucketRow = bucketRowStart; bucketRow < bucketRowEnd; ++bucketRow) {
+        for (int bucketCol = bucketColStart; bucketCol < bucketColEnd; ++bucketCol) {
+          tiles.addAll(tileBuckets.get(bucketRow).get(bucketCol));
+        }
+      }
+
+      // Sorts tiles  from smallest correlation tile to largest correlation tile
+      // This enables painting the highest correlation tiles last.
+      Collections.sort(tiles, new Comparator<ImageTile<T>>() {
+
+        @Override
+        public int compare(ImageTile<T> t1, ImageTile<T> t2) {
+          return Double.compare(t1.getTileCorrelation(), t2.getTileCorrelation());
+        }
+
+      });
+
+      return tiles;
+    }
+
+    private int numTileRows;
+    private int numTileCols;
+    private List<List<List<ImageTile<T>>>> tileBuckets;
+  }
 
   /**
    * Enum representing the different types of blending modes
@@ -227,24 +299,13 @@ public class LargeImageExporter<T> {
         break;
     }
 
-    // for each image tile get the region ...
-    TileGridTraverser<ImageTile<T>> traverser =
-            TileGridTraverserFactory.makeTraverser(Traversals.ROW, this.grid);
+    // Compute number of tiles
+    int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
+    int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
 
-    List<ImageTile<T>> sortedTileList = new ArrayList<ImageTile<T>>();
-    for (ImageTile<T> tile : traverser) {
-      sortedTileList.add(tile);
-    }
-    // Sorts tiles  from smallest correlation tile to largest correlation tile
-    // This enables painting the highest correlation tiles last.
-    Collections.sort(sortedTileList, new Comparator<ImageTile<T>>() {
+    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol);
 
-      @Override
-      public int compare(ImageTile<T> t1, ImageTile<T> t2) {
-        return Double.compare(t1.getTileCorrelation(), t2.getTileCorrelation());
-      }
-
-    });
+    tileBuckets.addTiles(this.grid);
 
     TileBlender tileBlender = null;
 
@@ -257,16 +318,11 @@ public class LargeImageExporter<T> {
         tileBlender = new TileAverageBlend(numBytesPerChannel, this.imageType);
         break;
       case LINEAR:
-        ImageTile<T> tile = sortedTileList.get(0);
+        ImageTile<T> tile = this.grid.getTileThatExists();
         tile.readTile();
         tileBlender = new TileLinearBlend(numBytesPerChannel, this.imageType, tile.getWidth(), tile.getHeight(), this.alpha);
         break;
     }
-
-
-    // Compute number of tiles
-    int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
-    int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
 
     StitchingGuiUtils.updateProgressBar(this.progressBar, false, null, "Blending tiles...", 0,
             numTilesRow * numTilesCol, 0, false);
@@ -343,6 +399,8 @@ public class LargeImageExporter<T> {
           tileBlender.init(tileSizeX, tileSizeY);
 
           Rectangle2D tileRect = new Rectangle(tileStartX, tileStartY, tileSizeX, tileSizeY);
+
+          List<ImageTile<T>> sortedTileList = tileBuckets.getPotentialOverlapTiles(tileRow, tileCol);
 
           for (ImageTile<T> tile : sortedTileList) {
             if (this.isCancelled)
