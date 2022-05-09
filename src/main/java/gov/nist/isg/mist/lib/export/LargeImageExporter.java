@@ -110,11 +110,13 @@ public class LargeImageExporter<T> {
     }
 
     public List<ImageTile<T>> getPotentialOverlapTiles(int tileRow, int tileCol) {
-      int bucketRowStart = tileRow - 1;
-      int bucketColStart = tileCol - 1;
+      int radius = 1;
 
-      int bucketRowEnd = tileRow + 2;
-      int bucketColEnd = tileCol + 2;
+      int bucketRowStart = tileRow - radius;
+      int bucketColStart = tileCol - radius;
+
+      int bucketRowEnd = tileRow + 1;
+      int bucketColEnd = tileCol + 1;
 
       if (bucketRowStart < 0) bucketRowStart = 0;
       if (bucketColStart < 0) bucketColStart = 0;
