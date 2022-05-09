@@ -71,9 +71,12 @@ import ome.xml.model.primitives.PositiveInteger;
 public class LargeImageExporter<T> {
 
   private class TileBuckets {
-    public TileBuckets(int numTileRows, int numTileCols) {
+    public TileBuckets(int numTileRows, int numTileCols, int tileHeight, int tileWidth) {
       this.numTileRows = numTileRows;
       this.numTileCols = numTileCols;
+
+      this.tileHeight = tileHeight;
+      this.tileWidth  = tileWidth;
 
       // Allocate row array
       this.tileBuckets = new ArrayList<List<List<ImageTile<T>>>>(numTileRows);
@@ -94,19 +97,13 @@ public class LargeImageExporter<T> {
     public void addTiles(TileGrid<ImageTile<T>> grid) {
       // Add tiles to data struct
 
-      ImageTile<T> existingTile = grid.getTileThatExists();
-      existingTile.readTile();
-
-      int tileHeight = existingTile.getHeight();
-      int tileWidth = existingTile.getWidth();
-
       // for each image tile get the region ...
       TileGridTraverser<ImageTile<T>> traverser =
               TileGridTraverserFactory.makeTraverser(Traversals.ROW, grid);
 
       for (ImageTile<T> tile : traverser) {
-        int tileRow = tile.getAbsYPos() / tileHeight;
-        int tileCol = tile.getAbsXPos() / tileWidth;
+        int tileRow = tile.getAbsYPos() / this.tileHeight;
+        int tileCol = tile.getAbsXPos() / this.tileWidth;
 
         this.tileBuckets.get(tileRow).get(tileCol).add(tile);
       }
@@ -149,6 +146,8 @@ public class LargeImageExporter<T> {
 
     private int numTileRows;
     private int numTileCols;
+    private int tileHeight;
+    private int tileWidth;
     private List<List<List<ImageTile<T>>>> tileBuckets;
   }
 
@@ -312,7 +311,7 @@ public class LargeImageExporter<T> {
     int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
     int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
 
-    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol);
+    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol, this.tileDim, this.tileDim);
 
     tileBuckets.addTiles(this.grid);
 
