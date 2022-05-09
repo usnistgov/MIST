@@ -94,13 +94,19 @@ public class LargeImageExporter<T> {
     public void addTiles(TileGrid<ImageTile<T>> grid) {
       // Add tiles to data struct
 
+      ImageTile<T> existingTile = grid.getTileThatExists();
+      existingTile.readTile();
+
+      int tileHeight = existingTile.getHeight();
+      int tileWidth = existingTile.getWidth();
+
       // for each image tile get the region ...
       TileGridTraverser<ImageTile<T>> traverser =
               TileGridTraverserFactory.makeTraverser(Traversals.ROW, grid);
 
       for (ImageTile<T> tile : traverser) {
-        int tileRow = tile.getAbsYPos() / tile.getHeight();
-        int tileCol = tile.getAbsXPos() / tile.getWidth();
+        int tileRow = tile.getAbsYPos() / tileHeight;
+        int tileCol = tile.getAbsXPos() / tileWidth;
 
         this.tileBuckets.get(tileRow).get(tileCol).add(tile);
       }
