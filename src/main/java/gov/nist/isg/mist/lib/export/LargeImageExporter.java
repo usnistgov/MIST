@@ -75,15 +75,18 @@ public class LargeImageExporter<T> {
       this.numTileRows = numTileRows;
       this.numTileCols = numTileCols;
 
-      // Allocate data struct
-
+      // Allocate row array
       this.tileBuckets = new ArrayList<List<List<ImageTile<T>>>>(numTileRows);
 
+      // Allocate col arrays
       for (int tileRow = 0; tileRow < numTileRows; ++tileRow) {
-        this.tileBuckets.set(tileRow, new ArrayList<List<ImageTile<T>>>(numTileCols));
+        this.tileBuckets.add(new ArrayList<List<ImageTile<T>>>(numTileCols));
+      }
 
+      // Allocate tile arrays
+      for (int tileRow = 0; tileRow < numTileRows; ++tileRow) {
         for (int tileCol = 0; tileCol < numTileCols; ++tileCol) {
-          this.tileBuckets.get(tileRow).set(tileCol, new ArrayList<ImageTile<T>>());
+          this.tileBuckets.get(tileRow).add(new ArrayList<ImageTile<T>>());
         }
       }
     }
