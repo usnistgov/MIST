@@ -71,12 +71,23 @@ import ome.xml.model.primitives.PositiveInteger;
 public class LargeImageExporter<T> {
 
   private class TileBuckets {
-    public TileBuckets(int numTileRows, int numTileCols, int tileHeight, int tileWidth) {
+    private int numTileRows;
+    private int numTileCols;
+    private int tileHeight;
+    private int tileWidth;
+    private int searchHeight;
+    private int searchWidth;
+    private List<List<List<ImageTile<T>>>> tileBuckets;
+    private boolean withOverlap;
+
+    public TileBuckets(int numTileRows, int numTileCols, int tileHeight, int tileWidth, boolean withOverlap) {
       this.numTileRows = numTileRows;
       this.numTileCols = numTileCols;
 
       this.tileHeight = tileHeight;
       this.tileWidth  = tileWidth;
+
+      this.withOverlap = withOverlap;
 
       this.searchHeight = 0;
       this.searchWidth  = 0;
@@ -112,9 +123,21 @@ public class LargeImageExporter<T> {
       TileGridTraverser<ImageTile<T>> traverser =
               TileGridTraverserFactory.makeTraverser(Traversals.ROW, grid);
 
+      int imageTileWidth = existingTile.getWidth();
+      int imageTileHeight = existingTile.getHeight();
+
       for (ImageTile<T> tile : traverser) {
-        int tileRow = tile.getAbsYPos() / this.tileHeight;
-        int tileCol = tile.getAbsXPos() / this.tileWidth;
+
+        int tileRow = 0;
+        int tileCol = 0;
+
+        if (withOverlap) {
+          tileRow = tile.getAbsYPos() / this.tileHeight;
+          tileCol = tile.getAbsXPos() / this.tileWidth;
+        } else {
+          tileRow = tile.getRow() * imageTileHeight / this.tileHeight;
+          tileCol = tile.getCol() * imageTileWidth / this.tileWidth;
+        }
 
         this.tileBuckets.get(tileRow).get(tileCol).add(tile);
       }
@@ -156,13 +179,6 @@ public class LargeImageExporter<T> {
       return tiles;
     }
 
-    private int numTileRows;
-    private int numTileCols;
-    private int tileHeight;
-    private int tileWidth;
-    private int searchHeight;
-    private int searchWidth;
-    private List<List<List<ImageTile<T>>>> tileBuckets;
   }
 
   /**
@@ -325,11 +341,16 @@ public class LargeImageExporter<T> {
     int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
     int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
 
-    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol, this.tileDim, this.tileDim);
+    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol, this.tileDim, this.tileDim, withOverlap);
 
     tileBuckets.addTiles(this.grid);
 
     TileBlender tileBlender = null;
+    ImageTile<T> tileThatExists = this.grid.getTileThatExists();
+    tileThatExists.readTile();
+
+    int imageTileWidth = tileThatExists.getWidth();
+    int imageTileHeight = tileThatExists.getHeight();
 
     switch(this.blendingMode)
     {
@@ -340,9 +361,8 @@ public class LargeImageExporter<T> {
         tileBlender = new TileAverageBlend(numBytesPerChannel, this.imageType);
         break;
       case LINEAR:
-        ImageTile<T> tile = this.grid.getTileThatExists();
-        tile.readTile();
-        tileBlender = new TileLinearBlend(numBytesPerChannel, this.imageType, tile.getWidth(), tile.getHeight(), this.alpha);
+
+        tileBlender = new TileLinearBlend(numBytesPerChannel, this.imageType, imageTileWidth, imageTileHeight, this.alpha);
         break;
     }
 
@@ -428,8 +448,8 @@ public class LargeImageExporter<T> {
             if (this.isCancelled)
               return file;
 
-            int absX = tile.getCol() * tile.getWidth();
-            int absY = tile.getRow() * tile.getHeight();
+            int absX = tile.getCol() * imageTileWidth;
+            int absY = tile.getRow() * imageTileHeight;
 
             if (withOverlap) {
               absX = tile.getAbsXPos();
@@ -438,10 +458,7 @@ public class LargeImageExporter<T> {
 //              int absEndY = absY + tile.getHeight();
             }
 
-            if (tile.getWidth() == 0 || tile.getHeight() == 0)
-              tile.readTile();
-
-            Rectangle2D imageTileRect = new Rectangle(absX, absY, tile.getWidth(), tile.getHeight());
+            Rectangle2D imageTileRect = new Rectangle(absX, absY, imageTileWidth, imageTileHeight);
 
             Rectangle2D intersect = tileRect.createIntersection(imageTileRect);
 
@@ -483,7 +500,6 @@ public class LargeImageExporter<T> {
             tileBlender.blend(tileX, tileY, arrayView, tile);
 
             tile.releasePixels();
-
           }
 
           int writeXSize = actualTileSizeX;
