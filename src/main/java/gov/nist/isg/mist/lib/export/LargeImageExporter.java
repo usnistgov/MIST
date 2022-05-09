@@ -78,6 +78,9 @@ public class LargeImageExporter<T> {
       this.tileHeight = tileHeight;
       this.tileWidth  = tileWidth;
 
+      this.searchHeight = 0;
+      this.searchWidth  = 0;
+
       // Allocate row array
       this.tileBuckets = new ArrayList<List<List<ImageTile<T>>>>(numTileRows);
 
@@ -95,7 +98,15 @@ public class LargeImageExporter<T> {
     }
 
     public void addTiles(TileGrid<ImageTile<T>> grid) {
-      // Add tiles to data struct
+      // Compute search radius
+
+      ImageTile<T> existingTile = grid.getTileThatExists();
+      existingTile.readTile();
+
+      this.searchHeight = (int)Math.ceil((double)existingTile.getHeight() / this.tileHeight);
+      this.searchWidth  = (int)Math.ceil((double)existingTile.getWidth()  / this.tileWidth);
+
+      // Add tiles to buckets
 
       // for each image tile get the region ...
       TileGridTraverser<ImageTile<T>> traverser =
@@ -110,11 +121,10 @@ public class LargeImageExporter<T> {
     }
 
     public List<ImageTile<T>> getPotentialOverlapTiles(int tileRow, int tileCol) {
-      int radius = 1;
+      int bucketRowStart = tileRow - this.searchHeight;
+      int bucketColStart = tileCol - this.searchWidth;
 
-      int bucketRowStart = tileRow - radius;
-      int bucketColStart = tileCol - radius;
-
+      // All possible overlapping tiles are to the North and West, so do not search South or East
       int bucketRowEnd = tileRow + 1;
       int bucketColEnd = tileCol + 1;
 
@@ -150,6 +160,8 @@ public class LargeImageExporter<T> {
     private int numTileCols;
     private int tileHeight;
     private int tileWidth;
+    private int searchHeight;
+    private int searchWidth;
     private List<List<List<ImageTile<T>>>> tileBuckets;
   }
 
