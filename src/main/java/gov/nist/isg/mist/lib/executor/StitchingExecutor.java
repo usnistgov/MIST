@@ -873,6 +873,13 @@ public class StitchingExecutor implements Runnable {
 
             int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
             int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
+
+            long totalPixels = (long)width * (long)height;
+            if (totalPixels >= Integer.MAX_VALUE) {
+                showError("Error, unable to display image whose width(" + width + ")*height(" + height + ") is greater than " + Integer.MAX_VALUE);
+                return;
+            }
+
             int tileSize = 1024;
 
             if (isCancelled)
@@ -913,6 +920,13 @@ public class StitchingExecutor implements Runnable {
             } catch (IOException e) {
                 Log.msg(LogType.MANDATORY, "Error: IOException occurred when openning the image into ImageJ");
                 e.printStackTrace();
+            } catch (NegativeArraySizeException e) {
+                Log.msg(LogType.MANDATORY, "Error: Unable to view image of size width*height > "
+                        + Integer.MAX_VALUE);
+                showError("Error: Unable to view image of size width*height > "
+                        + Integer.MAX_VALUE);
+
+                return;
             }
 
         }
@@ -998,6 +1012,13 @@ public class StitchingExecutor implements Runnable {
 
         int width = grid.getExtentWidth() * initImg.getWidth();
         int height = grid.getExtentHeight() * initImg.getHeight();
+
+        long totalPixels = (long)width * (long)height;
+        if (totalPixels >= Integer.MAX_VALUE) {
+            showError("Error: Unable to display image whose width(" + width + ") * height(" + height + ") is greater than " + Integer.MAX_VALUE);
+            return;
+        }
+
         int tileSize = 1024;
 
         Log.msg(LogType.MANDATORY, "Preparing preview image size: " + width + "x" + height);
@@ -1079,75 +1100,75 @@ public class StitchingExecutor implements Runnable {
 
     public <T> boolean checkOutputGridMemory(TileGrid<ImageTile<T>> grid)
             throws FileNotFoundException {
-
-        ImageTile<T> tile = grid.getTileThatExists();
-        tile.readTile();
-
-        long width = TileGridUtils.getFullImageWidth(grid, tile.getWidth());
-        long height = TileGridUtils.getFullImageHeight(grid, tile.getHeight());
-
-        long numberPixels = width * height;
-        if (numberPixels >= (long) Integer.MAX_VALUE)
-            return false;
-
-        long byteDepth = tile.getBitDepth() / 8;
-
-        // Account for the memory required to hold a single image
-        // Output image is build by read, copy into output, free sequentially
-        long requiredMemoryBytes = tile.getHeight() * tile.getWidth() * byteDepth;
-
-        switch (params.getOutputParams().getBlendingMode()) {
-            case OVERLAY:
-                // requires enough memory to hold the output image
-                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
-                break;
-
-            case AVERAGE:
-                // Account for average blend data
-                if (byteDepth == 3) {
-                    requiredMemoryBytes +=
-                            numberPixels * 3 * 4; // sums = new float[numChannels][height][width];
-                    requiredMemoryBytes +=
-                            numberPixels * 3 * 4; // counts = new int[numChannels][height][width];
-                } else {
-                    requiredMemoryBytes +=
-                            numberPixels * 4; // sums = new float[numChannels][height][width];
-                    requiredMemoryBytes +=
-                            numberPixels * 4; // counts = new int[numChannels][height][width];
-                }
-                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
-
-                break;
-            case LINEAR:
-                // Account for the pixel weights
-                requiredMemoryBytes +=
-                        (long)tile.getHeight() * tile.getWidth()
-                                * 8; // lookupTable = new double[initImgHeight][initImgWidth];
-
-                // Account for average blend data
-                if (byteDepth == 3) {
-                    requiredMemoryBytes +=
-                            numberPixels * 8; // pixelSums = new double[numChannels][height][width];
-                    requiredMemoryBytes +=
-                            numberPixels * 8; // weightSums = new double[numChannels][height][width];
-                } else {
-                    requiredMemoryBytes +=
-                            numberPixels * 8; // pixelSums = new double[numChannels][height][width];
-                    requiredMemoryBytes +=
-                            numberPixels * 8; // weightSums = new double[numChannels][height][width];
-                }
-
-                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
-                break;
-
-            default:
-                break;
-        }
-
-        // pad with 10%
-        requiredMemoryBytes *= 1.1;
-
-        return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
+        return true;
+//        ImageTile<T> tile = grid.getTileThatExists();
+//        tile.readTile();
+//
+//        long width = TileGridUtils.getFullImageWidth(grid, tile.getWidth());
+//        long height = TileGridUtils.getFullImageHeight(grid, tile.getHeight());
+//
+//        long numberPixels = width * height;
+//        if (numberPixels >= (long) Integer.MAX_VALUE)
+//            return false;
+//
+//        long byteDepth = tile.getBitDepth() / 8;
+//
+//        // Account for the memory required to hold a single image
+//        // Output image is build by read, copy into output, free sequentially
+//        long requiredMemoryBytes = tile.getHeight() * tile.getWidth() * byteDepth;
+//
+//        switch (params.getOutputParams().getBlendingMode()) {
+//            case OVERLAY:
+//                // requires enough memory to hold the output image
+//                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+//                break;
+//
+//            case AVERAGE:
+//                // Account for average blend data
+//                if (byteDepth == 3) {
+//                    requiredMemoryBytes +=
+//                            numberPixels * 3 * 4; // sums = new float[numChannels][height][width];
+//                    requiredMemoryBytes +=
+//                            numberPixels * 3 * 4; // counts = new int[numChannels][height][width];
+//                } else {
+//                    requiredMemoryBytes +=
+//                            numberPixels * 4; // sums = new float[numChannels][height][width];
+//                    requiredMemoryBytes +=
+//                            numberPixels * 4; // counts = new int[numChannels][height][width];
+//                }
+//                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+//
+//                break;
+//            case LINEAR:
+//                // Account for the pixel weights
+//                requiredMemoryBytes +=
+//                        (long)tile.getHeight() * tile.getWidth()
+//                                * 8; // lookupTable = new double[initImgHeight][initImgWidth];
+//
+//                // Account for average blend data
+//                if (byteDepth == 3) {
+//                    requiredMemoryBytes +=
+//                            numberPixels * 8; // pixelSums = new double[numChannels][height][width];
+//                    requiredMemoryBytes +=
+//                            numberPixels * 8; // weightSums = new double[numChannels][height][width];
+//                } else {
+//                    requiredMemoryBytes +=
+//                            numberPixels * 8; // pixelSums = new double[numChannels][height][width];
+//                    requiredMemoryBytes +=
+//                            numberPixels * 8; // weightSums = new double[numChannels][height][width];
+//                }
+//
+//                requiredMemoryBytes += numberPixels * byteDepth; // output image matches bit depth
+//                break;
+//
+//            default:
+//                break;
+//        }
+//
+//        // pad with 10%
+//        requiredMemoryBytes *= 1.1;
+//
+//        return requiredMemoryBytes < Runtime.getRuntime().maxMemory();
     }
 
 
