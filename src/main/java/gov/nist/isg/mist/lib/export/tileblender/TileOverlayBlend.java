@@ -50,23 +50,15 @@ public class TileOverlayBlend extends TileBlender {
 
   @Override
   public void blend(int x, int y, Array2DView pixels, ImageTile<?> tile) {
-    ImagePlus imgPlus = tile.getImagePlus();
-
+    ImageProcessor ip = tile.getImageProcessor();
     int tileY = 0;
     for (int row = pixels.getStartRow(); row < pixels.getStartRow() + pixels.getViewHeight(); row++) {
       int tileX = 0;
       for (int col = pixels.getStartCol(); col < pixels.getStartCol() + pixels.getViewWidth(); col++) {
 
-        int[] pixelChannels = imgPlus.getPixel(col, row);
+        int pixel = ip.getPixel(col, row);
+        this.setPixelValue(tileX + x, tileY + y, pixel);
 
-        int val = 0;
-        for (int channel = 0; channel < this.getNumChannels(); channel++) {
-          if (this.getNumChannels() > 1)
-            val = val | ((pixelChannels[channel] & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8));
-          else
-            val = pixelChannels[channel];
-        }
-        this.getIp().set(tileX + x, tileY + y, val);
         tileX++;
       }
       tileY++;

@@ -70,6 +70,64 @@ import ome.xml.model.primitives.PositiveInteger;
  */
 public class LargeImageExporter<T> {
 
+
+  /**
+   * Enum representing the different types of blending modes
+   *
+   * @author Tim Blattner
+   * @version 1.0
+   */
+  public enum BlendingMode {
+    /**
+     * Overlay blending mode
+     */
+    OVERLAY("Overlay", "Choose only one pixel from overlapping pixels based on highest correlation", false),
+
+    /**
+     * Average blending mode
+     */
+    AVERAGE("Average", "Computes the the average intensity for each image", false),
+
+    /**
+     * Linear blending mode
+     */
+    LINEAR("Linear", "Smoothly alters the intensity of the overlapping area between images", true);
+
+    private String name;
+    private String toolTipText;
+    private boolean requiresAlpha;
+
+    private BlendingMode(String name, String toolTipText, boolean requiresAlpha) {
+      this.name = name;
+      this.toolTipText = toolTipText;
+      this.requiresAlpha = requiresAlpha;
+    }
+
+    /**
+     * Returns if alpha is required or not
+     *
+     * @return true if alpha is required, otherwise false
+     */
+    public boolean isRequiresAlpha() {
+      return this.requiresAlpha;
+    }
+
+    /**
+     * Gets the tooltip text
+     *
+     * @return the tooltip text
+     */
+    public String getToolTipText() {
+      return this.toolTipText;
+    }
+
+    @Override
+    public String toString() {
+      return this.name;
+    }
+
+  }
+
   private BlendingMode blendingMode;
   private MicroscopyUnits unit;
   private double unitX;
@@ -147,6 +205,7 @@ public class LargeImageExporter<T> {
     int samplesPerChannel = 1;
     int numBytesPerChannel = 1;
     PixelType pixelType = null;
+    boolean interleaved = false;
 
     switch(this.imageType) {
       case ImagePlus.GRAY8:
@@ -158,9 +217,11 @@ public class LargeImageExporter<T> {
         pixelType = PixelType.UINT16;
         break;
       case ImagePlus.COLOR_RGB:
-        numChannels = 4;
-        numBytesPerChannel = 4;
+        samplesPerChannel = 3;
+//        numChannels = 4;
+        numBytesPerChannel = 3;
         pixelType = PixelType.UINT8;
+        interleaved = true;
         break;
       case ImagePlus.GRAY32:
       default:
@@ -221,11 +282,13 @@ public class LargeImageExporter<T> {
       omexml.setPixelsSizeC(new PositiveInteger(numChannels * samplesPerChannel), 0);
       omexml.setPixelsSizeT(new PositiveInteger(1), 0);
 
+      omexml.setChannelID("Channel:0:" + 0, 0,  0);
+      omexml.setChannelSamplesPerPixel(new PositiveInteger(samplesPerChannel), 0, 0);
 
-      for (int channel = 0; channel < numChannels; channel++) {
-        omexml.setChannelID("Channel:0:" + channel, 0,  channel);
-        omexml.setChannelSamplesPerPixel(new PositiveInteger(samplesPerChannel), 0, channel);
-      }
+//      for (int channel = 0; channel < numChannels; channel++) {
+//        omexml.setChannelID("Channel:0:" + channel, 0,  channel);
+//        omexml.setChannelSamplesPerPixel(new PositiveInteger(samplesPerChannel), 0, channel);
+//      }
 
       Unit<Length> unit = this.unit.getUnit();
 
@@ -239,7 +302,7 @@ public class LargeImageExporter<T> {
 
       OMETiffWriter omeTiffWriter = new OMETiffWriter();
       omeTiffWriter.setMetadataRetrieve(omexml);
-      omeTiffWriter.setInterleaved(false);
+      omeTiffWriter.setInterleaved(interleaved);
       omeTiffWriter.setBigTiff(true);
       omeTiffWriter.setCompression(OMETiffWriter.COMPRESSION_UNCOMPRESSED);
 
@@ -248,6 +311,12 @@ public class LargeImageExporter<T> {
       int actualTileSizeY = omeTiffWriter.setTileSizeY(this.tileDim);
 
       omeTiffWriter.setId(filePath);
+
+      long initTime = 0L;
+      long blendCallTime = 0L;
+      long blendTime = 0L;
+      long postProcessTime = 0L;
+      long closeTime = 0L;
 
       // Loop over each tile to fill them in
       for (int tileRow = 0; tileRow < numTilesRow; ++tileRow) {
@@ -269,12 +338,15 @@ public class LargeImageExporter<T> {
             tileSizeY = this.imageHeight - tileStartY;
           }
 
-
+          long startInit = System.currentTimeMillis();
           tileBlender.init(tileSizeX, tileSizeY);
+          initTime += System.currentTimeMillis() - startInit;
 
           Rectangle2D tileRect = new Rectangle(tileStartX, tileStartY, tileSizeX, tileSizeY);
 
           List<ImageTile<T>> sortedTileList = tileBuckets.getPotentialOverlapTiles(tileRow, tileCol);
+
+          long startBlendTime = System.currentTimeMillis();
 
           for (ImageTile<T> tile : sortedTileList) {
             if (this.isCancelled)
@@ -329,10 +401,15 @@ public class LargeImageExporter<T> {
             tile.readTile();
             Array2DView arrayView = new Array2DView(tile, viewY, copyHeight, viewX, copyWidth);
 
+            long blendCallStart = System.currentTimeMillis();
             tileBlender.blend(tileX, tileY, arrayView, tile);
+            blendCallTime += System.currentTimeMillis() - blendCallStart;
 
             tile.releasePixels();
+
           }
+
+          blendTime += System.currentTimeMillis() - startBlendTime;
 
           int writeXSize = actualTileSizeX;
           int writeYSize = actualTileSizeY;
@@ -345,7 +422,10 @@ public class LargeImageExporter<T> {
             writeYSize = this.imageHeight - tileStartY;
           }
 
+
+          long startPostProc = System.currentTimeMillis();
           tileBlender.postProcess(tileStartX, tileStartY, writeXSize, writeYSize, omeTiffWriter);
+          postProcessTime += System.currentTimeMillis() - startPostProc;
           StitchingGuiUtils.incrementProgressBar(this.progressBar);
         }
 
@@ -353,7 +433,11 @@ public class LargeImageExporter<T> {
       }
 
       StitchingGuiUtils.updateProgressBar(this.progressBar, true, "Finalizing Write");
+      long startClose = System.currentTimeMillis();
       omeTiffWriter.close();
+      closeTime += System.currentTimeMillis() - startClose;
+
+      Log.msg(LogType.MANDATORY, "Blending Profile: Init Time: " + initTime + " Blend Time: " + blendTime + " Blend Call Time: " + blendCallTime +  " Post Proccess Time: " + postProcessTime + " Closing Time: " + closeTime);
 
     } catch (DependencyException e) {
       e.printStackTrace();

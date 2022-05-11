@@ -52,19 +52,30 @@ public class TileAverageBlend extends TileBlender {
 
   @Override
   public void blend(int x, int y, Array2DView pixels, ImageTile<?> tile) {
-    ImagePlus imgPlus = tile.getImagePlus();
+    ImageProcessor ip = tile.getImageProcessor();
 
     int tileY = 0;
     for (int row = pixels.getStartRow(); row < pixels.getStartRow() + pixels.getViewHeight(); row++) {
       int tileX = 0;
       for (int col = pixels.getStartCol(); col < pixels.getStartCol() + pixels.getViewWidth(); col++) {
 
-        int[] pixelChannels = imgPlus.getPixel(col, row);
+        int value = ip.getPixel(col, row);
 
-        for (int channel = 0; channel < this.getNumChannels(); channel++) {
-          this.sums[y + tileY][x + tileX][channel] += pixelChannels[channel];
-          this.counts[y + tileY][x + tileX][channel] += 1;
+        if (this.getNumChannels() == 1) {
+          this.sums[y + tileY][x + tileX][0] += value;
+          this.counts[y + tileY][x + tileX][0] += 1;
+        } else {
+          int r = (value & 16711680) >> 16;
+          int g = (value & '\uff00') >> 8;
+          int b = value & 255;
+          this.sums[y + tileY][x + tileX][0] += r;
+          this.counts[y + tileY][x + tileX][0] += 1;
+          this.sums[y + tileY][x + tileX][1] += g;
+          this.counts[y + tileY][x + tileX][1] += 1;
+          this.sums[y + tileY][x + tileX][2] += b;
+          this.counts[y + tileY][x + tileX][2] += 1;
         }
+
         tileX++;
       }
       tileY++;
@@ -75,23 +86,15 @@ public class TileAverageBlend extends TileBlender {
   @Override
   public void finalizeBlend() {
 
-    for (int row = 0; row < this.getIp().getHeight(); row++) {
-      for (int col = 0; col < this.getIp().getWidth(); col++) {
-
-        int val = 0;
+    for (int row = 0; row < this.getTileHeight(); row++) {
+      for (int col = 0; col < this.getTileWidth(); col++) {
         for (int channel = 0; channel < this.getNumChannels(); channel++) {
           double avgVal = 0.0;
           if (this.counts[row][col][channel] != 0) {
             avgVal = this.sums[row][col][channel] / this.counts[row][col][channel];
           }
-
-          if (this.getNumChannels() > 1) {
-            val = val | ((int) avgVal & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8);
-          } else {
-            val = (int) avgVal;
-          }
+          this.setPixelValueChannel(col, row, channel, (int)avgVal);
         }
-        this.getIp().set(col, row, val);
       }
     }
   }
