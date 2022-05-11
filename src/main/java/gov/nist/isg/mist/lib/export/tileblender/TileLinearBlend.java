@@ -21,6 +21,7 @@ package gov.nist.isg.mist.lib.export.tileblender;
 import gov.nist.isg.mist.lib.common.Array2DView;
 import gov.nist.isg.mist.lib.imagetile.ImageTile;
 import ij.ImagePlus;
+import ij.plugin.filter.ImageProperties;
 import ij.process.*;
 import loci.formats.FormatException;
 import loci.formats.out.OMETiffWriter;
@@ -84,20 +85,32 @@ public class TileLinearBlend extends TileBlender {
 
   @Override
   public void blend(int x, int y, Array2DView pixels, ImageTile<?> tile) {
-    ImagePlus imgPlus = tile.getImagePlus();
+    ImageProcessor ip = tile.getImageProcessor();
 
     int tileY = 0;
     for (int row = pixels.getStartRow(); row < pixels.getStartRow() + pixels.getViewHeight(); row++) {
       int tileX = 0;
       for (int col = pixels.getStartCol(); col < pixels.getStartCol() + pixels.getViewWidth(); col++) {
 
-        int[] pixelChannels = imgPlus.getPixel(col, row);
+        int value = ip.getPixel(col, row);
+//        int[] pixelChannels = imgPlus.getPixel(col, row);
         double weight = this.lookupTable[row][col];
 
-        for (int channel = 0; channel < this.getNumChannels(); channel++) {
-            this.pixelSums[y + tileY][x + tileX][channel] += (weight * pixelChannels[channel]);
-            this.weightSums[y + tileY][x + tileX][channel] += weight;
+        if (this.getNumChannels() == 1) {
+          this.pixelSums[y + tileY][x + tileX][0] += (weight * value);
+          this.weightSums[y + tileY][x + tileX][0] += weight;
+        } else {
+          int r = (value & 16711680) >> 16;
+          int g = (value & '\uff00') >> 8;
+          int b = value & 255;
+          this.pixelSums[y + tileY][x + tileX][0] += (weight * r);
+          this.weightSums[y + tileY][x + tileX][0] += weight;
+          this.pixelSums[y + tileY][x + tileX][1] += (weight * g);
+          this.weightSums[y + tileY][x + tileX][1] += weight;
+          this.pixelSums[y + tileY][x + tileX][2] += (weight * b);
+          this.weightSums[y + tileY][x + tileX][2] += weight;
         }
+
         tileX++;
       }
       tileY++;
@@ -107,22 +120,15 @@ public class TileLinearBlend extends TileBlender {
   @Override
   public void finalizeBlend()
   {
-    for (int row = 0; row < this.getIp().getHeight(); row++) {
-      for (int col = 0; col < this.getIp().getWidth(); col++) {
-        int val = 0;
+    for (int row = 0; row < this.getTileHeight(); row++) {
+      for (int col = 0; col < this.getTileWidth(); col++) {
         for (int channel = 0; channel < this.getNumChannels(); channel++) {
           double weightedVal = 0.0;
           if (this.weightSums[row][col][channel] != 0) {
             weightedVal = this.pixelSums[row][col][channel] / this.weightSums[row][col][channel];
           }
-
-          if (this.getNumChannels() > 1) {
-            val = val | ((int) weightedVal & 0xFF) << ((this.getNumChannels() - 1 - channel) * 8);
-          } else {
-            val = (int) weightedVal;
-          }
+          this.setPixelValueChannel(col, row, channel, (int) weightedVal);
         }
-        this.getIp().set(col, row, val);
       }
     }
   }

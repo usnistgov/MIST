@@ -42,9 +42,14 @@ public abstract class TileBlender {
   private int bytesPerPixel;
   private int imageType;
 
+  private int tileWidth;
+  private int tileHeight;
+
   public TileBlender(int bytesPerPixel, int imageType) {
     this.bytesPerPixel = bytesPerPixel;
     this.imageType = imageType;
+    this.tileWidth = 0;
+    this.tileHeight = 0;
   }
 
   private void configureDefaultProcessor(int tileSizeX, int tileSizeY) {
@@ -66,7 +71,7 @@ public abstract class TileBlender {
   private void convertDefaultProcessor(Object pixels) {
     switch(bytesPerPixel) {
       case 1:
-        this.buffer.put((byte[])pixels);
+//        this.buffer.put((byte[])pixels);
         break;
       case 2:
         ShortBuffer shortBuffer = this.buffer.asShortBuffer();
@@ -81,12 +86,15 @@ public abstract class TileBlender {
   }
 
   public void init(int tileSizeX, int tileSizeY) {
+    this.tileWidth = tileSizeX;
+    this.tileHeight = tileSizeY;
+
     this.buffer = ByteBuffer.allocate(tileSizeY * tileSizeX * this.bytesPerPixel);
     this.buffer.order(ByteOrder.BIG_ENDIAN);
 
     switch(imageType){
       case ImagePlus.GRAY8:
-        this.ip = new ByteProcessor(tileSizeX, tileSizeY);
+//        this.ip = new ByteProcessor(tileSizeX, tileSizeY);
         this.numChannels = 1;
         break;
       case ImagePlus.GRAY16:
@@ -98,8 +106,8 @@ public abstract class TileBlender {
         this.numChannels = 1;
         break;
       case ImagePlus.COLOR_RGB:
-        this.ip = new ColorProcessor(tileSizeX, tileSizeY);
-        this.numChannels = 4;
+//        this.ip = new ColorProcessor(tileSizeX, tileSizeY);
+        this.numChannels = 3;
         break;
       default:
         this.configureDefaultProcessor(tileSizeX, tileSizeY);
@@ -133,6 +141,29 @@ public abstract class TileBlender {
    */
   public abstract void finalizeBlend();
 
+  public void setPixelValueChannel(int x, int y, int c, int value) {
+    if (this.imageType == ImagePlus.GRAY8 || this.imageType == ImagePlus.COLOR_RGB) {
+      this.buffer.put((y * this.tileWidth + x) * this.numChannels + c, (byte) value);
+    } else {
+      this.ip.set(x, y, value);
+    }
+  }
+
+  public void setPixelValue(int x, int y, int value) {
+    if (this.imageType == ImagePlus.GRAY8) {
+      this.buffer.put(y * this.tileWidth + x, (byte)(value & 0xFF));
+    } else if (this.imageType == ImagePlus.COLOR_RGB) {
+      byte r = (byte)((value & 16711680) >> 16);
+      byte g = (byte)((value & '\uff00') >> 8);
+      byte b = (byte)(value & 255);
+      this.buffer.put((y * this.tileWidth + x) * this.numChannels, r);
+      this.buffer.put((y * this.tileWidth + x) * this.numChannels + 1, g);
+      this.buffer.put((y * this.tileWidth + x) * this.numChannels + 2, b);
+    } else {
+      this.ip.set(x, y, value);
+    }
+  }
+
   /**
    * Applies post-processing functions
    */
@@ -140,11 +171,11 @@ public abstract class TileBlender {
     this.finalizeBlend();
 
     // Save to image
-    Object pixels = this.ip.getPixels();
+    Object pixels = this.ip == null ? null : this.ip.getPixels();
 
     switch(imageType){
       case ImagePlus.GRAY8:
-        this.buffer.put((byte[])pixels);
+      case ImagePlus.COLOR_RGB:
         break;
       case ImagePlus.GRAY16:
         ShortBuffer shortBuffer = this.buffer.asShortBuffer();
@@ -154,10 +185,6 @@ public abstract class TileBlender {
         FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
         floatBuffer.put((float[])pixels);
         break;
-      case ImagePlus.COLOR_RGB:
-        IntBuffer intBuffer = this.buffer.asIntBuffer();
-        intBuffer.put((int[])pixels);
-        break;
       default:
         this.convertDefaultProcessor(pixels);
         break;
@@ -166,8 +193,16 @@ public abstract class TileBlender {
     omeTiffWriter.saveBytes(0, this.buffer.array(), tileX, tileY, tileXSize, tileYSize);
   }
 
-  public ImageProcessor getIp() {
-    return ip;
+//  public ImageProcessor getIp() {
+//    return ip;
+//  }
+
+  public int getTileWidth() {
+    return this.tileWidth;
+  }
+
+  public int getTileHeight() {
+    return this.tileHeight;
   }
 
   public ByteBuffer getBuffer() {
