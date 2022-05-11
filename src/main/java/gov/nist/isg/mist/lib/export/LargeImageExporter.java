@@ -70,117 +70,6 @@ import ome.xml.model.primitives.PositiveInteger;
  */
 public class LargeImageExporter<T> {
 
-  private class TileBuckets {
-    private int numTileRows;
-    private int numTileCols;
-    private int tileHeight;
-    private int tileWidth;
-    private int searchHeight;
-    private int searchWidth;
-    private List<List<List<ImageTile<T>>>> tileBuckets;
-    private boolean withOverlap;
-
-    public TileBuckets(int numTileRows, int numTileCols, int tileHeight, int tileWidth, boolean withOverlap) {
-      this.numTileRows = numTileRows;
-      this.numTileCols = numTileCols;
-
-      this.tileHeight = tileHeight;
-      this.tileWidth  = tileWidth;
-
-      this.withOverlap = withOverlap;
-
-      this.searchHeight = 0;
-      this.searchWidth  = 0;
-
-      // Allocate row array
-      this.tileBuckets = new ArrayList<List<List<ImageTile<T>>>>(numTileRows);
-
-      // Allocate col arrays
-      for (int tileRow = 0; tileRow < numTileRows; ++tileRow) {
-        this.tileBuckets.add(new ArrayList<List<ImageTile<T>>>(numTileCols));
-      }
-
-      // Allocate tile arrays
-      for (int tileRow = 0; tileRow < numTileRows; ++tileRow) {
-        for (int tileCol = 0; tileCol < numTileCols; ++tileCol) {
-          this.tileBuckets.get(tileRow).add(new ArrayList<ImageTile<T>>());
-        }
-      }
-    }
-
-    public void addTiles(TileGrid<ImageTile<T>> grid) {
-      // Compute search radius
-
-      ImageTile<T> existingTile = grid.getTileThatExists();
-      existingTile.readTile();
-
-      this.searchHeight = (int)Math.ceil((double)existingTile.getHeight() / this.tileHeight);
-      this.searchWidth  = (int)Math.ceil((double)existingTile.getWidth()  / this.tileWidth);
-
-      // Add tiles to buckets
-
-      // for each image tile get the region ...
-      TileGridTraverser<ImageTile<T>> traverser =
-              TileGridTraverserFactory.makeTraverser(Traversals.ROW, grid);
-
-      int imageTileWidth = existingTile.getWidth();
-      int imageTileHeight = existingTile.getHeight();
-
-      for (ImageTile<T> tile : traverser) {
-
-        int tileRow = 0;
-        int tileCol = 0;
-
-        if (withOverlap) {
-          tileRow = tile.getAbsYPos() / this.tileHeight;
-          tileCol = tile.getAbsXPos() / this.tileWidth;
-        } else {
-          tileRow = tile.getRow() * imageTileHeight / this.tileHeight;
-          tileCol = tile.getCol() * imageTileWidth / this.tileWidth;
-        }
-
-        this.tileBuckets.get(tileRow).get(tileCol).add(tile);
-      }
-    }
-
-    public List<ImageTile<T>> getPotentialOverlapTiles(int tileRow, int tileCol) {
-      int bucketRowStart = tileRow - this.searchHeight;
-      int bucketColStart = tileCol - this.searchWidth;
-
-      // All possible overlapping tiles are to the North and West, so do not search South or East
-      int bucketRowEnd = tileRow + 1;
-      int bucketColEnd = tileCol + 1;
-
-      if (bucketRowStart < 0) bucketRowStart = 0;
-      if (bucketColStart < 0) bucketColStart = 0;
-
-      if (bucketRowEnd > numTileRows) bucketRowEnd = numTileRows;
-      if (bucketColEnd > numTileCols) bucketColEnd = numTileCols;
-
-      List<ImageTile<T>> tiles = new ArrayList<ImageTile<T>>();
-
-      for (int bucketRow = bucketRowStart; bucketRow < bucketRowEnd; ++bucketRow) {
-        for (int bucketCol = bucketColStart; bucketCol < bucketColEnd; ++bucketCol) {
-          tiles.addAll(tileBuckets.get(bucketRow).get(bucketCol));
-        }
-      }
-
-      // Sorts tiles  from smallest correlation tile to largest correlation tile
-      // This enables painting the highest correlation tiles last.
-      Collections.sort(tiles, new Comparator<ImageTile<T>>() {
-
-        @Override
-        public int compare(ImageTile<T> t1, ImageTile<T> t2) {
-          return Double.compare(t1.getTileCorrelation(), t2.getTileCorrelation());
-        }
-
-      });
-
-      return tiles;
-    }
-
-  }
-
   private BlendingMode blendingMode;
   private MicroscopyUnits unit;
   private double unitX;
@@ -284,7 +173,7 @@ public class LargeImageExporter<T> {
     int numTilesRow = (int)Math.ceil((double)this.imageHeight / this.tileDim);
     int numTilesCol = (int)Math.ceil((double)this.imageWidth / this.tileDim);
 
-    TileBuckets tileBuckets = new TileBuckets(numTilesRow, numTilesCol, this.tileDim, this.tileDim, withOverlap);
+    TileBuckets<T> tileBuckets = new TileBuckets<T>(numTilesRow, numTilesCol, this.tileDim, this.tileDim, withOverlap);
 
     tileBuckets.addTiles(this.grid);
 
