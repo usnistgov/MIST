@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import gov.nist.isg.mist.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
-import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.BlendingMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.lib.imagetile.fftw.FftwPlanType;

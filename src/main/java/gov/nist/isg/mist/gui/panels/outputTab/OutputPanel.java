@@ -43,7 +43,7 @@ import gov.nist.isg.mist.gui.panels.inputTab.InputPanel;
 import gov.nist.isg.mist.gui.panels.subgrid.SubgridPanel;
 import gov.nist.isg.mist.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.gui.params.interfaces.GUIParamFunctions;
-import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.BlendingMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import ome.units.UNITS;
 import ome.units.quantity.Length;

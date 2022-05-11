@@ -17,6 +17,7 @@
 
 package gov.nist.isg.mist.lib.executor;
 
+import gov.nist.isg.mist.lib.export.BlendingMode;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
@@ -1027,7 +1028,7 @@ public class StitchingExecutor implements Runnable {
             StitchingGuiUtils.updateProgressBar(progressBar, true, "Initializing image buffer...");
 
             imageExporter = new LargeImageExporter<T>(grid, tileSize, initImg.getImagePlus().getType(), 0, 0,
-                    width, height, LargeImageExporter.BlendingMode.OVERLAY, params.getOutputParams().getPerPixelUnit(),
+                    width, height, BlendingMode.OVERLAY, params.getOutputParams().getPerPixelUnit(),
                     params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progressBar);
             imgFile = imageExporter.exportImageNoOverlap(null);
 

@@ -29,7 +29,7 @@ import gov.nist.isg.mist.gui.params.interfaces.StitchingAppParamFunctions;
 import gov.nist.isg.mist.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.gui.params.utils.PreferencesUtils;
 import gov.nist.isg.mist.gui.params.utils.StitchingParamUtils;
-import gov.nist.isg.mist.lib.export.LargeImageExporter.BlendingMode;
+import gov.nist.isg.mist.lib.export.BlendingMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.log.Log;
 import gov.nist.isg.mist.lib.log.Log.LogType;
