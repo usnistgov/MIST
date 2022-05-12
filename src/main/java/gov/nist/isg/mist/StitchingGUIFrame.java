@@ -98,12 +98,10 @@ public class StitchingGUIFrame extends JFrame implements ActionListener, GUIPara
     init();
 
     add(this.mainFrame);
-    Dimension guiSize = new Dimension(600, 620);
+    Dimension guiSize = new Dimension(600, 680);
     this.setPreferredSize(guiSize);
     this.setSize(guiSize);
     this.setMinimumSize(guiSize);
-
-
   }
 
   /**

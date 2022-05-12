@@ -44,6 +44,7 @@ import gov.nist.isg.mist.gui.panels.subgrid.SubgridPanel;
 import gov.nist.isg.mist.gui.params.StitchingAppParams;
 import gov.nist.isg.mist.gui.params.interfaces.GUIParamFunctions;
 import gov.nist.isg.mist.lib.export.BlendingMode;
+import gov.nist.isg.mist.lib.export.CompressionMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import ome.units.UNITS;
 import ome.units.quantity.Length;
@@ -78,8 +79,10 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
 
   private TextFieldInputPanel<String> filePrefixName;
   private JComboBox blendingType = new JComboBox(BlendingMode.values());
+
   private TextFieldInputPanel<Double> blendingAlpha;
 
+  private JComboBox compressionType = new JComboBox(CompressionMode.values());
 
   private JComboBox unit = new JComboBox(MicroscopyUnits.values());
   private TextFieldInputPanel<Double> xSize;
@@ -184,6 +187,19 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     blendingTooltipText += "</html>";
     this.blendingType.setToolTipText(blendingTooltipText);
 
+    JPanel compressionPanel = new JPanel();
+    compressionPanel.add(new JLabel("Compression mode: "));
+    compressionPanel.add(this.compressionType);
+    this.compressionType.addActionListener(this);
+
+    String compressionTooltipText = "<html>Compression mode:";
+
+    for (CompressionMode cm : CompressionMode.values()) {
+      compressionTooltipText += "<br>" + cm.name() + ": " + cm.getToolTipText();
+    }
+
+    compressionTooltipText += "</html>";
+    this.compressionType.setToolTipText(compressionTooltipText);
 
     // setup the Output Folder panel
     JPanel outputFolderPanel = new JPanel(new GridBagLayout());
@@ -233,12 +249,14 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     c.anchor = GridBagConstraints.LINE_START;
     stitchedImagePanel.add(blendingPanel, c);
     c.gridy = 1;
-    stitchedImagePanel.add(checkBoxPanel, c);
+    stitchedImagePanel.add(compressionPanel, c);
     c.gridy = 2;
-    stitchedImagePanel.add(metaDataPanel, c);
+    stitchedImagePanel.add(checkBoxPanel, c);
     c.gridy = 3;
-    stitchedImagePanel.add(estimatedFileSizePanel, c);
+    stitchedImagePanel.add(metaDataPanel, c);
     c.gridy = 4;
+    stitchedImagePanel.add(estimatedFileSizePanel, c);
+    c.gridy = 5;
     stitchedImagePanel.add(exportInfoPanel, c);
 
 
@@ -347,6 +365,9 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
       BlendingMode blendType = (BlendingMode) this.blendingType.getSelectedItem();
       setAlphaEnabled(blendType.isRequiresAlpha());
     }
+//    else if (e.getSource() == this.compressionType) {
+//      CompressionMode compressionType = (CompressionMode) this.compressionType.getSelectedItem();
+//    }
   }
 
   private void processDocumentEvent(DocumentEvent e) {
@@ -403,6 +424,8 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     this.blendingType.setSelectedItem(params.getOutputParams().getBlendingMode());
     this.blendingAlpha.setValue(params.getOutputParams().getBlendingAlpha());
 
+    this.compressionType.setSelectedItem(params.getOutputParams().getCompressionMode());
+
     this.unit.setSelectedItem(params.getOutputParams().getPerPixelUnit());
     this.xSize.setValue(params.getOutputParams().getPerPixelX());
     this.ySize.setValue(params.getOutputParams().getPerPixelY());
@@ -449,6 +472,7 @@ public class OutputPanel extends JPanel implements GUIParamFunctions, DocumentLi
     params.getOutputParams().setOutputMeta(true);
     params.getOutputParams().setOutFilePrefix(this.filePrefixName.getValue());
     params.getOutputParams().setBlendingMode((BlendingMode) this.blendingType.getSelectedItem());
+    params.getOutputParams().setCompressionMode((CompressionMode)this.compressionType.getSelectedItem());
     params.getOutputParams().setBlendingAlpha(this.blendingAlpha.getValue());
     params.getOutputParams().setPerPixelUnit((MicroscopyUnits) this.unit.getSelectedItem());
     params.getOutputParams().setPerPixelX(this.xSize.getValue());

@@ -71,6 +71,7 @@ import ome.xml.model.primitives.PositiveInteger;
 public class LargeImageExporter<T> {
 
   private BlendingMode blendingMode;
+  private CompressionMode compressionMode;
   private MicroscopyUnits unit;
   private double unitX;
   private double unitY;
@@ -100,6 +101,7 @@ public class LargeImageExporter<T> {
    * @param width       the width of the final image
    * @param height      the height of the final image
    * @param blendingMode     the blending mode
+   * @param compressionMode the compression mode
    * @param progressBar the progress bar
    * @param unit the microscopy unit to save in metadata
    * @param unitX the x size based around unit
@@ -107,7 +109,8 @@ public class LargeImageExporter<T> {
    * @param alpha the alpha value for linear blend
    */
   public LargeImageExporter(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY, int width,
-                            int height, BlendingMode blendingMode, MicroscopyUnits unit, double unitX, double unitY, double alpha, JProgressBar progressBar) {
+                            int height, BlendingMode blendingMode, CompressionMode compressionMode, MicroscopyUnits unit,
+                            double unitX, double unitY, double alpha, JProgressBar progressBar) {
     this.grid = grid;
     this.tileDim = tileDim;
     this.imageType = imageType;
@@ -123,6 +126,7 @@ public class LargeImageExporter<T> {
     this.unitX = unitX;
     this.unitY = unitY;
     this.alpha = alpha;
+    this.compressionMode = compressionMode;
     this.isCancelled = false;
   }
 
@@ -246,7 +250,7 @@ public class LargeImageExporter<T> {
       omeTiffWriter.setMetadataRetrieve(omexml);
       omeTiffWriter.setInterleaved(interleaved);
       omeTiffWriter.setBigTiff(true);
-      omeTiffWriter.setCompression(OMETiffWriter.COMPRESSION_UNCOMPRESSED);
+      omeTiffWriter.setCompression(this.compressionMode.getCompressionName());
 
 
       int actualTileSizeX = omeTiffWriter.setTileSizeX(this.tileDim);
@@ -437,6 +441,7 @@ public class LargeImageExporter<T> {
    * @param width       the width of the large image
    * @param height      the height of the large image
    * @param blendingMode  the blending mode
+   * @param compressionMode the compression mode
    * @param alpha       the alpha value for linear blend
    * @param unit    the unit of measurement
    * @param unitX  the x dim unit value
@@ -446,9 +451,10 @@ public class LargeImageExporter<T> {
    * @return the File object associated with the export
    */
   public static <T> File exportImage(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
-                                          int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
+                                          int width, int height, BlendingMode blendingMode, CompressionMode compressionMode,
+                                     double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, progressBar);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, compressionMode, unit, unitX, unitY, alpha, progressBar);
     return exporter.exportImage(file);
   }
 
@@ -462,6 +468,7 @@ public class LargeImageExporter<T> {
    * @param width   the width of the large image
    * @param height  the height of the large image
    * @param blendingMode the blending function
+   * @param compressionMode the compression mode
    * @param alpha       the alpha value for linear blend
    * @param unit    the unit of measurement
    * @param unitX  the x dim unit value
@@ -469,9 +476,9 @@ public class LargeImageExporter<T> {
    * @param file    the file or null if no save is needed
    */
   public static <T> void exportImage(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
-                                     int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY,File file) throws FileNotFoundException {
+                                     int width, int height, BlendingMode blendingMode, CompressionMode compressionMode, double alpha, MicroscopyUnits unit, double unitX, double unitY,File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, null);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, compressionMode, unit, unitX, unitY, alpha, null);
     exporter.exportImage(file);
 
   }
@@ -487,6 +494,7 @@ public class LargeImageExporter<T> {
    * @param width       the width of the large image
    * @param height      the height of the large image
    * @param blendingMode     the blending mode
+   * @param compressionMode the compression mode
    * @param alpha       the alpha value for linear blend
    * @param unit    the unit of measurement
    * @param unitX  the x dim unit value
@@ -496,9 +504,9 @@ public class LargeImageExporter<T> {
    * @return the File object associated with the export
    */
   public static <T> File exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX,
-                                                   int startY, int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
+                                                   int startY, int width, int height, BlendingMode blendingMode, CompressionMode compressionMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file, JProgressBar progressBar) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha, progressBar);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, compressionMode, unit, unitX, unitY, alpha, progressBar);
     return exporter.exportImageNoOverlap(file);
   }
 
@@ -512,6 +520,7 @@ public class LargeImageExporter<T> {
    * @param width   the width of the large image
    * @param height  the height of the large image
    * @param blendingMode the blending mode
+   * @param compressionMode the compression mode
    * @param alpha   the alpha value for linear blend
    * @param unit    the unit of measurement
    * @param unitX  the x dim unit value
@@ -519,9 +528,9 @@ public class LargeImageExporter<T> {
    * @param file    the file or null if no save is needed
    */
   public static <T> void exportImageNoOverlap(TileGrid<ImageTile<T>> grid, int tileDim, int imageType, int startX, int startY,
-                                              int width, int height, BlendingMode blendingMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file) throws FileNotFoundException {
+                                              int width, int height, BlendingMode blendingMode, CompressionMode compressionMode, double alpha, MicroscopyUnits unit, double unitX, double unitY, File file) throws FileNotFoundException {
     LargeImageExporter<T> exporter =
-        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, unit, unitX, unitY, alpha,null);
+        new LargeImageExporter<T>(grid, tileDim, imageType, startX, startY, width, height, blendingMode, compressionMode, unit, unitX, unitY, alpha,null);
     exporter.exportImageNoOverlap(file);
 
   }

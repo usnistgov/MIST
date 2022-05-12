@@ -18,6 +18,7 @@
 package gov.nist.isg.mist.lib.executor;
 
 import gov.nist.isg.mist.lib.export.BlendingMode;
+import gov.nist.isg.mist.lib.export.CompressionMode;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
@@ -841,7 +842,7 @@ public class StitchingExecutor implements Runnable {
 
         try {
             imageExporter = new LargeImageExporter<T>(grid, tileDim, initImg.getImagePlus().getType(), 0, 0,
-                    width, height, params.getOutputParams().getBlendingMode(), params.getOutputParams().getPerPixelUnit(),
+                    width, height, params.getOutputParams().getBlendingMode(), params.getOutputParams().getCompressionMode(), params.getOutputParams().getPerPixelUnit(),
                     params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progress);
             exportedImg = imageExporter.exportImage(imageFile);
 
@@ -888,7 +889,7 @@ public class StitchingExecutor implements Runnable {
 
             try {
                 imageExporter = new LargeImageExporter<T>(grid, tileSize, initImg.getImagePlus().getType(), 0, 0,
-                        width, height, params.getOutputParams().getBlendingMode(), params.getOutputParams().getPerPixelUnit(),
+                        width, height, params.getOutputParams().getBlendingMode(), params.getOutputParams().getCompressionMode(), params.getOutputParams().getPerPixelUnit(),
                         params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progress);
                 img = imageExporter.exportImage(null);
             } catch (OutOfMemoryError e) {
@@ -1028,7 +1029,7 @@ public class StitchingExecutor implements Runnable {
             StitchingGuiUtils.updateProgressBar(progressBar, true, "Initializing image buffer...");
 
             imageExporter = new LargeImageExporter<T>(grid, tileSize, initImg.getImagePlus().getType(), 0, 0,
-                    width, height, BlendingMode.OVERLAY, params.getOutputParams().getPerPixelUnit(),
+                    width, height, BlendingMode.OVERLAY, CompressionMode.UNCOMPRESSED, params.getOutputParams().getPerPixelUnit(),
                     params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progressBar);
             imgFile = imageExporter.exportImageNoOverlap(null);
 

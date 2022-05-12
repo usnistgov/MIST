@@ -23,6 +23,7 @@ import gov.nist.isg.mist.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.lib.export.BlendingMode;
+import gov.nist.isg.mist.lib.export.CompressionMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.lib.imagetile.fftw.FftwPlanType;
@@ -186,6 +187,13 @@ public class PreferencesUtils {
     return type;
   }
 
+  /**
+   * Loads microscopy units
+   * @param pref the preferences
+   * @param key the key value
+   * @param def the default value
+   * @return the microscopy unit
+   */
   public static MicroscopyUnits loadPrefMicroscopyUnitsType(Preferences pref, String key, String def) {
     String res = pref.get(key, def);
 
@@ -195,6 +203,24 @@ public class PreferencesUtils {
     }
 
     return unit;
+  }
+
+  /**
+   * Loads compression mode
+   * @param pref the preferences
+   * @param key the key value
+   * @param def the default value
+   * @return the compression mode
+   */
+  public static CompressionMode loadPrefCompressionMode(Preferences pref, String key, String def) {
+    String res = pref.get(key, def);
+
+    CompressionMode mode = CompressionMode.valueOf(res.toUpperCase());
+    if (mode == null) {
+      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid CompressionMode");
+    }
+
+    return mode;
   }
 
   /**

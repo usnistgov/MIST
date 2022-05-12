@@ -30,9 +30,11 @@ import gov.nist.isg.mist.gui.params.utils.MacroUtils;
 import gov.nist.isg.mist.gui.params.utils.PreferencesUtils;
 import gov.nist.isg.mist.gui.params.utils.StitchingParamUtils;
 import gov.nist.isg.mist.lib.export.BlendingMode;
+import gov.nist.isg.mist.lib.export.CompressionMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.log.Log;
 import gov.nist.isg.mist.lib.log.Log.LogType;
+import ucar.nc2.stream.NcStreamProto;
 
 /**
  * OutputParameters are the output parameters for Stitching
@@ -49,6 +51,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private static final String OUT_FILE_PREFIX = "outFilePrefix";
   private static final String BLENDING_MODE = "blendingMode";
   private static final String BLENDING_ALPHA = "blendingAlpha";
+  private static final String COMPRESSION_MODE = "compressionMode";
 
   private static final String UNIT = "unit";
   private static final String UNIT_X = "unitX";
@@ -74,6 +77,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
   private BlendingMode blendingMode;
   private double blendingAlpha;
 
+  private CompressionMode compressionMode;
+
   private MicroscopyUnits perPixelUnit;
   private double perPixelX;
   private double perPixelY;
@@ -88,6 +93,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.outFilePrefix = "img-";
     this.blendingMode = BlendingMode.OVERLAY;
     this.blendingAlpha = Double.NaN;
+    this.compressionMode = CompressionMode.UNCOMPRESSED;
     this.perPixelUnit = MicroscopyUnits.MICROMETER;
     this.perPixelX = 1.0;
     this.perPixelY = 1.0;
@@ -296,6 +302,8 @@ public class OutputParameters implements StitchingAppParamFunctions {
       this.blendingMode = BlendingMode.valueOf(value.toUpperCase());
     else if (key.equals(BLENDING_ALPHA))
       this.blendingAlpha = StitchingParamUtils.loadDouble(value, this.blendingAlpha);
+    else if (key.equals(COMPRESSION_MODE))
+      this.compressionMode = CompressionMode.valueOf(value.toUpperCase());
     else if (key.equals(OUT_FILE_PREFIX))
       this.outFilePrefix = value;
     else if (key.equals(UNIT))
@@ -317,6 +325,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.outputImgPyramid = pref.getBoolean(OUTPUT_IMG_PYRAMID, this.outputImgPyramid);
     this.blendingMode = PreferencesUtils.loadPrefBlendingModeType(pref, BLENDING_MODE, this.blendingMode.name());
     this.blendingAlpha = pref.getDouble(BLENDING_ALPHA, this.blendingAlpha);
+    this.compressionMode = PreferencesUtils.loadPrefCompressionMode(pref, COMPRESSION_MODE, this.compressionMode.name());
     this.outFilePrefix = pref.get(OUT_FILE_PREFIX, this.outFilePrefix);
 
     this.perPixelUnit = PreferencesUtils.loadPrefMicroscopyUnitsType(pref, UNIT, this.perPixelUnit.name());
@@ -336,6 +345,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     Log.msg(logLevel, OUTPUT_IMG_PYRAMID + ": " + this.outputImgPyramid);
     Log.msg(logLevel, BLENDING_MODE + ": " + this.blendingMode);
     Log.msg(logLevel, BLENDING_ALPHA + ": " + this.blendingAlpha);
+    Log.msg(logLevel, COMPRESSION_MODE + ": " + this.compressionMode);
     Log.msg(logLevel, OUT_FILE_PREFIX + ": " + this.outFilePrefix);
     Log.msg(logLevel, UNIT + ": " + this.perPixelUnit);
     Log.msg(logLevel, UNIT_X + ": " + this.perPixelX);
@@ -352,6 +362,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.outputImgPyramid = MacroUtils.loadMacroBoolean(macroOptions, OUTPUT_IMG_PYRAMID, this.outputImgPyramid);
     this.blendingMode = MacroUtils.loadMacroBlendingModeType(macroOptions, BLENDING_MODE, this.blendingMode.name());
     this.blendingAlpha = MacroUtils.loadMacroDouble(macroOptions, BLENDING_ALPHA, this.blendingAlpha);
+    this.compressionMode = MacroUtils.loadMacroCompressionMode(macroOptions, COMPRESSION_MODE, this.compressionMode.name());
     this.outFilePrefix = MacroUtils.loadMacroString(macroOptions, OUT_FILE_PREFIX, this.outFilePrefix);
     this.perPixelUnit = MacroUtils.loadMacroMicroscopyUnits(macroOptions, UNIT, this.perPixelUnit.name());
     this.perPixelX = MacroUtils.loadMacroDouble(macroOptions, UNIT_X, this.perPixelX);
@@ -368,6 +379,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     MacroUtils.recordBoolean(OUTPUT_IMG_PYRAMID + ": ", this.outputImgPyramid);
     MacroUtils.recordString(BLENDING_MODE + ": ", this.blendingMode.name());
     MacroUtils.recordDouble(BLENDING_ALPHA + ": ", this.blendingAlpha);
+    MacroUtils.recordString(COMPRESSION_MODE + ": ", this.compressionMode.name());
     MacroUtils.recordString(OUT_FILE_PREFIX + ": ", this.outFilePrefix);
     MacroUtils.recordString(UNIT + ": ", this.perPixelUnit.name());
     MacroUtils.recordDouble(UNIT_X + ": ", this.perPixelX);
@@ -384,6 +396,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
     pref.putBoolean(OUTPUT_IMG_PYRAMID, this.outputImgPyramid);
     pref.put(BLENDING_MODE, this.blendingMode.name());
     pref.putDouble(BLENDING_ALPHA, this.blendingAlpha);
+    pref.put(COMPRESSION_MODE, this.compressionMode.name());
     pref.put(OUT_FILE_PREFIX, this.outFilePrefix);
     pref.put(UNIT, this.perPixelUnit.name());
     pref.putDouble(UNIT_X, this.perPixelX);
@@ -403,6 +416,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
       fw.write(OUTPUT_IMG_PYRAMID + ": " + this.outputImgPyramid + newLine);
       fw.write(BLENDING_MODE + ": " + this.blendingMode.name() + newLine);
       fw.write(BLENDING_ALPHA + ": " + this.blendingAlpha + newLine);
+      fw.write(COMPRESSION_MODE + ": " + this.compressionMode.name() + newLine);
       fw.write(OUT_FILE_PREFIX + ": " + this.outFilePrefix + newLine);
       fw.write(UNIT + ": " + this.perPixelUnit.name() + newLine);
       fw.write(UNIT_X + ": " + this.perPixelX + newLine);
@@ -528,6 +542,19 @@ public class OutputParameters implements StitchingAppParamFunctions {
     this.blendingMode = blendingMode;
   }
 
+  /**
+   * @return the compression mode
+   */
+  public CompressionMode getCompressionMode() {
+    return compressionMode;
+  }
+
+  /**
+   * @param compressionMode the compression mode to set
+   */
+  public void setCompressionMode(CompressionMode compressionMode) {
+    this.compressionMode = compressionMode;
+  }
 
   /**
    * @return the blendingAlpha
@@ -607,6 +634,7 @@ public class OutputParameters implements StitchingAppParamFunctions {
   	parameterNames.add(OUT_FILE_PREFIX);
   	parameterNames.add(BLENDING_MODE);
   	parameterNames.add(BLENDING_ALPHA);
+    parameterNames.add(COMPRESSION_MODE);
   	parameterNames.add(UNIT);
   	parameterNames.add(UNIT_X);
   	parameterNames.add(UNIT_Y);

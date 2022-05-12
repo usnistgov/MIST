@@ -22,6 +22,7 @@ import gov.nist.isg.mist.gui.params.objects.CudaDeviceParam;
 import gov.nist.isg.mist.gui.params.objects.RangeParam;
 import gov.nist.isg.mist.lib.executor.StitchingExecutor.StitchingType;
 import gov.nist.isg.mist.lib.export.BlendingMode;
+import gov.nist.isg.mist.lib.export.CompressionMode;
 import gov.nist.isg.mist.lib.export.MicroscopyUnits;
 import gov.nist.isg.mist.lib.imagetile.Stitching.TranslationRefinementType;
 import gov.nist.isg.mist.lib.imagetile.fftw.FftwPlanType;
@@ -33,6 +34,7 @@ import gov.nist.isg.mist.lib.tilegrid.loader.TileGridLoader.GridOrigin;
 import gov.nist.isg.mist.lib.tilegrid.loader.TileGridLoader.LoaderType;
 import ij.Macro;
 import ij.plugin.frame.Recorder;
+import ucar.nc2.stream.NcStreamProto;
 
 
 /**
@@ -262,6 +264,23 @@ public class MacroUtils {
     return type;
   }
 
+  /**
+   * Loads a macro compression mode enum
+   * @param options the macro options
+   * @param key the key value
+   * @param def the default value
+   * @return the loaded compression mode enum
+   */
+  public static CompressionMode loadMacroCompressionMode(String options, String key, String def) {
+    String res = Macro.getValue(options, key.toLowerCase(), def);
+    CompressionMode type = CompressionMode.valueOf(res.toUpperCase());
+
+    if (type == null) {
+      Log.msg(LogType.MANDATORY, "Error parsing macro: " + key + " must be valid CompressionMode");
+    }
+
+    return type;
+  }
 
   /**
    * Loads a macro microscopy unit enum
