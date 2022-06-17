@@ -117,14 +117,18 @@ public class PreferencesUtils {
    */
   public static StitchingType loadPrefProgramType(Preferences pref, String key, String def) {
     String res = pref.get(key, def);
+    try {
+      StitchingType progType = StitchingType.valueOf(res.toUpperCase());
 
-    StitchingType progType = StitchingType.valueOf(res.toUpperCase());
+      if (progType == null) {
+        Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid StitchingType");
+      }
 
-    if (progType == null) {
-      Log.msg(LogType.MANDATORY, "Error parsing preferences: " + key + " must be valid StitchingType");
+      return progType;
+    } catch(IllegalArgumentException ex) {
+      Log.msg(LogType.MANDATORY, res.toUpperCase() + " is not longer being used, reverting to " + StitchingType.FFTW.name());
+      return StitchingType.FFTW;
     }
-
-    return progType;
   }
 
   /**
