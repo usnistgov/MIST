@@ -108,6 +108,7 @@ class Assemble:
                 raise RuntimeError('Img {} has type: {}, expected {}.'.format(fn, tile.dtype, first_tile.dtype))
 
             stitched_img[y:y+tile_h, x:x+tile_w, :] = tile
+            del self.file_and_content[fn] # release memory
 
         print('Saving stitched image to disk')
         skimage.io.imsave(output_filepath, stitched_img, plugin=None, tile=(1024, 1024), check_contrast=False)
