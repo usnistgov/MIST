@@ -13,6 +13,28 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <transformers>
+                                <transformer implementation=
+                                                     "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>gov.nist.isg.mist.MISTMain</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
@@ -47,6 +69,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <classpathPrefix>src/</classpathPrefix>
                             <mainClass>gov.nist.isg.mist.MISTMain</mainClass>
                         </manifest>
                     </archive>
@@ -55,6 +78,7 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
+
         </plugins>
         <!--<outputDirectory>${project.build.directory}/maven-results/</outputDirectory>-->
     </build>

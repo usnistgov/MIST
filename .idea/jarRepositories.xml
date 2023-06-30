@@ -9,12 +9,12 @@
     <remote-repository>
       <option name="id" value="mist.in-project" />
       <option name="name" value="In Project Repo" />
-      <option name="url" value="file://$PROJECT_DIR$/java_libs" />
+      <option name="url" value="file://C:\Users\tjb3\Documents\work\MIST-master/java_libs" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="mist.in-project" />
       <option name="name" value="In Project Repo" />
-      <option name="url" value="file://C:\Users\tjb3\Documents\work\MIST-master/java_libs" />
+      <option name="url" value="file://C:\Users\tjb3\Documents\work\MIST/java_libs" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="ome.snapshots" />
@@ -24,7 +24,7 @@
     <remote-repository>
       <option name="id" value="mist.in-project" />
       <option name="name" value="In Project Repo" />
-      <option name="url" value="file://C:\Users\tjb3\Documents\work\MIST/java_libs" />
+      <option name="url" value="file://$PROJECT_DIR$/java_libs" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
