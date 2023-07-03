@@ -380,7 +380,6 @@ class StageModel():
                     if tile is None:
                         continue
                     t = tile.get_translation(direction)
-                    t.ncc = np.nan
                     if direction == 'VERTICAL':
                         t.y = est_translation
                         t.x = 0
@@ -424,13 +423,13 @@ class StageModel():
                 t = tile.get_translation(direction)
                 if t is None:
                     continue
-                t.ncc = np.nan
-                if direction == 'VERTICAL':
-                    t.y = int(direction_of_travel_estimate)
-                    t.x = 0
-                else:
-                    t.y = 0
-                    t.x = int(direction_of_travel_estimate)
+                if np.isnan(t.ncc):
+                    if direction == 'VERTICAL':
+                        t.y = int(direction_of_travel_estimate)
+                        t.x = 0
+                    else:
+                        t.y = 0
+                        t.x = int(direction_of_travel_estimate)
 
     def build(self):
         # create a copy of the translations before optimization

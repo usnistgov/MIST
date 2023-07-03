@@ -21,6 +21,8 @@ class TileGrid():
 
         # init a 2d list to hold Tiles
         self.tiles = [[None for _ in range(self.args.grid_width)] for _ in range(self.args.grid_height)]
+        self.height = self.args.grid_height
+        self.width = self.args.grid_width
 
     def get_tile(self, r: int, c: int) -> tile.Tile:
         if r >= 0 and c >= 0 and r < self.args.grid_height and c < self.args.grid_width:
@@ -56,7 +58,7 @@ class TileGrid():
 
     def print_peaks(self, dir: str, key: str):
         assert dir in ['north', 'west']
-        assert key in ['ncc', 'x', 'y']
+        assert key in ['ncc', 'x', 'y', 'abs_x', 'abs_y']
 
         str = "{} {} matrix:\n".format(dir, key)
         for r in range(self.args.grid_height):
@@ -74,7 +76,7 @@ class TileGrid():
             str += "\n"
         logging.info(str)
 
-    def write_to_file(self, output_filepath: str):
+    def write_translations_to_file(self, output_filepath: str):
         with open(output_filepath, 'w') as f:
             for r in range(self.args.grid_height):
                 for c in range(self.args.grid_width):
@@ -87,12 +89,26 @@ class TileGrid():
                     if west is not None:
                         t = tile.west_translation
                         if t is not None:
-                            f.write("west, {}, {}, {}, {}, {}\n".format(tile.name, west.name, t.ncc, t.x, t.y))
+                                f.write("west, {}, {}, {}, {}, {}\n".format(tile.name, west.name, t.ncc, t.x, t.y))
 
                     if north is not None:
                         t = tile.north_translation
                         if t is not None:
-                            f.write("north, {}, {}, {}, {}, {}\n".format(tile.name, north.name, t.ncc, t.x, t.y))
+                                f.write("north, {}, {}, {}, {}, {}\n".format(tile.name, north.name, t.ncc, t.x, t.y))
+
+    def write_global_positions_to_file(self, output_filepath: str):
+        with open(output_filepath, 'w') as f:
+            for r in range(self.args.grid_height):
+                for c in range(self.args.grid_width):
+                    tile = self.get_tile(r, c)
+                    if tile is None:
+                        continue
+
+                    ncc = tile.get_max_translation_ncc()
+                    if np.isnan(ncc):
+                        ncc = -1.0
+
+                    f.write("file: {}; corr: {:0.10f}; position: ({:d}, {:d}); grid: ({:d}, {:d});\n".format(tile.name, ncc, tile.abs_x, tile.abs_y, c, r))
 
 
 class TileGridRowCol(TileGrid):

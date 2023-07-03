@@ -21,6 +21,7 @@ import utils
 import pciam
 import stage_model
 import translation_refinement
+import assemble
 
 
 
@@ -38,22 +39,30 @@ def mist_single_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
     tile_grid.print_peaks('west', 'x')
 
     # write pre-optimization translations to file
-    output_filename = args.output_prefix + "relative-positions-no-optimization-{}.txt".format(args.time_slice)
-    tile_grid.write_to_file(os.path.join(args.output_dirpath, output_filename))
+    output_filename = "{}relative-positions-no-optimization-{}.txt".format(args.output_prefix, args.time_slice)
+    tile_grid.write_translations_to_file(os.path.join(args.output_dirpath, output_filename))
 
     # build the stage model
     sm = stage_model.StageModel(args, tile_grid)
     sm.build()
 
     # refine the translations
+    # TODO this translation refinement needs parallelization
     translation_refiner = translation_refinement.RefineSequential(args, tile_grid, sm)
     translation_refiner.execute()
 
     # TODO compose global positions
     # resume from GlobalOptimization.java line 106
+    global_positions = translation_refinement.GlobalPositions(tile_grid)
+    global_positions.traverse_minimum_spanning_tree()
 
+    output_filename = "{}global-positions-{}.txt".format(args.output_prefix, args.time_slice)
+    global_positions_filepath = os.path.join(args.output_dirpath, output_filename)
+    tile_grid.write_global_positions_to_file(global_positions_filepath)
 
-    raise NotImplementedError
+    if args.save_image:
+        img_output_filepath = os.path.join(args.output_dirpath, "{}stitched-{}.tiff".format(args.output_prefix, args.time_slice))
+        assemble.assemble_image(global_positions_filepath, args.image_dirpath, img_output_filepath)
 
 
 def mist_multi_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
@@ -66,7 +75,7 @@ def mist(args: argparse.Namespace):
     os.makedirs(args.output_dirpath)
 
     # add the file based handler to the logger
-    fh = logging.FileHandler(filename=os.path.join(args.output_dirpath, 'log.txt'))
+    fh = logging.FileHandler(filename=os.path.join(args.output_dirpath, '{}log.txt'.format(args.output_prefix)))
     fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"))
     logging.getLogger().addHandler(fh)
 
@@ -77,11 +86,6 @@ def mist(args: argparse.Namespace):
         tile_grid = grid.TileGridRowCol(args)
     else:
         raise RuntimeError("Unknown filename pattern type: {}".format(args.filename_pattern_type))
-
-    # a = tile_grid.get_tile(0, 0)
-    # b = tile_grid.get_tile(0, 1)
-    # results = pciam.compute_pciam(a, b, 2)
-    # print(results)
 
     if args.disable_mem_cache:
         mist_single_threaded(args, tile_grid)
