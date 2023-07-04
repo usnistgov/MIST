@@ -56,22 +56,23 @@ class TileGrid():
 
 
     def print_names(self):
-        str = "Tile grid:\n"
+        str = "Tile grid:"
         for r in range(self.args.grid_height):
+            str += "\n"
             for c in range(self.args.grid_width):
                 if self.tiles[r][c] is None:
                     str += "None\t"
                 else:
                     str += self.tiles[r][c].name + "\t"
-            str += "\n"
         logging.info(str)
 
     def print_peaks(self, dir: str, key: str):
         assert dir in ['north', 'west']
         assert key in ['ncc', 'x', 'y', 'abs_x', 'abs_y']
 
-        str = "{} {} matrix:\n".format(dir, key)
+        str = "{} {} matrix:".format(dir, key)
         for r in range(self.args.grid_height):
+            str += "\n"
             for c in range(self.args.grid_width):
                 tile = self.get_tile(r, c)
                 if tile is None:
@@ -83,7 +84,6 @@ class TileGrid():
                     str += "{:0.2f}\t".format(getattr(t, key))
                 else:
                     str += "None\t"
-            str += "\n"
         logging.info(str)
 
     def write_translations_to_file(self, output_filepath: str):

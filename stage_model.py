@@ -39,8 +39,9 @@ class StageModel():
         assert direction in ['VERTICAL', 'HORIZONTAL']
         translations = list()
 
-        str = "Grid translations for direction: {}\n".format(direction)
+        str = "Grid translations for direction: {}".format(direction)
         for r in range(self.args.grid_height):
+            row_str = ""
             for c in range(self.args.grid_width):
                 tile = self.tile_grid.get_tile(r, c)
                 if tile is None:
@@ -51,8 +52,9 @@ class StageModel():
                     continue
                 val = t.x if direction == 'HORIZONTAL' else t.y
                 translations.append(val)
-                str += "{}, ".format(val)
-            str += "\n"
+                row_str += "{}, ".format(val)
+            if len(row_str) > 0:
+                str += "\n{}".format(row_str)
         if print_log:
             logging.info(str)
 
@@ -110,25 +112,54 @@ class StageModel():
     def filer_translations_remove_outliers(self, direction: str, valid_tiles: set[tile.Tile]) -> set[tile.Tile]:
         assert direction in ['VERTICAL', 'HORIZONTAL']
 
-        # only filter if there are more than 3 translations
-        if len(valid_tiles) < 3:
-            return valid_tiles
+        def lcl_filter(valid_tiles: set[tile.Tile], direction: str, displacement: str) -> set[tile.Tile]:
+            """
+            # filter the translations to remove outliers
+            # compute the statistics required to determine which translations are outliers
+            # q1 is first quartile
+            # q2 is second quartile (median)
+            # q3 is third quartile
+            # filter based on (>q3 + w(q3-q1)) and (<q1 - w(q3-q1))
+            """
+            # only filter if there are more than 3 translations
+            if len(valid_tiles) < 3:
+                return valid_tiles
 
-        # filter the translations to remove outliers
-        # compute the statistics required to determine which translations are outliers
-        # q1 is first quartile
-        # q2 is second quartile (median)
-        # q3 is third quartile
-        # filter based on (>q3 + w(q3-q1)) and (<q1 - w(q3-q1))
-        t_vals = [t.west_translation.x if direction == 'HORIZONTAL' else t.north_translation.y for t in valid_tiles]
-        percs = np.percentile(t_vals, [25, 75])
-        q1 = percs[0]
-        q3 = percs[1]
-        iqr = np.abs(q3 - q1)
-        w = 1.5  # default statistical outlier w (1.5)
-        # keep only those tiles within the interquartile range
-        idx = np.logical_and(t_vals >= (q1 - w * iqr), t_vals <= (q3 + w * iqr))
-        valid_tiles = set([t for t, i in zip(valid_tiles, idx) if i])
+            if displacement == 'x':
+                t_vals = [t.get_translation(direction).x for t in valid_tiles]
+            else:
+                t_vals = [t.get_translation(direction).y for t in valid_tiles]
+
+            m = np.median(t_vals)
+            less_than = [t for t in t_vals if t < m]
+            greater_than = [t for t in t_vals if t > m]
+            if len(less_than) < 3 or len(greater_than) < 3:
+                return valid_tiles
+
+            q1 = np.median(less_than)
+            q3 = np.median(greater_than)
+            iqr = np.abs(q3 - q1)
+            w = 1.5  # default statistical outlier w (1.5)
+            # keep only those tiles within the interquartile range
+
+            new_valid_tiles = set()
+            for t in valid_tiles:
+                if displacement == 'x':
+                    val = t.get_translation(direction).x
+                else:
+                    val = t.get_translation(direction).y
+                if val >= (q1 - w * iqr) and val <= (q3 + w * iqr):
+                    new_valid_tiles.add(t)
+            return new_valid_tiles
+
+        # filter the translations by the primary travel direction first
+        if direction == 'VERTICAL':
+            valid_tiles = lcl_filter(valid_tiles, direction, 'y')
+            valid_tiles = lcl_filter(valid_tiles, direction, 'x')
+        else:
+            valid_tiles = lcl_filter(valid_tiles, direction, 'y')
+            valid_tiles = lcl_filter(valid_tiles, direction, 'x')
+
         return valid_tiles
 
     def filter_translations(self, direction) -> set[tile.Tile]:
@@ -159,6 +190,7 @@ class StageModel():
         # Filter based on t_min, t_max, and minCorrelation, and orthogonal direction
 
         valid_tiles = set()
+        tile_count = 0
         for r in range(self.args.grid_height):
             for c in range(self.args.grid_width):
                 tile = self.tile_grid.get_tile(r, c)
@@ -168,6 +200,8 @@ class StageModel():
                 t = tile.get_translation(direction)
                 if t is None:
                     continue
+
+                tile_count += 1
                 if t.ncc < self.args.valid_correlation_threshold:
                     # correlation is below valid threshold
                     continue
@@ -187,7 +221,12 @@ class StageModel():
                         continue
 
                 valid_tiles.add(tile)
+
         valid_tiles = self.filer_translations_remove_outliers(direction, valid_tiles)
+        valid_perc = 100.0 * len(valid_tiles) / tile_count
+        logging.info("{} valid tiles after outlier filter: {} out of {}  ({:0.1f}%)".format(direction, len(valid_tiles), tile_count, valid_perc))
+        self.stats['{}_valid_tiles_after_filter'.format(direction.lower())] = len(valid_tiles)
+        self.stats['{}_total_tiles'.format(direction.lower())] = tile_count
         return valid_tiles
 
     def compute_repeatability(self, direction: str):
@@ -266,8 +305,10 @@ class StageModel():
         # This operates per row or column depending on the direction
         if direction == 'VERTICAL':
             valid_tiles = self.vertical_valid_tiles
+            repeatability = self.vertical_repeatability
         else:
             valid_tiles = self.horizontal_valid_tiles
+            repeatability = self.horizontal_repeatability
 
         # compute median x and y values per row or col over the valid tiles
         med_x_vals = dict()
@@ -280,8 +321,8 @@ class StageModel():
             t = tile.get_translation(direction)
             if t is None:
                 continue
-            med_x_vals[key].append(t.x if direction == 'VERTICAL' else t.x)
-            med_y_vals[key].append(t.y if direction == 'VERTICAL' else t.y)
+            med_x_vals[key].append(t.x)
+            med_y_vals[key].append(t.y)
         for key in med_x_vals.keys():
             med_x_vals[key] = np.median(med_x_vals[key])
             med_y_vals[key] = np.median(med_y_vals[key])
@@ -307,12 +348,12 @@ class StageModel():
                     t.ncc = np.nan
                     continue
 
-                x_min = med_x_vals[key] - self.repeatability
-                x_max = med_x_vals[key] + self.repeatability
-                y_min = med_y_vals[key] - self.repeatability
-                y_max = med_y_vals[key] + self.repeatability
+                x_min = med_x_vals[key] - repeatability
+                x_max = med_x_vals[key] + repeatability
+                y_min = med_y_vals[key] - repeatability
+                y_max = med_y_vals[key] + repeatability
                 # If correlation is less than CorrelationThreshold or outside x range or outside y range, then throw away
-                if t.ncc < 0.5 or t.x < x_min or t.x > x_max or t.y < y_min or t.y > y_max:
+                if t.ncc < self.args.valid_correlation_threshold or t.x < x_min or t.x > x_max or t.y < y_min or t.y > y_max:
                     if tile in valid_tiles:
                         # remove it from the valid tiles list if present
                         valid_tiles.remove(tile)
