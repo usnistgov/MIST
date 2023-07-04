@@ -185,19 +185,17 @@ class RefineSequential(Refine):
                 tile = self.tile_grid.get_tile(r, c)
                 if tile is None:
                     continue
-                west = self.tile_grid.get_tile(r, c - 1)
-                if west is None:
-                    continue
 
-                # optimize with west neighbor
-                self.optimize_direction(tile, west, 'west')
+                west = self.tile_grid.get_tile(r, c - 1)
+                if west is not None:
+                    # optimize with west neighbor
+                    self.optimize_direction(tile, west, 'west')
 
                 north = self.tile_grid.get_tile(r - 1, c)
-                if north is None:
-                    continue
+                if north is not None:
+                    # optimize with west neighbor
+                    self.optimize_direction(tile, north, 'north')
 
-                # optimize with west neighbor
-                self.optimize_direction(tile, north, 'north')
 
         elapsed_time = time.time() - start_time
         logging.info("Translation Refinement took {} seconds".format(elapsed_time))

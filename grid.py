@@ -81,7 +81,11 @@ class TileGrid():
 
                 t = tile.west_translation if dir == 'west' else tile.north_translation
                 if t is not None:
-                    str += "{:0.2f}\t".format(getattr(t, key))
+                    val = getattr(t, key)
+                    if np.isnan(val):
+                        str += "nan \t"  # print nan with a trailing space to make it the same size as the rest of the values
+                    else:
+                        str += "{:0.2f}\t".format(val)
                 else:
                     str += "None\t"
         logging.info(str)
