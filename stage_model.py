@@ -35,12 +35,11 @@ class StageModel():
         self.missing_rows = None
         self.missing_cols = None
 
-    def get_translations(self, direction: str):
+    def get_all_translations_for_direction(self, direction: str, print_log: bool = False):
         assert direction in ['VERTICAL', 'HORIZONTAL']
-        img_shape = self.tile_grid.get_image_shape()
-        h_or_w = img_shape[0] if direction == 'VERTICAL' else img_shape[1]
         translations = list()
 
+        str = "Grid translations for direction: {}\n".format(direction)
         for r in range(self.args.grid_height):
             for c in range(self.args.grid_width):
                 tile = self.tile_grid.get_tile(r, c)
@@ -51,16 +50,23 @@ class StageModel():
                 if t is None:
                     continue
                 val = t.x if direction == 'HORIZONTAL' else t.y
-                if val > 1 and val < h_or_w - 1:
-                    translations.append(val)
+                translations.append(val)
+                str += "{}, ".format(val)
+            str += "\n"
+        if print_log:
+            logging.info(str)
 
         return translations
 
     def compute_overlap(self, direction: str):
         assert direction in ['VERTICAL', 'HORIZONTAL']
-        translations = self.get_translations(direction)
+        translations = self.get_all_translations_for_direction(direction, print_log=True)
+        # remove translations that are out of range, or consist of a single pixel
+        h_or_w = self.tile_grid.get_image_size_per_direction(direction)
+        translations = [t for t in translations if t > 1 and t < h_or_w - 1]
         if len(translations) == 0:
             raise RuntimeError("No translations found in direction: {}".format(direction))
+        logging.info("Translations used for MLE {}:\n{}".format(direction, translations))
 
         img_shape = self.tile_grid.get_image_shape()
         h_or_w = img_shape[0] if direction == 'VERTICAL' else img_shape[1]
@@ -187,7 +193,7 @@ class StageModel():
     def compute_repeatability(self, direction: str):
         assert direction in ['VERTICAL', 'HORIZONTAL']
 
-        translations = self.get_translations(direction)
+        translations = self.get_all_translations_for_direction(direction)
         if len(translations) == 0:
             raise RuntimeError("No translations found in direction: {}".format(direction))
 
@@ -203,10 +209,10 @@ class StageModel():
             logging.warning("No good translations found for direction: {}. Estimated translations generated from the overlap.".format(direction))
             if self.args.stage_repeatability is not None:
                 logging.warning("No good translations found for direction: {}. Repeatability has been set to {} (advanced options value).".format(direction, self.args.stage_repeatability))
+                stage_repeatability = self.args.stage_repeatability
             else:
                 logging.warning("No good translations found for direction: {}. Repeatability has been set to 0. Please define a valid stage repeatability if possible.".format(direction))
-
-            stage_repeatability = 0
+                stage_repeatability = 0
         else:
             # the valid translations list was not empty
             logging.info("Computing min/max combinations using {} valid translations".format(len(valid_tiles)))
@@ -240,8 +246,15 @@ class StageModel():
 
             stage_repeatability = np.max([repeatability1, repeatability2])
             logging.info("Computed {} Repeatability: {} = max({}, {})".format(direction, stage_repeatability, repeatability1, repeatability2))
+
+            if direction == 'HORIZONTAL':
+                self.stats['horizontal_repeatability'] = stage_repeatability
+            else:
+                self.stats['vertical_repeatability'] = stage_repeatability
             if self.args.stage_repeatability is not None:
-                logging.info("Overridden by user specified repeatability: {}".format(self.args.stage_repeatability))
+                logging.info("Computed stage repeatability overridden by user specified repeatability: {}".format(self.args.stage_repeatability))
+                stage_repeatability = self.args.stage_repeatability
+
             if stage_repeatability > 10:
                 logging.warning("The computed Repeatability ({}) is unusually large. Consider manually specifying the repeatability in the Advanced Parameters.".format(stage_repeatability))
 
@@ -434,20 +447,18 @@ class StageModel():
     def build(self):
         # build stage model
         start_time = time.time()
-        self.horizontal_overlap = self.compute_overlap("HORIZONTAL")
-        self.stats['horizontal_overlap'] = self.horizontal_overlap
         self.vertical_overlap = self.compute_overlap("VERTICAL")
-        self.stats['vertical_overlap'] = self.vertical_overlap
+        self.horizontal_overlap = self.compute_overlap("HORIZONTAL")
 
         if self.args.horizontal_overlap is not None:
             logging.info("Overriding horizontal overlap with user provided value: {}".format(self.args.horizontal_overlap))
             self.horizontal_overlap = self.args.horizontal_overlap
-            self.stats['horizontal_overlap'] = self.horizontal_overlap
+        self.stats['horizontal_overlap'] = self.horizontal_overlap
 
         if self.args.vertical_overlap is not None:
             logging.info("Overriding vertical overlap with user provided value: {}".format(self.args.vertical_overlap))
             self.vertical_overlap = self.args.vertical_overlap
-            self.stats['vertical_overlap'] = self.vertical_overlap
+        self.stats['vertical_overlap'] = self.vertical_overlap
 
         if not np.isfinite(self.horizontal_overlap):
             raise RuntimeError("Compute horizontal image grid overlap is not finite: {}. Please provide the appropriate overlap via the command line".format(self.horizontal_overlap))
@@ -455,12 +466,9 @@ class StageModel():
             raise RuntimeError("Compute image grid vertical overlap is not finite: {}. Please provide the appropriate overlap via the command line".format(self.vertical_overlap))
 
         # compute stage repeatability
-        self.horizontal_repeatability = self.compute_repeatability("HORIZONTAL")
-        self.stats['horizontal_repeatability'] = self.horizontal_repeatability
         self.vertical_repeatability = self.compute_repeatability("VERTICAL")
-        self.stats['vertical_repeatability'] = self.vertical_repeatability
+        self.horizontal_repeatability = self.compute_repeatability("HORIZONTAL")
         self.repeatability = int(max(self.horizontal_repeatability, self.vertical_repeatability))
-        self.stats['repeatability'] = self.repeatability
         logging.info("Global Stage Model Repeatability = {}".format(self.repeatability))
 
         self.apply_model_per_direction("HORIZONTAL")
@@ -468,6 +476,7 @@ class StageModel():
         # update the repeatability to reflect the search range (to encompass +- r)
         self.repeatability = int(2 * self.repeatability + 1)
         logging.info("Calculated Repeatability = {} pixels".format(self.repeatability))
+
         elapsed_time = time.time() - start_time
         logging.info("Stage Model Computation Time = {} seconds".format(elapsed_time))
 
@@ -477,15 +486,15 @@ class StageModel():
         h_keys = [k for k in key_list if k.startswith('horizontal')]
         other_keys = [k for k in key_list if k not in n_keys and k not in h_keys]
         with open(output_filepath, 'w') as f:
-            for key in other_keys:
-                f.write("{}: {}\n".format(key, self.stats[key]))
-            f.write("\n")
+            if len(other_keys) > 0:
+                for key in other_keys:
+                    f.write("{}: {}\n".format(key, self.stats[key]))
+                f.write("\n")
             for key in n_keys:
                 f.write("{}: {}\n".format(key, self.stats[key]))
             f.write("\n")
             for key in h_keys:
                 f.write("{}: {}\n".format(key, self.stats[key]))
-            f.write("\n")
 
 
 

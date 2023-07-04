@@ -44,6 +44,16 @@ class TileGrid():
 
         return self.img_height, self.img_width
 
+    def get_image_size_per_direction(self, direction) -> int:
+        img_shape = self.get_image_shape()
+        if direction == 'HORIZONTAL':
+            return img_shape[1]
+        elif direction == 'VERTICAL':
+            return img_shape[0]
+        else:
+            raise ValueError("Invalid direction: {}".format(direction))
+
+
 
     def print_names(self):
         str = "Tile grid:\n"

@@ -142,7 +142,7 @@ class RefineSequential(Refine):
 
         # determine how many converged
         converged = np.sum([1 for peak in peak_results if peak.x == best_peak.x and peak.y == best_peak.y])
-        logging.info("Translation Hill Climb ({}, ({}) had {}/{} hill climbs converge with best ncc = {}".format(t1.name, t2.name, converged, n, best_peak.ncc))
+        logging.debug("Translation Hill Climb ({}, ({}) had {}/{} hill climbs converge with best ncc = {}".format(t1.name, t2.name, converged, n, best_peak.ncc))
         return best_peak
 
 

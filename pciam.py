@@ -159,16 +159,11 @@ class PCIAM(ABC):
         t1_img = t1.get_image()
         t2_img = t2.get_image()
 
-        # fc = np.fft.fft2(t1_img.astype(np.float32)) * np.conj(np.fft.fft2(t2_img.astype(np.float32)))
-        # fc = np.clip(fc, a_min=1e-16, a_max=None)
-        # fc = np.nan_to_num(fc, nan=1e-16, copy=False)  # replace nans with min value
-        # fcn = fc / np.abs(fc)
-        # pcm = np.real(np.fft.ifft2(fcn))
-
         # use scipy over np to do fft in 32bit (for complex64 result)
         fc = scipy.fft.fft2(t1_img.astype(np.float32)) * np.conj(scipy.fft.fft2(t2_img.astype(np.float32)))
-        fc = np.clip(fc, a_min=1e-16, a_max=None)
-        fc = np.nan_to_num(fc, nan=1e-16, copy=False)  # replace nans with min value
+        np.clip(fc.real, a_min=1e-16, a_max=None, out=fc.real)  # specify out for in place clip
+        np.clip(fc.imag, a_min=1e-16, a_max=None, out=fc.imag)  # specify out for in place clip
+        fc = np.nan_to_num(fc, nan=1e-16, copy=False)  # replace nans with min value, copy=False for in place
         fcn = fc / np.abs(fc)
         pcm = np.real(scipy.fft.ifft2(fcn))
 

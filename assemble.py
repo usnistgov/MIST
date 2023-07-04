@@ -66,7 +66,7 @@ def assemble_image(global_positions_filepath, images_dirpath, output_filepath):
         fn = img_names[i]
         x = pixel_x_position[i]
         y = pixel_y_position[i]
-        logging.info('Img {}/{}. Placing {} at ({}, {})'.format(i, len(img_names), fn, x, y))
+        logging.debug('Img {}/{}. Placing {} at ({}, {})'.format(i, len(img_names), fn, x, y))
         tile = skimage.io.imread(os.path.join(images_dirpath, fn))
         if tile.shape != tile_shape:
             raise RuntimeError('All images must be the same shape. Image {} is {}, expected {}'.format(fn, tile.shape, tile_shape))
