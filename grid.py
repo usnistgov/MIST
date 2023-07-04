@@ -89,12 +89,12 @@ class TileGrid():
                     if west is not None:
                         t = tile.west_translation
                         if t is not None:
-                                f.write("west, {}, {}, {}, {}, {}\n".format(tile.name, west.name, t.ncc, t.x, t.y))
+                                f.write("west, {}, {}, {:0.10f}, {:d}, {:d}\n".format(tile.name, west.name, t.ncc, t.x, t.y))
 
                     if north is not None:
                         t = tile.north_translation
                         if t is not None:
-                                f.write("north, {}, {}, {}, {}, {}\n".format(tile.name, north.name, t.ncc, t.x, t.y))
+                                f.write("north, {}, {}, {:0.10f}, {:d}, {:d}\n".format(tile.name, north.name, t.ncc, t.x, t.y))
 
     def write_global_positions_to_file(self, output_filepath: str):
         with open(output_filepath, 'w') as f:

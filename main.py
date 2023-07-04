@@ -27,16 +27,16 @@ import assemble
 
 
 def mist_single_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
-    tile_grid.print_names()
+    # tile_grid.print_names()
 
     logging.info("Computing all pairwise translations for between images")
     # TODO this will need parallelization
     translation_computation = pciam.SequentialPciam(args)
     translation_computation.execute(tile_grid)
 
-    tile_grid.print_peaks('north', 'ncc')
-    tile_grid.print_peaks('west', 'ncc')
-    tile_grid.print_peaks('west', 'x')
+    # tile_grid.print_peaks('north', 'ncc')
+    # tile_grid.print_peaks('west', 'ncc')
+    # tile_grid.print_peaks('west', 'x')
 
     # write pre-optimization translations to file
     output_filename = "{}relative-positions-no-optimization-{}.txt".format(args.output_prefix, args.time_slice)
@@ -45,6 +45,8 @@ def mist_single_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
     # build the stage model
     sm = stage_model.StageModel(args, tile_grid)
     sm.build()
+    output_filename = "{}statistics-{}.txt".format(args.output_prefix, args.time_slice)
+    sm.save_stats(os.path.join(args.output_dirpath, output_filename))
 
     # refine the translations
     # TODO this translation refinement needs parallelization
@@ -55,6 +57,9 @@ def mist_single_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
     # resume from GlobalOptimization.java line 106
     global_positions = translation_refinement.GlobalPositions(tile_grid)
     global_positions.traverse_minimum_spanning_tree()
+
+    output_filename = "{}relative-positions-{}.txt".format(args.output_prefix, args.time_slice)
+    tile_grid.write_translations_to_file(os.path.join(args.output_dirpath, output_filename))
 
     output_filename = "{}global-positions-{}.txt".format(args.output_prefix, args.time_slice)
     global_positions_filepath = os.path.join(args.output_dirpath, output_filename)
@@ -69,10 +74,11 @@ def mist_multi_threaded(args: argparse.Namespace, tile_grid: grid.TileGrid):
     raise NotImplementedError
 
 def mist(args: argparse.Namespace):
-    if os.path.exists(args.output_dirpath):
-        import shutil
-        shutil.rmtree(args.output_dirpath)
-    os.makedirs(args.output_dirpath)
+    # if os.path.exists(args.output_dirpath):
+    #     import shutil
+    #     shutil.rmtree(args.output_dirpath)
+    if not os.path.exists(args.output_dirpath):
+        os.makedirs(args.output_dirpath)
 
     # add the file based handler to the logger
     fh = logging.FileHandler(filename=os.path.join(args.output_dirpath, '{}log.txt'.format(args.output_prefix)))
@@ -126,7 +132,7 @@ if __name__ == "__main__":
     parser.add_argument('--time-slice', type=int, default=0)  # optional, sets the time slice to stitch when timeslice is present in the filename pattern
 
     # advanced parameters
-    parser.add_argument('--translation-refinement-method', type=str, default='SINGLEHILLCLIMB', choices=['SINGLEHILLCLIMB', 'MULTIPOINTHILLCLIMB', 'EXHAUSTIVE'])
+    parser.add_argument('--translation-refinement-method', type=str, default='SINGLEHILLCLIMB', choices=['SINGLEHILLCLIMB', 'MULTIPOINTHILLCLIMB'])
     parser.add_argument('--num-hill-climbs', type=int, default=16)
     parser.add_argument('--num-fft-peaks', type=int, default=2)
 

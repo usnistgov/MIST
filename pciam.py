@@ -159,12 +159,18 @@ class PCIAM(ABC):
         t1_img = t1.get_image()
         t2_img = t2.get_image()
 
-        # use scipy of np to do fft in 32bit (for complex64 result)
+        # fc = np.fft.fft2(t1_img.astype(np.float32)) * np.conj(np.fft.fft2(t2_img.astype(np.float32)))
+        # fc = np.clip(fc, a_min=1e-16, a_max=None)
+        # fc = np.nan_to_num(fc, nan=1e-16, copy=False)  # replace nans with min value
+        # fcn = fc / np.abs(fc)
+        # pcm = np.real(np.fft.ifft2(fcn))
+
+        # use scipy over np to do fft in 32bit (for complex64 result)
         fc = scipy.fft.fft2(t1_img.astype(np.float32)) * np.conj(scipy.fft.fft2(t2_img.astype(np.float32)))
         fc = np.clip(fc, a_min=1e-16, a_max=None)
         fc = np.nan_to_num(fc, nan=1e-16, copy=False)  # replace nans with min value
         fcn = fc / np.abs(fc)
-        pcm = np.real(np.fft.ifft2(fcn))
+        pcm = np.real(scipy.fft.ifft2(fcn))
 
         # get the n_peaks largest values using argpartition to avoid sort
         indices = pcm.argpartition(pcm.size - n_peaks, axis=None)[-n_peaks:]

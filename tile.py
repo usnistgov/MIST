@@ -26,9 +26,6 @@ class Tile():
         self.west_translation = None
         self.north_translation = None
 
-        self.west_translation_pre_optimization = None
-        self.north_translation_pre_optimization = None
-
         self.abs_x = 0
         self.abs_y = 0
 
@@ -114,19 +111,19 @@ class Tile():
         if self.north_of(other):
             peak = other.north_translation
             self.abs_x = x - peak.x
-            self.abs_y = y - peak.x
+            self.abs_y = y - peak.y
 
         if self.south_of(other):
             peak = self.north_translation
             self.abs_x = x + peak.x
-            self.abs_y = y + peak.x
+            self.abs_y = y + peak.y
 
         if self.west_of(other):
             peak = other.west_translation
             self.abs_x = x - peak.x
-            self.abs_y = y - peak.x
+            self.abs_y = y - peak.y
 
         if self.east_of(other):
             peak = self.west_translation
             self.abs_x = x + peak.x
-            self.abs_y = y + peak.x
+            self.abs_y = y + peak.y

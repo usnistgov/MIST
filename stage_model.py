@@ -4,7 +4,6 @@ import numpy as np
 import logging
 import time
 
-
 # local imports
 import grid
 import translation_refinement
@@ -24,10 +23,7 @@ class StageModel():
         self.horizontal_overlap: float = None
         self.vertical_overlap: float = None
 
-        self.vertical_min_translation_threshold: int = None
-        self.vertical_max_translation_threshold: int = None
-        self.horizontal_min_translation_threshold: int = None
-        self.horizontal_max_translation_threshold: int = None
+        self.stats = dict()
 
         self.horizontal_repeatability: int = None
         self.vertical_repeatability: int = None
@@ -145,16 +141,14 @@ class StageModel():
             t_min = height - (overlap + self.args.overlap_uncertainty) * height / 100.0
             t_max = height - (overlap - self.args.overlap_uncertainty) * height / 100.0
             overlap_error = self.args.overlap_uncertainty * height / 100.0
-            self.vertical_min_translation_threshold = t_min
-            self.vertical_max_translation_threshold = t_max
         else:
             overlap = self.horizontal_overlap
             t_min = width - (overlap + self.args.overlap_uncertainty) * width / 100.0
             t_max = width - (overlap - self.args.overlap_uncertainty) * width / 100.0
             overlap_error = self.args.overlap_uncertainty * width / 100.0
-            self.horizontal_min_translation_threshold = t_min
-            self.horizontal_max_translation_threshold = t_max
 
+        self.stats['{}_min_filter_threshold'.format(direction.lower())] = t_min
+        self.stats['{}_max_filter_threshold'.format(direction.lower())] = t_max
         logging.info("{} translation filter min={:0.2f}, max={:0.2f}".format(direction, t_min, t_max))
         # Filter based on t_min, t_max, and minCorrelation, and orthogonal direction
 
@@ -313,6 +307,9 @@ class StageModel():
                 else:
                     valid_tiles.add(tile)  # set add wont have duplicates
 
+            self.stats['{}_valid_tiles'.format(direction.lower())] = len(valid_tiles)
+
+
     def replace_invalid_translations_per_row_col(self, direction: str):
         assert direction in ['VERTICAL', 'HORIZONTAL']
 
@@ -402,6 +399,9 @@ class StageModel():
         empty_rows_cols = self.missing_cols if direction == 'VERTICAL' else self.missing_rows
         if len(empty_rows_cols) > 0:
             logging.info("Missing rows/cols: {}".format(empty_rows_cols))
+        self.stats['{}_missing_rows_cols'.format(direction.lower())] = empty_rows_cols
+        val = len(empty_rows_cols) / self.args.grid_height if direction == 'VERTICAL' else len(empty_rows_cols) / self.args.grid_width
+        self.stats['{}_missing_rows_cols_percentage'.format(direction.lower())] = val
 
         valid_tiles = self.vertical_valid_tiles if direction == 'VERTICAL' else self.horizontal_valid_tiles
         if len(valid_tiles) > 0:
@@ -432,26 +432,22 @@ class StageModel():
                         t.x = int(direction_of_travel_estimate)
 
     def build(self):
-        # create a copy of the translations before optimization
-        for r in range(self.args.grid_height):
-            for c in range(self.args.grid_width):
-                tile = self.tile_grid.get_tile(r, c)
-                if tile is not None:
-                    tile.west_translation_pre_optimization = tile.west_translation
-                    tile.north_translation_pre_optimization = tile.north_translation
-
         # build stage model
         start_time = time.time()
         self.horizontal_overlap = self.compute_overlap("HORIZONTAL")
+        self.stats['horizontal_overlap'] = self.horizontal_overlap
         self.vertical_overlap = self.compute_overlap("VERTICAL")
+        self.stats['vertical_overlap'] = self.vertical_overlap
 
         if self.args.horizontal_overlap is not None:
             logging.info("Overriding horizontal overlap with user provided value: {}".format(self.args.horizontal_overlap))
             self.horizontal_overlap = self.args.horizontal_overlap
+            self.stats['horizontal_overlap'] = self.horizontal_overlap
 
         if self.args.vertical_overlap is not None:
             logging.info("Overriding vertical overlap with user provided value: {}".format(self.args.vertical_overlap))
             self.vertical_overlap = self.args.vertical_overlap
+            self.stats['vertical_overlap'] = self.vertical_overlap
 
         if not np.isfinite(self.horizontal_overlap):
             raise RuntimeError("Compute horizontal image grid overlap is not finite: {}. Please provide the appropriate overlap via the command line".format(self.horizontal_overlap))
@@ -460,8 +456,11 @@ class StageModel():
 
         # compute stage repeatability
         self.horizontal_repeatability = self.compute_repeatability("HORIZONTAL")
+        self.stats['horizontal_repeatability'] = self.horizontal_repeatability
         self.vertical_repeatability = self.compute_repeatability("VERTICAL")
+        self.stats['vertical_repeatability'] = self.vertical_repeatability
         self.repeatability = int(max(self.horizontal_repeatability, self.vertical_repeatability))
+        self.stats['repeatability'] = self.repeatability
         logging.info("Global Stage Model Repeatability = {}".format(self.repeatability))
 
         self.apply_model_per_direction("HORIZONTAL")
@@ -471,6 +470,22 @@ class StageModel():
         logging.info("Calculated Repeatability = {} pixels".format(self.repeatability))
         elapsed_time = time.time() - start_time
         logging.info("Stage Model Computation Time = {} seconds".format(elapsed_time))
+
+    def save_stats(self, output_filepath):
+        key_list = self.stats.keys()
+        n_keys = [k for k in key_list if k.startswith('vertical')]
+        h_keys = [k for k in key_list if k.startswith('horizontal')]
+        other_keys = [k for k in key_list if k not in n_keys and k not in h_keys]
+        with open(output_filepath, 'w') as f:
+            for key in other_keys:
+                f.write("{}: {}\n".format(key, self.stats[key]))
+            f.write("\n")
+            for key in n_keys:
+                f.write("{}: {}\n".format(key, self.stats[key]))
+            f.write("\n")
+            for key in h_keys:
+                f.write("{}: {}\n".format(key, self.stats[key]))
+            f.write("\n")
 
 
 
