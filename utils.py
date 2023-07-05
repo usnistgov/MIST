@@ -9,7 +9,7 @@ def is_ide_debug_mode():
     import sys
     gettrace = getattr(sys, 'gettrace', None)
     if gettrace():
-        logging.info("Detected IDE debug mode, setting number of workers to 0 to allow IDE debugger to work with pytorch.")
+        logging.info("Detected IDE debug mode")
         return True
     return False
 
@@ -23,9 +23,6 @@ def get_num_workers():
     except KeyError as e:
         pass  # do nothing
 
-    if is_ide_debug_mode():
-        # IDE is debug (works at least of PyCharm), so set num workers to 0
-        num_workers = 0
     logging.info("Using {} Workers".format(num_workers))
     return num_workers
 

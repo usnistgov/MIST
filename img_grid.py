@@ -6,7 +6,7 @@ import skimage.io
 import logging
 
 # local imports
-import tile
+import img_tile
 
 
 
@@ -24,7 +24,14 @@ class TileGrid():
         self.height = self.args.grid_height
         self.width = self.args.grid_width
 
-    def get_tile(self, r: int, c: int) -> tile.Tile:
+    def load_images_into_memory(self):
+        for r in range(self.args.grid_height):
+            for c in range(self.args.grid_width):
+                t = self.get_tile(r, c)
+                if t is not None:
+                    t.get_image()  # loads the image into memory
+
+    def get_tile(self, r: int, c: int) -> img_tile.Tile:
         if r >= 0 and c >= 0 and r < self.args.grid_height and c < self.args.grid_width:
             return self.tiles[r][c]
         else:
@@ -53,7 +60,13 @@ class TileGrid():
         else:
             raise ValueError("Invalid direction: {}".format(direction))
 
-
+    def get_num_valid_tiles(self):
+        count = 0
+        for r in range(self.args.grid_height):
+            for c in range(self.args.grid_width):
+                if self.get_tile(r, c) is not None:
+                    count += 1
+        return count
 
     def print_names(self):
         str = "Tile grid:"
@@ -180,8 +193,9 @@ class TileGridRowCol(TileGrid):
                 fmt_str = "{:0" + str(len(col_match.group(2)) - 2) + "d}"
                 fn = "{}{}{}".format(col_match.group(1), fmt_str.format(col + self.args.start_col), col_match.group(3))
 
-                t = tile.Tile(grid_row, grid_col, os.path.join(self.args.image_dirpath, fn), disable_cache=self.args.disable_mem_cache)
-                self.tiles[grid_row][grid_col] = t
+                if os.path.exists(os.path.join(self.args.image_dirpath, fn)):
+                    t = img_tile.Tile(grid_row, grid_col, os.path.join(self.args.image_dirpath, fn), disable_cache=self.args.disable_mem_cache)
+                    self.tiles[grid_row][grid_col] = t
                 grid_col += col_incrementer
             grid_row += row_incrementer
 
@@ -193,4 +207,133 @@ class TileGridSequential(TileGrid):
     def __init__(self, args: argparse.Namespace):
         super().__init__(args)
 
-        raise NotImplementedError()
+        self._filename_pattern = self.args.filename_pattern
+        time_matcher = re.compile(self.timePattern)
+        time_match = time_matcher.match(self._filename_pattern)
+        if time_match is not None:
+            if self.args.time_slice is None:
+                raise RuntimeError("Filename pattern has a time component \"{t+}\", so a time slice is required.")
+            fmt_str = "{:0" + str(len(time_match.group(2)) - 2) + "d}"
+            self._filename_pattern = "{}{}{}".format(time_match.group(1), fmt_str.format(self.args.time_slice), time_match.group(3))
+
+        self._sequential_matcher = re.compile(self.positionPattern)
+
+        if self.args.numbering_pattern == 'HORIZONTALCOMBING':
+            self._fill_numbering_by_row()
+        elif self.args.numbering_pattern == 'HORIZONTALCONTINUOUS':
+            self._fill_numbering_by_row_chained()
+        elif self.args.numbering_pattern == 'VERTICALCOMBING':
+            self._fill_numbering_by_col()
+        elif self.args.numbering_pattern == 'VERTICALCONTINUOUS':
+            self._fill_numbering_by_col_chained()
+        else:
+            raise RuntimeError("Unknown grid origin: {}".format(self.args.numbering_pattern))
+
+        if self.args.grid_origin == 'UL':
+            pass
+        elif self.args.grid_origin == 'UR':
+            self._reflect_numbering_vertical()
+        elif self.args.grid_origin == 'LL':
+            self._reflect_numbering_horizontal()
+        elif self.args.grid_origin == 'LR':
+            self._reflect_numbering_vertical()
+            self._reflect_numbering_horizontal()
+        else:
+            raise RuntimeError("Unknown grid origin: {}".format(self.args.grid_origin))
+
+
+    def _init_tile(self, r, c, index):
+        seq_match = self._sequential_matcher.match(self._filename_pattern)
+        fmt_str = "{:0" + str(len(seq_match.group(2)) - 2) + "d}"
+        fn = "{}{}{}".format(seq_match.group(1), fmt_str.format(index), seq_match.group(3))
+        if os.path.exists(os.path.join(self.args.image_dirpath, fn)):
+            t = img_tile.Tile(r, c, os.path.join(self.args.image_dirpath, fn), disable_cache=self.args.disable_mem_cache)
+            self.tiles[r][c] = t
+
+    def _fill_numbering_by_row(self):
+        index = self.args.start_tile
+        for r in range(self.args.grid_height):
+            for c in range(self.args.grid_width):
+                self._init_tile(r, c, index)
+                index += 1
+
+    def _fill_numbering_by_row_chained(self):
+        index = self.args.start_tile
+        for r in range(self.args.grid_height):
+            if r % 2 == 0:
+                for c in range(self.args.grid_width):
+                    self._init_tile(r, c, index)
+                    index += 1
+            else:
+                for c in range(self.args.grid_width - 1, -1, -1):
+                    self._init_tile(r, c, index)
+                    index += 1
+
+    def _fill_numbering_by_col(self):
+        index = self.args.start_tile
+        for c in range(self.args.grid_width):
+            for r in range(self.args.grid_height):
+                self._init_tile(r, c, index)
+                index += 1
+
+    def _fill_numbering_by_col_chained(self):
+        index = self.args.start_tile
+        for c in range(self.args.grid_width):
+            if c % 2 == 0:
+                for r in range(self.args.grid_height):
+                    self._init_tile(r, c, index)
+                    index += 1
+            else:
+                for r in range(self.args.grid_height - 1, -1, -1):
+                    self._init_tile(r, c, index)
+                    index += 1
+
+    def _reflect_numbering_vertical(self):
+        """
+        reflect the grid numbering around the vertical axis
+        """
+        for r in range(self.height):
+            for c in range(int(self.width / 2)):
+                col_offset = self.width - c - 1
+                tile = self.tiles[r][c]
+                other = self.tiles[r][col_offset]
+                if tile is not None and other is not None:
+                    tmp_fp = tile.filepath
+                    tmp_fn = tile.name
+                    tile.name = other.name
+                    tile.filepath = other.filepath
+                    other.name = tmp_fn
+                    other.filepath = tmp_fp
+                if tile is not None and other is None:
+                    self.tiles[r][col_offset] = tile
+                    tile.c = col_offset
+                    self.tiles[r][c] = None
+                if tile is None and other is not None:
+                    self.tiles[r][c] = other
+                    other.c = c
+                    self.tiles[r][col_offset] = None
+
+    def _reflect_numbering_horizontal(self):
+        """
+        reflect the grid numbering around the vertical axis
+        """
+        for r in range(int(self.height / 2)):
+            row_offset = self.height - r - 1
+            for c in range(self.width):
+                tile = self.tiles[r][c]
+                other = self.tiles[row_offset][c]
+                if tile is not None and other is not None:
+                    tmp_fp = tile.filepath
+                    tmp_fn = tile.name
+                    tile.name = other.name
+                    tile.filepath = other.filepath
+                    other.name = tmp_fn
+                    other.filepath = tmp_fp
+                if tile is not None and other is None:
+                    self.tiles[row_offset][c] = tile
+                    tile.r = row_offset
+                    self.tiles[r][c] = None
+                if tile is None and other is not None:
+                    self.tiles[r][c] = other
+                    other.r = r
+                    self.tiles[row_offset][c] = None

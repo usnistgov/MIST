@@ -1,5 +1,7 @@
 *.dat
 *.class
+__pychache__
+*.pyc
 
 # jekyll files
 _site/

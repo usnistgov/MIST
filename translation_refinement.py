@@ -1,5 +1,4 @@
 import argparse
-import os
 import numpy as np
 import logging
 import time
@@ -8,11 +7,11 @@ import copy
 import enum
 
 # local imports
-import grid
-import tile
-import mle
+import img_grid
+import img_tile
 import stage_model
 import pciam
+import utils
 
 
 class HillClimbDirection(enum.Enum):
@@ -31,9 +30,10 @@ class HillClimbDirection(enum.Enum):
         self.x = x
         self.y = y
 
+
 class Refine(ABC):
     @staticmethod
-    def hill_climb_worker(i1: np.ndarray, i2: np.ndarray, x_min: int, x_max: int, y_min: int, y_max: int, start_x: int, start_y: int, cache: np.ndarray) -> tile.Peak:
+    def hill_climb_worker(i1: np.ndarray, i2: np.ndarray, x_min: int, x_max: int, y_min: int, y_max: int, start_x: int, start_y: int, cache: np.ndarray) -> img_tile.Peak:
         """
         Computes cross correlation search with hill climbing
         :param i1: image 1 (ego)
@@ -48,7 +48,7 @@ class Refine(ABC):
         :return:
         """
 
-        best_peak = tile.Peak(ncc=np.nan, x=start_x, y=start_y)
+        best_peak = img_tile.Peak(ncc=np.nan, x=start_x, y=start_y)
 
         # walk hill climb until we reach a top
         while True:
@@ -64,6 +64,7 @@ class Refine(ABC):
                 best_peak.ncc = pciam.PCIAM.compute_cross_correlation(i1, i2, best_peak.x, best_peak.y)
                 cache[cur_y_idx, cur_x_idx] = best_peak.ncc
 
+            search_center = copy.deepcopy(best_peak)
             # Check each direction and move based on highest correlation
             for d in HillClimbDirection._member_names_:
                 dir = HillClimbDirection[d]
@@ -71,8 +72,8 @@ class Refine(ABC):
                     continue
 
                 # Check if moving dir is in bounds
-                new_x = best_peak.x + dir.x
-                new_y = best_peak.y + dir.y
+                new_x = search_center.x + dir.x
+                new_y = search_center.y + dir.y
                 if new_y >= y_min and new_y <= y_max and new_x >= x_min and new_x <= x_max:
                     # Check if we have already computed the peak at dir
                     ncc = cache[cur_y_idx + dir.y, cur_x_idx + dir.x]
@@ -90,23 +91,14 @@ class Refine(ABC):
                 break
 
         if np.isnan(best_peak.ncc):
+            # no best peak was found, use center of search area
             best_peak.x = int((x_max + x_min) / 2)
             best_peak.y = int((y_max + y_min) / 2)
             best_peak.ncc = -1.0
         return best_peak
 
-
-
-
-class RefineSequential(Refine):
-    def __init__(self, args: argparse.Namespace, tile_grid: grid.TileGrid, stage_model: stage_model.StageModel):
-        self.args = args
-        self.tile_grid = tile_grid
-        self.stage_model = stage_model
-
-
     @staticmethod
-    def multipoint_hill_climb(n: int, t1: tile.Tile, t2: tile.Tile, x_min: int, x_max: int, y_min: int, y_max: int, start_x: int, start_y: int) -> tile.Peak:
+    def multipoint_hill_climb(num_hill_climbs: int, t1: img_tile.Tile, t2: img_tile.Tile, x_min: int, x_max: int, y_min: int, y_max: int, start_x: int, start_y: int) -> img_tile.Peak:
         i1 = t1.get_image()
         i2 = t2.get_image()
         img_shape = i1.shape
@@ -120,7 +112,7 @@ class RefineSequential(Refine):
         y_max = np.clip(y_max, -(height - 1), height - 1)
 
         # create array of peaks +1 for inclusive
-        cache = np.nan * np.ones((x_max - x_min + 1, y_max - y_min + 1), dtype=np.float32)
+        cache = np.nan * np.ones((x_max - x_min + 2, y_max - y_min + 2), dtype=np.float32)  # +2 to be inclusive of both end points
 
         peak_results = list()
         # evaluate the starting point hill climb
@@ -128,7 +120,7 @@ class RefineSequential(Refine):
         peak_results.append(peak)
 
         # perform the random starting point multipoint hill climbing
-        for i in range(n - 1):
+        for i in range(num_hill_climbs - 1):
             # generate random starting point
             start_x = np.random.randint(x_min, x_max + 1)
             start_y = np.random.randint(y_min, y_max + 1)
@@ -142,42 +134,39 @@ class RefineSequential(Refine):
 
         # determine how many converged
         converged = np.sum([1 for peak in peak_results if peak.x == best_peak.x and peak.y == best_peak.y])
-        logging.debug("Translation Hill Climb ({}, ({}) had {}/{} hill climbs converge with best ncc = {}".format(t1.name, t2.name, converged, n, best_peak.ncc))
+        logging.info("Translation Hill Climb ({}, ({}) had {}/{} hill climbs converge with best ncc = {}".format(t1.name, t2.name, converged, num_hill_climbs, best_peak.ncc))
         return best_peak
 
-
-    def optimize_direction(self, tile: tile.Tile, other: tile.Tile, direction: str):
+    @staticmethod
+    def optimize_direction(tile: img_tile.Tile, other: img_tile.Tile, direction: str, repeatability: int, num_hill_climbs: int) -> img_tile.Peak:
         assert direction in ['west', 'north']
         relevant_translation = tile.west_translation if direction == 'west' else tile.north_translation
-        x_min = relevant_translation.x - self.stage_model.repeatability
-        x_max = relevant_translation.x + self.stage_model.repeatability
-        y_min = relevant_translation.y - self.stage_model.repeatability
-        y_max = relevant_translation.y + self.stage_model.repeatability
-
         orig_peak = copy.deepcopy(relevant_translation)
-        if self.args.translation_refinement_method == 'SINGLEHILLCLIMB':
-            new_peak = self.multipoint_hill_climb(1, other, tile, x_min, x_max, y_min, y_max, orig_peak.x, orig_peak.y)
-        elif self.args.translation_refinement_method == 'MULTIPOINTHILLCLIMB':
-            new_peak = self.multipoint_hill_climb(self.args.num_hill_climbs, other, tile, x_min, x_max, y_min, y_max, orig_peak.x, orig_peak.y)
-        else:
-            raise RuntimeError("Unknown translation refinement method: {}".format(self.args.translation_refinement_method))
+        x_min = orig_peak.x - repeatability
+        x_max = orig_peak.x + repeatability
+        y_min = orig_peak.y - repeatability
+        y_max = orig_peak.y + repeatability
 
-        if direction == 'west':
-            tile.west_translation = new_peak
-        else:
-            tile.north_translation = new_peak
+        new_peak = Refine.multipoint_hill_climb(num_hill_climbs, other, tile, x_min, x_max, y_min, y_max, orig_peak.x, orig_peak.y)
 
+        # If the old correlation was a number, then it was a good translation.
+        # Increment the new translation by the value of the old correlation to increase beyond 1
+        # This will enable these tiles to have higher priority in minimum spanning tree search
         if not np.isnan(orig_peak.ncc):
-            # If the old correlation was a number, then it was a good translation.
-            # Increment the new translation by the value of the old correlation to increase beyond 1
-            # This will enable these tiles to have higher priority in minimum spanning tree search
-            if direction == 'west':
-                tile.west_translation.ncc += 3.0
-            else:
-                tile.north_translation.ncc += 3.0
+            new_peak.ncc += 3.0
 
+        return new_peak
+
+
+
+class RefineSequential(Refine):
+    def __init__(self, args: argparse.Namespace, tile_grid: img_grid.TileGrid, sm: stage_model.StageModel):
+        self.args = args
+        self.tile_grid = tile_grid
+        self.sm = sm
 
     def execute(self):
+        logging.info("Starting Translation Refinement")
         start_time = time.time()
         # iterate over the tile grid
         for r in range(self.args.grid_height):
@@ -189,13 +178,66 @@ class RefineSequential(Refine):
                 west = self.tile_grid.get_tile(r, c - 1)
                 if west is not None:
                     # optimize with west neighbor
-                    self.optimize_direction(tile, west, 'west')
+                    tile.west_translation = Refine.optimize_direction(tile, west, 'west', self.sm.repeatability, self.args.num_hill_climbs)
 
                 north = self.tile_grid.get_tile(r - 1, c)
                 if north is not None:
-                    # optimize with west neighbor
-                    self.optimize_direction(tile, north, 'north')
+                    # optimize with north neighbor
+                    tile.north_translation = Refine.optimize_direction(tile, north, 'north', self.sm.repeatability, self.args.num_hill_climbs)
 
+        elapsed_time = time.time() - start_time
+        logging.info("Translation Refinement took {} seconds".format(elapsed_time))
+
+
+class RefineParallel(Refine):
+    def __init__(self, args: argparse.Namespace, tile_grid: img_grid.TileGrid, sm: stage_model.StageModel):
+        self.args = args
+        self.tile_grid = tile_grid
+        self.sm = sm
+
+    @staticmethod
+    def _worker(tile: img_tile.Tile, other: img_tile.Tile, direction: str, repeatability: int, num_hill_climbs: int, r: int, c: int) -> tuple[img_tile.Peak, int, int, str]:
+        return Refine.optimize_direction(tile, other, direction, repeatability, num_hill_climbs), r, c, direction
+
+
+    def execute(self):
+        logging.info("Starting Translation Refinement")
+        start_time = time.time()
+
+        worker_input_list = list()
+        # iterate over the tile grid
+        for r in range(self.args.grid_height):
+            for c in range(self.args.grid_width):
+                tile = self.tile_grid.get_tile(r, c)
+                if tile is None:
+                    continue
+
+                west = self.tile_grid.get_tile(r, c - 1)
+                if west is not None:
+                    # optimize with west neighbor
+                    worker_input_list.append((tile, west, 'west', self.sm.repeatability, self.args.num_hill_climbs, r, c))
+
+                north = self.tile_grid.get_tile(r - 1, c)
+                if north is not None:
+                    # optimize with north neighbor
+                    worker_input_list.append((tile, north, 'north', self.sm.repeatability, self.args.num_hill_climbs, r, c))
+
+        # results = list()
+        # for worker_input in worker_input_list:
+        #     results.append(self._worker(*worker_input))
+        import multiprocessing
+        with multiprocessing.Pool(processes=utils.get_num_workers()) as pool:
+            # perform the work in parallel
+            results = pool.starmap(self._worker, worker_input_list)
+
+        for result in results:
+            peak, r, c, direction = result
+            tile = self.tile_grid.get_tile(r, c)
+            if tile is not None:
+                if direction == 'west':
+                    tile.west_translation = peak
+                elif direction == 'north':
+                    tile.north_translation = peak
 
         elapsed_time = time.time() - start_time
         logging.info("Translation Refinement took {} seconds".format(elapsed_time))
@@ -206,7 +248,7 @@ class GlobalPositions():
     _dx = [0, -1, 1, 0]
     _dy = [-1, 0, 0, 1]
 
-    def __init__(self, tile_grid: grid.TileGrid):
+    def __init__(self, tile_grid: img_grid.TileGrid):
         self.tile_grid = tile_grid
 
     def get_release_count(self, r, c):
@@ -216,13 +258,22 @@ class GlobalPositions():
         # If a tile is on the edge of the grid, then its release count is 3, if the tile is on a corner
         # then the release count is 2, if the tile is in the center then the release count is 4.
         """
+        if self.tile_grid.get_tile(r, c) is None:
+            return 0
+
         release_count = (0 if r == 0 else 1) + \
                         (0 if c == 0 else 1) + \
                         (0 if r == self.tile_grid.height - 1 else 1) + \
                         (0 if c == self.tile_grid.width - 1 else 1)
+
+        # handle cases where neighbor tiles are missing
+        if r > 1 and self.tile_grid.get_tile(r - 1, c) is None:
+            release_count -= 1
+        if c > 1 and self.tile_grid.get_tile(r, c - 1) is None:
+            release_count -= 1
         return release_count
 
-    def traverse_next_mst_tile(self, frontier_tiles: set[tile.Tile], visited_tiles: np.ndarray, mst_release_counts: np.ndarray, mst_size: int) -> int:
+    def traverse_next_mst_tile(self, frontier_tiles: set[img_tile.Tile], visited_tiles: np.ndarray, mst_release_counts: np.ndarray, mst_size: int) -> int:
         """
         Traverses to the next tile in the minimum spanning tree
         """
@@ -239,6 +290,8 @@ class GlobalPositions():
                 if r >= 0 and r < self.tile_grid.height and c >= 0 and c < self.tile_grid.width:
                     if not visited_tiles[r, c]:
                         neighbor_tile = self.tile_grid.get_tile(r, c)
+                        if neighbor_tile is None:
+                            continue
                         edge_weight = tile.get_peak(neighbor_tile).ncc
                         if edge_weight > best_ncc:
                             best_ncc = edge_weight
@@ -258,7 +311,7 @@ class GlobalPositions():
         for i in range(len(self._dx)):
             r = next_tile.r + self._dy[i]
             c = next_tile.c + self._dx[i]
-            if r >= 0 and r < self.tile_grid.height and c >= 0 and c < self.tile_grid.width:
+            if r >= 0 and r < self.tile_grid.height and c >= 0 and c < self.tile_grid.width and self.tile_grid.get_tile(r, c) is not None:
                 mst_release_counts[r, c] -= 1
 
         visited_tiles[next_tile.r, next_tile.c] = True
@@ -318,7 +371,8 @@ class GlobalPositions():
         visited_tiles[start_tile.r, start_tile.c] = True
         mst_size = 1  # current size is 1 b/c startTile has been added
 
-        while mst_size < self.tile_grid.height * self.tile_grid.width:
+        tgt_mst_size = self.tile_grid.get_num_valid_tiles()
+        while mst_size < tgt_mst_size:
             mst_size = self.traverse_next_mst_tile(frontier_tiles, visited_tiles, mst_release_counts, mst_size)
 
         logging.info("Completed MST traversal")

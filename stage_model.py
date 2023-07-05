@@ -5,18 +5,18 @@ import logging
 import time
 
 # local imports
-import grid
+import img_grid
 import translation_refinement
 import utils
-import mle
-import tile
+import mle_estimator
+import img_tile
 
 
 
 class StageModel():
     NUMBER_STABLE_MLE_ITERATIONS = 20
 
-    def __init__(self, args: argparse.Namespace, tile_grid: grid.TileGrid):
+    def __init__(self, args: argparse.Namespace, tile_grid: img_grid.TileGrid):
         self.args = args
         self.tile_grid = tile_grid
 
@@ -29,8 +29,8 @@ class StageModel():
         self.vertical_repeatability: int = None
         self.repeatability: int = None
 
-        self.valid_translations_vertical: set[tile.Tile] = None
-        self.valid_translations_horizontal: set[tile.Tile] = None
+        self.valid_translations_vertical: set[img_tile.Tile] = None
+        self.valid_translations_horizontal: set[img_tile.Tile] = None
 
         self.missing_rows = None
         self.missing_cols = None
@@ -77,17 +77,17 @@ class StageModel():
         translations = np.asarray(translations, dtype=np.float32)
 
         # setup cache for mle likelihoods
-        self.cache = mle.MleLikelihoodCache()
+        self.cache = mle_estimator.MleLikelihoodCache()
         num_stable_iterations = 0
 
         best_points = list()
-        best_point = mle.MlePoint()
+        best_point = mle_estimator.MlePoint()
         while num_stable_iterations < self.NUMBER_STABLE_MLE_ITERATIONS:
             # create the current starting point
-            point = mle.MlePoint.getRandomPoint()
+            point = mle_estimator.MlePoint.getRandomPoint()
 
             # perform hill climb search for that point
-            point = mle.hillClimbSearch(point, self.cache, translations)
+            point = mle_estimator.hillClimbSearch(point, self.cache, translations)
             best_points.append(point)
             # check if the new point is better than the best point
             if point.likelihood > best_point.likelihood:
@@ -109,10 +109,10 @@ class StageModel():
 
         return overlap
 
-    def filer_translations_remove_outliers(self, direction: str, valid_tiles: set[tile.Tile]) -> set[tile.Tile]:
+    def filer_translations_remove_outliers(self, direction: str, valid_tiles: set[img_tile.Tile]) -> set[img_tile.Tile]:
         assert direction in ['VERTICAL', 'HORIZONTAL']
 
-        def lcl_filter(valid_tiles: set[tile.Tile], direction: str, displacement: str) -> set[tile.Tile]:
+        def lcl_filter(valid_tiles: set[img_tile.Tile], direction: str, displacement: str) -> set[img_tile.Tile]:
             """
             # filter the translations to remove outliers
             # compute the statistics required to determine which translations are outliers
@@ -162,7 +162,7 @@ class StageModel():
 
         return valid_tiles
 
-    def filter_translations(self, direction) -> set[tile.Tile]:
+    def filter_translations(self, direction) -> set[img_tile.Tile]:
         """
         Filters grid of image tiles based on calculated overlap, correlation, and standard deviation. A set of valid image tiles after filtering is returned. This modifies the tile_grid translation values.
         :return: list of valid image tiles

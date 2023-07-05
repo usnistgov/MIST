@@ -7,23 +7,24 @@ import logging
 from abc import ABC
 
 # local imports
-import tile
-import grid
+import img_tile
+import img_grid
+import utils
 
 
 class PCIAM(ABC):
 
     @staticmethod
-    def extract_subregion(tile: np.ndarray, x: int, y: int) -> np.ndarray:
+    def extract_subregion(t1: np.ndarray, x: int, y: int) -> np.ndarray:
         """
         Extracts the sub-region visible if the image view window is translated the given (x,y) distance).
-        :param tile: The image tile a sub-region is being extracted from. The translation (x,y) is relative to the upper left corner of this image.
+        :param t1: The image tile a sub-region is being extracted from. The translation (x,y) is relative to the upper left corner of this image.
         :param x: the x component of the translation.
         :param y: the y component of the translation.
         :return: the portion of tile shown if the view is translated (x,y) pixels.
         """
-        w = tile.shape[1]
-        h = tile.shape[0]
+        w = t1.shape[1]
+        h = t1.shape[0]
 
         x_start = x
         x_end = x + w - 1
@@ -40,7 +41,7 @@ class PCIAM(ABC):
         if abs(x) >= w or abs(y) >= h:
             return None
 
-        sub_tile = tile[y_start:y_end + 1, x_start:x_end + 1]
+        sub_tile = t1[y_start:y_end + 1, x_start:x_end + 1]
         return sub_tile
 
     @staticmethod
@@ -84,7 +85,7 @@ class PCIAM(ABC):
         return PCIAM.cross_correlation(a1, a2)
 
     @staticmethod
-    def peak_cross_correlation_worker(t1: np.ndarray, t2: np.ndarray, dims: list[tuple[int, int]]) -> tile.Peak:
+    def peak_cross_correlation_worker(t1: np.ndarray, t2: np.ndarray, dims: list[tuple[int, int]]) -> img_tile.Peak:
         # remove duplicate dim values to prevent redundant computation
         dims = list(set(dims))
 
@@ -103,12 +104,12 @@ class PCIAM(ABC):
             y_list.append(nr)
 
         idx = np.argmax(ncc_list)
-        peak = tile.Peak(ncc_list[idx], x_list[idx], y_list[idx])
+        peak = img_tile.Peak(ncc_list[idx], x_list[idx], y_list[idx])
 
         return peak
 
     @staticmethod
-    def peak_cross_correlation_lr(t1: np.ndarray, t2: np.ndarray, x: int, y: int) -> tile.Peak:
+    def peak_cross_correlation_lr(t1: np.ndarray, t2: np.ndarray, x: int, y: int) -> img_tile.Peak:
         """
         Computes the peak cross correlation between two images t1 and t2, where t1 is the left image
         """
@@ -132,7 +133,7 @@ class PCIAM(ABC):
         return PCIAM.peak_cross_correlation_worker(t1, t2, dims)
 
     @staticmethod
-    def peak_cross_correlation_ud(t1: np.ndarray, t2: np.ndarray, x: int, y: int) -> tile.Peak:
+    def peak_cross_correlation_ud(t1: np.ndarray, t2: np.ndarray, x: int, y: int) -> img_tile.Peak:
         """
         Computes the peak cross correlation between two images t1 and t2, where t1 is the top image
         """
@@ -155,7 +156,7 @@ class PCIAM(ABC):
         return PCIAM.peak_cross_correlation_worker(t1, t2, dims)
 
     @staticmethod
-    def compute_pciam(t1: tile.Tile, t2: tile.Tile, n_peaks: int) -> tile.Peak:
+    def compute_pciam(t1: img_tile.Tile, t2: img_tile.Tile, n_peaks: int) -> img_tile.Peak:
         t1_img = t1.get_image()
         t2_img = t2.get_image()
 
@@ -188,11 +189,11 @@ class PCIAM(ABC):
         return peak
 
 
-class SequentialPciam(PCIAM):
+class PciamSequential(PCIAM):
     def __init__(self, args: argparse.Namespace):
         self.args = args
 
-    def execute(self, tile_grid: grid.TileGrid):
+    def execute(self, tile_grid: img_grid.TileGrid):
         start_time = time.time()
         # iterate over the rows and columns of the grid
         for r in range(self.args.grid_height):
@@ -209,6 +210,59 @@ class SequentialPciam(PCIAM):
                 north = tile_grid.get_tile(r - 1, c)
                 if north is not None:
                     peak = self.compute_pciam(north, tile, self.args.num_fft_peaks)
+                    tile.north_translation = peak
+
+        elapsed_time = time.time() - start_time
+        logging.info("Finished computing all pairwise translations in {} seconds".format(elapsed_time))
+
+
+class PciamParallel(PCIAM):
+    def __init__(self, args: argparse.Namespace):
+        self.args = args
+
+    @staticmethod
+    def _worker(tile: img_tile.Tile, other: img_tile.Tile, r: int, c: int, direction: str, num_fft_peaks) -> tuple[img_tile.Peak, int, int, str]:
+        return PciamParallel.compute_pciam(other, tile, num_fft_peaks), r, c, direction
+
+
+    def execute(self, tile_grid: img_grid.TileGrid):
+        start_time = time.time()
+        logging.info("Computing all pairwise translations in parallel")
+        logging.info("Preloading all images into memory")
+        tile_grid.load_images_into_memory()
+        logging.info("Finished preloading all images into memory. Took {}s".format(time.time() - start_time))
+
+        worker_input_list = list()
+        # iterate over the rows and columns of the grid
+        for r in range(self.args.grid_height):
+            for c in range(self.args.grid_width):
+                tile = tile_grid.get_tile(r, c)
+                if tile is None:
+                    continue
+
+                west = tile_grid.get_tile(r, c - 1)
+                if west is not None:
+                    worker_input_list.append((tile, west, r, c, 'west', self.args.num_fft_peaks))
+
+                north = tile_grid.get_tile(r - 1, c)
+                if north is not None:
+                    worker_input_list.append((tile, north, r, c, 'north', self.args.num_fft_peaks))
+
+        # results = list()
+        # for worker_input in worker_input_list:
+        #     results.append(self._worker(*worker_input))
+        import multiprocessing
+        with multiprocessing.Pool(processes=utils.get_num_workers()) as pool:
+            # perform the work in parallel
+            results = pool.starmap(self._worker, worker_input_list)
+
+        for result in results:
+            peak, r, c, direction = result
+            tile = tile_grid.get_tile(r, c)
+            if tile is not None:
+                if direction == 'west':
+                    tile.west_translation = peak
+                elif direction == 'north':
                     tile.north_translation = peak
 
         elapsed_time = time.time() - start_time
