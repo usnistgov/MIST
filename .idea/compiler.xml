@@ -9,8 +9,5 @@
         <module name="MIST_" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="MIST_" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>
