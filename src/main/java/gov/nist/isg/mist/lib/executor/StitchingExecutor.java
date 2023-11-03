@@ -876,7 +876,7 @@ public class StitchingExecutor implements Runnable {
             int width = TileGridUtils.getFullImageWidth(grid, initImg.getWidth());
             int height = TileGridUtils.getFullImageHeight(grid, initImg.getHeight());
 
-            long totalPixels = (long)width * (long)height;
+            long totalPixels = (long)width * (long)height * (initImg.getBitDepth() / 8);
             if (totalPixels >= Integer.MAX_VALUE) {
                 showError("Error, unable to display image whose width(" + width + ")*height(" + height + ") is greater than " + Integer.MAX_VALUE);
                 return;
@@ -1015,15 +1015,24 @@ public class StitchingExecutor implements Runnable {
         int width = grid.getExtentWidth() * initImg.getWidth();
         int height = grid.getExtentHeight() * initImg.getHeight();
 
-        long totalPixels = (long)width * (long)height;
+        boolean displayInImageJ = true;
+
+        long totalPixels = (long)width * (long)height * (initImg.getBitDepth() / 8);
         if (totalPixels >= Integer.MAX_VALUE) {
-            showError("Error: Unable to display image whose width(" + width + ") * height(" + height + ") is greater than " + Integer.MAX_VALUE);
-            return;
+            String outputDirpath = this.params.getOutputParams().getOutputPath();
+            imgFile = new File(outputDirpath, "temp.ome.tiff");
+
+            Log.msg(LogType.MANDATORY, "Warning: Unable to display image whose width(" + width + ") * height(" + height + ") * channels(" + (initImg.getBitDepth() / 8) + ") is greater than " + Integer.MAX_VALUE);
+            Log.msg(LogType.MANDATORY, "The temporary file \"" + imgFile.getAbsolutePath() + "\" will be saved. To modify the output directory, edit the \"Output Directory\" option in the Output parameters.");
+            Log.msg(LogType.MANDATORY, "In order to view this image, you may have to use an external tool. It is possible to try ImageJ/Fiji with the SCIFIO beta feature enabled in the ImageJ settings, but this has shown to fail to open some images.");
+            displayInImageJ = false;
         }
 
         int tileSize = 1024;
 
-        Log.msg(LogType.MANDATORY, "Preparing preview image size: " + width + "x" + height);
+        if (displayInImageJ) {
+            Log.msg(LogType.MANDATORY, "Preparing preview image size: " + width + "x" + height);
+        }
 
         try {
             StitchingGuiUtils.updateProgressBar(progressBar, true, "Initializing image buffer...");
@@ -1031,7 +1040,7 @@ public class StitchingExecutor implements Runnable {
             imageExporter = new LargeImageExporter<T>(grid, tileSize, initImg.getImagePlus().getType(), 0, 0,
                     width, height, BlendingMode.OVERLAY, CompressionMode.UNCOMPRESSED, params.getOutputParams().getPerPixelUnit(),
                     params.getOutputParams().getPerPixelX(), params.getOutputParams().getPerPixelY(), params.getOutputParams().getBlendingAlpha(), progressBar);
-            imgFile = imageExporter.exportImageNoOverlap(null);
+            imgFile = imageExporter.exportImageNoOverlap(imgFile);
 
 
         } catch (OutOfMemoryError e) {
@@ -1047,17 +1056,24 @@ public class StitchingExecutor implements Runnable {
         if (imgFile == null) {
             Log.msg(LogType.MANDATORY, "Error: Unable to display image.");
         } else {
-            try {
-                ImagePlus[] imps = BF.openImagePlus(imgFile.getAbsolutePath());
-                for (ImagePlus imp : imps) {
-                    imp.show();
+            if (displayInImageJ) {
+                try {
+                    ImagePlus[] imps = BF.openImagePlus(imgFile.getAbsolutePath());
+                    for (ImagePlus imp : imps) {
+                        imp.show();
+                    }
+                } catch (FormatException e) {
+                    Log.msg(LogType.MANDATORY, "Error: Failed to load image file format: " + e.getMessage());
+                } catch (IOException e) {
+                    Log.msg(LogType.MANDATORY, "Error: IOException occurred when openning the image into ImageJ");
+                    e.printStackTrace();
                 }
-            } catch (FormatException e) {
-                Log.msg(LogType.MANDATORY, "Error: Failed to load image file format: " + e.getMessage());
-            } catch (IOException e) {
-                Log.msg(LogType.MANDATORY, "Error: IOException occurred when openning the image into ImageJ");
-                e.printStackTrace();
             }
+            else {
+                Log.msg(LogType.MANDATORY, "Finished saving temporary image to " + imgFile.getAbsolutePath());
+            }
+
+
 //      ImgOpener opener = new ImgOpener();
 //      try {
 //        List<SCIFIOImgPlus<?>> files = opener.openImgs(imgFile.getAbsolutePath());
