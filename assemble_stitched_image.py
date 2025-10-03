@@ -1,86 +1,120 @@
 import os
 import numpy as np
 import skimage.io
+from concurrent.futures import ThreadPoolExecutor
+from collections import deque
 
+class Assemble:
 
-def assemble_image(global_positions_filepath, images_dirpath, output_filepath):
+    def __init__(self) -> None:
+        
+        self.files_and_content = {}
+        self.file_names = deque()
 
-    parent, fn = os.path.split(output_filepath)
-    if not os.path.exists(parent):
-        os.makedirs(parent)
+    def read_files(self, images_dirpath):
 
-    if not os.path.exists(global_positions_filepath):
-        raise RuntimeError('Missing global positions file: {}'.format(global_positions_filepath))
+        while 1:
+            try:
+                file_name = self.file_names.popleft()
+                print(f"read {file_name}")
+                content = skimage.io.imread(os.path.join(images_dirpath, file_name))
+                self.files_and_content[file_name] = content
+            
+            except IndexError:
+                return
 
-    # load the global positions for each image
-    img_names = list()
-    pixel_x_position = list()
-    pixel_y_position = list()
-    with open(global_positions_filepath, 'r') as fh:
-        for line in fh:
-            line = line.strip()
-            toks = line.split(';')
+    def assemble_image(self, global_positions_filepath, images_dirpath, output_filepath):
 
-            # handle file name loading
-            fn_tok = toks[0]
-            fn = fn_tok.split(':')[1].strip()
-            img_names.append(fn)
+        executor = ThreadPoolExecutor(max_workers=os.cpu_count()) # threadpool for parallel imgread. 
 
-            # handle the position loading
-            pos_tok = toks[2]
-            pos_pair = pos_tok.split(':')[1].strip()
-            pos_pair = pos_pair.replace(')', '')
-            pos_pair = pos_pair.replace('(', '')
-            pos_pairs = pos_pair.split(',')
-            x = int(pos_pairs[0].strip())
-            y = int(pos_pairs[1].strip())
-            pixel_x_position.append(x)
-            pixel_y_position.append(y)
+        parent, fn = os.path.split(output_filepath)
+        if not os.path.exists(parent):
+            os.makedirs(parent)
 
-    # verify that all images exist
-    if not os.path.exists(images_dirpath):
-        raise RuntimeError('Images directory does not exist: {}'.format(images_dirpath))
+        if not os.path.exists(global_positions_filepath):
+            raise RuntimeError('Missing global positions file: {}'.format(global_positions_filepath))
 
-    for fn in img_names:
-        if not os.path.exists(os.path.join(images_dirpath, fn)):
-            raise RuntimeError('Image {} expected based on global positions file, but its missing from the image directory.'.format(fn))
+        # load the global positions for each image
+        img_names = deque()
+        pixel_x_position = list()
+        pixel_y_position = list()
+        with open(global_positions_filepath, 'r') as fh:
+            for line in fh:
+                line = line.strip()
+                toks = line.split(';')
 
-    # compute how large of an output image will be required.
-    first_tile = skimage.io.imread(os.path.join(images_dirpath, img_names[0]))
-    tile_shape = first_tile.shape
-    n_channels = 1
-    if len(tile_shape) == 3:
-        n_channels = tile_shape[2]
-    tile_h = tile_shape[0]
-    tile_w = tile_shape[1]
+                # handle file name loading
+                fn_tok = toks[0]
+                fn = fn_tok.split(':')[1].strip()
+                img_names.append(fn)
 
-    stitched_img_h = tile_h + np.max(pixel_y_position)
-    stitched_img_w = tile_w + np.max(pixel_x_position)
+                # handle the position loading
+                pos_tok = toks[2]
+                pos_pair = pos_tok.split(':')[1].strip()
+                pos_pair = pos_pair.replace(')', '')
+                pos_pair = pos_pair.replace('(', '')
+                pos_pairs = pos_pair.split(',')
+                x = int(pos_pairs[0].strip())
+                y = int(pos_pairs[1].strip())
+                pixel_x_position.append(x)
+                pixel_y_position.append(y)
 
-    # creating blank image
-    print('Creating blank stitched image of size: ({}, {}, {})'.format(stitched_img_h, stitched_img_w, n_channels))
-    stitched_img = np.zeros((stitched_img_h, stitched_img_w, n_channels), dtype=first_tile.dtype)
+        self.file_names = img_names.copy() # we will pop file names from deque, but we need img names when placing
 
-    for i in range(0, len(img_names)):
-        fn = img_names[i]
-        x = pixel_x_position[i]
-        y = pixel_y_position[i]
-        print('Img {}/{}. Placing {} at ({}, {})'.format(i, len(img_names), fn, x, y))
-        tile = skimage.io.imread(os.path.join(images_dirpath, fn))
-        if tile.shape != tile_shape:
-            raise RuntimeError('All images must be the same shape. Image {} is {}, expected {}'.format(fn, tile.shape, tile_shape))
-        if tile.dtype != first_tile.dtype:
-            raise RuntimeError('Img {} has type: {}, expected {}.'.format(fn, tile.dtype, first_tile.dtype))
+        for i in range(os.cpu_count()):
+            executor.submit(self.read_files, images_dirpath)
 
-        stitched_img[y:y+tile_h, x:x+tile_w, :] = tile
+        # verify that all images exist
+        if not os.path.exists(images_dirpath):
+            raise RuntimeError('Images directory does not exist: {}'.format(images_dirpath))
 
-    print('Saving stitched image to disk')
-    skimage.io.imsave(output_filepath, stitched_img, plugin=None, tile=(1024, 1024), check_contrast=False)
+        for fn in img_names:
+            if not os.path.exists(os.path.join(images_dirpath, fn)):
+                raise RuntimeError('Image {} expected based on global positions file, but its missing from the image directory.'.format(fn))
+
+        # compute how large of an output image will be required.
+        first_tile = skimage.io.imread(os.path.join(images_dirpath, img_names[0]))
+        tile_shape = first_tile.shape
+        n_channels = 1
+        if len(tile_shape) == 3:
+            n_channels = tile_shape[2]
+        tile_h = tile_shape[0]
+        tile_w = tile_shape[1]
+
+        stitched_img_h = tile_h + np.max(pixel_y_position)
+        stitched_img_w = tile_w + np.max(pixel_x_position)
+
+        # creating blank image
+        print('Creating blank stitched image of size: ({}, {}, {})'.format(stitched_img_h, stitched_img_w, n_channels))
+        stitched_img = np.zeros((stitched_img_h, stitched_img_w, n_channels), dtype=first_tile.dtype)
+
+        for i in range(0, len(img_names)):
+            fn = img_names[i]
+            x = pixel_x_position[i]
+            y = pixel_y_position[i]
+            print('Img {}/{}. Placing {} at ({}, {})'.format(i, len(img_names), fn, x, y))
+            while 1:
+                try:
+                    tile = self.files_and_content[fn]
+                    break
+                except KeyError:
+                    pass
+                
+            if tile.shape != tile_shape:
+                raise RuntimeError('All images must be the same shape. Image {} is {}, expected {}'.format(fn, tile.shape, tile_shape))
+            if tile.dtype != first_tile.dtype:
+                raise RuntimeError('Img {} has type: {}, expected {}.'.format(fn, tile.dtype, first_tile.dtype))
+
+            stitched_img[y:y+tile_h, x:x+tile_w, :] = tile
+            del self.file_and_content[fn] # release memory
+
+        print('Saving stitched image to disk')
+        skimage.io.imsave(output_filepath, stitched_img, plugin=None, tile=(1024, 1024), check_contrast=False)
 
 
 if __name__ == "__main__":
     import argparse
-
+    
     parser = argparse.ArgumentParser(description='Script to assemble MIST stitched image')
     parser.add_argument('--global-positions-filepath', type=str, required=True, help='Filepath to the global positions file generated by MIST.')
     parser.add_argument('--images-dirpath', type=str, required=True, help='Dirpath (directory) where the source images exists.')
@@ -91,4 +125,6 @@ if __name__ == "__main__":
     images_dirpath = args.images_dirpath
     output_filepath = args.output_filepath
 
-    assemble_image(global_positions_filepath, images_dirpath, output_filepath)
+    assembler=Assemble()
+
+    assembler.assemble_image(global_positions_filepath, images_dirpath, output_filepath)
