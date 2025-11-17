@@ -90,7 +90,7 @@
         </repository>
         <repository>
             <id>imagej.public</id>
-            <url>http://maven.imagej.net/content/groups/public</url>
+            <url>https://maven.imagej.net/content/groups/public</url>
         </repository>
         <repository>
             <id>mist.in-project</id>
@@ -99,7 +99,7 @@
         </repository>
         <repository>
             <id>ome.snapshots</id>
-            <url>http://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
+            <url>https://artifacts.openmicroscopy.org/artifactory/ome.snapshots</url>
         </repository>
     </repositories>
 
