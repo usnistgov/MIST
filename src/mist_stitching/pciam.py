@@ -7,9 +7,9 @@ import logging
 from abc import ABC
 
 # local imports
-import img_tile
-import img_grid
-import utils
+from . import img_tile
+from . import img_grid
+from . import utils
 
 
 class PCIAM(ABC):

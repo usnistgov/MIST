@@ -13,12 +13,12 @@ import argparse
 import time
 
 # local imports
-import translation_refinement
-import img_grid
-import pciam
-import stage_model
-import assemble
-import utils
+from . import translation_refinement
+from . import img_grid
+from . import pciam
+from . import stage_model
+from . import assemble
+from . import utils
 
 
 

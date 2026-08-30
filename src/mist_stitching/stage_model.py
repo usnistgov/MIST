@@ -5,11 +5,11 @@ import logging
 import time
 
 # local imports
-import img_grid
-import translation_refinement
-import utils
-import mle_estimator
-import img_tile
+from . import img_grid
+from . import translation_refinement
+from . import utils
+from . import mle_estimator
+from . import img_tile
 
 
 

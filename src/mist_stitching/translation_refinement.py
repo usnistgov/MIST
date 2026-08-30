@@ -7,11 +7,11 @@ import copy
 import enum
 
 # local imports
-import img_grid
-import img_tile
-import stage_model
-import pciam
-import utils
+from . import img_grid
+from . import img_tile
+from . import stage_model
+from . import pciam
+from . import utils
 
 
 class HillClimbDirection(enum.Enum):
